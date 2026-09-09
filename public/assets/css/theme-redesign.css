@@ -440,6 +440,37 @@ body.mini-sidebar #sidebar-menu.sidebar-menu ul ul {
   color: var(--tr-text-muted) !important;
 }
 
+/* Page header with icon + subtitle + action button (e.g. Userrole, and
+   reusable on any other old-template page that wants the same layout). */
+.content .page-header.ph-flex {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.content .page-header .ph-left {
+  display: flex;
+  align-items: center;
+}
+.content .page-header .ph-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--tr-blue-light);
+  color: var(--tr-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 14px;
+}
+.content .page-header .page-subtitle {
+  font-size: 13.5px !important;
+  color: var(--tr-text-secondary) !important;
+  margin-top: 2px !important;
+}
+
 /* Cards */
 .card {
   background: var(--tr-white) !important;
@@ -646,4 +677,75 @@ select.select:focus {
   background: var(--tr-blue-light) !important;
   border-color: var(--tr-blue) !important;
   color: var(--tr-navy) !important;
+}
+
+/* DataTables' own auto-generated length / search / info controls —
+   used by any page with a real server-side DataTable (Userrole and many
+   master-data pages). */
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-size: 13.5px !important;
+  color: var(--tr-text) !important;
+  background: var(--tr-white) !important;
+  margin: 0 6px !important;
+}
+.dataTables_wrapper .dataTables_length select:focus,
+.dataTables_wrapper .dataTables_filter input:focus {
+  outline: none !important;
+  border-color: var(--tr-blue) !important;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.10) !important;
+}
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info {
+  color: var(--tr-text-secondary) !important;
+  font-size: 13.5px !important;
+}
+
+/* Shared Edit/Delete action buttons rendered by Action_button.blade.php —
+   used across 17+ controllers' DataTables. */
+.dt-actions {
+  display: flex;
+  gap: 6px;
+}
+.dt-act-btn,
+.dt-act-btn:link,
+.dt-act-btn:visited,
+.dt-act-btn:hover,
+.dt-act-btn:active,
+.dt-act-btn:focus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  text-decoration: none !important;
+  transition: opacity .15s ease, transform .12s ease;
+  font-size: 13px;
+}
+.dt-act-btn:hover {
+  opacity: .8;
+  transform: translateY(-1px);
+}
+.dt-act-edit,
+.dt-act-edit:link,
+.dt-act-edit:visited,
+.dt-act-edit:hover,
+.dt-act-edit:active,
+.dt-act-edit:focus {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+}
+.dt-act-delete,
+.dt-act-delete:link,
+.dt-act-delete:visited,
+.dt-act-delete:hover,
+.dt-act-delete:active,
+.dt-act-delete:focus {
+  background: #FEECEC !important;
+  color: var(--tr-danger) !important;
 }

@@ -28,26 +28,22 @@
         <div class="main-wrapper">
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41L11 3.83V3H3v8h.83l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83z"/><circle cx="6.5" cy="6.5" r="1"/></svg>
+                            </div>
+                            <div>
                                 <h3 class="page-title">User Roles</h3>
-                                <hr>
+                                <p class="page-subtitle">Define roles and permission levels for system users</p>
                             </div>
                         </div>
+                        <a class="btn btn-primary" onClick="add()" href="javascript:void(0)">
+                            <i class="fas fa-plus"></i> Add Role
+                        </a>
                     </div>
 
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col-lg-12 margin-tb">
-                                <div class="pull-left">
-                    
-                                </div>
-                                <div class="pull-right mb-2">
-                                    <a class="btn btn-primary" onClick="add()" href="javascript:void(0)">Add User Roles Details</a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="container-fluid px-0">
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">
                                 <p>{{ $message }}</p>

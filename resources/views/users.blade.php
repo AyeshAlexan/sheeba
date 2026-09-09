@@ -53,32 +53,21 @@
 
     .pu-wrap { padding: 24px 28px; }
 
-    /* Banner */
+    /* Page header — plain, no gradient banner, matches the rest of the app */
     .pu-banner {
-        background: var(--grad-header); border-radius: var(--radius);
-        padding: 22px 28px; display: flex; align-items: center;
+        background: transparent; padding: 0;
+        display: flex; align-items: flex-start;
         justify-content: space-between; margin-bottom: 22px;
-        flex-wrap: wrap; gap: 14px; box-shadow: var(--shadow-card);
-        position: relative; overflow: hidden;
-    }
-    .pu-banner::before {
-        content: ''; position: absolute; top: -40px; right: -40px;
-        width: 160px; height: 160px; border-radius: 50%;
-        background: rgba(255,255,255,.06);
-    }
-    .pu-banner::after {
-        content: ''; position: absolute; bottom: -30px; right: 120px;
-        width: 100px; height: 100px; border-radius: 50%;
-        background: rgba(255,255,255,.04);
+        flex-wrap: wrap; gap: 14px;
     }
     .pu-banner-icon {
         width: 46px; height: 46px; border-radius: 12px;
-        background: rgba(255,255,255,.18); display: flex;
-        align-items: center; justify-content: center;
-        font-size: 1.3rem; flex-shrink: 0; margin-right: 14px;
+        background: var(--primary-light); color: var(--blue);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-right: 14px;
     }
-    .pu-banner-text h2 { font-size: 1.2rem; font-weight: 700; color: #fff; }
-    .pu-banner-text p  { font-size: .82rem; color: rgba(255,255,255,.75); margin-top: 2px; }
+    .pu-banner-text h2 { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+    .pu-banner-text p  { font-size: .83rem; color: var(--text-sub); margin-top: 2px; }
     .pu-banner-left    { display: flex; align-items: center; }
     .pu-banner-actions { display: flex; gap: 10px; position: relative; z-index: 1; }
 
@@ -95,12 +84,12 @@
 
     .btn-ghost {
         display: inline-flex; align-items: center; gap: 7px;
-        background: rgba(255,255,255,.15); color: #fff;
-        border: 1.5px solid rgba(255,255,255,.35); border-radius: var(--radius-sm);
+        background: var(--surface); color: var(--navy);
+        border: 1.5px solid var(--border); border-radius: var(--radius-sm);
         padding: 8px 17px; font-family: var(--font); font-size: .83rem; font-weight: 600;
         cursor: pointer; transition: all .2s;
     }
-    .btn-ghost:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.6); }
+    .btn-ghost:hover { background: #EDF0F5; border-color: #D5DBE5; }
 
     .btn-outline {
         display: inline-flex; align-items: center; gap: 6px;
@@ -113,13 +102,12 @@
 
     .btn-blue {
         display: inline-flex; align-items: center; gap: 7px;
-        background: var(--grad-btn); color: #fff; border: none;
-        border-radius: var(--radius-sm); padding: 9px 20px;
-        font-family: var(--font); font-size: .83rem; font-weight: 600;
+        background: var(--blue); color: #fff; border: none;
+        border-radius: var(--radius-sm); padding: 10px 20px;
+        font-family: var(--font); font-size: .84rem; font-weight: 600;
         cursor: pointer; transition: all .2s;
-        box-shadow: 0 3px 10px rgba(21,101,192,.3);
     }
-    .btn-blue:hover { box-shadow: 0 5px 16px rgba(21,101,192,.4); transform: translateY(-1px); }
+    .btn-blue:hover { background: var(--blue-mid); transform: translateY(-1px); }
 
     .btn-amber {
         display: inline-flex; align-items: center; gap: 7px;
@@ -134,21 +122,22 @@
     /* Stats */
     .pu-stats { display: flex; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
     .stat-pill {
-        flex: 1; min-width: 130px; background: var(--card);
+        flex: 1; min-width: 200px; background: var(--card);
         border: 1.5px solid var(--border); border-radius: var(--radius);
-        padding: 14px 18px; display: flex; align-items: center; gap: 12px;
-        box-shadow: var(--shadow); transition: box-shadow .2s;
+        padding: 16px 18px; display: flex; align-items: center; gap: 12px;
+        box-shadow: var(--shadow); transition: box-shadow .2s, transform .2s;
     }
-    .stat-pill:hover { box-shadow: var(--shadow-card); }
+    .stat-pill:hover { box-shadow: var(--shadow-card); transform: translateY(-1px); }
     .stat-dot {
-        width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
     }
-    .sd-blue  { background: var(--primary-light); }
-    .sd-green { background: var(--green-light); }
-    .sd-amber { background: var(--amber-light); }
+    .sd-blue  { background: var(--primary-light); color: var(--blue); }
+    .sd-green { background: var(--green-light); color: var(--green); }
+    .sd-amber { background: #EEE9FE; color: #7C3AED; }
     .stat-num { font-size: 1.4rem; font-weight: 700; color: var(--navy); line-height: 1; }
     .stat-lbl { font-size: .75rem; color: var(--text-sub); margin-top: 2px; font-weight: 500; }
+    .stat-chev { margin-left: auto; color: var(--text-light); flex-shrink: 0; }
 
     /* Alerts */
     .pu-alert {
@@ -192,18 +181,21 @@
     /* Table */
     .table-scroll { overflow-x: auto; }
     .pu-table { width: 100%; border-collapse: collapse; }
-    .pu-table thead tr { background: linear-gradient(90deg, #14213D 0%, #1677FF 100%); }
+    .pu-table thead tr { background: var(--surface); }
     .pu-table thead th {
         padding: 12px 16px; text-align: left; font-size: .72rem;
-        font-weight: 600; color: rgba(255,255,255,.9);
-        text-transform: uppercase; letter-spacing: .7px; white-space: nowrap;
+        font-weight: 600; color: var(--navy);
+        text-transform: uppercase; letter-spacing: .5px; white-space: nowrap;
+        border-bottom: 1px solid var(--border);
     }
     .pu-table thead th:first-child { padding-left: 20px; }
     .pu-table tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
     .pu-table tbody tr:last-child { border-bottom: none; }
-    .pu-table tbody tr:hover { background: #f0f4ff; }
+    .pu-table tbody tr:hover { background: var(--surface); }
     .pu-table tbody td { padding: 12px 16px; font-size: .855rem; vertical-align: middle; }
     .pu-table tbody td:first-child { padding-left: 20px; }
+    .pu-table .col-check { width: 40px; }
+    .pu-table .col-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; }
 
     .user-cell { display: flex; align-items: center; gap: 11px; }
     .u-avatar {
@@ -215,27 +207,63 @@
     .u-name     { font-weight: 600; font-size: .875rem; color: var(--text-main); }
     .u-username { font-size: .75rem; color: var(--text-sub); margin-top: 1px; }
 
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .71rem; font-weight: 600; white-space: nowrap; }
-    .badge-role   { background: var(--green-light); color: var(--green); }
-    .badge-branch { background: var(--amber-light);  color: #7c4300; }
-    .badge-bc     { background: var(--primary-light); color: var(--navy); letter-spacing: .5px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 20px; font-size: .73rem; font-weight: 600; white-space: nowrap; }
+    .badge svg { flex-shrink: 0; }
+    .badge-role   { background: var(--primary-light); color: var(--blue); }
+    .badge-branch { background: var(--amber-light);  color: #B45309; }
+    .badge-bc     { background: var(--surface); color: var(--text-sub); letter-spacing: .5px; border: 1px solid var(--border); }
 
-    .act-wrap { display: flex; gap: 5px; flex-wrap: wrap; }
+    .act-wrap { display: flex; gap: 6px; }
     .act-btn {
-        display: inline-flex; align-items: center; gap: 4px;
-        border: none; border-radius: 5px; padding: 5px 11px;
-        font-family: var(--font); font-size: .75rem; font-weight: 600;
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 30px; height: 30px;
+        border: none; border-radius: 50%;
         cursor: pointer; transition: opacity .15s, transform .12s;
-        text-decoration: none; white-space: nowrap;
+        text-decoration: none; flex-shrink: 0;
     }
-    .act-btn:hover { opacity: .85; transform: translateY(-1px); }
-    .act-edit   { background: var(--green-light);   color: var(--green); }
-    .act-view   { background: var(--primary-light); color: var(--blue); }
-    .act-delete { background: var(--red-light);     color: var(--red); }
+    .act-btn:hover { opacity: .8; transform: translateY(-1px); }
+    .act-edit, .act-edit:link, .act-edit:visited, .act-edit:hover, .act-edit:active, .act-edit:focus {
+        background: var(--green-light) !important; color: var(--green) !important;
+    }
+    .act-view, .act-view:link, .act-view:visited, .act-view:hover, .act-view:active, .act-view:focus {
+        background: var(--primary-light) !important; color: var(--blue) !important;
+    }
+    .act-delete, .act-delete:link, .act-delete:visited, .act-delete:hover, .act-delete:active, .act-delete:focus {
+        background: var(--red-light) !important; color: var(--red) !important;
+    }
 
     .empty-row td { text-align: center; padding: 48px; color: var(--text-light); font-size: .9rem; }
-    .pu-foot { padding: 12px 20px; border-top: 1.5px solid var(--border); background: #fafbff; }
-    .pu-foot .pagination { margin: 0; }
+
+    /* "Show X entries" control */
+    .pu-show-row {
+        display: flex; align-items: center; gap: 8px;
+        padding: 12px 20px; font-size: .8rem; color: var(--text-sub); font-weight: 500;
+    }
+    .pu-show-row select {
+        border: 1.5px solid var(--border); border-radius: 7px;
+        padding: 5px 10px; font-family: var(--font); font-size: .8rem;
+        color: var(--text-main); background: var(--white); cursor: pointer;
+    }
+    .pu-show-row select:focus { outline: none; border-color: var(--blue-mid); }
+
+    /* Footer / compact pager */
+    .pu-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 10px;
+        padding: 14px 20px; border-top: 1.5px solid var(--border);
+    }
+    .pu-foot-info { font-size: .8rem; color: var(--text-sub); }
+    .pu-pager { display: flex; align-items: center; gap: 6px; }
+    .pu-pager button, .pu-pager span.pu-page {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 28px; height: 28px; border-radius: 50%;
+        border: 1.5px solid var(--border); background: var(--white);
+        color: var(--text-sub); font-size: .78rem; font-weight: 600;
+        cursor: pointer; transition: all .15s;
+    }
+    .pu-pager button:hover:not(:disabled) { border-color: var(--blue-mid); color: var(--blue); }
+    .pu-pager button:disabled { opacity: .4; cursor: not-allowed; }
+    .pu-pager span.pu-page.active { background: var(--blue); border-color: var(--blue); color: #fff; }
 
     /* Modals */
     .modal-bg {
@@ -330,7 +358,9 @@
     {{-- ── Banner ── --}}
     <div class="pu-banner">
         <div class="pu-banner-left">
-            <div class="pu-banner-icon">👥</div>
+            <div class="pu-banner-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
             <div class="pu-banner-text">
                 <h2>User Management</h2>
                 <p>Manage system users, assign roles and branch access</p>
@@ -341,7 +371,7 @@
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                 Add Role
             </button>
-            <button class="btn-white" id="openAddUserModal">
+            <button class="btn-blue" id="openAddUserModal">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Add User
             </button>
@@ -362,25 +392,34 @@
     {{-- ── Stats ── --}}
     <div class="pu-stats">
         <div class="stat-pill">
-            <div class="stat-dot sd-blue">👤</div>
+            <div class="stat-dot sd-blue">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
             <div>
                 <div class="stat-num">{{ $users->total() }}</div>
                 <div class="stat-lbl">Total Users</div>
             </div>
+            <svg class="stat-chev" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div class="stat-pill">
-            <div class="stat-dot sd-green">🏷</div>
+            <div class="stat-dot sd-green">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/></svg>
+            </div>
             <div>
                 <div class="stat-num">{{ $Userrole->count() }}</div>
                 <div class="stat-lbl">Roles Defined</div>
             </div>
+            <svg class="stat-chev" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div class="stat-pill">
-            <div class="stat-dot sd-amber">🏢</div>
+            <div class="stat-dot sd-amber">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6"/></svg>
+            </div>
             <div>
                 <div class="stat-num">{{ $Branch->count() }}</div>
                 <div class="stat-lbl">Branches</div>
             </div>
+            <svg class="stat-chev" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
     </div>
 
@@ -397,11 +436,23 @@
             </div>
         </div>
 
+        <div class="pu-show-row">
+            <span>Show</span>
+            <select id="pageSizeSelect">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="all">All</option>
+            </select>
+            <span>entries</span>
+        </div>
+
         <div class="table-scroll">
             <div class="table-data">
                 <table class="pu-table">
                     <thead>
                         <tr>
+                            <th class="col-check"><input type="checkbox" id="selectAllUsers"></th>
                             <th>User</th>
                             <th>Role</th>
                             <th>Branch</th>
@@ -412,6 +463,7 @@
                     <tbody>
                         @forelse ($users as $data)
                         <tr>
+                            <td class="col-check"><input type="checkbox" class="row-check"></td>
                             <td>
                                 <div class="user-cell">
                                     <div class="u-avatar">{{ strtoupper(substr($data->name, 0, 2)) }}</div>
@@ -422,35 +474,64 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="badge badge-role">{{ $data->role }}</span></td>
-                            <td><span class="badge badge-branch">{{ $data->Branch }}</span></td>
-                            <td><span class="badge badge-bc">{{ $data->BC }}</span></td>
+                            <td>
+                                <span class="badge badge-role">
+                                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                    {{ $data->role }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-branch">
+                                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6"/></svg>
+                                    {{ $data->Branch }}
+                                </span>
+                            </td>
+                            <td><span class="badge badge-bc">{{ $data->BC ?: '—' }}</span></td>
                             <td>
                                 <div class="act-wrap">
-                                    <a href="#" class="act-btn act-edit update_user_form"
+                                    <a href="#" class="act-btn act-edit update_user_form" title="Edit"
                                         data-id="{{ $data->id }}"
                                         data-username="{{ $data->username }}"
                                         data-name="{{ $data->name }}"
                                         data-role="{{ $data->role }}"
                                         data-branch="{{ $data->Branch }}"
                                         data-bc="{{ $data->BC }}">
-                                        ✏️ Edit
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </a>
-                                    <button class="act-btn act-delete delete_user" data-id="{{ $data->id }}">
-                                        🗑 Delete
+                                    <button class="act-btn act-delete delete_user" title="Delete" data-id="{{ $data->id }}">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                         @empty
-                        <tr class="empty-row"><td colspan="5">No users found.</td></tr>
+                        <tr class="empty-row"><td colspan="6">No users found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="pu-foot">{!! $users->links() !!}</div>
+        <div class="pu-foot">
+            <div class="pu-foot-info">
+                @if($users->total() > 0)
+                    Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} entries
+                @else
+                    No entries to show
+                @endif
+            </div>
+            <div class="pu-pager">
+                <button type="button" {{ $users->onFirstPage() ? 'disabled' : '' }}
+                    onclick="window.location='{{ $users->previousPageUrl() }}'">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <span class="pu-page active">{{ $users->currentPage() }}</span>
+                <button type="button" {{ $users->hasMorePages() ? '' : 'disabled' }}
+                    onclick="window.location='{{ $users->nextPageUrl() }}'">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -461,7 +542,9 @@
 <div class="modal-bg" id="addUserBg">
     <div class="modal-box modal-box-lg">
         <div class="modal-head">
-            <h4><div class="mh-icon">👤</div> Add New User</h4>
+            <h4><div class="mh-icon">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div> Add New User</h4>
             <button class="btn-close-x" data-close="addUserBg">✕</button>
         </div>
         <div class="modal-body">
@@ -524,7 +607,9 @@
 <div class="modal-bg" id="editUserBg">
     <div class="modal-box modal-box-lg">
         <div class="modal-head">
-            <h4><div class="mh-icon">✏️</div> Edit User</h4>
+            <h4><div class="mh-icon">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div> Edit User</h4>
             <button class="btn-close-x" data-close="editUserBg">✕</button>
         </div>
         <div class="modal-body">
@@ -587,8 +672,10 @@
 {{-- ════ ADD ROLE MODAL ════ --}}
 <div class="modal-bg" id="addRoleBg">
     <div class="modal-box">
-        <div class="modal-head" style="background: linear-gradient(135deg, #e65100, #f57c00);">
-            <h4><div class="mh-icon">🏷</div> Add New Role</h4>
+        <div class="modal-head">
+            <h4><div class="mh-icon">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41L11 3.83V3H3v8h.83l9.58 9.59a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83z"/><circle cx="6.5" cy="6.5" r="1"/></svg>
+            </div> Add New Role</h4>
             <button class="btn-close-x" data-close="addRoleBg">✕</button>
         </div>
         <div class="modal-body">
@@ -617,7 +704,7 @@
         </div>
         <div class="modal-foot">
             <button class="btn-outline" data-close="addRoleBg">Cancel</button>
-            <button class="btn-amber" id="submitAddRole">
+            <button class="btn-blue" id="submitAddRole">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                 Create Role
             </button>
@@ -804,6 +891,23 @@ $(document).ready(function () {
         e.preventDefault();
         var page = $(this).attr('href').split('page=')[1];
         $.ajax({ url: "/customer_pagination?page=" + page, success: function (res) { $('.table-data').html(res); } });
+    });
+
+    /* ── Select all rows ── */
+    $(document).on('change', '#selectAllUsers', function () {
+        $('.row-check').prop('checked', $(this).is(':checked'));
+    });
+
+    /* ── "Show N entries" — client-side row limiter ── */
+    $('#pageSizeSelect').on('change', function () {
+        var val  = $(this).val();
+        var rows = $('.pu-table tbody tr').not('.empty-row');
+        if (val === 'all') {
+            rows.show();
+        } else {
+            var n = parseInt(val, 10);
+            rows.each(function (i) { $(this).toggle(i < n); });
+        }
     });
 
 });
