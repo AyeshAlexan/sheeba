@@ -348,6 +348,38 @@
     }
     .err-box.show { display: block; }
     .err-box span { display: block; font-size: .8rem; color: var(--red); font-weight: 500; }
+
+    /* ══════════════════════════════════════════════════
+       ANIMATION & TRANSITIONS
+    ══════════════════════════════════════════════════ */
+    @media (prefers-reduced-motion: no-preference) {
+        @keyframes puFadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .pu-banner, .pu-stats .stat-pill, .pu-card {
+            animation: puFadeUp .5s cubic-bezier(.16,1,.3,1) both;
+        }
+        .pu-banner { animation-delay: 0s; }
+        .pu-stats .stat-pill:nth-child(1) { animation-delay: .05s; }
+        .pu-stats .stat-pill:nth-child(2) { animation-delay: .1s; }
+        .pu-stats .stat-pill:nth-child(3) { animation-delay: .15s; }
+        .pu-card { animation-delay: .2s; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pu-banner, .pu-stats .stat-pill, .pu-card, .modal-box { animation: none !important; }
+    }
+
+    /* Snappier, consistent interactive feedback */
+    .btn-white, .btn-ghost, .btn-outline, .btn-blue, .btn-amber, .act-btn {
+        transition: background .15s ease, color .15s ease, border-color .15s ease,
+                    box-shadow .15s ease, transform .1s ease;
+    }
+    .btn-white:active, .btn-ghost:active, .btn-outline:active,
+    .btn-blue:active, .btn-amber:active { transform: scale(.97); }
+    .pu-table tbody td { transition: background .15s ease; }
+    .badge, .stat-pill { transition: transform .15s ease; }
+    .row-check, #selectAllUsers { transition: transform .1s ease; }
 </style>
 
 <body>

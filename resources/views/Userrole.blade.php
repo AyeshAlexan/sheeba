@@ -20,6 +20,30 @@
                 <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
                 <link rel="stylesheet" href="../assets/css/style.css">
                 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+                <style>
+                    /* ══════════════════════════════════════════════════
+                       ANIMATION & TRANSITIONS
+                    ══════════════════════════════════════════════════ */
+                    @media (prefers-reduced-motion: no-preference) {
+                        @keyframes urFadeUp {
+                            from { opacity: 0; transform: translateY(14px); }
+                            to   { opacity: 1; transform: translateY(0); }
+                        }
+                        .page-header.ph-flex, .card {
+                            animation: urFadeUp .5s cubic-bezier(.16,1,.3,1) both;
+                        }
+                        .page-header.ph-flex { animation-delay: 0s; }
+                        .card { animation-delay: .1s; }
+                    }
+                    @media (prefers-reduced-motion: reduce) {
+                        .page-header.ph-flex, .card, .modal-content { animation: none !important; }
+                    }
+
+                    .btn-primary { transition: background .15s ease, border-color .15s ease, transform .1s ease; }
+                    .btn-primary:active { transform: scale(.97); }
+                    #Userrole tbody tr { transition: background .15s ease; }
+                    .dataTables_wrapper .dataTables_paginate .paginate_button { transition: background .15s ease, border-color .15s ease, color .15s ease; }
+                </style>
             </head>
 
             <body>

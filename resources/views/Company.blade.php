@@ -151,6 +151,29 @@
 
     .modal-header { background: var(--co-surface) !important; border-bottom: 1px solid var(--co-border) !important; }
     .form-control:focus { border-color: var(--co-green) !important; box-shadow: 0 0 0 3px rgba(22,163,74,.10) !important; }
+
+    /* ══════════════════════════════════════════════════
+       ANIMATION & TRANSITIONS
+    ══════════════════════════════════════════════════ */
+    @media (prefers-reduced-motion: no-preference) {
+        @keyframes coFadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .co-header, .card { animation: coFadeUp .5s cubic-bezier(.16,1,.3,1) both; }
+        .co-header { animation-delay: 0s; }
+        .card { animation-delay: .1s; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .co-header, .card, .modal-content { animation: none !important; }
+    }
+
+    .btn-success { transition: background .15s ease, border-color .15s ease, transform .1s ease; }
+    .btn-success:active { transform: scale(.97); }
+    #Company tbody tr { transition: background .15s ease; }
+    .co-stat-dot { transition: transform .15s ease; }
+    .co-total-row:hover .co-stat-dot { transform: scale(1.06); }
+    #Company_wrapper .dataTables_paginate .paginate_button { transition: background .15s ease, border-color .15s ease, color .15s ease; }
 </style>
             </head>
 
