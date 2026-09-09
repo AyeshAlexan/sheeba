@@ -1,0 +1,210 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\TSupPurchaseTrance;
+use App\Models\TSupplierPayment;
+use App\Models\TSupCheque;
+use App\Models\Suppliers;
+use Illuminate\Support\Facades\DB;
+
+class SupplierAccountReportController extends Controller
+{
+    public function index(Request $request){
+
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $customerCode = $request->input('supplier');
+        $branchCode = auth()->user()->BC;
+
+        $query = TSupPurchaseTrance::where('BC', $branchCode);
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('dDate', [$fromDate, $toDate]);
+        }
+
+        if ($customerCode) {
+            $query->where('supplier', $customerCode);
+        }
+
+        $invoice = $query->get();
+
+        $sumDrAmount = $query->sum('dr_amount');
+        $totalDrAmount = number_format($sumDrAmount, 2);
+
+        $sumCrAmount = $query->sum('cr_amount');
+        $totalCrAmount = number_format($sumCrAmount, 2);
+
+        $balance = $sumCrAmount - $sumDrAmount;
+        $totalBalance = number_format($balance, 2);
+
+        $totalPawn = TSupPurchaseTrance::count();
+
+        return view('supplier_Report.supplier_account_report')
+            ->with("invoice", $invoice)
+            ->with("recipts", $query)
+            ->with("totalDrAmount", $totalDrAmount)
+            ->with("totalCrAmount", $totalCrAmount)
+            ->with("fromDate", $fromDate)
+            ->with("toDate", $toDate)
+            ->with("totalBalance", $totalBalance);
+
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+   public function SupplierPaymentIndex(Request $request)
+{
+    $branch_code = auth()->user()->BC;
+
+    // Optionally, filter by date if needed
+    $fromDate = $request->input('from_date');
+    $toDate = $request->input('to_date');
+
+    $query = TSupplierPayment::where('BC', $branch_code);
+
+    if ($fromDate && $toDate) {
+        $query->whereBetween('Payment_date', [$fromDate, $toDate]);
+    }
+
+    $payments = $query->orderBy('Payment_date', 'desc')->get();
+
+    return view('supplier_Report.supplyer_payment_report', compact('payments'));
+}
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function SupplierBalanceIndex(Request $request)
+    {
+
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $supplierCode = $request->input('supplier');
+        $branchCode = auth()->user()->BC;
+        $supName="";
+
+        $query = TSupPurchaseTrance::select(
+            't_sup_purchase_trances.supplier',
+            DB::raw('SUM(t_sup_purchase_trances.dr_amount) as total_dr_amount'),
+            DB::raw('SUM(t_sup_purchase_trances.cr_amount) as total_cr_amount'),
+            'suppliers.Code',
+            'suppliers.Name'
+        )
+        ->join('suppliers', 'suppliers.Code', '=', 't_sup_purchase_trances.supplier')
+        ->groupBy('t_sup_purchase_trances.supplier', 'suppliers.Code', 'suppliers.Name');
+
+        // ->get();
+        // ->join('items', 't_invoice_deils.Item_code', '=', 'items.Item_code')
+        // ->join('job_sheets', 't_invoice_sums.Job_no', '=', 'job_sheets.Job_no')
+        // ->whereBetween('t_invoice_sums.Invoice_date', [$fromDate, $toDate])
+        // ->groupBy('t_invoice_sums.Job_no')
+        // $query = TSupPurchaseTrance::where('BC', $branchCode);
+
+        if ($fromDate && $toDate && $supplierCode) {
+            $query  ->whereBetween('dDate', [$fromDate, $toDate])
+                    ->where('t_sup_purchase_trances.supplier',$supplierCode);
+            $supName = $query->pluck('suppliers.Name')->first();
+        }
+        else if ($fromDate && $toDate) {
+            $query  ->whereBetween('dDate', [$fromDate, $toDate]);
+        }else if ($supplierCode) {
+            $query  ->where('t_sup_purchase_trances.supplier',$supplierCode);
+            $supName = $query->pluck('suppliers.Name')->first();
+        }
+
+        $supplier_details = $query->get();
+
+       return view('supplier_Report.supplyer_balance_report')
+        ->with("supplierData", $supplier_details)
+        ->with("supName", $supName)
+        ->with("fromDate", $fromDate)
+        ->with("toDate", $toDate)
+       ;
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+       public function IndexSupCheque(Request $request){
+        // Get the 'to_date' input from the request
+        $toDate = $request->input('to_date');
+
+         // Set a default value for $fromDate
+         $fromDate = '2000-01-01';
+
+         // Fetch invoices based on the provided date range
+         $SuppplierChequeData = TSupCheque::whereBetween('release_date', [$fromDate, $toDate])
+                     ->whereRaw('amount < release_date')
+                     ->get();
+
+         // Initialize the query builder
+         $query = TSupCheque::query();
+
+         // Check if both fromDate and toDate are provided
+         if($toDate) {
+             // Update the query builder with the provided date range and condition
+             $query->whereBetween('release_date', [$fromDate, $toDate])
+                   ->whereRaw('amount < release_date');
+         }
+
+         return view('supplier_Report.supplier_cheque_payment_report')
+         ->with("fromDate", $fromDate)
+         ->with("toDate", $toDate)
+         ->with("receipts", $query->get()) // Execute the query and pass the result
+         ->with("SuplierDetails" , $SuppplierChequeData);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+      public function supplierDetailsReportIndex(Request $request){
+        $branch_code = auth()->user()->BC;
+        $customers = Suppliers::all();
+
+        $fromDate="";
+        $toDate ="";
+
+        return view('supplier_Report.supplier_details_report')
+        ->with("fromDate", $fromDate)
+        ->with("toDate", $toDate)
+        ->with("customers", $customers);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

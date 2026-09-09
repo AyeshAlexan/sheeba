@@ -1,0 +1,649 @@
+/* ==========================================================================
+   Theme Redesign — Phase 1: Top Navbar + Sidebar
+   Scope: visual only. No markup structure, routes, or data are affected.
+   Loaded after the legacy stylesheet(s); uses higher specificity / !important
+   on visual properties only, because this app re-includes style.css from
+   every individual page's own <head>, so load order cannot be relied on.
+   ========================================================================== */
+
+:root {
+  --tr-blue: #1677FF;
+  --tr-navy: #14213D;
+  --tr-white: #FFFFFF;
+  --tr-bg: #F6F8FC;
+  --tr-blue-light: #EAF3FF;
+  --tr-border: #E5EAF2;
+  --tr-text: #172033;
+  --tr-text-secondary: #667085;
+  --tr-text-muted: #98A2B3;
+  --tr-success: #16A34A;
+  --tr-danger: #EF4444;
+  --tr-warning: #F59E0B;
+  --tr-header-h: 70px;
+  --tr-sidebar-w: 280px;
+  --tr-content-gap: 0px;
+  --tr-font: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+/* Soft page background so the breathing room below the header (added by
+   --tr-content-gap) reads as intentional spacing rather than a gap that
+   exposes a mismatched white background. */
+body {
+  background: var(--tr-bg) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Scrollbars — the legacy template used a plain dark-grey scrollbar
+   (#999 thumb on #eee track). Restyled thin and tinted with the new
+   palette so it reads as part of the same system everywhere (Firefox via
+   scrollbar-width/scrollbar-color, Chrome/Edge/Safari via ::-webkit-*).
+   -------------------------------------------------------------------------- */
+
+html, body, * {
+  scrollbar-width: thin !important;
+  scrollbar-color: #D5DBE5 transparent !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background: #D5DBE5 !important;
+  border-radius: 20px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--tr-text-muted) !important;
+}
+
+html::-webkit-scrollbar-corner,
+body::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* --------------------------------------------------------------------------
+   Top navbar (.header.header-one, from layouts/topnavbar.blade.php)
+   -------------------------------------------------------------------------- */
+
+.app-topbar {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.header.header-one {
+  background: var(--tr-white) !important;
+  height: var(--tr-header-h) !important;
+  min-height: var(--tr-header-h) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 24px !important;
+  border-bottom: 1px solid var(--tr-border) !important;
+  box-shadow: 0 2px 8px rgba(20, 33, 61, 0.03) !important;
+  /* This app's page templates render the shared topnavbar partial at an
+     arbitrary point in the DOM (sometimes after the entire page body), so
+     `position: fixed` (matching the original template) is required —
+     `sticky` only engages once the element's normal-flow position scrolls
+     into view, which for a partial buried at the bottom of the document
+     never happens. */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1002 !important;
+  font-family: var(--tr-font);
+}
+
+.header.header-one .header-left.header-left-one {
+  display: flex;
+  align-items: center;
+  height: auto;
+  padding: 0;
+  background: transparent !important;
+  border: none !important;
+}
+
+.header.header-one .header-left.header-left-one .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--tr-navy) !important;
+  text-decoration: none !important;
+}
+
+.header.header-one .logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(155deg, var(--tr-blue), #3b8bff);
+  color: var(--tr-white);
+  flex-shrink: 0;
+}
+
+.header.header-one .logo-text {
+  letter-spacing: -0.01em;
+}
+
+.header.header-one #toggle_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: 14px;
+  border-radius: 8px;
+  color: var(--tr-text-secondary) !important;
+  transition: background 0.15s ease;
+}
+
+.header.header-one #toggle_btn:hover {
+  background: var(--tr-bg);
+}
+
+.header.header-one ul.nav-tabs.user-menu {
+  display: flex !important;
+  align-items: center;
+  gap: 14px;
+  border: none !important;
+  margin: 0;
+}
+
+.header.header-one ul.nav-tabs.user-menu > li {
+  border: none !important;
+}
+
+.header.header-one ul.nav-tabs.user-menu > li > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px !important;
+  border-radius: 9px !important;
+  background: var(--tr-bg) !important;
+  border: 1px solid var(--tr-border) !important;
+  color: var(--tr-navy) !important;
+  font-size: 13.5px !important;
+  font-weight: 500;
+}
+
+.header.header-one ul.nav-tabs.user-menu > li > a span {
+  font-weight: 600;
+  color: var(--tr-navy);
+}
+
+.header.header-one .branch-pill {
+  border-radius: 999px !important;
+  padding: 6px 12px !important;
+  font-size: 12.5px !important;
+}
+
+.header.header-one .branch-pill span {
+  font-size: 12.5px !important;
+}
+
+.header.header-one .branch-pill svg {
+  width: 12px;
+  height: 12px;
+  color: var(--tr-success);
+  flex-shrink: 0;
+}
+
+.header.header-one ul.nav-tabs.user-menu li.main-drop > a {
+  background: transparent !important;
+  border: none !important;
+  padding: 6px 10px 6px 6px !important;
+  border-radius: 9px !important;
+}
+
+.header.header-one ul.nav-tabs.user-menu li.main-drop > a:hover {
+  background: var(--tr-bg) !important;
+}
+
+.header.header-one .dropdown-menu {
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 40px rgba(20, 33, 61, 0.12) !important;
+  padding: 8px !important;
+  margin-top: 8px !important;
+}
+
+.header.header-one .dropdown-menu .dropdown-item {
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  padding: 9px 12px !important;
+  color: var(--tr-text) !important;
+}
+
+.header.header-one .dropdown-menu .dropdown-item:hover {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar (#sidebar, from layouts/sidebar.blade.php)
+   -------------------------------------------------------------------------- */
+
+#sidebar.sidebar {
+  background: var(--tr-white) !important;
+  width: var(--tr-sidebar-w) !important;
+  box-shadow: none !important;
+  border-right: 1px solid var(--tr-border) !important;
+  top: calc(var(--tr-header-h) + var(--tr-content-gap)) !important;
+  z-index: 1001 !important;
+  font-family: var(--tr-font);
+  /* Original template used a sluggish 0.2–0.4s "transition: all" on both
+     the sidebar and .page-wrapper for the collapse/expand toggle. Scope it
+     to just the properties that actually change, at a snappier duration. */
+  transition: width 0.15s ease !important;
+}
+
+/* --------------------------------------------------------------------------
+   Content offset — keep the page content clear of the new fixed header
+   and sidebar dimensions (header 70px tall, sidebar 280px wide vs. the
+   template's original 60px / 240px), with a small gap below the header so
+   the sidebar/content don't sit flush against it, and speed up the
+   collapse animation.
+   -------------------------------------------------------------------------- */
+
+.page-wrapper {
+  margin-left: var(--tr-sidebar-w) !important;
+  padding-top: calc(var(--tr-header-h) + var(--tr-content-gap)) !important;
+  transition: margin-left 0.15s ease !important;
+}
+
+body.mini-sidebar .page-wrapper {
+  margin-left: 80px !important;
+}
+
+#sidebar-menu.sidebar-menu {
+  padding: 16px 12px !important;
+}
+
+#sidebar-menu.sidebar-menu ul {
+  padding: 0;
+}
+
+#sidebar-menu.sidebar-menu .menu-title {
+  display: none !important;
+}
+
+#sidebar-menu.sidebar-menu > ul > li > a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  height: 46px !important;
+  padding: 0 12px !important;
+  margin-bottom: 2px !important;
+  border-radius: 9px !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  color: var(--tr-navy) !important;
+  background: transparent !important;
+  border: none !important;
+  transition: background .15s ease, color .15s ease;
+}
+
+#sidebar-menu.sidebar-menu > ul > li > a:hover {
+  background: var(--tr-bg) !important;
+}
+
+#sidebar-menu.sidebar-menu > ul > li > a i {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--tr-text-secondary) !important;
+  flex-shrink: 0;
+}
+
+#sidebar-menu.sidebar-menu > ul > li > a .menu-arrow {
+  margin-left: auto;
+  color: var(--tr-text-muted) !important;
+}
+
+/* Active top-level item: light-blue background + left indicator bar */
+#sidebar-menu.sidebar-menu > ul > li.active > a,
+#sidebar-menu.sidebar-menu > ul > li > a.subdrop {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+  font-weight: 600 !important;
+  position: relative;
+}
+
+#sidebar-menu.sidebar-menu > ul > li.active > a i,
+#sidebar-menu.sidebar-menu > ul > li > a.subdrop i {
+  color: var(--tr-blue) !important;
+}
+
+#sidebar-menu.sidebar-menu > ul > li.active > a::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--tr-blue);
+}
+
+/* Submenus */
+#sidebar-menu.sidebar-menu ul ul {
+  background: transparent !important;
+  margin: 2px 0 6px 20px !important;
+  padding-left: 20px !important;
+  border-left: 1px solid var(--tr-border) !important;
+}
+
+#sidebar-menu.sidebar-menu ul ul li a {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  height: 40px !important;
+  padding: 0 12px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: var(--tr-text-secondary) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  transition: background .15s ease, color .15s ease;
+}
+
+#sidebar-menu.sidebar-menu ul ul li a:hover {
+  background: var(--tr-bg) !important;
+  color: var(--tr-navy) !important;
+}
+
+#sidebar-menu.sidebar-menu ul ul li a i {
+  display: none;
+}
+
+#sidebar-menu.sidebar-menu ul ul li.active > a {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+  font-weight: 600 !important;
+}
+
+/* Collapsed / mini sidebar — keep existing toggle behaviour, restyle it */
+body.mini-sidebar #sidebar.sidebar {
+  width: 80px !important;
+}
+
+body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li > a span:not(.menu-arrow) {
+  display: none;
+}
+
+body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li > a {
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+body.mini-sidebar #sidebar-menu.sidebar-menu ul ul {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Phase 2: Page content — cards, forms, tables, buttons, modals, alerts.
+   These are the shared Bootstrap classes ("card", "form-control", "btn",
+   "table", …) used across the old-template pages (Store, Users, reports,
+   etc). Styling them once here reskins every page built on them, without
+   needing per-page markup rewrites for pure visual changes.
+   ========================================================================== */
+
+/* Page header */
+.content .page-header {
+  margin-bottom: 24px !important;
+}
+.content .page-header .page-title {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: var(--tr-navy) !important;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px !important;
+}
+.content .page-header hr {
+  display: none !important;
+}
+.breadcrumb {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 13px !important;
+}
+.breadcrumb-item a {
+  color: var(--tr-text-secondary) !important;
+  text-decoration: none !important;
+}
+.breadcrumb-item.active {
+  color: var(--tr-text-muted) !important;
+}
+
+/* Cards */
+.card {
+  background: var(--tr-white) !important;
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(20, 33, 61, 0.05) !important;
+}
+.card-body {
+  padding: 24px !important;
+}
+.card-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--tr-navy) !important;
+  margin-bottom: 16px !important;
+}
+/* Legacy pages sometimes stack Bootstrap utility classes (shadow, p-3,
+   mb-5, bg-body-tertiary, rounded) directly onto a card/card-body,
+   producing an oversized double-shadow look. Neutralize when combined
+   with a card so the single card style above wins. */
+.card.shadow, .card-body.shadow {
+  box-shadow: 0 4px 20px rgba(20, 33, 61, 0.05) !important;
+}
+.card .bg-body-tertiary, .card-body.bg-body-tertiary {
+  background: var(--tr-white) !important;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 18px !important;
+}
+.form-group label,
+form > label,
+.control-label {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--tr-navy) !important;
+  margin-bottom: 8px !important;
+}
+.form-control,
+select.select,
+select.form-control {
+  height: 44px !important;
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 9px !important;
+  padding: 0 14px !important;
+  font-size: 14px !important;
+  color: var(--tr-text) !important;
+  background: var(--tr-white) !important;
+  box-shadow: none !important;
+  font-family: var(--tr-font);
+}
+textarea.form-control {
+  height: auto !important;
+  padding: 12px 14px !important;
+}
+.form-control:focus,
+select.select:focus {
+  border-color: var(--tr-blue) !important;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.10) !important;
+  outline: none !important;
+}
+.form-control::placeholder {
+  color: var(--tr-text-muted) !important;
+}
+
+/* Buttons — SAVE = green, PRINT/neutral action = blue, WARNING = amber,
+   DELETE = red, matching the semantic-color rule from the design spec. */
+.btn {
+  border-radius: 9px !important;
+  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  padding: 10px 20px !important;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
+}
+.btn:active { transform: scale(.98); }
+.btn-primary {
+  background: var(--tr-success) !important;
+  border-color: var(--tr-success) !important;
+}
+.btn-primary:hover {
+  background: #128A3E !important;
+  border-color: #128A3E !important;
+}
+.btn-outline-primary {
+  color: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
+  background: transparent !important;
+}
+.btn-outline-primary:hover {
+  background: var(--tr-blue-light) !important;
+}
+.btn-warning {
+  background: var(--tr-warning) !important;
+  border-color: var(--tr-warning) !important;
+  color: #fff !important;
+}
+.btn-warning:hover {
+  background: #D97F09 !important;
+  border-color: #D97F09 !important;
+}
+.btn-danger {
+  background: var(--tr-danger) !important;
+  border-color: var(--tr-danger) !important;
+}
+
+/* Tables */
+.table thead th {
+  background: #F8FAFC !important;
+  color: var(--tr-navy) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--tr-border) !important;
+  border-top: none !important;
+}
+.table td, .table th {
+  border-color: var(--tr-border) !important;
+  vertical-align: middle !important;
+  padding: 12px 16px !important;
+  font-size: 13.5px !important;
+}
+.table-bordered, .table-bordered td, .table-bordered th {
+  border: 1px solid var(--tr-border) !important;
+}
+.table tbody tr:hover {
+  background: #FAFBFD !important;
+}
+
+/* Modals */
+.modal-content {
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 0 12px 40px rgba(20, 33, 61, 0.12) !important;
+}
+.modal-header {
+  border-bottom: 1px solid var(--tr-border) !important;
+  padding: 20px 24px !important;
+}
+.modal-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--tr-navy) !important;
+}
+.modal-body {
+  padding: 24px !important;
+}
+
+/* Alerts */
+.alert {
+  border-radius: 10px !important;
+  border: none !important;
+  font-size: 13.5px !important;
+  padding: 12px 16px !important;
+}
+.alert-success {
+  background: #EAFBEF !important;
+  color: #128A3E !important;
+}
+
+/* Checkboxes */
+.content input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--tr-blue);
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.content input[type="checkbox"] + label {
+  display: inline !important;
+  font-weight: 500 !important;
+  color: var(--tr-text) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Pagination — both Laravel's default {{ $x->links() }} Bootstrap markup
+   and DataTables' auto-generated paginate_button controls default to
+   Bootstrap's stock indigo/purple; retint to match. */
+.page-link {
+  color: var(--tr-blue) !important;
+  border-color: var(--tr-border) !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+}
+.page-link:hover {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+}
+.page-item.active .page-link {
+  background: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
+  color: #fff !important;
+}
+.page-item.disabled .page-link {
+  color: var(--tr-text-muted) !important;
+}
+.dataTables_wrapper .paginate_button.current,
+.dataTables_wrapper .paginate_button.current:hover {
+  background: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
+  color: #fff !important;
+}
+.dataTables_wrapper .paginate_button:hover {
+  background: var(--tr-blue-light) !important;
+  border-color: var(--tr-blue) !important;
+  color: var(--tr-navy) !important;
+}

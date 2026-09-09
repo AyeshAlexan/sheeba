@@ -1,0 +1,1168 @@
+@extends('layouts.topnavbar')
+@extends('layouts.sidebar')
+@section('content')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/plugins/fontawesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>Item Details</title>
+</head>
+
+<style>
+    p { font-weight:bold; font-family:"Noto Sans,sans-serif"; color:rgb(3,80,3) }
+    input::placeholder { font-weight:bold; opacity:.5; color:rgb(4,58,13) }
+    input[type="text"] { background-color:rgb(206,235,219); padding:10px 15px; border-radius:3px; }
+    hr { color:rgb(3,31,3) }
+
+    /* ── Category Preview ── */
+    #category-items-preview { display:none; margin-top:10px; border:1px solid #b2dfdb; border-radius:6px; background:#f0faf4; }
+    #category-items-preview .preview-header { background:hsl(147,50%,47%); color:#fff; padding:6px 12px; border-radius:6px 6px 0 0; font-weight:600; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
+    #category-items-preview table thead th { background:#e8f5e9; font-size:12px; }
+    #cat-item-count { background:#fff; color:hsl(147,50%,40%); border-radius:10px; padding:1px 8px; font-size:12px; font-weight:700; }
+
+    /* ── Tabs ── */
+    .item-mode-tabs .nav-link { color:hsl(147,40%,30%); font-weight:500; }
+    .item-mode-tabs .nav-link.active { background:hsl(147,50%,47%); color:#fff; border-color:hsl(147,50%,47%); }
+
+    /* ── Package Section ── */
+    #package-add-section { display:none; margin-top:10px; }
+
+    .pkg-header-box {
+        background: linear-gradient(135deg,#e8f5e9 0%,#f0faf4 100%);
+        border:1px solid #b2dfdb; border-radius:8px; padding:16px; margin-bottom:16px;
+    }
+    .pkg-header-box label { font-size:13px; font-weight:600; color:hsl(147,40%,25%); }
+
+    .pkg-name-input {
+        font-size:15px !important; font-weight:600 !important;
+        background:#fff !important; border:2px solid hsl(147,50%,47%) !important;
+        border-radius:6px !important; padding:8px 14px !important; color:#145032 !important;
+    }
+    .pkg-name-input:focus { box-shadow:0 0 0 3px rgba(56,161,105,.2) !important; outline:none; }
+
+    /* ── Search ── */
+    .pkg-search-wrapper { position:relative; }
+    .pkg-search-input {
+        background:rgb(206,235,219) !important; border:1px solid #b2dfdb !important;
+        border-radius:6px !important; font-size:13px !important; padding:8px 12px !important;
+    }
+    .pkg-search-input:focus { border-color:hsl(147,50%,47%) !important; outline:none; }
+
+    /* ── Autocomplete ── */
+    .pkg-ac-dropdown {
+        display:none; position:absolute; top:100%; left:0; right:0; z-index:9999;
+        background:#fff; border:1px solid #b2dfdb; border-radius:0 0 8px 8px;
+        max-height:220px; overflow-y:auto; box-shadow:0 6px 20px rgba(0,0,0,.12);
+    }
+    .pkg-ac-item {
+        padding:8px 12px; cursor:pointer; font-size:12px; border-bottom:1px solid #f0f0f0;
+        display:flex; align-items:center; gap:8px; transition:background .15s;
+    }
+    .pkg-ac-item:hover { background:#e8f5e9; }
+    .pkg-ac-item .ac-code {
+        background:hsl(147,50%,47%); color:#fff; border-radius:4px;
+        padding:2px 7px; font-size:11px; white-space:nowrap; flex-shrink:0;
+    }
+    .pkg-ac-item .ac-desc { flex:1; color:#1a1a1a; }
+    .pkg-ac-item .ac-price { color:hsl(147,40%,30%); font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .pkg-ac-empty,.pkg-ac-loading { padding:10px 12px; font-size:12px; color:#888; text-align:center; }
+
+    /* ── Package table ── */
+    .pkg-items-table thead th {
+        background:hsl(147,50%,47%); color:#fff;
+        font-size:12px; padding:7px 10px; white-space:nowrap;
+    }
+    .pkg-items-table tbody td { padding:5px 8px; vertical-align:middle; }
+    .pkg-items-table tbody tr:hover { background:#f0faf4; }
+    .pkg-items-table .code-badge {
+        background:hsl(147,50%,47%); color:#fff;
+        border-radius:4px; padding:2px 8px; font-size:11px; white-space:nowrap;
+    }
+
+    /* ── Price inputs inside table — override global padding ── */
+    .pkg-price-input {
+        background:rgb(206,235,219) !important;
+        font-size:13px !important;
+        padding:4px 8px !important;
+        border-radius:5px !important;
+        width:110px !important;
+        border:1px solid #b2dfdb !important;
+        box-sizing:border-box;
+    }
+    .pkg-price-input:focus {
+        border-color:hsl(147,50%,47%) !important;
+        outline:none;
+        box-shadow:0 0 0 2px rgba(56,161,105,.15) !important;
+    }
+    .pkg-price-input.is-invalid { border-color:#dc3545 !important; }
+
+    /* ── Qty input inside package table ── */
+    .pkg-qty-input {
+        background:rgb(206,235,219) !important;
+        font-size:13px !important;
+        padding:4px 4px !important;
+        border-radius:5px !important;
+        width:65px !important;
+        border:1px solid #b2dfdb !important;
+        box-sizing:border-box;
+        text-align:center;
+    }
+    .pkg-qty-input:focus {
+        border-color:hsl(147,50%,47%) !important;
+        outline:none;
+        box-shadow:0 0 0 2px rgba(56,161,105,.15) !important;
+    }
+    /* hide browser number spinners for cleaner look */
+    .pkg-qty-input::-webkit-inner-spin-button,
+    .pkg-qty-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+    .pkg-qty-input[type=number] { -moz-appearance:textfield; }
+
+    .pkg-empty-row td { text-align:center; color:#888; font-size:13px; padding:20px !important; }
+    .btn-remove-row { background:#dc3545; color:#fff; border:none; border-radius:3px; padding:2px 8px; font-size:12px; cursor:pointer; }
+
+    /* ── Summary bar ── */
+    .pkg-summary-bar {
+        background:linear-gradient(90deg,#e8f5e9,#f0faf4);
+        border:1px solid #b2dfdb; border-radius:8px;
+        padding:10px 16px; display:flex; align-items:center;
+        gap:20px; margin-top:12px; flex-wrap:wrap;
+    }
+    .pkg-summary-bar .s-stat { text-align:center; min-width:110px; }
+    .pkg-summary-bar .s-label { font-size:11px; color:#2d6a4f; font-weight:600; }
+    .pkg-summary-bar .s-value { font-size:17px; font-weight:700; color:#145032; }
+
+    #pkg-save-btn {
+        background:hsl(147,50%,38%); color:#fff; border:none;
+        border-radius:6px; padding:8px 28px; font-size:14px;
+        font-weight:600; cursor:pointer; transition:background .2s;
+    }
+    #pkg-save-btn:hover { background:hsl(147,45%,30%); }
+    #pkg-save-btn:disabled { background:#aaa; cursor:not-allowed; }
+
+    /* ── Item_set_bulk preview badge ── */
+    .bulk-preview {
+        font-size:11px; color:#555; margin-top:6px;
+        background:#f0faf4; border:1px dashed #b2dfdb;
+        border-radius:4px; padding:4px 8px; word-break:break-all;
+        display:none;
+    }
+    .bulk-preview span { color:hsl(147,40%,30%); font-weight:700; }
+</style>
+
+<body>
+<div class="main-wrapper">
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card shadow">
+                        <div class="col-md-9">
+                            <h4 class="card-title m-3">Item Details</h4>
+                        </div>
+                        <hr style="height:5px;color:blue;">
+                        <div class="container mt-2">
+                            <div class="row">
+                                <div class="col-lg-12 margin-tb">
+                                    <div class="pull-right mb-2">
+                                        <a class="btn btn-warning card-body shadow p-3 mb-2"
+                                           onclick="add()" href="javascript:void(0)">Add Item</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if ($message = Session::get('success'))
+                                <div class="alert alert-success"><p>{{ $message }}</p></div>
+                            @endif
+
+                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="Item">
+                                        <thead>
+                                            <tr style="background-color:hsl(147,50%,47%);">
+                                                <th>Action</th><th>Category</th><th>Department</th>
+                                                <th>Code</th><th>BarCode</th><th>Name</th><th>Per</th>
+                                                <th>Purchase Price</th><th>Sales Price</th>
+                                                <th>Border Price</th><th>Recorder Quantity</th>
+                                                <th>Reorder Level</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @include('layouts.footer')
+    </div>
+</div>
+
+
+{{-- ============================================================
+     MAIN ADD / EDIT ITEM MODAL
+============================================================ --}}
+<div class="modal fade" id="Item-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:hsl(147,50%,47%);color:#fff;">
+                <h5 class="modal-title" id="ItemModal">Add Item</h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+
+                {{-- ── Mode Tabs ── --}}
+                <ul class="nav nav-tabs item-mode-tabs mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tab-single"
+                           href="javascript:void(0)" onclick="switchMode('single')">
+                            <i class="fa fa-plus-circle me-1"></i> Single Item
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab-package"
+                           href="javascript:void(0)" onclick="switchMode('package')">
+                            <i class="fa fa-box-open me-1"></i> Set Items
+                        </a>
+                    </li>
+                </ul>
+
+
+                {{-- ══════════════════════════════════
+                     SINGLE ITEM FORM
+                ══════════════════════════════════ --}}
+                <div id="single-item-section">
+                    <div id="error-messages" class="alert alert-danger" style="display:none;"></div>
+
+                    <form action="javascript:void(0)" id="ItemForm" name="ItemForm"
+                          class="form-horizontal" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="id" id="id">
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label class="col-sm-3 control-label">Category</label>
+                                <a href="{{ ('Category') }}" target="_blank">Create Category</a>
+                                <select class="form-control" name="category" id="category">
+                                    <option value="">Please Select</option>
+                                    @foreach($Category as $categoryData)
+                                        <option value="{{ $categoryData->description }}"
+                                                data-code="{{ $categoryData->Cate_code }}">
+                                            {{ $categoryData->description }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <div id="category-items-preview">
+                                    <div class="preview-header">
+                                        <span id="preview-category-name">Items in Category</span>
+                                        <span id="cat-item-count">0 items</span>
+                                    </div>
+                                    <div class="p-2">
+                                        <div class="table-responsive" style="max-height:200px;overflow-y:auto;">
+                                            <table class="table table-sm table-bordered mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th><th>Item Code</th>
+                                                        <th>Description</th><th>Purchase Price</th><th>Sale Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="cat-items-body">
+                                                    <tr><td colspan="5" class="text-center text-muted">No items found</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">Department</label>
+                                <a href="{{ ('Department') }}" target="_blank">Create Department</a>
+                                <select class="select form-control" name="Department" id="Department">
+                                    <option value="">Please Select</option>
+                                    @foreach($Department as $DepartmentData)
+                                        <option value="{{ $DepartmentData->description }}">
+                                            {{ $DepartmentData->description }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <br>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group mb-3">
+                                    <label>Item Code</label>
+                                    <div class="input-group">
+                                        <input type="text" id="single_cate_code" class="form-control"
+                                               placeholder="Category Code" readonly>
+                                        <input type="text" id="single_item_number" class="form-control"
+                                               placeholder="Item Number">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="Item_code" id="Item_code">
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Model No</label>
+                                    <input type="text" class="form-control" id="Bar_code"
+                                           name="Bar_code" placeholder="Bar Code" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="Item_description"
+                                   name="Item_description" placeholder="Description" maxlength="150" required>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-sm-4">
+                                <label>Brand</label>
+                                <select class="form-control" name="Brand" id="Brand">
+                                    <option value="">Please Select</option>
+                                    @foreach($Brand as $b)
+                                        <option value="{{ $b->Brand_name }}">{{ $b->Brand_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>Color</label>
+                                <select class="form-control" name="Color" id="Color">
+                                    <option value="">Please Select</option>
+                                    @foreach($Color as $c)
+                                        <option value="{{ $c->Color_name }}">{{ $c->Color_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>Make</label>
+                                <select class="form-control" name="Make" id="Make">
+                                    <option value="">Please Select</option>
+                                    @foreach($Make as $m)
+                                        <option value="{{ $m->Make_name }}">{{ $m->Make_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <br>
+                        <div class="row mt-2">
+                            <div class="col-sm-6">
+                                     <div class="form-group">
+                            <label>Per <span class="text-danger"></span></label>
+                            <input type="text" class="form-control" id="Per"
+                                   name="Per" placeholder="Per" maxlength="150">
+                        </div>
+                            </div>
+                            <div class="col-sm-6">
+                                 <div class="mb-3">
+                            <label class="form-label">Image:</label>
+                            <input type="file" name="image" id="inputImage" class="form-control">
+                        </div>
+                            </div>
+                        </div>
+                        <img id="preview-image" width="300px">
+
+
+                        <div class="shadow-sm p-3 mb-3 bg-body-tertiary rounded">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Prices <span class="text-danger">*</span></h6><hr>
+                                            <div class="form-group mb-2">
+                                                <label>Purchase Price <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="purchasePrice"
+                                                       name="purchasePrice" placeholder="Purchase Price" maxlength="20" required>
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label>Sales Price <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="saleprice"
+                                                       name="saleprice" placeholder="Sale Price" maxlength="20" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Border Price</label>
+                                                <input type="text" class="form-control" id="Credit"
+                                                       name="Credit" placeholder="Border price" maxlength="15">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Options</h6><hr>
+                                            <div class="form-group mb-2">
+                                                <label>Reorder Level</label>
+                                                <input type="text" class="form-control" id="ReorderLevel"
+                                                       name="ReorderLevel" placeholder="Reorder Level" maxlength="25">
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <label>Recorder Quantity</label>
+                                                <input type="text" class="form-control" id="RecorderQuantitiy"
+                                                       name="RecorderQuantitiy" placeholder="Recorder Quantity" maxlength="25">
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1"
+                                                       id="SaleDecimal" name="SaleDecimal">
+                                                <label class="form-check-label">Sales by Decimals</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1"
+                                                       id="Serialnumber" name="Serialnumber">
+                                                <label class="form-check-label">Serial Number</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1"
+                                                       id="Inactive" name="Inactive">
+                                                <label class="form-check-label">Inactive</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="Branch"     id="Branch"     value="{{ Auth::user()->Branch }}">
+                        <input type="hidden" name="BranchCode" id="BranchCode" value="{{ Auth::user()->BC }}">
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-info" id="btn-save">Save Changes</button>
+                        </div>
+                    </form>
+                </div>{{-- end #single-item-section --}}
+
+
+                {{-- ══════════════════════════════════════════════════════
+                     PACKAGE / SET ITEMS SECTION
+                     ─────────────────────────────────────────────────────
+                     User fills:
+                       • pkg_name      → saved as Item_description in items table
+                       • pkg_code      → saved as Item_code in items table
+                       • qty per row   → saved to package_items.qty
+                       • purchasePrice, saleprice, Credit typed in summary bar
+                       • Item_set_bulk → built automatically as "CODE(QTY)|…"
+                         and saved to items.Item_set_bulk (VARCHAR 750)
+                ══════════════════════════════════════════════════════ --}}
+                <div id="package-add-section">
+
+                    <div id="pkg-error-msg"   class="alert alert-danger"  style="display:none;"></div>
+                    <div id="pkg-success-msg" class="alert alert-success" style="display:none;"></div>
+
+                    <div class="alert alert-info py-2 mb-3" style="font-size:13px;">
+                        <i class="fa fa-box-open me-1"></i>
+                        Create a <strong>named bundle</strong>. The bundle name becomes the
+                        <strong>Item Description</strong> and the code becomes the
+                        <strong>Item Code</strong> — both saved to the items table.
+                        Each row's <strong>Qty</strong> is saved to <code>package_items.qty</code>
+                        and the full set is saved to <code>items.Item_set_bulk</code>.
+                    </div>
+
+                    {{-- ── Header: Name + Code ── --}}
+                    <div class="pkg-header-box">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <label>Set Item Name <span class="text-danger">*</span>
+                                    <small class="fw-normal text-muted">(→ Item_description)</small>
+                                </label>
+                                <input type="text" id="pkg_name" class="form-control pkg-name-input"
+                                       placeholder="e.g. Starter Kit, Office Bundle…" maxlength="150">
+                            </div>
+                            <div class="col-sm-4">
+                                <label>Set Item Code <span class="text-danger">*</span>
+                                    <small class="fw-normal text-muted">(→ Item_code)</small>
+                                </label>
+                                <input type="text" id="pkg_code" class="form-control pkg-name-input"
+                                       placeholder="e.g. PKG-001" maxlength="25">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ── Item search box ── --}}
+                    <div class="mb-3">
+                        <label style="font-size:13px;font-weight:600;color:hsl(147,40%,25%);">
+                            <i class="fa fa-search me-1"></i> Search &amp; Add Existing Items to Bundle
+                        </label>
+                        <div class="pkg-search-wrapper">
+                            <input type="text" id="pkg_item_search" class="form-control pkg-search-input"
+                                   placeholder="Type item name, code, or barcode…"
+                                   autocomplete="off">
+                            <div id="pkg-ac-dropdown" class="pkg-ac-dropdown"></div>
+                        </div>
+                        <small class="text-muted" style="font-size:11px;">
+                            Items added here are stored in the <strong>package_items</strong> table (with qty).
+                            The combined set is also stored in <strong>items.Item_set_bulk</strong>.
+                        </small>
+                    </div>
+
+                    {{-- ── Package items table ── --}}
+                    <div class="table-responsive">
+                        <table class="table table-bordered pkg-items-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:36px;">#</th>
+                                    <th style="min-width:100px;">Item Code</th>
+                                    <th>Description</th>
+                                    {{-- Qty column — now editable ── --}}
+                                    <th style="width:80px;">Qty</th>
+                                    <th style="width:46px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="pkgItemsBody">
+                                <tr class="pkg-empty-row" id="pkg-placeholder">
+                                    <td colspan="5">
+                                        <i class="fa fa-box-open me-2 text-muted"></i>
+                                        No items added yet — use the search above.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- ── Item_set_bulk live preview ── --}}
+                    <div class="bulk-preview" id="bulk-preview-box">
+                        <strong>Item_set_bulk:</strong> <span id="bulk-preview-text"></span>
+                    </div>
+
+                    {{-- ────────────────────────────────────────────────────
+                         SUMMARY BAR
+                         purchasePrice, saleprice, Credit → saved to items table
+                    ──────────────────────────────────────────────────── --}}
+                    <div class="pkg-summary-bar">
+
+                        <div class="s-stat">
+                            <div class="s-label">Items in Package</div>
+                            <div class="s-value" id="pkg-item-count">0</div>
+                        </div>
+
+                        {{-- Purchase Price ──────────────────────────── --}}
+                        <div class="s-stat">
+                            <div class="s-label">Total Purchase Price
+                                <small class="d-block text-muted" style="font-size:10px;">→ purchasePrice</small>
+                            </div>
+                            <input type="text"
+                                   id="pkg-total-pp"
+                                   class="pkg-price-input text-center mt-1"
+                                   value="0.00"
+                                   placeholder="0.00"
+                                   style="width:100px !important;">
+                        </div>
+
+                        {{-- Sale Price ──────────────────────────────── --}}
+                        <div class="s-stat">
+                            <div class="s-label">Total Sale Unit Price
+                                <small class="d-block text-muted" style="font-size:10px;">→ saleprice</small>
+                            </div>
+                            <input type="text"
+                                   id="pkg-total-sp"
+                                   class="pkg-price-input text-center mt-1"
+                                   value="0.00"
+                                   placeholder="0.00"
+                                   style="width:100px !important;">
+                        </div>
+
+                        {{-- Border Price ─────────────────────────────── --}}
+                        <div class="s-stat">
+                            <div class="s-label">Total Border Price
+                                <small class="d-block text-muted" style="font-size:10px;">→ Credit</small>
+                            </div>
+                            <input type="text"
+                                   id="pkg-total-cr"
+                                   class="pkg-price-input text-center mt-1"
+                                   value="0.00"
+                                   placeholder="0.00"
+                                   style="width:100px !important;">
+                        </div>
+
+                        <div class="ms-auto">
+                            <button id="pkg-save-btn" onclick="savePackage()">
+                                <i class="fa fa-save me-1"></i> Save Package
+                            </button>
+                        </div>
+                    </div>
+                    {{-- /summary bar --}}
+
+                </div>{{-- end #package-add-section --}}
+
+            </div>{{-- /modal-body --}}
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+
+
+{{-- ============================================================
+     SCRIPTS
+============================================================ --}}
+<script>
+$(document).ready(function () {
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    // ── DataTable ─────────────────────────────────────────────
+$('#Item').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "{{ url('Item') }}",
+    columns: [
+        { data: 'action',            name: 'action',            orderable: false },
+        { data: 'category',          name: 'category' },
+        { data: 'Department',        name: 'Department' },
+        { data: 'Item_code',         name: 'Item_code' },
+        { data: 'Bar_code',          name: 'Bar_code' },
+        { data: 'Item_description',  name: 'Item_description' },
+        { data: 'Per',               name: 'Per' },
+        { data: 'purchasePrice',     name: 'purchasePrice' },
+        { data: 'saleprice',         name: 'saleprice' },
+        { data: 'Credit',            name: 'Credit' },
+        { data: 'RecorderQuantitiy', name: 'RecorderQuantitiy' },
+        { data: 'ReorderLevel',      name: 'ReorderLevel' },
+    ],
+    order: [[0, 'desc']],
+    paging: false,          // ← disables pagination
+    pageLength: -1,         // ← tells server to return all records
+});
+
+    // ── Package autocomplete search ───────────────────────────
+    let pkgSearchTimer = null;
+
+    $('#pkg_item_search').on('input', function () {
+        let q = $(this).val().trim();
+        clearTimeout(pkgSearchTimer);
+        if (q.length < 2) { $('#pkg-ac-dropdown').hide(); return; }
+
+        $('#pkg-ac-dropdown')
+            .html('<div class="pkg-ac-loading"><i class="fa fa-spinner fa-spin me-1"></i>Searching…</div>')
+            .show();
+
+        pkgSearchTimer = setTimeout(function () {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('ItemSearch') }}",
+                data: { q: q },
+                dataType: 'json',
+                success: function (items) {
+                    if (!items.length) {
+                        $('#pkg-ac-dropdown')
+                            .html('<div class="pkg-ac-empty">No items found for "' + q + '"</div>')
+                            .show();
+                        return;
+                    }
+                    let html = '';
+                    $.each(items, function (i, item) {
+                        html += `<div class="pkg-ac-item"
+                                      data-code="${item.Item_code}"
+                                      data-desc="${item.Item_description}"
+                                      onclick="pkgSelectItem(this)">
+                            <span class="ac-code">${item.Item_code}</span>
+                            <span class="ac-desc">${item.Item_description}</span>
+                        </div>`;
+                    });
+                    $('#pkg-ac-dropdown').html(html).show();
+                },
+                error: function () {
+                    $('#pkg-ac-dropdown')
+                        .html('<div class="pkg-ac-empty text-danger">Search failed. Try again.</div>')
+                        .show();
+                }
+            });
+        }, 300);
+    });
+
+    // ── Listen for qty changes to keep bulk preview updated ───
+    // Uses event delegation because rows are added dynamically
+    $('#pkgItemsBody').on('input change', '.pkg-qty-input', function () {
+        updateBulkPreview();
+    });
+
+    // Close dropdown on outside click
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.pkg-search-wrapper').length) {
+            $('#pkg-ac-dropdown').hide();
+        }
+    });
+});
+
+
+// ════════════════════════════════════════════════════════
+// buildBulkString
+// Reads all current rows and builds "CODE(QTY)|CODE(QTY)…"
+// ════════════════════════════════════════════════════════
+function buildBulkString() {
+    let parts = [];
+    $('#pkgItemsBody tr:not(#pkg-placeholder)').each(function () {
+        let code = $(this).data('code');
+        let qty  = parseInt($(this).find('.pkg-qty-input').val()) || 1;
+        parts.push(code + '(' + qty + ')');
+    });
+    return parts.join('|');
+}
+
+// ════════════════════════════════════════════════════════
+// updateBulkPreview  — shows the live Item_set_bulk value
+// ════════════════════════════════════════════════════════
+function updateBulkPreview() {
+    let bulk = buildBulkString();
+    if (bulk) {
+        $('#bulk-preview-text').text(bulk);
+        $('#bulk-preview-box').show();
+    } else {
+        $('#bulk-preview-box').hide();
+    }
+}
+
+
+// ════════════════════════════════════════════════════════
+// PACKAGE — select item from autocomplete
+// ════════════════════════════════════════════════════════
+let pkgRowIndex   = 0;
+let pkgAddedCodes = [];
+
+function pkgSelectItem(el) {
+    let code = $(el).data('code');
+    let desc = $(el).data('desc');
+
+    // Prevent duplicate
+    if (pkgAddedCodes.includes(String(code))) {
+        $('#pkg-ac-dropdown').hide();
+        $('#pkg_item_search').val('').focus();
+        $('#pkg-error-msg')
+            .html(`<i class="fa fa-exclamation-triangle me-1"></i>"${desc}" is already in the package.`)
+            .show();
+        setTimeout(() => $('#pkg-error-msg').fadeOut(), 2500);
+        return;
+    }
+
+    pkgAddedCodes.push(String(code));
+    pkgRowIndex++;
+    let idx = pkgRowIndex;
+
+    $('#pkg-placeholder').remove();
+
+    let rowNum = $('#pkgItemsBody tr').length + 1;
+
+    // ── Qty is now an editable <input type="number"> ──────────
+    let row = `<tr id="pkg-row-${idx}" data-row="${idx}" data-code="${code}">
+        <td class="text-center align-middle fw-bold text-muted" style="font-size:13px;">${rowNum}</td>
+        <td class="align-middle"><span class="code-badge">${code}</span></td>
+        <td class="align-middle" style="font-size:13px;">${desc}</td>
+        <td class="text-center align-middle">
+            <input type="number"
+                   class="pkg-qty-input"
+                   value="1"
+                   min="1"
+                   max="9999"
+                   title="Quantity">
+        </td>
+        <td class="text-center align-middle">
+            <button class="btn-remove-row" onclick="removePkgRow(${idx},'${code}')" title="Remove">
+                <i class="fa fa-times"></i>
+            </button>
+        </td>
+    </tr>`;
+
+    $('#pkgItemsBody').append(row);
+    $('#pkg-ac-dropdown').hide();
+    $('#pkg_item_search').val('').focus();
+    $('#pkg-error-msg').hide();
+
+    // Update count in summary bar and live preview
+    $('#pkg-item-count').text($('#pkgItemsBody tr:not(#pkg-placeholder)').length);
+    renumberPkgRows();
+    updateBulkPreview();
+}
+
+
+// ════════════════════════════════════════════════════════
+// PACKAGE — remove row
+// ════════════════════════════════════════════════════════
+function removePkgRow(idx, code) {
+    $(`#pkg-row-${idx}`).remove();
+    pkgAddedCodes = pkgAddedCodes.filter(c => c !== String(code));
+
+    if ($('#pkgItemsBody tr').length === 0) {
+        $('#pkgItemsBody').html(
+            '<tr class="pkg-empty-row" id="pkg-placeholder">' +
+            '<td colspan="5"><i class="fa fa-box-open me-2 text-muted"></i>' +
+            'No items added yet — use the search above.</td></tr>'
+        );
+    }
+
+    $('#pkg-item-count').text($('#pkgItemsBody tr:not(#pkg-placeholder)').length);
+    renumberPkgRows();
+    updateBulkPreview();
+}
+
+function renumberPkgRows() {
+    $('#pkgItemsBody tr:not(#pkg-placeholder)').each(function (i) {
+        $(this).find('td:first').text(i + 1);
+    });
+}
+
+
+// ════════════════════════════════════════════════════════
+// PACKAGE — SAVE
+//
+// What gets saved:
+//   packages table  → package_name, pkg_code, Branch, BranchCode
+//   package_items   → package_id, pkg_code, item_code, item_description, qty
+//   items table     → Item_code        = pkg_code
+//                     Item_description = pkg_name
+//                     purchasePrice    = #pkg-total-pp  (manual input)
+//                     saleprice        = #pkg-total-sp  (manual input)
+//                     Credit           = #pkg-total-cr  (manual input)
+//                     Item_set_bulk    = "SS-MA008(2)|BOWL-001(1)" (auto-built)
+//                     Branch, BranchCode
+// ════════════════════════════════════════════════════════
+function savePackage() {
+    let pkgName       = $('#pkg_name').val().trim();
+    let pkgCode       = $('#pkg_code').val().trim();
+    let purchasePrice = $('#pkg-total-pp').val().trim();
+    let salePrice     = $('#pkg-total-sp').val().trim();
+    let borderPrice   = $('#pkg-total-cr').val().trim();
+
+    $('#pkg-error-msg').hide();
+
+    // ── Validation ───────────────────────────────────────
+    let errors = [];
+    if (!pkgName)                              errors.push('Set Item Name (Item_description) is required.');
+    if (!pkgCode)                              errors.push('Set Item Code (Item_code) is required.');
+    if (!purchasePrice || isNaN(purchasePrice)) errors.push('Total Purchase Price must be a valid number.');
+    if (!salePrice     || isNaN(salePrice))    errors.push('Total Sale Unit Price must be a valid number.');
+
+    if (errors.length) {
+        $('#pkg-error-msg')
+            .html(errors.map(e => `<p class="mb-0"><i class="fa fa-exclamation-triangle me-1"></i>${e}</p>`).join(''))
+            .show();
+        return;
+    }
+
+    // ── Collect package item rows (with qty) ─────────────
+    let bundleItems  = [];
+    let bulkParts    = [];   // → Item_set_bulk
+
+    $('#pkgItemsBody tr:not(#pkg-placeholder)').each(function () {
+        let code = $(this).data('code');
+        let desc = $(this).find('td:eq(2)').text().trim();
+        let qty  = parseInt($(this).find('.pkg-qty-input').val()) || 1;
+
+        bundleItems.push({
+            item_code:        code,
+            item_description: desc,
+            qty:              qty,   // saved to package_items.qty
+        });
+
+        // e.g. "SS-MA008(2)"
+        bulkParts.push(code + '(' + qty + ')');
+    });
+
+    // Final Item_set_bulk string: "SS-MA008(2)|BOWL-001(1)"
+    let itemSetBulk = bulkParts.join('|');
+
+    $('#pkg-save-btn')
+        .html('<span class="spinner-border spinner-border-sm me-1"></span>Saving…')
+        .attr('disabled', true);
+
+    $.ajax({
+        type: 'POST',
+        url: "{{ url('PackageStore') }}",
+        data: JSON.stringify({
+            // ── packages + package_items tables ──
+            package_name:  pkgName,
+            pkg_code:      pkgCode,
+            items:         bundleItems,      // each item now includes qty
+
+            // ── items table ──
+            purchasePrice: purchasePrice,    // Total Purchase Price (manual)
+            saleprice:     salePrice,        // Total Sale Unit Price (manual)
+            Credit:        borderPrice || '0',
+            Item_set_bulk: itemSetBulk,      // "SS-MA008(2)|BOWL-001(1)"
+
+            Branch:        "{{ Auth::user()->Branch }}",
+            BranchCode:    "{{ Auth::user()->BC }}",
+        }),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (res) {
+            $('#pkg-success-msg')
+                .html('<i class="fa fa-check-circle me-1"></i> ' + res.message)
+                .show();
+            setTimeout(function () {
+                $('#Item-modal').modal('hide');
+                location.reload();
+            }, 1600);
+        },
+        error: function (data) {
+            let errHtml = '<p>Error saving package.</p>';
+            if (data.responseJSON) {
+                if (data.responseJSON.errors) {
+                    errHtml = '';
+                    $.each(data.responseJSON.errors, function (k, v) {
+                        errHtml += '<p>' + (Array.isArray(v) ? v[0] : v) + '</p>';
+                    });
+                } else if (data.responseJSON.message) {
+                    errHtml = '<p>' + data.responseJSON.message + '</p>';
+                }
+            }
+            $('#pkg-error-msg').html(errHtml).show();
+            $('#pkg-save-btn')
+                .html('<i class="fa fa-save me-1"></i> Save Package')
+                .attr('disabled', false);
+        }
+    });
+}
+
+
+// ════════════════════════════════════════════════════════
+// PACKAGE — reset
+// ════════════════════════════════════════════════════════
+function resetPackageSection() {
+    $('#pkg_name').val('');
+    $('#pkg_code').val('');
+    $('#pkg_item_search').val('');
+    $('#pkg-ac-dropdown').hide();
+    $('#pkg-error-msg').hide();
+    $('#pkg-success-msg').hide();
+    $('#pkg-total-pp').val('0.00');
+    $('#pkg-total-sp').val('0.00');
+    $('#pkg-total-cr').val('0.00');
+    $('#pkg-item-count').text('0');
+    $('#bulk-preview-box').hide();
+    $('#bulk-preview-text').text('');
+    pkgRowIndex   = 0;
+    pkgAddedCodes = [];
+    $('#pkgItemsBody').html(
+        '<tr class="pkg-empty-row" id="pkg-placeholder">' +
+        '<td colspan="5"><i class="fa fa-box-open me-2 text-muted"></i>' +
+        'No items added yet — use the search above.</td></tr>'
+    );
+    $('#pkg-save-btn').html('<i class="fa fa-save me-1"></i> Save Package').attr('disabled', false);
+}
+
+
+// ════════════════════════════════════════════════════════
+// MODAL OPEN / RESET
+// ════════════════════════════════════════════════════════
+function add() {
+    $('#ItemForm').trigger('reset');
+    $('#ItemModal').html('Add Item');
+    $('#id').val('');
+    $('#category-items-preview').hide();
+    $('#single_cate_code').val('');
+    $('#single_item_number').val('');
+    $('#Item_code').val('');
+    $('#error-messages').hide();
+    resetPackageSection();
+    switchMode('single');
+    $('#Item-modal').modal('show');
+}
+
+
+// ════════════════════════════════════════════════════════
+// EDIT
+// ════════════════════════════════════════════════════════
+function editFunc(id) {
+    $.ajax({
+        type: 'POST',
+        url: "{{ url('Itemedit') }}",
+        data: { id: id },
+        dataType: 'json',
+        success: function (res) {
+            switchMode('single');
+            $('#ItemModal').html('Edit Item');
+            $('#Item-modal').modal('show');
+            $('#id').val(res.id);
+            $('#category').val(res.category);
+            $('#Department').val(res.Department);
+            $('#Item_code').val(res.Item_code);
+            $('#Bar_code').val(res.Bar_code);
+            $('#Item_description').val(res.Item_description);
+            $('#Brand').val(res.Brand);
+            $('#Color').val(res.Color);
+            $('#Make').val(res.Make);
+            $('#purchasePrice').val(res.purchasePrice);
+            $('#saleprice').val(res.saleprice);
+            $('#Credit').val(res.Credit);
+            $('#Per').val(res.Per);
+            $('#ReorderLevel').val(res.ReorderLevel);
+            $('#RecorderQuantitiy').val(res.RecorderQuantitiy);
+            $('#Serialnumber').prop('checked', res.Serialnumber == 1);
+            $('#SaleDecimal').prop('checked',  res.SaleDecimal  == 1);
+            $('#Inactive').prop('checked',     res.Inactive     == 1);
+
+            let parts = res.Item_code ? res.Item_code.split('-') : [];
+            if (parts.length >= 2) {
+                $('#single_cate_code').val(parts[0]);
+                $('#single_item_number').val(parts.slice(1).join('-'));
+            }
+            loadCategoryItems(res.category, '#cat-items-body',
+                '#category-items-preview', '#preview-category-name', '#cat-item-count');
+        }
+    });
+}
+
+
+// ════════════════════════════════════════════════════════
+// DELETE
+// ════════════════════════════════════════════════════════
+function deleteFunc(id) {
+    if (confirm('Delete Record?')) {
+        $.ajax({
+            type: 'POST',
+            url: "{{ url('Itemdelete') }}",
+            data: { id: id },
+            dataType: 'json',
+            success: function () { $('#Item').dataTable().fnDraw(false); }
+        });
+    }
+}
+
+
+// ════════════════════════════════════════════════════════
+// SINGLE ITEM SUBMIT
+// ════════════════════════════════════════════════════════
+$('#ItemForm').submit(function (e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $('#btn-save').html('Saving…').attr('disabled', true);
+    $.ajax({
+        type: 'POST',
+        url: "{{ url('Itemstore') }}",
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function () {
+            $('#Item-modal').modal('hide');
+            $('#Item').dataTable().fnDraw(false);
+            $('#btn-save').html('Save Changes').attr('disabled', false);
+            location.reload();
+        },
+        error: function (data) {
+            var errors = data.responseJSON ? data.responseJSON.errors : {};
+            var html = '';
+            $.each(errors, function (k, v) { html += '<p>' + v[0] + '</p>'; });
+            if (!html) html = '<p>An unexpected error occurred.</p>';
+            $('#error-messages').html(html).show();
+            $('#btn-save').html('Save Changes').attr('disabled', false);
+        }
+    });
+});
+
+
+// ════════════════════════════════════════════════════════
+// SINGLE — item code generator
+// ════════════════════════════════════════════════════════
+$('#category').change(function () {
+    let code = $(this).find(':selected').data('code');
+    $('#single_cate_code').val(code || '');
+    generateSingleItemCode();
+    if (this.value) {
+        loadCategoryItems(this.value, '#cat-items-body',
+            '#category-items-preview', '#preview-category-name', '#cat-item-count');
+    } else {
+        $('#category-items-preview').hide();
+    }
+});
+
+$('#single_item_number').on('keyup change', generateSingleItemCode);
+
+function generateSingleItemCode() {
+    let cate = $('#single_cate_code').val();
+    let num  = $('#single_item_number').val();
+    $('#Item_code').val(cate && num ? cate + '-' + num : '');
+}
+
+
+// ════════════════════════════════════════════════════════
+// CATEGORY ITEMS LOADER
+// ════════════════════════════════════════════════════════
+function loadCategoryItems(category, tbodySelector, previewSelector, labelSelector, countSelector) {
+    $(tbodySelector).html(
+        '<tr><td colspan="5" class="text-center">' +
+        '<div class="spinner-border spinner-border-sm text-success"></div></td></tr>'
+    );
+    $(previewSelector).show();
+
+    $.ajax({
+        type: 'POST',
+        url: "{{ url('ItemsByCategory') }}",
+        data: { category: category },
+        dataType: 'json',
+        success: function (items) {
+            $(labelSelector).text('Items in: ' + category);
+            $(countSelector).text(items.length + ' item' + (items.length !== 1 ? 's' : ''));
+            if (!items.length) {
+                $(tbodySelector).html(
+                    '<tr><td colspan="5" class="text-center text-muted">No items in this category yet</td></tr>'
+                );
+                return;
+            }
+            let rows = '';
+            $.each(items, function (i, item) {
+                rows += `<tr>
+                    <td>${i + 1}</td>
+                    <td><span class="badge" style="background:hsl(147,50%,47%)">${item.Item_code}</span></td>
+                    <td>${item.Item_description}</td>
+                    <td>${item.purchasePrice}</td>
+                    <td>${item.saleprice}</td>
+                </tr>`;
+            });
+            $(tbodySelector).html(rows);
+        },
+        error: function () {
+            $(tbodySelector).html(
+                '<tr><td colspan="5" class="text-center text-danger">Failed to load</td></tr>'
+            );
+        }
+    });
+}
+
+
+// ════════════════════════════════════════════════════════
+// TAB SWITCHER
+// ════════════════════════════════════════════════════════
+function switchMode(mode) {
+    $('#single-item-section').hide();
+    $('#package-add-section').hide();
+    $('#tab-single, #tab-package').removeClass('active');
+
+    if (mode === 'single') {
+        $('#single-item-section').show();
+        $('#tab-single').addClass('active');
+    } else {
+        $('#package-add-section').show();
+        $('#tab-package').addClass('active');
+        setTimeout(() => $('#pkg_name').focus(), 150);
+    }
+}
+</script>
+
+<script src="assets/js/feather.min.js"></script>
+<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="assets/js/script.js"></script>
+<script src="assets/plugins/apexchart/apexcharts.min.js"></script>
+<script src="assets/plugins/apexchart/chart-data.js"></script>
+</body>
+@endsection
