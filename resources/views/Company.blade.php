@@ -22,88 +22,135 @@
                 <link rel="stylesheet" href="../assets/css/style.css">
                 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
                 <style>
-    /* Custom Styling for a Modern Look */
-    .page-wrapper {
-        background-color: #f8f9fa;
-        padding-top: 20px;
+    /* Company page — green accent (this page's identity colour), blue
+       stays the app's dominant colour everywhere else. */
+    :root {
+        --co-green:      #16A34A;
+        --co-green-light:#EAFBEF;
+        --co-navy:       #14213D;
+        --co-border:     #E5EAF2;
+        --co-surface:    #F6F8FC;
+        --co-text-sub:   #667085;
     }
 
-    .page-title {
-        font-weight: 700;
-        color: #334155;
-        font-size: 1.5rem;
+    .co-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+    }
+    .co-header-left { display: flex; align-items: center; }
+    .co-icon {
+        width: 46px; height: 46px; border-radius: 12px;
+        background: var(--co-green-light); color: var(--co-green);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-right: 14px;
+    }
+    .co-header h3.page-title { font-size: 1.4rem; font-weight: 700; color: var(--co-navy); margin: 0; }
+    .co-header p { font-size: .83rem; color: var(--co-text-sub); margin-top: 2px; }
+
+    .co-total-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        border-bottom: 1px solid var(--co-border); padding-bottom: 20px; flex-wrap: wrap;
+    }
+    .co-total-row-left { display: flex; align-items: center; gap: 12px; }
+    .co-stat-dot {
+        width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+        background: var(--co-green-light); color: var(--co-green);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .co-stat-num { font-size: 1.4rem; font-weight: 700; color: var(--co-navy); line-height: 1; }
+    .co-stat-lbl { font-size: .75rem; color: var(--co-text-sub); margin-top: 2px; font-weight: 500; }
+
+    /* Search box (DataTables' own filter, relocated next to the stat) */
+    .co-total-row .dataTables_filter label {
+        display: flex; align-items: center; gap: 0; margin: 0;
+        font-size: 0; /* hide the "Search:" text label, keep just the input */
+    }
+    .co-total-row .dataTables_filter input {
+        border: 1.5px solid var(--co-border); border-radius: 9px;
+        padding: 9px 14px; font-size: .83rem; color: #475569; background: #fff;
+        width: 230px; outline: none;
+    }
+    .co-total-row .dataTables_filter input:focus { border-color: var(--co-green); }
+
+    /* "Show N entries" as its own dedicated row, above the (scrollable,
+       many-column) table — kept out of table-responsive so it's always
+       visible without needing to scroll sideways to find it. */
+    .co-show-row {
+        display: flex; align-items: center; gap: 8px;
+        padding: 14px 24px; font-size: .8rem; color: var(--co-text-sub); font-weight: 500;
+    }
+    /* NOTE: initComplete() below moves .dataTables_length out of
+       #Company_wrapper and into #companyShowRow (.co-show-row), so these
+       rules must target its new location — a selector scoped to
+       #Company_wrapper here would silently never match. */
+    .co-show-row .dataTables_length {
+        display: flex !important; align-items: center !important; gap: 8px;
+    }
+    .co-show-row .dataTables_length label {
+        display: flex !important; align-items: center !important; gap: 8px !important;
+        flex-direction: row !important; flex-wrap: nowrap !important;
+        margin: 0 !important; white-space: nowrap;
+    }
+    .co-show-row .dataTables_length select {
+        border: 1.5px solid var(--co-border) !important; border-radius: 8px !important;
+        padding: 6px 30px 6px 12px !important; font-size: .85rem !important; color: #334155 !important;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center !important;
+        background-size: 15px !important;
+        -webkit-appearance: none; -moz-appearance: none; appearance: none !important;
+        min-width: 68px; cursor: pointer;
+    }
+    .co-show-row .dataTables_length select:focus {
+        outline: none !important; border-color: var(--co-green) !important;
+        box-shadow: 0 0 0 3px rgba(22,163,74,.10) !important;
     }
 
-    /* Table Styling */
-    .card-body {
-        background: #ffffff;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    }
-
-    #Company thead tr {
-        background-color: #10b981 !important; /* Modern Emerald Green */
-        color: white;
-    }
-
-    #Company thead th {
-        border: none;
-        padding: 15px;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.05em;
-    }
-
-    #Company tbody td {
-        padding: 12px 15px;
-        vertical-align: middle;
-        color: #475569;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    /* Button Styling */
     .btn-success {
-        background-color: #10b981;
-        border-color: #10b981;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        background: var(--co-green) !important; border-color: var(--co-green) !important;
+        font-weight: 600 !important; transition: all .2s ease;
     }
+    .btn-success:hover { background: #128A3E !important; border-color: #128A3E !important; transform: translateY(-1px); }
 
-    .btn-success:hover {
-        background-color: #059669;
-        transform: translateY(-1px);
+    /* Flat table header, matching the rest of the app's table style */
+    #Company thead tr { background: var(--co-surface) !important; }
+    #Company thead th {
+        background: var(--co-surface) !important;
+        border: none !important; border-bottom: 1px solid var(--co-border) !important;
+        padding: 13px 16px !important; font-weight: 600 !important;
+        text-transform: uppercase !important; font-size: .72rem !important; letter-spacing: .05em !important;
+        color: var(--co-navy) !important;
     }
+    #Company tbody td { padding: 12px 16px !important; vertical-align: middle !important; color: #475569 !important; }
 
-    /* Modal Styling */
-    .modal-content {
-        border: none;
-        border-radius: 15px;
-        overflow: hidden;
+    /* Pagination — rounded, current page filled in green (this page's accent).
+       Scoped with #Company_wrapper (the table's unique DataTables wrapper id)
+       so this always outranks the app-wide blue pagination rule in
+       theme-redesign.css, regardless of stylesheet load order. */
+    #Company_wrapper .dataTables_info { color: var(--co-text-sub) !important; font-size: .8rem !important; padding-top: 0 !important; }
+    #Company_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 8px !important; border: 1.5px solid var(--co-border) !important;
+        padding: 6px 12px !important; margin-left: 6px !important; color: var(--co-text-sub) !important;
+        background: #fff !important;
     }
+    #Company_wrapper .dataTables_paginate .paginate_button.current,
+    #Company_wrapper .dataTables_paginate .paginate_button.current:link,
+    #Company_wrapper .dataTables_paginate .paginate_button.current:visited,
+    #Company_wrapper .dataTables_paginate .paginate_button.current:hover,
+    #Company_wrapper .dataTables_paginate .paginate_button.current:active,
+    #Company_wrapper .dataTables_paginate .paginate_button.current:focus,
+    #Company_wrapper .dataTables_paginate span .paginate_button.current,
+    #Company_wrapper .page-item.active .page-link {
+        background: var(--co-green) !important;
+        border-color: var(--co-green) !important;
+        color: #fff !important;
+        box-shadow: none !important;
+    }
+    #Company_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
+        background: var(--co-green-light) !important; border-color: var(--co-green) !important; color: var(--co-navy) !important;
+    }
+    #Company_wrapper .dataTables_paginate .paginate_button.disabled { opacity: .5 !important; }
 
-    .modal-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .form-label, .control-label {
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 5px;
-    }
-
-    .form-control {
-        border-radius: 8px;
-        border: 1px solid #cbd5e1;
-        padding: 10px;
-    }
-
-    .form-control:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-    }
+    .modal-header { background: var(--co-surface) !important; border-bottom: 1px solid var(--co-border) !important; }
+    .form-control:focus { border-color: var(--co-green) !important; box-shadow: 0 0 0 3px rgba(22,163,74,.10) !important; }
 </style>
             </head>
 
@@ -112,54 +159,65 @@
         <div class="main-wrapper">
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-
-                        </div>
-                    </div>
-
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col-lg-12 margin-tb">
-                                <div class="pull-left">
-
-                                </div>
-                                <div class="pull-right mb-2" >
-                                    <a class="btn btn-success card-body shadow p-3 mb-5" onClick="add()" href="javascript:void(0)"> Create Company</a>
-                                </div>
+                    <div class="co-header">
+                        <div class="co-header-left">
+                            <div class="co-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="page-title">Company</h3>
+                                <p>Manage your company profile and business details</p>
                             </div>
                         </div>
+                        <a class="btn btn-success" onClick="add()" href="javascript:void(0)">
+                            <i class="fas fa-plus"></i> Create Company
+                        </a>
+                    </div>
+
+                    <div class="container-fluid px-0">
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">
                                 <p>{{ $message }}</p>
                             </div>
                         @endif
 
-                             <div class="col">
-                                <h3 class="page-title">Company</h3>
-                                <hr>
+                        <div class="card">
+                            <div class="card-body co-total-row">
+                                <div class="co-total-row-left">
+                                    <div class="co-stat-dot">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="co-stat-num">{{ $totalCompanies }}</div>
+                                        <div class="co-stat-lbl">Total Companies</div>
+                                    </div>
+                                </div>
+                                <div id="companySearchSlot"></div>
                             </div>
 
-                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-                              <div class="table-responsive">
-                            <table class="table table-bordered" id="Company">
-                                <thead>
-                                    <tr style="background-color:hsl(147, 50%, 47%);">
-                                        <th>Id</th>
-                                        <th>Company code</th>
-                                        <th>Company Number</th>
-                                        <th>Address</th>
-                                        <th>Contact Number</th>
-                                        <th>Fax Number</th>
-                                        <th>One Number</th>
-                                        <th>Two Number</th>
-                                        <th>Email</th>
-                                        <th>Note</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
+                            <div class="co-show-row" id="companyShowRow"></div>
+
+                            <div class="card-body pt-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="Company">
+                                        <thead>
+                                            <tr>
+                                                <th>Id</th>
+                                                <th>Company code</th>
+                                                <th>Company Number</th>
+                                                <th>Address</th>
+                                                <th>Contact Number</th>
+                                                <th>Fax Number</th>
+                                                <th>One Number</th>
+                                                <th>Two Number</th>
+                                                <th>Email</th>
+                                                <th>Note</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -260,7 +318,18 @@
                                 { data: 'Note', name: 'Note' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            initComplete: function () {
+                                var $wrapper = $('#Company_wrapper');
+                                // "Show N entries" — its own dedicated row above
+                                // the table, so it stays visible even though the
+                                // table itself scrolls sideways (11 columns).
+                                $wrapper.find('.dataTables_length').appendTo('#companyShowRow');
+                                // Search box — next to the Total Companies stat.
+                                $wrapper.find('.dataTables_filter input')
+                                    .attr('placeholder', 'Search...');
+                                $wrapper.find('.dataTables_filter').appendTo('#companySearchSlot');
+                            }
                         });
                     });
 

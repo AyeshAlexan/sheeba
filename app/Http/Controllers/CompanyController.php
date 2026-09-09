@@ -17,7 +17,7 @@ class CompanyController extends Controller
             ->addIndexColumn()
             ->make(true);
         }
-        return view('Company');
+        return view('Company')->with('totalCompanies', Company::count());
     }
 
     public function Companystore(Request $request)

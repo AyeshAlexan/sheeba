@@ -9,19 +9,113 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <title>Branches</title>
+    <style>
+        /* Branch page — same green accent as Company (both live under
+           System), blue stays the app's dominant colour everywhere else. */
+        :root {
+            --br-green:       #16A34A;
+            --br-green-light: #EAFBEF;
+            --br-navy:        #14213D;
+            --br-border:      #E5EAF2;
+            --br-surface:     #F6F8FC;
+            --br-text-sub:    #667085;
+        }
+
+        .br-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+        }
+        .br-header-left { display: flex; align-items: center; }
+        .br-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            background: var(--br-green-light); color: var(--br-green);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-right: 14px;
+        }
+        .br-header h3 { font-size: 1.4rem; font-weight: 700; color: var(--br-navy); margin: 0; }
+        .br-header p { font-size: .83rem; color: var(--br-text-sub); margin-top: 2px; }
+
+        .br-total-row {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            border-bottom: 1px solid var(--br-border); padding-bottom: 20px; margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .br-total-left { display: flex; align-items: center; gap: 12px; }
+        .br-stat-dot {
+            width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+            background: var(--br-green-light); color: var(--br-green);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .br-stat-num { font-size: 1.4rem; font-weight: 700; color: var(--br-navy); line-height: 1; }
+        .br-stat-lbl { font-size: .75rem; color: var(--br-text-sub); margin-top: 2px; font-weight: 500; }
+
+        .br-search-box { position: relative; }
+        .br-search-box svg {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--br-text-sub); pointer-events: none;
+        }
+        .br-search-box input {
+            border: 1.5px solid var(--br-border); border-radius: 9px;
+            padding: 9px 14px 9px 36px; font-size: .83rem; color: #475569; background: #fff;
+            width: 230px; outline: none;
+        }
+        .br-search-box input:focus { border-color: var(--br-green); }
+
+        .btn-success {
+            background: var(--br-green) !important; border-color: var(--br-green) !important;
+            font-weight: 600 !important; transition: all .2s ease;
+        }
+        .btn-success:hover { background: #128A3E !important; border-color: #128A3E !important; }
+
+        /* Flat table header, matching the rest of the app */
+        #branchTable thead tr { background: var(--br-surface) !important; }
+        #branchTable thead th {
+            background: var(--br-surface) !important;
+            border: none !important; border-bottom: 1px solid var(--br-border) !important;
+            padding: 13px 16px !important; font-weight: 600 !important;
+            text-transform: uppercase !important; font-size: .72rem !important; letter-spacing: .05em !important;
+            color: var(--br-navy) !important;
+        }
+        #branchTable tbody td, #branchTable tbody th {
+            padding: 12px 16px !important; vertical-align: middle !important; color: #475569 !important;
+            font-weight: 400 !important;
+        }
+
+        /* Pagination — Laravel's default paginator markup, green active
+           page (this page's accent). #branchPager gives it enough
+           specificity to always beat the app-wide blue default. */
+        #branchPager .page-link { color: var(--br-green) !important; border-color: var(--br-border) !important; }
+        #branchPager .page-link:hover { background: var(--br-green-light) !important; color: var(--br-green) !important; }
+        #branchPager .page-item.active .page-link,
+        #branchPager .page-item.active .page-link:hover {
+            background: var(--br-green) !important; border-color: var(--br-green) !important; color: #fff !important;
+        }
+
+        .modal-header { background: var(--br-surface) !important; border-bottom: 1px solid var(--br-border) !important; }
+        .form-control:focus { border-color: var(--br-green) !important; box-shadow: 0 0 0 3px rgba(22,163,74,.10) !important; }
+    </style>
 </head>
 
 <body>
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
-                    <div class="card shadow ">
-
-                        <div class="col-md-9">
-                            <h4 class="card-title m-3">Branches</h4>
+                    <div class="br-header">
+                        <div class="br-header-left">
+                            <div class="br-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                            </div>
+                            <div>
+                                <h3>Branches</h3>
+                                <p>Manage your branch locations and contact details</p>
+                            </div>
                         </div>
-                        <hr style="height: 5px; color: blue;">
-                        <div class="row justify-content-md-center">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBranchModel">
+                            <i class="fas fa-plus"></i> Add Branch
+                        </button>
+                    </div>
+
+                    <div class="container-fluid px-0">
                                     {{-- error showing section --}}
                                     @if (session('delete'))
                                         <div class="alert alert-danger text-center" role="alert">
@@ -43,37 +137,31 @@
                                         </div>
                                     @endif
 
-                                    {{-- --------------search and add branch button-------- --}}
-                                        <div class="row ">
-                                            {{-- ........search area.......... --}}
-                                            <div class="col-md-6">
-                                                <div class="top-nav-search">
-                                                    <form>
-                                                        <input type="text" name="search" id="search"
-                                                            class="form-control" placeholder="Search here">
-                                                        <button class="btn" type="button"><i
-                                                                class="fas fa-search"></i></button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            {{-- .............add branch button.......... --}}
-                                            <div class="col-md-6">
-                                                <button type="button" class="btn btn-btn btn-warning float-end m-2"
-                                                    data-bs-toggle="modal" data-bs-target="#addBranchModel">
-                                                    <i data-feather="plus"></i>
-                                                    Add Branch
-                                                </button>
-                                            </div>
-                                        </div>
+                        <div class="card">
+                            <div class="card-body br-total-row">
+                                <div class="br-total-left">
+                                    <div class="br-stat-dot">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="br-stat-num">{{ $branchDel->total() }}</div>
+                                        <div class="br-stat-lbl">Total Branches</div>
+                                    </div>
+                                </div>
+                                <div class="br-search-box">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                    <input type="text" name="search" id="search" placeholder="Search...">
+                                </div>
+                            </div>
 
                                     {{-- ------------- Table branch -------------- --}}
-                                        <div class="card-body ">
+                                        <div class="card-body pt-0">
                                             <div class="table-responsive ">
                                                 <div class="table-data ">
-                                                    <table class="table table-bordered table-center table-hover mt-3"
+                                                    <table class="table table-bordered table-center table-hover"
                                                         id="branchTable">
                                                         <thead>
-                                                            <tr style="background-color:hsl(147, 50%, 47%);">
+                                                            <tr>
                                                                 <th>BC Code</th>
                                                                 <th>Name</th>
                                                                 <th>Address</th>
@@ -93,8 +181,9 @@
                                                                 <td>{{$branch->contact2}}</td>
                                                                 <td>{{$branch->date}}</td>
                                                                 <td>
-                                                                    <a href=""
-                                                                        class="btn btn-sm btn-success update_branch_form bg-success-light text-success me-2"
+                                                                    <div class="dt-actions">
+                                                                    <a href="javascript:void(0)"
+                                                                        class="dt-act-btn dt-act-edit update_branch_form" title="Edit"
                                                                         data-bs-toggle="modal"
                                                                         data-bs-target="#updateBranchModel"
                                                                         data-id="{{$branch->id}}"
@@ -104,19 +193,20 @@
                                                                         data-contact1="{{$branch->contact1}}"
                                                                         data-contact2="{{$branch->contact2}}"
                                                                         data-date="{{$branch->date}}">
-                                                                        <i class="far fa-edit me-1"></i> Edit
+                                                                        <i class="far fa-edit"></i>
                                                                     </a>
-                                                                    <a href=""
-                                                                        class="btn btn-sm btn-danger delete_branch bg-danger-light text-danger me-2"
+                                                                    <a href="javascript:void(0)"
+                                                                        class="dt-act-btn dt-act-delete delete_branch" title="Delete"
                                                                         data-id="{{$branch->id}}">
-                                                                        <i class="far fa-trash-alt me-1"></i> Delete
+                                                                        <i class="far fa-trash-alt"></i>
                                                                     </a>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                             @endforeach
                                                         </tbody>
                                                     </table>
-                                                    <div class="ml-4 mb-3 mt-1">
+                                                    <div class="ml-4 mb-3 mt-1" id="branchPager">
                                                     {!! $branchDel->links() !!}
                                                     </div>
                                                 </div>
