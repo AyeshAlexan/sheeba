@@ -150,6 +150,7 @@ public function createSalesReturn(Request $request)
         $creditTrance->cr_amount     = $request->credite_payment ?? 0;
         $creditTrance->trance_type   = "SALES_RETURN";
         $creditTrance->trance_no     = $request->invoice_no;
+        $creditTrance->Display_Ref   = $request->invoice_no;
         $creditTrance->dDate         = $request->invoice_date;
         $creditTrance->BC            = $user->BC;
         $creditTrance->OC            = $user->username;

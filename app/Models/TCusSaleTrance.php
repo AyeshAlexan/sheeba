@@ -19,6 +19,7 @@ class TCusSaleTrance extends Model
         'dr_amount',
         'trance_type',
         'trance_no',
+        'Display_Ref',
         'dDate',
         'bc',
         'oc',

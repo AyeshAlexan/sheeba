@@ -196,6 +196,7 @@ class RecallEditSalesInvoiceController extends Controller
                     'cr_amount' => $credit,
                     'trance_type' => 'SALES_OUT_VAT',
                     'trance_no' => $data['invoice_no'],
+                    'Display_Ref' => $data['invoice_no'],
                     'dDate' => $data['invoice_date'],
                     'BC' => auth()->user()->BC,
                     'OC' => auth()->user()->username,

@@ -335,6 +335,7 @@ private function insertCusTrance($request, $bc, $oc, $dr, $cr)
     $ct->cr_amount     = $cr;
     $ct->trance_type   = 'SALES_OUT_VAT';
     $ct->trance_no     = $request->invoice_no;
+    $ct->Display_Ref   = $request->invoice_no;
     $ct->dDate         = $request->invoice_date;
     $ct->BC            = $bc;
     $ct->OC            = $oc;
@@ -531,6 +532,7 @@ public function printInvoice(Request $request)
         $cust1->cr_amount     = $paymentAmount;
         $cust1->trance_type   = 'SALES_OUT_VAT';
         $cust1->trance_no     = $invoiceNo;
+        $cust1->Display_Ref   = $invoiceNo;
         $cust1->dDate         = $invoiceDate;
         $cust1->BC            = $branch_code;
         $cust1->OC            = $oc;
@@ -550,6 +552,7 @@ public function printInvoice(Request $request)
             $cust2->cr_amount     = 0;
             $cust2->trance_type   = 'SALES_OUT_VAT';
             $cust2->trance_no     = $invoiceNo;
+            $cust2->Display_Ref   = $invoiceNo;
             $cust2->dDate         = $invoiceDate;
             $cust2->BC            = $branch_code;
             $cust2->OC            = $oc;

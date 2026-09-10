@@ -60,6 +60,7 @@ class CustomerChequePaymentReportController extends Controller
                     'oc'            => $cheque->oc,
                     'trance_type'   => $cheque->trans_type,
                     'trance_no'     => $cheque->trans_no,
+                    'Display_Ref'   => $cheque->cheques_no,
                     'dDate'         => now()->toDateString(),
                 ]);
             }

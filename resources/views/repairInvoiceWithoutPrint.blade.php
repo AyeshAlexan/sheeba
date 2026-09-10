@@ -155,16 +155,20 @@
             padding-top: 6px;
             font-size: 11px;
         }
-        .payment-summary-title { color: #444; margin-bottom: 3px; }
-        .payment-tag {
-            display: inline-block;
-            border: 1px solid #bbb;
-            border-radius: 3px;
-            padding: 2px 6px;
-            margin-right: 4px;
-            color: #777;
+        .payment-summary-title { color: #444; margin-bottom: 5px; font-weight: bold; }
+        .pay-line {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #198754;
+            border-radius: 4px;
+            padding: 4px 10px;
+            margin-right: 6px;
+            background: #eefbf3;
+            color: #176b43;
+            font-size: 11px;
         }
-        .payment-tag.active { border-color: #198754; color: #176b43; font-weight: bold; }
+        .pay-line strong { font-weight: bold; margin-right: 2px; }
+        .pay-line.neutral { border-color: #bbb; background: #f5f5f5; color: #777; }
 
         /* ── Signatures ── */
         .signature-section {
@@ -482,10 +486,18 @@
     @endphp
     <div class="payment-summary">
         <div class="payment-summary-title">Payment Method</div>
-        <span class="payment-tag {{ $cashPaid > 0 ? 'active' : '' }}">{{ $cashPaid > 0 ? '[x]' : '[ ]' }} Cash Pay</span>
-        <span class="payment-tag {{ $creditDue > 0 ? 'active' : '' }}">{{ $creditDue > 0 ? '[x]' : '[ ]' }} Credit Pay</span>
-        <span class="payment-tag {{ $chequePaid > 0 ? 'active' : '' }}">{{ $chequePaid > 0 ? '[x]' : '[ ]' }} Cheque Pay</span>
-        <span style="margin-left:8px;">Cash Paid: {{ number_format($cashPaid, 2) }} | Credit Balance: {{ number_format($creditDue, 2) }}</span>
+        @if($cashPaid > 0)
+            <span class="pay-line"><strong>Cash Pay</strong> &nbsp;Cash Paid: {{ number_format($cashPaid, 2) }}</span>
+        @endif
+        @if($creditDue > 0)
+            <span class="pay-line"><strong>Credit Pay</strong> &nbsp;Credit Balance: {{ number_format($creditDue, 2) }} | Paid: {{ number_format($cashPaid, 2) }}</span>
+        @endif
+        @if($chequePaid > 0)
+            <span class="pay-line"><strong>Cheque Pay</strong> &nbsp;Cheque Amount: {{ number_format($chequePaid, 2) }}</span>
+        @endif
+        @if($cashPaid <= 0 && $creditDue <= 0 && $chequePaid <= 0)
+            <span class="pay-line neutral">No payment recorded</span>
+        @endif
     </div>
     
     

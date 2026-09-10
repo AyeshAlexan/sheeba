@@ -180,6 +180,7 @@ class CustomerPaymentController extends Controller
             $TCusSaleTrance->cr_amount       = 0;
             $TCusSaleTrance->trance_type     = 'TCP_CUS_PAY';
             $TCusSaleTrance->trance_no       = $request->customer_code;
+            $TCusSaleTrance->Display_Ref     = $request->payment_no;
             $TCusSaleTrance->dDate           = $request->payment_date;
             $TCusSaleTrance->BC              = $branch_code;
             $TCusSaleTrance->OC              = $user_name;
@@ -357,6 +358,7 @@ class CustomerPaymentController extends Controller
             $TCusSaleTrance->cr_amount       = 0;
             $TCusSaleTrance->trance_type     = 'CR_CUS_PAY';
             $TCusSaleTrance->trance_no       = $request->sales_no;
+            $TCusSaleTrance->Display_Ref     = $request->payment_no;
             $TCusSaleTrance->dDate           = $request->payment_date;
             $TCusSaleTrance->bc              = $branch_code;
             $TCusSaleTrance->oc              = $user_name;

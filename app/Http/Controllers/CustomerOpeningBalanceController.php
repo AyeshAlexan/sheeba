@@ -96,6 +96,7 @@ class CustomerOpeningBalanceController extends Controller
                         'dr_amount'     => 0,
                         'trance_type'   => 'CUS_OPEN_BC',
                         'trance_no'     => $request->invoice_no,
+                        'Display_Ref'   => $request->invoice_no,
                         'dDate'         => $request->date,
                         'bc'            => auth()->user()->BC,
                         'oc'            => auth()->user()->username,

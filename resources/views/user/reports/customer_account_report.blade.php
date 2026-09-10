@@ -137,11 +137,16 @@
                                     <td>{{$invoice->dDate}}</td>
                                     <td>{{$invoice->trance_no}}</td>
                                     <td>{{$invoice->customer}}</td>
-                                    <td>{{$invoice->cr_trnce_code}}</td>
-                                     <td>{{$invoice->cr_amount}}</td>
-                                    <td>{{$invoice->dr_amount}}</td>
-
-                                    <td></td>
+                                    <td>
+                                        @if($invoice->reference_url)
+                                            <a href="{{ $invoice->reference_url }}" target="_blank">{{ $invoice->reference_label }}</a>
+                                        @else
+                                            {{ $invoice->reference_label }}
+                                        @endif
+                                    </td>
+                                    <td>{{ number_format((float) $invoice->dr_amount, 2) }}</td>
+                                    <td>{{ number_format((float) $invoice->cr_amount, 2) }}</td>
+                                    <td>{{ number_format((float) $invoice->running_balance, 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -153,8 +158,8 @@
                                     <td id="balanceTotal">Balance Total:</td>
                                 </tr>
                                 <tr>
-                                    <td><strong id="totalCrAmount">{{$totalCrAmount}}</strong></td>
                                     <td><strong id="totalDrAmount">{{$totalDrAmount}}</strong></td>
+                                    <td><strong id="totalCrAmount">{{$totalCrAmount}}</strong></td>
                                     <td><strong id="totalBalance">{{$totalBalance}}</strong></td>
                                 </tr>
                             </tfoot>

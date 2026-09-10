@@ -220,6 +220,7 @@ class InvoiceController extends Controller
         }
         $TCusSaleTrance->trance_type ="SALES";
         $TCusSaleTrance->trance_no =  $request->invoice_no;
+        $TCusSaleTrance->Display_Ref = $request->invoice_no;
         $TCusSaleTrance->dDate =  $request->invoice_date;
         $TCusSaleTrance->BC = auth()->user()->BC;
         $TCusSaleTrance->OC = auth()->user()->username;
@@ -241,6 +242,7 @@ class InvoiceController extends Controller
             $TCusSaleTrance->cr_amount = "0";
             $TCusSaleTrance->trance_type ="SALES";
             $TCusSaleTrance->trance_no =  $request->invoice_no;
+            $TCusSaleTrance->Display_Ref = $request->invoice_no;
             $TCusSaleTrance->dDate =  $request->invoice_date;
             $TCusSaleTrance->BC = auth()->user()->BC;
             $TCusSaleTrance->OC = auth()->user()->username;

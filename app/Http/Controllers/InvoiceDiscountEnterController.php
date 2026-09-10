@@ -141,6 +141,7 @@ class InvoiceDiscountEnterController extends Controller
             $creditTrance->cr_amount     = 0;
             $creditTrance->trance_type   = 'SALES_DISCOUNT';
             $creditTrance->trance_no     = $request->invoice_no;
+            $creditTrance->Display_Ref   = $request->invoice_no;
             $creditTrance->dDate         = $request->invoice_date;
             $creditTrance->bc            = $user->BC ?? null;
             $creditTrance->oc            = $user->username ?? null;
@@ -207,6 +208,7 @@ class InvoiceDiscountEnterController extends Controller
             $transportTrance->cr_amount     = $transport;
             $transportTrance->trance_type   = 'Transport Payment';
             $transportTrance->trance_no     = $request->invoice_no;
+            $transportTrance->Display_Ref   = $request->invoice_no;
             $transportTrance->dDate         = $request->invoice_date;
             $transportTrance->bc            = $user->BC ?? null;
             $transportTrance->oc            = $user->username ?? null;
