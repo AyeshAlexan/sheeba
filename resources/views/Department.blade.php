@@ -11,34 +11,72 @@
     <title>Department</title>
 
     <style>
-        p {
-          font-weight: bold;
-          font-family: "Noto Sans, sans-serif";
-          size:"6";
-          color: rgb(3, 80, 3)
+        :root {
+            --dp-green:       #16A34A;
+            --dp-green-light: #EAFBEF;
+            --dp-navy:        #14213D;
+            --dp-border:      #E5EAF2;
+            --dp-surface:     #F6F8FC;
+            --dp-text-sub:    #667085;
+        }
+        .dp-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+        }
+        .dp-header-left { display: flex; align-items: center; }
+        .dp-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            background: var(--dp-green-light); color: var(--dp-green);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-right: 14px;
+        }
+        .dp-header h3 { font-size: 1.4rem; font-weight: 700; color: var(--dp-navy); margin: 0; }
+        .dp-header p { font-size: .83rem; color: var(--dp-text-sub); margin-top: 2px; }
+
+        .dp-search-box { position: relative; }
+        .dp-search-box svg {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--dp-text-sub); pointer-events: none;
+        }
+        .dp-search-box input {
+            border: 1.5px solid var(--dp-border); border-radius: 9px;
+            padding: 9px 14px 9px 36px; font-size: .83rem; color: #475569; background: #fff;
+            width: 230px; outline: none;
+        }
+        .dp-search-box input:focus { border-color: var(--dp-green); }
+
+        .btn-success {
+            background: var(--dp-green) !important; border-color: var(--dp-green) !important;
+            font-weight: 600 !important; transition: all .2s ease;
+        }
+        .btn-success:hover { background: #128A3E !important; border-color: #128A3E !important; }
+
+        #DepartmentTable thead tr { background: var(--dp-surface) !important; }
+        #DepartmentTable thead th {
+            background: var(--dp-surface) !important;
+            border: none !important; border-bottom: 1px solid var(--dp-border) !important;
+            padding: 13px 16px !important; font-weight: 600 !important;
+            text-transform: uppercase !important; font-size: .72rem !important; letter-spacing: .05em !important;
+            color: var(--dp-navy) !important;
+        }
+        #DepartmentTable tbody td, #DepartmentTable tbody th {
+            padding: 12px 16px !important; vertical-align: middle !important; color: #475569 !important;
+            font-weight: 400 !important;
         }
 
-        h1{
-          font-family: "Times New Roman", Times, serif;
-          size:"6";
-          color: rgb(4, 58, 13)
-        }
+        .modal-header { background: var(--dp-surface) !important; border-bottom: 1px solid var(--dp-border) !important; }
+        .form-control:focus { border-color: var(--dp-green) !important; box-shadow: 0 0 0 3px rgba(22,163,74,.10) !important; }
 
-        input::placeholder {
-          font-weight: bold;
-          opacity: 0.5;
-          color: rgb(4, 58, 13)
+        @media (prefers-reduced-motion: no-preference) {
+            @keyframes dpFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+            .dp-header, .card { animation: dpFadeUp .5s cubic-bezier(.16,1,.3,1) both; }
+            .dp-header { animation-delay: 0s; }
+            .card { animation-delay: .1s; }
         }
-
-        input[type="text"]{
-          background-color: rgb(206, 235, 219);
-          padding: 10px 15px;
-          border-radius: 3px;
+        @media (prefers-reduced-motion: reduce) {
+            .dp-header, .card, .modal-content { animation: none !important; }
         }
-
-        hr{
-          color: rgb(3, 31, 3)
-        }
+        .btn-success:active { transform: scale(.97); }
   </style>
 
 </head>
@@ -47,13 +85,19 @@
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
-                    <div class="card shadow ">
-
-                        <div class="col-md-9">
-                            <h4 class="card-title m-3">Department</h4>
+                    <div class="dp-header">
+                        <div class="dp-header-left">
+                            <div class="dp-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18.7 8a3 3 0 1 0-5.4 0"/><path d="M13.3 16a3 3 0 1 0 5.4 0"/><path d="M8 12h8"/></svg>
+                            </div>
+                            <div>
+                                <h3>Department</h3>
+                                <p>Manage company departments and their branch assignments</p>
+                            </div>
                         </div>
-                        <hr style="height: 5px; color: blue;">
-                        <div class="row justify-content-md-center">
+                    </div>
+
+                    <div class="container-fluid px-0">
                                     {{-- error showing section --}}
                                     @if (session('delete'))
                                         <div class="alert alert-danger text-center" role="alert">
@@ -75,37 +119,25 @@
                                         </div>
                                     @endif
 
-                                    {{-- --------------search and add branch button-------- --}}
-                                        <div class="row ">
-                                            {{-- ........search area.......... --}}
-                                            <div class="col-md-6">
-                                                <div class="top-nav-search">
-                                                    <form>
-                                                        <input type="text" name="search" id="search"
-                                                            class="form-control" placeholder="Search here">
-                                                        <button class="btn" type="button"><i
-                                                                class="fas fa-search"></i></button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            {{-- .............add branch button.......... --}}
-                                            <div class="col-md-6">
-                                                <button type="button" class="btn btn float-end m-2" style="background-color:hsl(59, 75%, 49%);"
-                                                    data-bs-toggle="modal" data-bs-target="#addDepartmentModel">
-                                                    <i data-feather="plus"></i>
-                                                    Add Department
-                                                </button>
-                                            </div>
-                                        </div>
+                        <div class="card">
+                            <div class="card-body" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:0;">
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartmentModel">
+                                    <i class="fas fa-plus"></i> Add Department
+                                </button>
+                                <div class="dp-search-box">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                    <input type="text" name="search" id="search" placeholder="Search...">
+                                </div>
+                            </div>
 
                                     {{-- ------------- Table branch -------------- --}}
-                                        <div class="card-body ">
+                                        <div class="card-body">
                                             <div class="table-responsive ">
                                                 <div class="table-data ">
-                                                    <table class="table table-bordered table-center table-hover mt-3"
+                                                    <table class="table table-bordered table-center table-hover"
                                                         id="DepartmentTable">
                                                         <thead>
-                                                            <tr style="background-color:hsl(147, 50%, 47%);">
+                                                            <tr>
                                                                 <th>Department Code</th>
                                                                 <th>Department Name</th>
                                                                 <th>Branch</th>
@@ -121,30 +153,28 @@
                                                                 <td>{{$Department->Branch}}</td>
                                                                 <td>{{$Department->BranchCode}}</td>
                                                                 <td>
-                                                                <a href=""
-                                                                        class="btn btn-sm btn-success update_Department_form bg-success-light text-success me-2"
+                                                                <div class="dt-actions">
+                                                                <a href="javascript:void(0)"
+                                                                        class="dt-act-btn dt-act-edit update_Department_form" title="Edit"
                                                                         data-bs-toggle="modal"
                                                                         data-bs-target="#updateDepartmentModel"
                                                                         data-id="{{$Department->id}}"
                                                                         data-code="{{$Department->code}}"
                                                                         data-description="{{$Department->description}}"
-                                                                        {{-- data-Branch="{{$Department->Branch}}"
-                                                                        data-Branch="{{$Department->BranchCode}}" --}}
                                                                         >
-                                                                        <i class="far fa-edit me-1"></i> Edit
+                                                                        <i class="far fa-edit"></i>
                                                                     </a>
-                                                                    <a href=""
-                                                                        class="btn btn-sm btn-danger delete_Department bg-danger-light text-danger me-2"
+                                                                    <a href="javascript:void(0)"
+                                                                        class="dt-act-btn dt-act-delete delete_Department" title="Delete"
                                                                         data-id="{{$Department->id}}">
-                                                                        <i class="far fa-trash-alt me-1"></i> Delete
+                                                                        <i class="far fa-trash-alt"></i>
                                                                     </a>
+                                                                </div>
                                                                 </td>
                                                             </tr>
                                                             @endforeach
                                                         </tbody>
                                                     </table>
-                                                    <div class="ml-4 mb-3 mt-1">
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

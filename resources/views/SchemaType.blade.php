@@ -22,74 +22,41 @@
                 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
             </head>
 
-            <style>
-                p {
-                  font-weight: bold;
-                  font-family: "Noto Sans, sans-serif";
-                  size:"6";
-                  color: rgb(3, 80, 3)
-                }
-
-                h1{
-                  font-family: "Times New Roman", Times, serif;
-                  size:"6";
-                  color: rgb(4, 58, 13)
-                }
-
-                input::placeholder {
-                  font-weight: bold;
-                  opacity: 0.5;
-                  color: rgb(4, 58, 13)
-                }
-
-                input[type="text"]{
-                  background-color: rgb(206, 235, 219);
-                  padding: 10px 15px;
-                  border-radius: 3px;
-                }
-
-                hr{
-                  color: rgb(3, 31, 3)
-                }
-          </style>
-
             <body>
 
 
         <div class="main-wrapper">
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                            </div>
+                            <div>
                                 <h3 class="page-title">Schema Type</h3>
-                                <hr>
+                                <p class="page-subtitle">Manage hire-purchase payment schemes</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col-lg-12 margin-tb">
-                                <div class="pull-left">
-
-                                </div>
-                                <div class="pull-right mb-2">
-                                    <a class="btn btn-warning card-body shadow p-3 mb-5" onClick="add()" href="javascript:void(0)">Add Schema Type</a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="container-fluid px-0">
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">
                                 <p>{{ $message }}</p>
                             </div>
                         @endif
 
-                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-							<div class="table-responsive">
+                        <a id="addSchemaBtn" class="btn btn-primary" onClick="add()" href="javascript:void(0)" style="display:none;">
+                            <i class="fas fa-plus"></i> Add Schema Type
+                        </a>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
                             <table class="table table-bordered" id="MSchema">
                                 <thead>
-                                    <tr style="background-color:hsl(147, 50%, 47%);">
+                                    <tr>
                                         <th>Code</th>
 										<th>Schema Type</th>
                                         <th>In Rate / Month</th>
@@ -100,6 +67,8 @@
                                     </tr>
                                 </thead>
                             </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -230,7 +199,10 @@
                                 { data: 'DownPayment', name: 'DownPayment' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            initComplete: function () {
+                                dtFixToolbar(this, '#addSchemaBtn');
+                            }
                         });
                     });
 

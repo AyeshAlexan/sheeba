@@ -671,17 +671,20 @@ select.select:focus {
   color: var(--tr-blue) !important;
 }
 .page-item.active .page-link {
-  background: var(--tr-blue) !important;
-  border-color: var(--tr-blue) !important;
-  color: #fff !important;
+  background: var(--tr-bg) !important;
+  border-color: var(--tr-border) !important;
+  color: var(--tr-navy) !important;
+  font-weight: 700 !important;
 }
 .page-item.disabled .page-link {
   color: var(--tr-text-muted) !important;
 }
 .dataTables_wrapper .paginate_button.current,
 .dataTables_wrapper .paginate_button.current:hover {
-  background: var(--tr-blue) !important;
-  border-color: var(--tr-blue) !important;
+  background: var(--tr-bg) !important;
+  border-color: var(--tr-border) !important;
+  color: var(--tr-navy) !important;
+  font-weight: 700 !important;
   color: #fff !important;
 }
 .dataTables_wrapper .paginate_button:hover {
@@ -692,7 +695,18 @@ select.select:focus {
 
 /* DataTables' own auto-generated length / search / info controls —
    used by any page with a real server-side DataTable (Userrole and many
-   master-data pages). */
+   master-data pages). The "Show <select> entries" text + control lives
+   inside a <label> that defaults to block display, which is what makes it
+   stack onto separate lines instead of reading as one row. */
+.dataTables_wrapper .dataTables_length label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--tr-text-secondary);
+}
 .dataTables_wrapper .dataTables_length select,
 .dataTables_wrapper .dataTables_filter input {
   border: 1px solid var(--tr-border) !important;
@@ -716,6 +730,42 @@ select.select:focus {
   font-size: 13.5px !important;
 }
 
+/* DataTables "Processing…" indicator: by default it's centered on the
+   table's CURRENT height, which before data has loaded is just the thead
+   row (a few pixels tall) — especially on tables like Item that disable
+   paging — so it rendered as a tiny sliver of dots overlapping the header
+   instead of a visible loading state. Anchor it to the top of the wrapper
+   with a fixed height instead, so it always has room to render clearly. */
+.dataTables_wrapper .dataTables_processing {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 180px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: rgba(255, 255, 255, .92);
+  border-radius: 12px;
+  z-index: 5;
+  /* display is left alone (not !important) so DataTables' own JS can
+     still toggle it to "none" once loading finishes — forcing it here
+     previously kept the overlay stuck on screen after data had loaded. */
+}
+/* DataTables 1.13's own processing markup is a 4-dot CSS spinner
+   (div > div x4) inside one wrapper div; center that wrapper within our
+   fixed-height box regardless of the outer element's display value. */
+.dataTables_wrapper .dataTables_processing > div {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+}
+.dataTables_wrapper .dataTables_processing > div > div {
+  background: var(--tr-blue) !important;
+}
+
 /* Shared Edit/Delete action buttons rendered by Action_button.blade.php —
    used across 17+ controllers' DataTables. */
 .dt-actions {
@@ -737,6 +787,13 @@ select.select:focus {
   text-decoration: none !important;
   transition: opacity .15s ease, transform .12s ease;
   font-size: 13px;
+  /* delete buttons are real <button> elements (edit is an <a>), so the
+     browser's default button border/outline shows through as a faint
+     ring around the circle unless explicitly cleared. */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0;
 }
 .dt-act-btn:hover {
   opacity: .8;
@@ -759,4 +816,95 @@ select.select:focus {
 .dt-act-delete:focus {
   background: #FEECEC !important;
   color: var(--tr-danger) !important;
+}
+
+/* Standard master-data list pages: move "Show N entries" to sit right next
+   to the Previous/Next pagination controls (via each page's DataTable
+   initComplete), instead of its own row above the table — removes the
+   extra vertical gap and keeps the footer compact. */
+.dt-pager-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  flex-wrap: wrap;
+}
+.dt-pager-row .dataTables_length {
+  margin: 0 !important;
+}
+
+/* Top toolbar row: the page's own "Add X" button, inserted into the
+   left column that's empty once .dataTables_length has been moved down
+   to sit with pagination instead — keeps the button genuinely flush left
+   instead of centered inside the same column as the search box. */
+.dt-toolbar-col {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Gap between the table and the footer row (entries count + pager),
+   which otherwise sit flush against it. */
+.dataTables_wrapper > .row:last-child {
+  margin-top: 16px !important;
+}
+/* Gap between the top toolbar row (Add button + Search box) and the table
+   itself — dt-bootstrap4 pages stack these as adjacent .row siblings with
+   no vertical margin, so the button/search sit flush against the table
+   header. */
+.dataTables_wrapper > .row:first-child {
+  margin-bottom: 16px !important;
+}
+/* Plain (non-bootstrap4) DataTables pages: the Search box (.dataTables_filter)
+   floats above the table with no bottom margin of its own, so the table
+   header sits flush underneath it. */
+.dataTables_wrapper .dataTables_filter {
+  margin-bottom: 16px !important;
+}
+
+/* Legacy non-DataTables list pages (Suppliers, Guarantor, Route, Area,
+   Salesmen) use a hand-rolled two-column row for the Add button + search
+   box instead of a real DataTable — replaced with a plain flex toolbar
+   so the button sits flush left next to the search box, matching the
+   DataTables-driven master pages instead of leaving a large empty gap. */
+.static-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.static-toolbar .toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--tr-text-secondary);
+}
+.static-toolbar .toolbar-search input.form-control {
+  width: 240px;
+}
+
+/* Plain (non-bootstrap4) DataTables pages: .dataTables_filter is a direct
+   float:right sibling of .dataTables_wrapper, with no column to insert
+   the button into — so the button is placed as a float:left sibling
+   instead, taking the spot .dataTables_length used to occupy. */
+.dt-toolbar-btn-plain {
+  float: left !important;
+  margin-bottom: 12px;
+}
+/* Plain DataTables: length + paginate get wrapped (via dtFixToolbar) in
+   this fresh container so their default floats can't fight the layout. */
+.dt-pager-row-plain {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  clear: both;
+  margin-top: 16px;
+}
+.dt-pager-row-plain .dataTables_length,
+.dt-pager-row-plain .dataTables_paginate {
+  float: none !important;
+  margin: 0 !important;
 }

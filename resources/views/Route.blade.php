@@ -9,148 +9,100 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <title>Route</title>
-
-    <style>
-        p {
-          font-weight: bold;
-          font-family: "Noto Sans, sans-serif";
-          size:"6";
-          color: rgb(3, 80, 3)
-        }
-
-        h1{
-          font-family: "Times New Roman", Times, serif;
-          size:"6";
-          color: rgb(4, 58, 13)
-        }
-
-        input::placeholder {
-          font-weight: bold;
-          opacity: 0.5;
-          color: rgb(4, 58, 13)
-        }
-
-        input[type="text"]{
-          background-color: rgb(206, 235, 219);
-          padding: 10px 15px;
-          border-radius: 3px;
-        }
-
-        hr{
-          color: rgb(3, 31, 3)
-        }
-  </style>
-
 </head>
 
 <body>
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
-                    <div class="card shadow ">
-
-                        <div class="col-md-9">
-                            <h4 class="card-title m-3">Route</h4>
+                <div class="page-header ph-flex">
+                    <div class="ph-left">
+                        <div class="ph-icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13 6-3m-6 3V7m6 10 4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                         </div>
-                        <hr style="height: 5px; color: blue;">
-                        <div class="row justify-content-md-center">
-                                    {{-- error showing section --}}
-                                    @if (session('delete'))
-                                        <div class="alert alert-danger text-center" role="alert">
-                                            {{ session('delete') }} &#10004;
-                                        </div>
-                                    @endif
-                                    @if (session('added'))
-                                    <div class="alert alert-success text-center" role="alert">
-                                        {{ session('added') }} &#10004;
-                                    </div>
-                                    @endif
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger" role="alert">
-                                            <ul>
-                                                @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-
-                                    {{-- --------------search and add branch button-------- --}}
-                                        <div class="row ">
-                                            {{-- ........search area.......... --}}
-                                            <div class="col-md-6">
-                                                <div class="top-nav-search">
-                                                    <form>
-                                                        <input type="text" name="search" id="search"
-                                                            class="form-control" placeholder="Search here">
-                                                        <button class="btn" type="button"><i
-                                                                class="fas fa-search"></i></button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            {{-- .............add branch button.......... --}}
-                                            <div class="col-md-6">
-                                                <button type="button" class="btn btn float-end m-2" style="background-color:hsl(59, 75%, 49%);"
-                                                    data-bs-toggle="modal" data-bs-target="#addDepartmentModel">
-                                                    <i data-feather="plus"></i>
-                                                    Add Route
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                    {{-- ------------- Table branch -------------- --}}
-                                        <div class="card-body ">
-                                            <div class="table-responsive ">
-                                                <div class="table-data ">
-                                                    <table class="table table-bordered table-center table-hover mt-3"
-                                                        id="DepartmentTable">
-                                                        <thead>
-                                                            <tr style="background-color:hsl(147, 50%, 47%);">
-                                                                <th>Route Code</th>
-                                                                <th>Route Name</th>
-                                                                <th>Branch</th>
-                                                                <th>Branch Code</th>
-                                                                <th>Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach ($DepartmentData as $key=>$Department)
-                                                            <tr>
-                                                                <th>{{$Department->code }}</th>
-                                                                <td>{{$Department->description  }}</td>
-                                                                <td>{{$Department->Branch}}</td>
-                                                                <td>{{$Department->BranchCode}}</td>
-                                                                <td>
-                                                                <a href=""
-                                                                        class="btn btn-sm btn-success update_Department_form bg-success-light text-success me-2"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#updateDepartmentModel"
-                                                                        data-id="{{$Department->id}}"
-                                                                        data-code="{{$Department->code}}"
-                                                                        data-description="{{$Department->description}}"
-                                                                        {{-- data-Branch="{{$Department->Branch}}"
-                                                                        data-Branch="{{$Department->BranchCode}}" --}}
-                                                                        >
-                                                                        <i class="far fa-edit me-1"></i> Edit
-                                                                    </a>
-                                                                    <a href=""
-                                                                        class="btn btn-sm btn-danger delete_Department bg-danger-light text-danger me-2"
-                                                                        data-id="{{$Department->id}}">
-                                                                        <i class="far fa-trash-alt me-1"></i> Delete
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-
-                                                    <div class="ml-4 mb-3 mt-1">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                        <div>
+                            <h3 class="page-title">Route</h3>
+                            <p class="page-subtitle">Manage delivery routes</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="container-fluid px-0">
+                    @if (session('delete'))
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ session('delete') }} &#10004;
+                    </div>
+                    @endif
+                    @if (session('added'))
+                    <div class="alert alert-success text-center" role="alert">
+                        {{ session('added') }} &#10004;
+                    </div>
+                    @endif
+                    @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    <div class="static-toolbar">
+                        <a href="javascript:void(0)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModel">
+                            <i class="fas fa-plus"></i> Add Route
+                        </a>
+                        <div class="toolbar-search">
+                            Search:
+                            <input type="text" name="search" id="search" class="form-control" placeholder="Search here">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <div class="table-data">
+                                    <table class="table table-bordered table-center table-hover" id="DepartmentTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Route Code</th>
+                                                <th>Route Name</th>
+                                                <th>Branch</th>
+                                                <th>Branch Code</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($DepartmentData as $key=>$Department)
+                                            <tr>
+                                                <th>{{$Department->code }}</th>
+                                                <td>{{$Department->description  }}</td>
+                                                <td>{{$Department->Branch}}</td>
+                                                <td>{{$Department->BranchCode}}</td>
+                                                <td>
+                                                    <div class="dt-actions">
+                                                        <a href="javascript:void(0)"
+                                                            class="dt-act-btn dt-act-edit update_Department_form"
+                                                            data-bs-toggle="modal" data-bs-target="#updateDepartmentModel"
+                                                            data-id="{{$Department->id}}"
+                                                            data-code="{{$Department->code}}"
+                                                            data-description="{{$Department->description}}" title="Edit">
+                                                            <i class="far fa-edit"></i>
+                                                        </a>
+                                                        <button type="button" class="dt-act-btn dt-act-delete delete_Department" data-id="{{$Department->id}}" title="Delete">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
             @include('layouts.footer')
@@ -158,152 +110,76 @@
     </div>
     {!! Toastr::message() !!}
 
-
-     {{-- ------------- model for add branch -------------- --}}
-    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addDepartmentModelLabel"
-        aria-hidden="true" id="addDepartmentModel">
+    <!-- Add Route modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addDepartmentModelLabel" aria-hidden="true" id="addDepartmentModel">
         <div class="modal-dialog modal-lg">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h4 class="modal-title" id="addDepartmentModelLabel">Add Category </h4>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                     aria-label="Close"></button>
-             </div>
-             <div class="modal-body">
-                 <div class="row">
-                     <div class="col-md-12">
-                         <div class="card">
-                             <div class="card-body">
-                                <div class="errMsgContainer"></div>
-                                 <form action="" id="addDepartment" method="POST"
-                                     enctype="multipart/form-data">
-                                     @csrf
-                                     <div class="mb-3">
-                                         <label for="exampleFormControlInput1"
-                                             class="form-label">
-                                             Route Code</label>
-                                         <input type="text" class="form-control" id="code"
-                                             name="code" placeholder="Enter a Route Code"
-                                             value="" required>
-                                     </div>
-                                     <div class="mb-3">
-                                         <label for="exampleFormControlTextarea1"
-                                             class="form-label"> Route Name</label>
-                                         <input type="text" class="form-control" id="description"
-                                             name="description" placeholder="Enter a Route Name"
-                                             value="" required>
-                                     </div>
-                                   <div class="row">
-                                     <div class="col-md-6">
-                                         <input type="hidden" class="form-control" id="Branch"
-                                         name="Branch" placeholder="Enter a Category Name"
-                                         value="{{ Auth::user()->Branch}}" readonly>
-                                     </div>
-
-                                     <div class="col-md-6">
-                                        <input type="hidden" class="form-control" id="BranchCode"
-                                        name="BranchCode" placeholder="Enter a Category Name"
-                                        value="{{ Auth::user()->BC}}" readonly>
-                                    </div>
-                                </div>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="text-center mt-4">
-                         <button class="btn btn-success add_Department"
-                             type="button">Save</button>
-                         <input class="btn btn-outline-warning" type="reset" value="Reset">
-                         <button type="button" id="closeModel"
-                             class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                             aria-label="Close">Close</button>
-                     </div>
-                     </form>
-                 </div>
-             </div>
-         </div>
-     </div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDepartmentModelLabel">Add Route</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="errMsgContainer"></div>
+                    <form action="" id="addDepartment" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="code" class="form-label">Route Code</label>
+                            <input type="text" class="form-control" id="code" name="code" placeholder="Enter a Route Code" value="" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Route Name</label>
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Enter a Route Name" value="" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="hidden" class="form-control" id="Branch" name="Branch" value="{{ Auth::user()->Branch}}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="hidden" class="form-control" id="BranchCode" name="BranchCode" value="{{ Auth::user()->BC}}" readonly>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-success add_Department" type="button">Save</button>
+                            <input class="btn btn-outline-warning" type="reset" value="Reset">
+                            <button type="button" id="closeModel" class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
- {{-- ------------- model for update Department -------------- --}}
- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="updateDepartmentModelLabel"
-     aria-hidden="true" id="updateDepartmentModel">
-     <div class="modal-dialog modal-lg">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h4 class="modal-title" id="updateDepartmentModelLabel">Update Route </h4>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                     aria-label="Close"></button>
-             </div>
-             <div class="modal-body">
-                 <div class="row">
-                     <div class="col-md-12">
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="errMsgContainer"></div>
-                                 <form action="" id="updateDepartment" method="POST">
-                                     @csrf
-                                     <input type="hidden" id="up_id" name="up_id">
-                                     <div class="mb-3">
-                                         <label for="exampleFormControlInput1"
-                                             class="form-label">
-                                             Route Code </label>
-                                         <input type="text" class="form-control"
-                                             id="up_code" name="up_code"
-                                             placeholder="Enter a Route Code" required>
-                                     </div>
-                                     <div class="mb-3">
-                                         <label for="exampleFormControlTextarea1"
-                                             class="form-label">Route Name</label>
-                                         <input type="text" class="form-control" id="up_description"
-                                             name="up_description" placeholder="Enter a Route Name"
-                                             required>
-                                     </div>
-                                     {{-- <div class="row">
-                                     <div class="col-md-6">
-                                         <label for="exampleFormControlTextarea1"
-                                             class="form-label">Branch Name</label>
-                                             <select class="select form-control" name="up_Branch" id="up_Branch"
-                                             aria-hidden="true">
-                                             <option value="">Please Select</option>
-                                             @foreach($Branch as $BranchData)
-                                             <option value="{{ $BranchData->name}}">
-                                                 {{ $BranchData->name }}</option>
-                                             @endforeach
-                                         </select>
-                                     </div>
-
-                                     <div class="col-md-6">
-                                            <select hidden name="up_BranchCode" id="up_BranchCode"
-                                            aria-hidden="true">
-                                            <option value="">Please Select</option>
-                                            @foreach($Branch as $BranchData)
-                                            <option value="{{ $BranchData->bccode}}">
-                                                {{ $BranchData->bccode }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div> --}}
-                                </div>
-
-                             </div>
-                         </div>
-                     </div>
-                     <div class="text-center mt-4">
-                         <button class="btn btn-success update_Department"
-                             type="button">Update</button>
-                         <input class="btn btn-outline-warning" type="reset" value="Reset">
-                         <button type="button" id="closeModel"
-                             class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                             aria-label="Close">Close</button>
-                     </div>
-                     </form>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
-
-
-
+    <!-- Update Route modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="updateDepartmentModelLabel" aria-hidden="true" id="updateDepartmentModel">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateDepartmentModelLabel">Update Route</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="errMsgContainer"></div>
+                    <form action="" id="updateDepartment" method="POST">
+                        @csrf
+                        <input type="hidden" id="up_id" name="up_id">
+                        <div class="mb-3">
+                            <label for="up_code" class="form-label">Route Code</label>
+                            <input type="text" class="form-control" id="up_code" name="up_code" placeholder="Enter a Route Code" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="up_description" class="form-label">Route Name</label>
+                            <input type="text" class="form-control" id="up_description" name="up_description" placeholder="Enter a Route Name" required>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-success update_Department" type="button">Update</button>
+                            <input class="btn btn-outline-warning" type="reset" value="Reset">
+                            <button type="button" id="closeModel" class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
@@ -319,7 +195,6 @@
     <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
     <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 
-    {{-- CSRF token script --}}
     <script>
         $.ajaxSetup({
             headers: {
@@ -331,8 +206,7 @@
     <script>
         $(document).ready(function () {
 
-                        //add new branch
-                        $(document).on('click', '.add_Department', function (e) {
+            $(document).on('click', '.add_Department', function (e) {
                 e.preventDefault();
                 let code = $('#code').val();
                 let description = $('#description').val();
@@ -384,9 +258,6 @@
                 })
             })
 
-
-
-            //show Department details in update form
             $(document).on('click', '.update_Department_form', function () {
                 let id = $(this).data('id');
                 let code = $(this).data('code');
@@ -399,11 +270,8 @@
                 $('#up_description').val(description);
                 $('#up_Branch').val(Branch);
                 $('#up_BranchCode').val(BranchCode);
-
-
             });
 
-            //update branch data
             $(document).on('click', '.update_Department', function (e) {
                 e.preventDefault();
                 let up_id = $('#up_id').val();
@@ -460,7 +328,6 @@
                 })
             })
 
-            //delete Department data
             $(document).on('click', '.delete_Department', function (e) {
                 e.preventDefault();
                 let Department_id = $(this).data('id');
@@ -499,71 +366,8 @@
                 }
             })
 
-
         });
     </script>
-
-
-{{-- <script>
-    $(document).ready(function () {
-        // Listen for changes in the Weight and QTY fields
-        $('#Branch').on('change', function () {
-            let category = $('#Branch').val();
-            $.ajax({
-                        url: "{{ route('show_select_Branch_ajax') }}",
-                        method: 'GET',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            category: category
-                        },
-                        success: function (res) {
-                            if (res.status == 'success') {
-
-                                var itemsCodeSelected = $('#BranchCode');
-                                // var itemDescriptionSelected = $('#item_description');
-                                // var itemUnit_price = $('#unit_price');
-                                // Change this to match your items select element
-                                // Clear existing options
-                                itemsCodeSelected.empty();
-                                // itemDescriptionSelected.empty();
-                                // itemUnit_price.empty();
-
-                                $.each(res.data, function (index, item) {
-                                    itemsCodeSelected.append($('<option>', {
-                                        value: item.bccode,
-                                        text: item.bccode
-                                    }));
-                                });
-
-                                // // Add a default option for item description
-                                // itemDescriptionSelected.append($('<option>', {
-                                //     value: '',
-                                //     text: 'Select an item'
-                                // }));
-
-                                // $.each(res.data, function (index, item) {
-                                //     itemDescriptionSelected.append($('<option>', {
-                                //         value: item.Item_description,
-                                //         text: item.Item_description
-                                //     }));
-                                // });
-
-                            }
-                        },
-                        error: function (err) {
-                            $('.errMsgContainer').html('');
-                            let error = err.responseJSON;
-                            $.each(error.errors, function (index, value) {
-                                $('.errMsgContainer').append(
-                                    '<span class="text-danger">' + value +
-                                    '<span>' + '<br>');
-                            });
-                        }
-                    });
-        });
-    });
-</script> --}}
-
 
 </body>
 @endsection

@@ -28,43 +28,43 @@
         <div class="main-wrapper">
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            </div>
+                            <div>
                                 <h3 class="page-title">Bank Details</h3>
-                                <hr>
+                                <p class="page-subtitle">Manage banks used for cheque and account transactions</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col-lg-12 margin-tb">
-                                <div class="pull-left">
-                    
-                                </div>
-                                <div class="pull-right mb-2">
-                                    <a class="btn btn-warning card-body shadow p-3 mb-5" onClick="add()" href="javascript:void(0)">Add Store Details</a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="container-fluid px-0">
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">
                                 <p>{{ $message }}</p>
                             </div>
                         @endif
-                    
-                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-							<div class="table-responsive">	
+
+                        <a id="addBankBtn" class="btn btn-primary" onClick="add()" href="javascript:void(0)" style="display:none;">
+                            <i class="fas fa-plus"></i> Add Bank
+                        </a>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
                             <table class="table table-bordered" id="BankDeltails">
                                 <thead>
-                                    <tr style="background-color:hsl(147, 50%, 47%);">
+                                    <tr>
                                         <th>Bank Code</th>
 										<th>Bank Name</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                            </table>							
+                            </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -141,7 +141,10 @@
                                 { data: 'description', name: 'description' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            initComplete: function () {
+                                dtFixToolbar(this, '#addBankBtn');
+                            }
                         });
                     });
 

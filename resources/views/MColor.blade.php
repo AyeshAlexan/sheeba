@@ -28,43 +28,43 @@
         <div class="main-wrapper">
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.26-.296-.436-.694-.436-1.125a1.64 1.64 0 0 1 1.648-1.64h1.936c2.31 0 4.19-1.87 4.19-4.187C22 6.13 17.5 2 12 2z"/></svg>
+                            </div>
+                            <div>
                                 <h3 class="page-title">Color Details</h3>
-                                <hr>
+                                <p class="page-subtitle">Manage product colors</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col-lg-12 margin-tb">
-                                <div class="pull-left">
-                    
-                                </div>
-                                <div class="pull-right mb-2">
-                                    <a class="btn btn-warning card-body shadow p-3 mb-5" onClick="add()" href="javascript:void(0)">Add Color Details</a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="container-fluid px-0">
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">
                                 <p>{{ $message }}</p>
                             </div>
                         @endif
-                    
-                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-							<div class="table-responsive">	
+
+                        <a id="addColorBtn" class="btn btn-primary" onClick="add()" href="javascript:void(0)" style="display:none;">
+                            <i class="fas fa-plus"></i> Add Color
+                        </a>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
                             <table class="table table-bordered" id="MColor">
                                 <thead>
-                                    <tr style="background-color:hsl(147, 50%, 47%);">
+                                    <tr>
                                         <th>Color Code</th>
 										<th>Color Name</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                            </table>							
+                            </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -142,7 +142,10 @@
                                 { data: 'Color_name', name: 'Color_name' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            initComplete: function () {
+                                dtFixToolbar(this, '#addColorBtn');
+                            }
                         });
                     });
 

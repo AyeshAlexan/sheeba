@@ -30,13 +30,13 @@
 
     /* ── Category Preview ── */
     #category-items-preview { display:none; margin-top:10px; border:1px solid #b2dfdb; border-radius:6px; background:#f0faf4; }
-    #category-items-preview .preview-header { background:hsl(147,50%,47%); color:#fff; padding:6px 12px; border-radius:6px 6px 0 0; font-weight:600; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
+    #category-items-preview .preview-header { background:#1677FF; color:#fff; padding:6px 12px; border-radius:6px 6px 0 0; font-weight:600; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
     #category-items-preview table thead th { background:#e8f5e9; font-size:12px; }
-    #cat-item-count { background:#fff; color:hsl(147,50%,40%); border-radius:10px; padding:1px 8px; font-size:12px; font-weight:700; }
+    #cat-item-count { background:#fff; color:#1677FF; border-radius:10px; padding:1px 8px; font-size:12px; font-weight:700; }
 
     /* ── Tabs ── */
-    .item-mode-tabs .nav-link { color:hsl(147,40%,30%); font-weight:500; }
-    .item-mode-tabs .nav-link.active { background:hsl(147,50%,47%); color:#fff; border-color:hsl(147,50%,47%); }
+    .item-mode-tabs .nav-link { color:#14213D; font-weight:500; }
+    .item-mode-tabs .nav-link.active { background:#1677FF; color:#fff; border-color:#1677FF; }
 
     /* ── Package Section ── */
     #package-add-section { display:none; margin-top:10px; }
@@ -45,11 +45,11 @@
         background: linear-gradient(135deg,#e8f5e9 0%,#f0faf4 100%);
         border:1px solid #b2dfdb; border-radius:8px; padding:16px; margin-bottom:16px;
     }
-    .pkg-header-box label { font-size:13px; font-weight:600; color:hsl(147,40%,25%); }
+    .pkg-header-box label { font-size:13px; font-weight:600; color:#14213D; }
 
     .pkg-name-input {
         font-size:15px !important; font-weight:600 !important;
-        background:#fff !important; border:2px solid hsl(147,50%,47%) !important;
+        background:#fff !important; border:2px solid #1677FF !important;
         border-radius:6px !important; padding:8px 14px !important; color:#145032 !important;
     }
     .pkg-name-input:focus { box-shadow:0 0 0 3px rgba(56,161,105,.2) !important; outline:none; }
@@ -60,7 +60,7 @@
         background:rgb(206,235,219) !important; border:1px solid #b2dfdb !important;
         border-radius:6px !important; font-size:13px !important; padding:8px 12px !important;
     }
-    .pkg-search-input:focus { border-color:hsl(147,50%,47%) !important; outline:none; }
+    .pkg-search-input:focus { border-color:#1677FF !important; outline:none; }
 
     /* ── Autocomplete ── */
     .pkg-ac-dropdown {
@@ -74,22 +74,22 @@
     }
     .pkg-ac-item:hover { background:#e8f5e9; }
     .pkg-ac-item .ac-code {
-        background:hsl(147,50%,47%); color:#fff; border-radius:4px;
+        background:#1677FF; color:#fff; border-radius:4px;
         padding:2px 7px; font-size:11px; white-space:nowrap; flex-shrink:0;
     }
     .pkg-ac-item .ac-desc { flex:1; color:#1a1a1a; }
-    .pkg-ac-item .ac-price { color:hsl(147,40%,30%); font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .pkg-ac-item .ac-price { color:#14213D; font-weight:700; white-space:nowrap; flex-shrink:0; }
     .pkg-ac-empty,.pkg-ac-loading { padding:10px 12px; font-size:12px; color:#888; text-align:center; }
 
     /* ── Package table ── */
     .pkg-items-table thead th {
-        background:hsl(147,50%,47%); color:#fff;
+        background:#1677FF; color:#fff;
         font-size:12px; padding:7px 10px; white-space:nowrap;
     }
     .pkg-items-table tbody td { padding:5px 8px; vertical-align:middle; }
     .pkg-items-table tbody tr:hover { background:#f0faf4; }
     .pkg-items-table .code-badge {
-        background:hsl(147,50%,47%); color:#fff;
+        background:#1677FF; color:#fff;
         border-radius:4px; padding:2px 8px; font-size:11px; white-space:nowrap;
     }
 
@@ -104,7 +104,7 @@
         box-sizing:border-box;
     }
     .pkg-price-input:focus {
-        border-color:hsl(147,50%,47%) !important;
+        border-color:#1677FF !important;
         outline:none;
         box-shadow:0 0 0 2px rgba(56,161,105,.15) !important;
     }
@@ -122,7 +122,7 @@
         text-align:center;
     }
     .pkg-qty-input:focus {
-        border-color:hsl(147,50%,47%) !important;
+        border-color:#1677FF !important;
         outline:none;
         box-shadow:0 0 0 2px rgba(56,161,105,.15) !important;
     }
@@ -146,11 +146,11 @@
     .pkg-summary-bar .s-value { font-size:17px; font-weight:700; color:#145032; }
 
     #pkg-save-btn {
-        background:hsl(147,50%,38%); color:#fff; border:none;
+        background:#1677FF; color:#fff; border:none;
         border-radius:6px; padding:8px 28px; font-size:14px;
         font-weight:600; cursor:pointer; transition:background .2s;
     }
-    #pkg-save-btn:hover { background:hsl(147,45%,30%); }
+    #pkg-save-btn:hover { background:#0F68E0; }
     #pkg-save-btn:disabled { background:#aaa; cursor:not-allowed; }
 
     /* ── Item_set_bulk preview badge ── */
@@ -160,39 +160,39 @@
         border-radius:4px; padding:4px 8px; word-break:break-all;
         display:none;
     }
-    .bulk-preview span { color:hsl(147,40%,30%); font-weight:700; }
+    .bulk-preview span { color:#14213D; font-weight:700; }
 </style>
 
 <body>
 <div class="main-wrapper">
     <div class="page-wrapper">
         <div class="content container-fluid">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card shadow">
-                        <div class="col-md-9">
-                            <h4 class="card-title m-3">Item Details</h4>
-                        </div>
-                        <hr style="height:5px;color:blue;">
-                        <div class="container mt-2">
-                            <div class="row">
-                                <div class="col-lg-12 margin-tb">
-                                    <div class="pull-right mb-2">
-                                        <a class="btn btn-warning card-body shadow p-3 mb-2"
-                                           onclick="add()" href="javascript:void(0)">Add Item</a>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="page-header ph-flex">
+                <div class="ph-left">
+                    <div class="ph-icon">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="page-title">Item Details</h3>
+                        <p class="page-subtitle">Manage products, prices, and item bundles</p>
+                    </div>
+                </div>
+                <a class="btn btn-primary" onclick="add()" href="javascript:void(0)">
+                    <i class="fas fa-plus"></i> Add Item
+                </a>
+            </div>
 
+            <div class="container-fluid px-0">
                             @if ($message = Session::get('success'))
                                 <div class="alert alert-success"><p>{{ $message }}</p></div>
                             @endif
 
-                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
+                            <div class="card">
+                                <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="Item">
                                         <thead>
-                                            <tr style="background-color:hsl(147,50%,47%);">
+                                            <tr>
                                                 <th>Action</th><th>Category</th><th>Department</th>
                                                 <th>Code</th><th>BarCode</th><th>Name</th><th>Per</th>
                                                 <th>Purchase Price</th><th>Sales Price</th>
@@ -202,10 +202,8 @@
                                         </thead>
                                     </table>
                                 </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         @include('layouts.footer')
@@ -219,7 +217,7 @@
 <div class="modal fade" id="Item-modal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background:hsl(147,50%,47%);color:#fff;">
+            <div class="modal-header" style="background:#1677FF;color:#fff;">
                 <h5 class="modal-title" id="ItemModal">Add Item</h5>
                 <button type="button" class="btn-close btn-close-white"
                         data-bs-dismiss="modal" aria-label="Close"></button>
@@ -500,7 +498,7 @@
 
                     {{-- ── Item search box ── --}}
                     <div class="mb-3">
-                        <label style="font-size:13px;font-weight:600;color:hsl(147,40%,25%);">
+                        <label style="font-size:13px;font-weight:600;color:#14213D;">
                             <i class="fa fa-search me-1"></i> Search &amp; Add Existing Items to Bundle
                         </label>
                         <div class="pkg-search-wrapper">
@@ -1101,7 +1099,7 @@ function generateSingleItemCode() {
 function loadCategoryItems(category, tbodySelector, previewSelector, labelSelector, countSelector) {
     $(tbodySelector).html(
         '<tr><td colspan="5" class="text-center">' +
-        '<div class="spinner-border spinner-border-sm text-success"></div></td></tr>'
+        '<div class="spinner-border spinner-border-sm text-primary"></div></td></tr>'
     );
     $(previewSelector).show();
 
@@ -1123,7 +1121,7 @@ function loadCategoryItems(category, tbodySelector, previewSelector, labelSelect
             $.each(items, function (i, item) {
                 rows += `<tr>
                     <td>${i + 1}</td>
-                    <td><span class="badge" style="background:hsl(147,50%,47%)">${item.Item_code}</span></td>
+                    <td><span class="badge" style="background:#1677FF">${item.Item_code}</span></td>
                     <td>${item.Item_description}</td>
                     <td>${item.purchasePrice}</td>
                     <td>${item.saleprice}</td>

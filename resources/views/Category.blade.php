@@ -15,20 +15,32 @@
 
 <!-- ✅ SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/js/script.js"></script>
 
 <div class="main-wrapper">
 <div class="page-wrapper">
 <div class="content container-fluid">
 
-    <h3 class="page-title">Category Details</h3>
-    <hr>
+    <div class="page-header ph-flex">
+        <div class="ph-left">
+            <div class="ph-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div>
+                <h3 class="page-title">Category Details</h3>
+                <p class="page-subtitle">Manage product categories</p>
+            </div>
+        </div>
+    </div>
 
-    <button class="btn btn-warning mb-3" onclick="add()">Add Category</button>
+    <button id="addCategoryBtn" class="btn btn-primary" onclick="add()" style="display:none;"><i class="fas fa-plus"></i> Add Category</button>
 
-    <div class="card p-3">
+    <div class="card">
+        <div class="card-body">
+        <div class="table-responsive">
         <table class="table table-bordered" id="MBrand">
             <thead>
-                <tr style="background-color: gray">
+                <tr>
                     <th>Code</th>
                     <th>Name</th>
                     <th>List Code</th>
@@ -36,8 +48,11 @@
                 </tr>
             </thead>
         </table>
+        </div>
+        </div>
     </div>
 
+</div>
 </div>
 </div>
 </div>
@@ -103,7 +118,10 @@ $(document).ready(function(){
             { data: 'description' },
             { data: 'Cate_code' },
             { data: 'action', orderable:false }
-        ]
+        ],
+        initComplete: function () {
+            dtFixToolbar(this, '#addCategoryBtn');
+        }
     });
 
 });

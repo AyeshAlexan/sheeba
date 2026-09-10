@@ -28,43 +28,43 @@
         <div class="main-wrapper">
             <div class="page-wrapper">
                 <div class="content container-fluid">
-                    <div class="page-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6"/></svg>
+                            </div>
+                            <div>
                                 <h3 class="page-title">Store Details</h3>
-                                <hr>
+                                <p class="page-subtitle">Manage stores and warehouse locations</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col-lg-12 margin-tb">
-                                <div class="pull-left">
-                    
-                                </div>
-                                <div class="pull-right mb-2">
-                                    <a class="btn btn-warning card-body shadow p-3 mb-5" onClick="add()" href="javascript:void(0)">Add Store Details</a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="container-fluid px-0">
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">
                                 <p>{{ $message }}</p>
                             </div>
                         @endif
-                    
-                            <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-							<div class="table-responsive">	
+
+                        <a id="addStoreBtn" class="btn btn-primary" onClick="add()" href="javascript:void(0)" style="display:none;">
+                            <i class="fas fa-plus"></i> Add Store
+                        </a>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
                             <table class="table table-bordered" id="Store">
                                 <thead>
-                                    <tr style="background-color:hsl(147, 50%, 47%);">
+                                    <tr>
                                         <th>Store Code</th>
 										<th>Store Name</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                            </table>							
+                            </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -141,7 +141,10 @@
                                 { data: 'Store_name', name: 'Store_name' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            initComplete: function () {
+                                dtFixToolbar(this, '#addStoreBtn');
+                            }
                         });
                     });
 

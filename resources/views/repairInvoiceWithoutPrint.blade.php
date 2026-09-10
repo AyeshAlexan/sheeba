@@ -79,6 +79,20 @@
         }
         .meta-right .customer-name { font-size: 14px; font-weight: bold; }
 
+        /* ── Invoice type banner (Cash / Credit / Cheque) ── */
+        .invoice-type-banner {
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            color: #176b43;
+            background: #eefbf3;
+            border: 1px solid #198754;
+            border-radius: 3px;
+            padding: 5px 0;
+            margin-bottom: 10px;
+        }
+
         /* ── Items Table ── */
         table.items-table { width: 100%; border-collapse: collapse; }
 
@@ -297,6 +311,19 @@
         </div>
 
     </div>
+
+    @php
+        $cashPaid   = (float) ($sumData->Cash_Pay ?? 0) + (float) ($sumData->Half_Payment ?? 0);
+        $creditDue  = (float) ($sumData->Credite ?? 0);
+        $chequePaid = (float) ($sumData->Cheque ?? 0);
+
+        $typeParts = [];
+        if ($cashPaid > 0)   $typeParts[] = 'CASH';
+        if ($creditDue > 0)  $typeParts[] = 'CREDIT';
+        if ($chequePaid > 0) $typeParts[] = 'CHEQUE';
+        $invoiceType = count($typeParts) ? implode(' / ', $typeParts) . ' INVOICE' : 'INVOICE';
+    @endphp
+    <div class="invoice-type-banner">{{ $invoiceType }}</div>
     @endforeach
 
     {{-- ════════════════════════════
@@ -479,11 +506,8 @@
 
     </div>
 
-    @php
-        $cashPaid = (float) ($sumData->Cash_Pay ?? 0) + (float) ($sumData->Half_Payment ?? 0);
-        $creditDue = (float) ($sumData->Credite ?? 0);
-        $chequePaid = (float) ($sumData->Cheque ?? 0);
-    @endphp
+    {{-- $cashPaid / $creditDue / $chequePaid already computed above, next to
+         the invoice-type banner (same $sumData, same values). --}}
     <div class="payment-summary">
         <div class="payment-summary-title">Payment Method</div>
         @if($cashPaid > 0)

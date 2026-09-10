@@ -517,3 +517,57 @@
         }
     });
 })(jQuery);
+
+/**
+ * dtFixToolbar — called from a DataTable's initComplete on the standard
+ * master-data list pages (Store, Category, Brands, etc). Moves the
+ * "Show N entries" control down next to Previous/Next, and moves the
+ * page's own "Add X" button into the (now empty) left slot next to the
+ * search box — instead of its own separate row above the table.
+ *
+ * Handles both DataTables layouts used across this app:
+ *  - bootstrap4 integration: length/filter and info/paginate each sit in
+ *    their own <div class="row"><div class="col-*">…</div></div> pair.
+ *  - plain DataTables: length/filter/info/paginate are direct
+ *    float:left / float:right siblings of .dataTables_wrapper.
+ */
+function dtFixToolbar(tableEl, btnSelector) {
+    var $wrapper  = jQuery(tableEl).closest('.dataTables_wrapper');
+    var $length   = $wrapper.find('.dataTables_length').first();
+    var $filter   = $wrapper.find('.dataTables_filter').first();
+    var $paginate = $wrapper.find('.dataTables_paginate').first();
+    var $btn      = jQuery(btnSelector);
+
+    if ($length.length && $paginate.length) {
+        var $pagParent = $paginate.parent();
+        if ($pagParent.get(0) !== $wrapper.get(0)) {
+            // bootstrap4: length + paginate already share a dedicated row
+            $length.insertBefore($paginate);
+            $pagParent.addClass('dt-pager-row');
+        } else {
+            // plain DataTables: both are float:left/float:right siblings of
+            // the wrapper with no shared row. $length sits near the top
+            // (before the table) and $paginate near the bottom (after it),
+            // so move $length down next to $paginate BEFORE wrapping —
+            // wrapAll() inserts its wrapper at the position of the first
+            // element in document order, so wrapping in place would have
+            // pulled the pager up to the top instead.
+            $length.insertBefore($paginate);
+            $length.add($paginate).wrapAll('<div class="dt-pager-row-plain"></div>');
+        }
+    }
+
+    if ($btn.length && $filter.length) {
+        $btn.show();
+        var $filterRow = $filter.closest('.row');
+        if ($filterRow.length && $filterRow.get(0) !== $wrapper.get(0)) {
+            // bootstrap4: put the button in the row's first (now empty) column
+            var $leftCol = $filterRow.children().first();
+            $btn.appendTo($leftCol);
+            $leftCol.addClass('dt-toolbar-col');
+        } else {
+            // plain DataTables: button becomes a float:left sibling of filter
+            $btn.insertBefore($filter).addClass('dt-toolbar-btn-plain');
+        }
+    }
+}
