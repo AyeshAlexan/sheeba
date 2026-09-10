@@ -60,7 +60,7 @@
                 <li class="menu-title"><span>Main</span></li>
                         <li class="{{ Request::is('home') ? 'active' : '' }}">
                         <a href="{{ route('home') }}">
-                            <i class="fa fa-home"></i>
+                            <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             <span>Home</span>
                         </a>
                     </li>
@@ -72,7 +72,7 @@
                 {{-- User Management --}}
                 <li class="submenu {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user')  ? 'active' : '' }} ">
                     <a href="#" class=" {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') ? 'subdrop' : '' }} ">
-                        <i class="fa fa-users"></i> <span> User Management</span>
+                        <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span> User Management</span>
                         <span class="menu-arrow"></span></a>
                     <ul style=" {{ Request::is('users') || Request::is('add_user') ? 'display:block;' : '' }} ">
                         <li class="{{ Request::is('users') || Request::is('add_user') ? 'active ' : '' }}">
@@ -94,7 +94,7 @@
                 {{-- system --}}
 
                 <li class="{{ Request::is('Company*') ? 'active' : '' }}">
-                    <a href="#"><i class="fa fa-th-list"></i> <span>System</span>
+                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg> <span>System</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style=" {{ Request::is('Company*') ? 'display:block;' : '' }}">
@@ -114,7 +114,7 @@
                 {{-- Master --}}
                 <li
                     class="dropdown {{ Request::is('master*')  || Request::is('SalesMan') || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MGuarantor') || Request::is('SchemaType')  || Request::is('MColor')  || Request::is('M_Make')  || Request::is('MBrand')  || Request::is('Category') || Request::is('Store') || Request::is('Department') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category') ? 'active' : '' }} ">
-                    <a href="#"><i class="fa fa-sitemap"></i> <span> Master</span> <span class="menu-arrow"></span></a>
+                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M12 9v3M12 12H6v3M12 12h6v3"/></svg> <span> Master</span> <span class="menu-arrow"></span></a>
                     <ul
                         style=" {{ Request::is('master*') || Request::is('SalesMan')  || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MGuarantor') || Request::is('SchemaType')  || Request::is('MColor')  || Request::is('Category') || Request::is('Store') || Request::is('Department') || Request::is('M_Make')  || Request::is('MBrand') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category')  ? 'display:block;' : '' }}">
                         <li class="{{ Request::is('Department') ? 'active' : '' }}">
@@ -186,7 +186,7 @@
                 {{-- Stock --}}
 
                 <li class="{{ Request::is('stock*') ? 'active' : '' }}">
-                    <a href="#"><i class="fa fas fa-database"></i> <span>Stock</span>
+                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg> <span>Stock</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style=" {{ Request::is('stock*') ? 'display:block;' : '' }}">
@@ -223,7 +223,7 @@
 
 
                 <li class=" dropdown {{ Request::is('purchases*') ? 'active' : '' }} ">
-                   <a href="#"><i class="fa fa-shopping-cart"></i> <span>Purchases</span>
+                   <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> <span>Purchases</span>
                        <span class="menu-arrow"></span></a>
 
                    <ul style="{{ Request::is('purchases*') ? 'display:block;' : '' }} ">
@@ -251,7 +251,7 @@
                </li>
 
                 <li class=" dropdown {{ Request::is('sales*') ? 'active' : '' }} ">
-                    <a href="#"><i class="fa fa-th-list"></i> <span>Sales</span>
+                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> <span>Sales</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style="{{ Request::is('sales*') ? 'display:block;' : '' }} ">
@@ -317,7 +317,7 @@
                 {{ Request::is('PaymentVoucher*') ? 'active' : '' }} " --}}
                 >
                 <a href="#">
-                    <i class="fa fa-barcode"></i> <span> Vouchers</span> <span class="menu-arrow"></span></a>
+                    <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 9a3 3 0 1 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 1 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg> <span> Vouchers</span> <span class="menu-arrow"></span></a>
                 <ul
                 style=" {{ Request::is('PaymentVoucher*') ? 'display:block;' : '' }}"
                 >
@@ -344,7 +344,7 @@
                 </li>
 
                 <li class="{{ Request::is('AddExpense*') ? 'active' : '' }}">
-                    <a href="#"><i class="fa fa-th-list"></i> <span>Expense</span>
+                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> <span>Expense</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style=" {{ Request::is('AddExpense*') ? 'display:block;' : '' }}">
@@ -364,7 +364,7 @@
 
                 <li class="">
                     <a href="#">
-                        <i class="fa fa-credit-card"></i> <span> Banking </span> <span
+                        <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span> Banking </span> <span
                             class="menu-arrow"></span></a>
                             <ul style="">
                                 <li class="">
@@ -394,7 +394,7 @@
                 {{-- Accounting --}}
                 <li class="">
                     <a href="#">
-                        <i class="fa fa-table"></i> <span> Accounting</span> <span
+                        <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/></svg> <span> Accounting</span> <span
                             class="menu-arrow"></span></a>
                             <ul style="">
                                 <li class="">
@@ -416,12 +416,9 @@
                             </ul>
                  </li>
 
-            <li class="menu-item">
-                <a href="javascript:void(0);"  class="menu-link menu-toggle">
-                  <i class='menu-icon tf-icons bx bx-cart-alt'></i>
-                  <a href="#"><i class="fa fa-chart-area"></i> <span>Reports</span> <span
+            <li class="">
+                <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> <span>Reports</span> <span
                     class="menu-arrow"></span></a>
-                </a>
                 <ul class="menu-sub">
                   <li class="menu-item">
                     <a href="javascript:void(0);"  class="menu-link menu-toggle">

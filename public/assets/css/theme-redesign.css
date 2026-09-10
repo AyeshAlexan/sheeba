@@ -319,6 +319,17 @@ body.mini-sidebar .page-wrapper {
   flex-shrink: 0;
 }
 
+#sidebar-menu.sidebar-menu > ul > li > a svg.nav-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--tr-text-secondary);
+}
+#sidebar-menu.sidebar-menu > ul > li.active > a svg.nav-svg,
+#sidebar-menu.sidebar-menu > ul > li > a.subdrop svg.nav-svg {
+  color: var(--tr-blue);
+}
+
 #sidebar-menu.sidebar-menu > ul > li > a .menu-arrow {
   margin-left: auto;
   color: var(--tr-text-muted) !important;
