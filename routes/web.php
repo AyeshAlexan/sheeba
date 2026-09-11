@@ -975,12 +975,6 @@ Route::get('/search-customers-return', [App\Http\Controllers\SalesReturnControll
 Route::get('/sales-return/print/{invoice_no}', [App\Http\Controllers\SalesReturnController::class, 'printInvoice'])->name('sales.return.print');
 
 
-
-
-
-
-
-
 Route::middleware(['auth'])->group(function () {
 
     // ... your existing routes ...
@@ -993,8 +987,6 @@ Route::middleware(['auth'])->group(function () {
             [App\Http\Controllers\SalesReturnReportController::class, 'getDetails'])
             ->name('sales.return.details');
 });
-
-
 
 
 

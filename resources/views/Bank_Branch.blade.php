@@ -81,7 +81,7 @@
                             class="form-horizontal" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="id" id="id">
                             <div class="col-sm-12">
-                                <label for="name" class="col-sm-5 control-label">Bank <span
+                                <label for="name" class="control-label">Bank <span
                                         style="color:#FF0000; font-weight: bold; ">*</span> :</label>
                                 <select class="select form-control" name="department" id="department"
                                     aria-hidden="true">
@@ -94,7 +94,7 @@
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="name" class="col-sm-5 control-label"> Branch Code <span
+                                <label for="name" class="control-label"> Branch Code <span
                                         style="color:#FF0000; font-weight: bold; ">*</span> :</label>
                                 <div class="col-sm-12">
                                     <input type="text" class="form-control" id="category_code" name="category_code"
@@ -102,7 +102,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="name" class="col-sm-5 control-label">Description <span
+                                <label for="name" class="control-label">Description <span
                                         style="color:#FF0000; font-weight: bold; ">*</span> :</label>
                                 <div class="col-sm-12">
                                     <input type="text" class="form-control" id="category_description"

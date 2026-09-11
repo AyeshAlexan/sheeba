@@ -23,144 +23,184 @@
 </head>
 
 <style>
-    p { font-weight:bold; font-family:"Noto Sans,sans-serif"; color:rgb(3,80,3) }
-    input::placeholder { font-weight:bold; opacity:.5; color:rgb(4,58,13) }
-    input[type="text"] { background-color:rgb(206,235,219); padding:10px 15px; border-radius:3px; }
-    hr { color:rgb(3,31,3) }
+    /* ── Item modal: section cards ── */
+    .item-section-card {
+        border: 1px solid var(--tr-border); border-radius: 14px;
+        padding: 18px; margin-bottom: 18px; background: var(--tr-white);
+    }
+    .item-section-card h6 {
+        font-size: 13px; font-weight: 700; color: var(--tr-navy);
+        text-transform: uppercase; letter-spacing: .03em;
+        margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .item-section-card h6 i { color: var(--tr-blue); font-size: 12px; }
+
+    /* Quick-create links next to Category / Department labels */
+    .quick-create-link {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11.5px; font-weight: 600; color: var(--tr-blue);
+        text-decoration: none !important; background: var(--tr-blue-light);
+        border-radius: 20px; padding: 2px 10px; margin-left: 6px;
+        vertical-align: middle; transition: opacity .15s;
+    }
+    .quick-create-link:hover { opacity: .75; }
 
     /* ── Category Preview ── */
-    #category-items-preview { display:none; margin-top:10px; border:1px solid #b2dfdb; border-radius:6px; background:#f0faf4; }
-    #category-items-preview .preview-header { background:#1677FF; color:#fff; padding:6px 12px; border-radius:6px 6px 0 0; font-weight:600; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
-    #category-items-preview table thead th { background:#e8f5e9; font-size:12px; }
-    #cat-item-count { background:#fff; color:#1677FF; border-radius:10px; padding:1px 8px; font-size:12px; font-weight:700; }
+    #category-items-preview {
+        display:none; margin-top:12px; border:1px solid var(--tr-border);
+        border-radius:12px; background:var(--tr-bg); overflow:hidden;
+    }
+    #category-items-preview .preview-header {
+        background:var(--tr-blue); color:#fff; padding:8px 14px;
+        font-weight:600; font-size:12.5px; display:flex;
+        justify-content:space-between; align-items:center;
+    }
+    #category-items-preview table thead th { background:var(--tr-blue-light); font-size:12px; }
+    #cat-item-count { background:#fff; color:var(--tr-blue); border-radius:10px; padding:1px 8px; font-size:12px; font-weight:700; }
 
-    /* ── Tabs ── */
-    .item-mode-tabs .nav-link { color:#14213D; font-weight:500; }
-    .item-mode-tabs .nav-link.active { background:#1677FF; color:#fff; border-color:#1677FF; }
+    /* ── Tabs (pill style) ── */
+    .item-mode-tabs {
+        display: flex; gap: 4px; background: var(--tr-bg); border: none;
+        border-radius: 12px; padding: 4px; margin-bottom: 20px;
+    }
+    .item-mode-tabs .nav-item { flex: 1; }
+    .item-mode-tabs .nav-link {
+        border: none !important; border-radius: 9px !important;
+        color: var(--tr-text-secondary); font-weight: 600; font-size: 13.5px;
+        text-align: center; padding: 9px 14px; width: 100%;
+        transition: background .15s, color .15s;
+    }
+    .item-mode-tabs .nav-link.active {
+        background: var(--tr-white) !important; color: var(--tr-blue) !important;
+        box-shadow: 0 2px 8px rgba(20,33,61,.08);
+    }
 
     /* ── Package Section ── */
     #package-add-section { display:none; margin-top:10px; }
 
     .pkg-header-box {
-        background: linear-gradient(135deg,#e8f5e9 0%,#f0faf4 100%);
-        border:1px solid #b2dfdb; border-radius:8px; padding:16px; margin-bottom:16px;
+        background: var(--tr-blue-light);
+        border:1px solid var(--tr-border); border-radius:12px; padding:16px; margin-bottom:16px;
     }
-    .pkg-header-box label { font-size:13px; font-weight:600; color:#14213D; }
+    .pkg-header-box label { font-size:13px; font-weight:600; color:var(--tr-navy); }
 
     .pkg-name-input {
         font-size:15px !important; font-weight:600 !important;
-        background:#fff !important; border:2px solid #1677FF !important;
-        border-radius:6px !important; padding:8px 14px !important; color:#145032 !important;
+        background:#fff !important; border:2px solid var(--tr-blue) !important;
+        border-radius:9px !important; padding:8px 14px !important; color:var(--tr-navy) !important;
     }
-    .pkg-name-input:focus { box-shadow:0 0 0 3px rgba(56,161,105,.2) !important; outline:none; }
+    .pkg-name-input:focus { box-shadow:0 0 0 3px rgba(22,119,255,.15) !important; outline:none; }
 
     /* ── Search ── */
     .pkg-search-wrapper { position:relative; }
     .pkg-search-input {
-        background:rgb(206,235,219) !important; border:1px solid #b2dfdb !important;
-        border-radius:6px !important; font-size:13px !important; padding:8px 12px !important;
+        background:var(--tr-white) !important; border:1px solid var(--tr-border) !important;
+        border-radius:9px !important; font-size:13px !important; padding:8px 12px !important;
     }
-    .pkg-search-input:focus { border-color:#1677FF !important; outline:none; }
+    .pkg-search-input:focus { border-color:var(--tr-blue) !important; outline:none; }
 
     /* ── Autocomplete ── */
     .pkg-ac-dropdown {
         display:none; position:absolute; top:100%; left:0; right:0; z-index:9999;
-        background:#fff; border:1px solid #b2dfdb; border-radius:0 0 8px 8px;
+        background:#fff; border:1px solid var(--tr-border); border-radius:0 0 10px 10px;
         max-height:220px; overflow-y:auto; box-shadow:0 6px 20px rgba(0,0,0,.12);
     }
     .pkg-ac-item {
-        padding:8px 12px; cursor:pointer; font-size:12px; border-bottom:1px solid #f0f0f0;
+        padding:8px 12px; cursor:pointer; font-size:12px; border-bottom:1px solid var(--tr-border);
         display:flex; align-items:center; gap:8px; transition:background .15s;
     }
-    .pkg-ac-item:hover { background:#e8f5e9; }
+    .pkg-ac-item:hover { background:var(--tr-blue-light); }
     .pkg-ac-item .ac-code {
-        background:#1677FF; color:#fff; border-radius:4px;
+        background:var(--tr-blue); color:#fff; border-radius:4px;
         padding:2px 7px; font-size:11px; white-space:nowrap; flex-shrink:0;
     }
-    .pkg-ac-item .ac-desc { flex:1; color:#1a1a1a; }
-    .pkg-ac-item .ac-price { color:#14213D; font-weight:700; white-space:nowrap; flex-shrink:0; }
-    .pkg-ac-empty,.pkg-ac-loading { padding:10px 12px; font-size:12px; color:#888; text-align:center; }
+    .pkg-ac-item .ac-desc { flex:1; color:var(--tr-text); }
+    .pkg-ac-item .ac-price { color:var(--tr-navy); font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .pkg-ac-empty,.pkg-ac-loading { padding:10px 12px; font-size:12px; color:var(--tr-text-muted); text-align:center; }
 
     /* ── Package table ── */
     .pkg-items-table thead th {
-        background:#1677FF; color:#fff;
-        font-size:12px; padding:7px 10px; white-space:nowrap;
+        background:#F8FAFC; color:var(--tr-navy);
+        font-size:12px; padding:8px 10px; white-space:nowrap;
     }
-    .pkg-items-table tbody td { padding:5px 8px; vertical-align:middle; }
-    .pkg-items-table tbody tr:hover { background:#f0faf4; }
+    .pkg-items-table tbody td { padding:6px 10px; vertical-align:middle; }
+    .pkg-items-table tbody tr:hover { background:var(--tr-bg); }
     .pkg-items-table .code-badge {
-        background:#1677FF; color:#fff;
-        border-radius:4px; padding:2px 8px; font-size:11px; white-space:nowrap;
+        background:var(--tr-blue-light); color:var(--tr-blue);
+        border-radius:4px; padding:2px 8px; font-size:11px; font-weight:600; white-space:nowrap;
     }
 
     /* ── Price inputs inside table — override global padding ── */
     .pkg-price-input {
-        background:rgb(206,235,219) !important;
+        background:var(--tr-white) !important;
         font-size:13px !important;
         padding:4px 8px !important;
-        border-radius:5px !important;
+        border-radius:7px !important;
         width:110px !important;
-        border:1px solid #b2dfdb !important;
+        border:1px solid var(--tr-border) !important;
         box-sizing:border-box;
     }
     .pkg-price-input:focus {
-        border-color:#1677FF !important;
+        border-color:var(--tr-blue) !important;
         outline:none;
-        box-shadow:0 0 0 2px rgba(56,161,105,.15) !important;
+        box-shadow:0 0 0 2px rgba(22,119,255,.12) !important;
     }
-    .pkg-price-input.is-invalid { border-color:#dc3545 !important; }
+    .pkg-price-input.is-invalid { border-color:var(--tr-danger) !important; }
 
     /* ── Qty input inside package table ── */
     .pkg-qty-input {
-        background:rgb(206,235,219) !important;
+        background:var(--tr-white) !important;
         font-size:13px !important;
         padding:4px 4px !important;
-        border-radius:5px !important;
+        border-radius:7px !important;
         width:65px !important;
-        border:1px solid #b2dfdb !important;
+        border:1px solid var(--tr-border) !important;
         box-sizing:border-box;
         text-align:center;
     }
     .pkg-qty-input:focus {
-        border-color:#1677FF !important;
+        border-color:var(--tr-blue) !important;
         outline:none;
-        box-shadow:0 0 0 2px rgba(56,161,105,.15) !important;
+        box-shadow:0 0 0 2px rgba(22,119,255,.12) !important;
     }
     /* hide browser number spinners for cleaner look */
     .pkg-qty-input::-webkit-inner-spin-button,
     .pkg-qty-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
     .pkg-qty-input[type=number] { -moz-appearance:textfield; }
 
-    .pkg-empty-row td { text-align:center; color:#888; font-size:13px; padding:20px !important; }
-    .btn-remove-row { background:#dc3545; color:#fff; border:none; border-radius:3px; padding:2px 8px; font-size:12px; cursor:pointer; }
+    .pkg-empty-row td { text-align:center; color:var(--tr-text-muted); font-size:13px; padding:24px !important; }
+    .btn-remove-row {
+        background:#FEECEC; color:var(--tr-danger); border:none;
+        border-radius:50%; width:26px; height:26px; font-size:12px; cursor:pointer;
+    }
 
     /* ── Summary bar ── */
     .pkg-summary-bar {
-        background:linear-gradient(90deg,#e8f5e9,#f0faf4);
-        border:1px solid #b2dfdb; border-radius:8px;
-        padding:10px 16px; display:flex; align-items:center;
+        background:var(--tr-bg);
+        border:1px solid var(--tr-border); border-radius:12px;
+        padding:12px 16px; display:flex; align-items:center;
         gap:20px; margin-top:12px; flex-wrap:wrap;
     }
     .pkg-summary-bar .s-stat { text-align:center; min-width:110px; }
-    .pkg-summary-bar .s-label { font-size:11px; color:#2d6a4f; font-weight:600; }
-    .pkg-summary-bar .s-value { font-size:17px; font-weight:700; color:#145032; }
+    .pkg-summary-bar .s-label { font-size:11px; color:var(--tr-text-secondary); font-weight:600; }
+    .pkg-summary-bar .s-value { font-size:17px; font-weight:700; color:var(--tr-navy); }
 
     #pkg-save-btn {
-        background:#1677FF; color:#fff; border:none;
-        border-radius:6px; padding:8px 28px; font-size:14px;
+        background:var(--tr-success); color:#fff; border:none;
+        border-radius:9px; padding:10px 28px; font-size:14.5px;
         font-weight:600; cursor:pointer; transition:background .2s;
     }
-    #pkg-save-btn:hover { background:#0F68E0; }
+    #pkg-save-btn:hover { background:#128A3E; }
     #pkg-save-btn:disabled { background:#aaa; cursor:not-allowed; }
 
     /* ── Item_set_bulk preview badge ── */
     .bulk-preview {
-        font-size:11px; color:#555; margin-top:6px;
-        background:#f0faf4; border:1px dashed #b2dfdb;
-        border-radius:4px; padding:4px 8px; word-break:break-all;
+        font-size:11px; color:var(--tr-text-secondary); margin-top:6px;
+        background:var(--tr-bg); border:1px dashed var(--tr-border);
+        border-radius:6px; padding:6px 10px; word-break:break-all;
         display:none;
     }
-    .bulk-preview span { color:#14213D; font-weight:700; }
+    .bulk-preview span { color:var(--tr-navy); font-weight:700; }
 </style>
 
 <body>
@@ -217,9 +257,9 @@
 <div class="modal fade" id="Item-modal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background:#1677FF;color:#fff;">
+            <div class="modal-header">
                 <h5 class="modal-title" id="ItemModal">Add Item</h5>
-                <button type="button" class="btn-close btn-close-white"
+                <button type="button" class="btn-close"
                         data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -254,8 +294,9 @@
 
                         <div class="row">
                             <div class="col-sm-6">
-                                <label class="col-sm-3 control-label">Category</label>
-                                <a href="{{ ('Category') }}" target="_blank">Create Category</a>
+                                <label class="control-label">Category
+                                    <a href="{{ ('Category') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Category</a>
+                                </label>
                                 <select class="form-control" name="category" id="category">
                                     <option value="">Please Select</option>
                                     @foreach($Category as $categoryData)
@@ -290,8 +331,9 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <label class="col-sm-4 control-label">Department</label>
-                                <a href="{{ ('Department') }}" target="_blank">Create Department</a>
+                                <label class="control-label">Department
+                                    <a href="{{ ('Department') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Department</a>
+                                </label>
                                 <select class="select form-control" name="Department" id="Department">
                                     <option value="">Please Select</option>
                                     @foreach($Department as $DepartmentData)
@@ -320,7 +362,7 @@
                             </div>
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">Model No</label>
+                                    <label class="control-label">Model No</label>
                                     <input type="text" class="form-control" id="Bar_code"
                                            name="Bar_code" placeholder="Bar Code" maxlength="50">
                                 </div>
@@ -382,60 +424,54 @@
                         <img id="preview-image" width="300px">
 
 
-                        <div class="shadow-sm p-3 mb-3 bg-body-tertiary rounded">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h6>Prices <span class="text-danger">*</span></h6><hr>
-                                            <div class="form-group mb-2">
-                                                <label>Purchase Price <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="purchasePrice"
-                                                       name="purchasePrice" placeholder="Purchase Price" maxlength="20" required>
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label>Sales Price <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="saleprice"
-                                                       name="saleprice" placeholder="Sale Price" maxlength="20" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Border Price</label>
-                                                <input type="text" class="form-control" id="Credit"
-                                                       name="Credit" placeholder="Border price" maxlength="15">
-                                            </div>
-                                        </div>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="item-section-card">
+                                    <h6><i class="fas fa-tag"></i> Prices <span class="text-danger">*</span></h6>
+                                    <div class="form-group mb-2">
+                                        <label>Purchase Price <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="purchasePrice"
+                                               name="purchasePrice" placeholder="Purchase Price" maxlength="20" required>
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Sales Price <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="saleprice"
+                                               name="saleprice" placeholder="Sale Price" maxlength="20" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Border Price</label>
+                                        <input type="text" class="form-control" id="Credit"
+                                               name="Credit" placeholder="Border price" maxlength="15">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h6>Options</h6><hr>
-                                            <div class="form-group mb-2">
-                                                <label>Reorder Level</label>
-                                                <input type="text" class="form-control" id="ReorderLevel"
-                                                       name="ReorderLevel" placeholder="Reorder Level" maxlength="25">
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label>Recorder Quantity</label>
-                                                <input type="text" class="form-control" id="RecorderQuantitiy"
-                                                       name="RecorderQuantitiy" placeholder="Recorder Quantity" maxlength="25">
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                       id="SaleDecimal" name="SaleDecimal">
-                                                <label class="form-check-label">Sales by Decimals</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                       id="Serialnumber" name="Serialnumber">
-                                                <label class="form-check-label">Serial Number</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                       id="Inactive" name="Inactive">
-                                                <label class="form-check-label">Inactive</label>
-                                            </div>
-                                        </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="item-section-card">
+                                    <h6><i class="fas fa-sliders-h"></i> Options</h6>
+                                    <div class="form-group mb-2">
+                                        <label>Reorder Level</label>
+                                        <input type="text" class="form-control" id="ReorderLevel"
+                                               name="ReorderLevel" placeholder="Reorder Level" maxlength="25">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Recorder Quantity</label>
+                                        <input type="text" class="form-control" id="RecorderQuantitiy"
+                                               name="RecorderQuantitiy" placeholder="Recorder Quantity" maxlength="25">
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               id="SaleDecimal" name="SaleDecimal">
+                                        <label class="form-check-label">Sales by Decimals</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               id="Serialnumber" name="Serialnumber">
+                                        <label class="form-check-label">Serial Number</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               id="Inactive" name="Inactive">
+                                        <label class="form-check-label">Inactive</label>
                                     </div>
                                 </div>
                             </div>
@@ -445,7 +481,7 @@
                         <input type="hidden" name="BranchCode" id="BranchCode" value="{{ Auth::user()->BC }}">
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-info" id="btn-save">Save Changes</button>
+                            <button type="submit" class="btn btn-primary" id="btn-save">Save Changes</button>
                         </div>
                     </form>
                 </div>{{-- end #single-item-section --}}

@@ -482,6 +482,35 @@ body.mini-sidebar #sidebar-menu.sidebar-menu ul ul {
   margin-top: 2px !important;
 }
 
+/* Page load animation — the header and the first card/table fade + rise
+   in on arrival instead of popping in flat, matching the modal entrance
+   below. Scoped to `.content > .page-header` / `.content > .container-fluid
+   > .card` (direct-ish children only) so it plays once per page load and
+   doesn't retrigger on every AJAX table redraw inside the card. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes tr-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .content > .page-header {
+    animation: tr-fade-up .45s cubic-bezier(.16,1,.3,1) both;
+  }
+  .content > .container-fluid > .card,
+  .content > .container-fluid > .static-toolbar,
+  .content > .container-fluid > .row > .card {
+    animation: tr-fade-up .45s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: .06s;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .content > .page-header,
+  .content > .container-fluid > .card,
+  .content > .container-fluid > .static-toolbar,
+  .content > .container-fluid > .row > .card {
+    animation: none !important;
+  }
+}
+
 /* Cards */
 .card {
   background: var(--tr-white) !important;
@@ -611,7 +640,36 @@ select.select:focus {
   background: #FAFBFD !important;
 }
 
-/* Modals */
+/* Modals
+   Several legacy pages open their modal via jQuery's Bootstrap-4-style
+   `$('#x').modal('show')` even though the page actually loads Bootstrap
+   5's JS bundle. That plugin call still works (an old jQuery modal shim
+   is present somewhere in the asset chain), but it drives the reveal as
+   two chained transitions — backdrop fade, then modal fade — through
+   whichever of the 2-3 conflicting Bootstrap CSS builds the browser
+   nearest read a transition-duration from. The net effect is the modal
+   visibly fades in over ~700-900ms instead of the usual ~150ms,
+   reading as broken/half-transparent while it's mid-fade. Pinning the
+   fade duration explicitly keeps that chain short and consistent across
+   every page regardless of which Bootstrap build wins the cascade. */
+.modal.fade,
+.modal-backdrop.fade {
+  transition: opacity .15s linear !important;
+}
+.modal.show {
+  opacity: 1 !important;
+}
+/* The dialog's entrance (scale + slide) is a purely decorative overlay
+   on top of that — using a CSS `animation` here (not `transition`) means
+   it plays out on its own timeline the moment `.show` is applied,
+   independent of the backdrop/modal transition-end handshake above. */
+@keyframes tr-modal-in {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal.show .modal-dialog {
+  animation: tr-modal-in .22s cubic-bezier(.16,1,.3,1) both;
+}
 .modal-content {
   border-radius: 16px !important;
   border: none !important;

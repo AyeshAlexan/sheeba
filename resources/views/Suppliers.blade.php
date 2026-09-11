@@ -183,7 +183,7 @@
                                     </div>
 
                                     <div class="text-center mt-4">
-                                        <button type="button" class="btn btn-success add_customer bg-success-light text-success me-2">Save</button>
+                                        <button type="button" class="btn btn-primary add_customer me-2">Save</button>
                                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
                                     </div>
                                 </form>
@@ -245,7 +245,7 @@
                                     </div>
 
                                     <div class="text-center mt-4">
-                                        <button type="button" class="btn btn-success update_customer bg-success-light text-success me-2">Update</button>
+                                        <button type="button" class="btn btn-primary update_customer me-2">Update</button>
                                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
                                     </div>
                                 </form>

@@ -82,13 +82,13 @@
                                     <form action="javascript:void(0)"  id="StoreForm" name="StoreForm" class="form-horizontal" method="POST" enctype="multipart/form-data">
                                         <input type="hidden" name="id" id="id">
                                         <div class="form-group">
-                                            <label for="name" class="col-sm-2 control-label">Brand Code</label>
+                                            <label for="name" class="control-label">Brand Code</label>
                                                 <div class="col-sm-12">
                                                 <input type="number" class="form-control" id="Brand_code" name="Brand_code" value="00{{ $maxCustomer+1}}" placeholder="Enter a Brand Code" maxlength="15" required="">
                                             </div>
                                         </div>  
                                         <div class="form-group">
-                                            <label for="name" class="col-sm-4 control-label">Brand Name</label>
+                                            <label for="name" class="control-label">Brand Name</label>
                                                 <div class="col-sm-12">
                                                 <input type="text" class="form-control" id="Brand_name" name="Brand_name" placeholder="Enter a Brand Name" maxlength="20" required="">
                                             </div>
