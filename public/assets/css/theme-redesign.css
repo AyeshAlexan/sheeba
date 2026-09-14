@@ -618,6 +618,209 @@ select.select:focus {
   border-color: var(--tr-danger) !important;
 }
 
+/* Transactional-form action row (Save / Print / Delete / Cancel / Reset) —
+   reused near-verbatim across ~18 legacy invoice/receipt/stock pages, all
+   as pale outline buttons with no visual hierarchy. Retinted to the same
+   semantic colors used everywhere else: Save=green, Print=blue,
+   Delete=red, Cancel=orange, Reset=neutral. Scoped to the specific class/
+   name combination each page already uses, so it doesn't affect unrelated
+   outline buttons elsewhere. */
+button[name="save"].btn-outline-info {
+  background: var(--tr-success) !important;
+  border-color: var(--tr-success) !important;
+  color: #fff !important;
+}
+button[name="save"].btn-outline-info:hover {
+  background: #128A3E !important;
+  border-color: #128A3E !important;
+}
+.printReceipt.btn-outline-primary {
+  background: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
+  color: #fff !important;
+}
+.printReceipt.btn-outline-primary:hover {
+  background: #0F68E0 !important;
+  border-color: #0F68E0 !important;
+}
+.pawn_delete.btn-outline-danger {
+  background: var(--tr-danger) !important;
+  border-color: var(--tr-danger) !important;
+  color: #fff !important;
+}
+.pawn_delete.btn-outline-danger:hover {
+  background: #DC2626 !important;
+  border-color: #DC2626 !important;
+}
+.pawn_cancel.btn-outline-warning {
+  background: var(--tr-warning) !important;
+  border-color: var(--tr-warning) !important;
+  color: #fff !important;
+}
+.pawn_cancel.btn-outline-warning:hover {
+  background: #D97F09 !important;
+  border-color: #D97F09 !important;
+}
+button[name="reset"].btn-outline-secondary {
+  background: var(--tr-white) !important;
+  border-color: var(--tr-border) !important;
+  color: var(--tr-text-secondary) !important;
+}
+button[name="reset"].btn-outline-secondary:hover {
+  background: var(--tr-bg) !important;
+}
+
+/* Stock forms (Opening Stock, Stock Adjustment, Stock Transfer): top row
+   with Store Code/Name on the left and Invoice No/Date as icon info-boxes
+   on the right, plus the item-code search cell and totals row below it. */
+.stock-top-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.stock-store-fields {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 320px;
+}
+.stock-store-fields > div {
+  flex: 1;
+  min-width: 180px;
+}
+.stock-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 220px;
+}
+.stock-info-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--tr-bg);
+  border: 1px solid var(--tr-border);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+.stock-info-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--tr-blue-light);
+  color: var(--tr-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+.stock-info-label {
+  font-size: 11px;
+  color: var(--tr-text-secondary);
+  font-weight: 600;
+}
+.stock-info-input {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  height: auto !important;
+  font-weight: 700 !important;
+  color: var(--tr-navy) !important;
+  font-size: 14px !important;
+  width: 150px;
+  box-shadow: none !important;
+}
+
+/* Item-code cell: search input with an icon inline, plus a circular blue
+   "search full list" button beside it — replaces the old input-group
+   whose button (also `.form-control`) fought the input for width and
+   rendered as two lopsided boxes. */
+.stock-item-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stock-item-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 90px;
+}
+.stock-item-search-wrap i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tr-text-muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+.stock-item-search-wrap input {
+  padding-left: 28px !important;
+}
+.stock-item-search-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tr-blue);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  transition: opacity .15s ease;
+}
+.stock-item-search-btn:hover {
+  opacity: .85;
+}
+
+/* Totals row + Total Amount box: light blue instead of the old mint-green
+   `table-success`, with the total figure in a small pill badge. */
+.stock-total-row {
+  background: var(--tr-blue-light) !important;
+}
+.stock-total-row td {
+  border-color: var(--tr-border) !important;
+}
+.stock-total-badge {
+  display: inline-block;
+  background: var(--tr-white);
+  color: var(--tr-blue);
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 14px;
+}
+.stock-amount-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--tr-bg);
+  border: 1px solid var(--tr-border);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+.stock-amount-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--tr-blue-light);
+  color: var(--tr-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+.stock-amount-box .stock-info-label {
+  margin-bottom: 2px;
+}
+
 /* Tables */
 .table thead th {
   background: #F8FAFC !important;

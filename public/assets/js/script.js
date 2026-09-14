@@ -571,3 +571,15 @@ function dtFixToolbar(tableEl, btnSelector) {
         }
     }
 }
+
+// Shared "Cancel" behavior for the Save/Print/Delete/Cancel/Reset action
+// row reused across ~18 transactional pages (invoices, receipts, stock
+// forms). The .pawn_cancel button previously had no click handler at all
+// on most of these pages — this makes it discard the in-progress form and
+// reload the page fresh, consistently everywhere it appears.
+jQuery(document).on('click', '.pawn_cancel', function (e) {
+    e.preventDefault();
+    if (confirm('Discard this form and start over?')) {
+        window.location.reload();
+    }
+});

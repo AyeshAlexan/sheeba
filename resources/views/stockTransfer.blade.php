@@ -29,13 +29,23 @@
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
+                <div class="page-header ph-flex">
+                    <div class="ph-left">
+                        <div class="ph-icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3 14 10"/><path d="m3 21 7-7"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="page-title">Create Stock Transfer</h3>
+                            <p class="page-subtitle">Move stock between branches or stores</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Reset this form and start over?')) window.location.reload();">
+                        <i class="fas fa-redo-alt"></i> Reset
+                    </button>
+                </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="card shadow">
-                            <div class="col-md-9">
-                                <h4 class="card-title m-3">Create Stock Transfer</h4>
-                            </div>
-                            <hr style="height: 5px; color: blue;">
+                        <div class="card">
                             <div class="card-body">
                                 {{-- alerts section --}}
                                 @if (session('delete'))
@@ -79,118 +89,89 @@
 
                                 <form action="{{route('add_stock_transfer')}}" method="post" id="sales_form">
                                     @csrf
-                                    <div class="row ">
-                                        <div class="row mb-1 form-group justify-content-between">
-                                            <div class="row">
-                                                <div class="col-md-3">
-
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" id="btnGroupAddon1">From Store  :
-                                                        </div>
-                                                            <select class="select form-control " id="Branch_Code"
-                                                            name="Branch_Code" aria-hidden="true">
-                                                            <option value="">Select an item</option>
-                                                            @foreach( $branchName as $branchData)
-                                                            <option value="{{ $branchData->Store_code  }}">
-                                                                {{ $branchData->Store_code }}</option>
-                                                            @endforeach
-                                                        </select>
-
-                                                        <div class="input-group-append">
-                                                        </div>
-                                                    </div>
+                                    <div class="stock-top-row">
+                                        <div style="flex:1; min-width:340px; display:flex; flex-direction:column; gap:14px;">
+                                            <div class="d-flex gap-3 flex-wrap">
+                                                <div style="flex:1; min-width:140px;">
+                                                    <label class="control-label">From Store</label>
+                                                    <select class="select form-control" id="Branch_Code" name="Branch_Code" aria-hidden="true">
+                                                        <option value="">Select an item</option>
+                                                        @foreach( $branchName as $branchData)
+                                                        <option value="{{ $branchData->Store_code  }}">{{ $branchData->Store_code }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
-
-                                                <div class="col-md-3">
-                                                             <select class="select form-control " id="Branch_Name"
-                                                            name="Branch_Name" aria-hidden="true">
-                                                            <option value="">Select an item</option>
-                                                            @foreach( $branchName as $branchData)
-                                                            <option value="{{ $branchData->Store_name  }}">
-                                                                {{ $branchData->Store_name }}</option>
-                                                            @endforeach
-                                                        </select>
+                                                <div style="flex:1; min-width:140px;">
+                                                    <label class="control-label">&nbsp;</label>
+                                                    <select class="select form-control" id="Branch_Name" name="Branch_Name" aria-hidden="true">
+                                                        <option value="">Select an item</option>
+                                                        @foreach( $branchName as $branchData)
+                                                        <option value="{{ $branchData->Store_name  }}">{{ $branchData->Store_name }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
-
-                                                <div class="col-md-2"> </div>
-                                        <div class="col">
-                                            <div class="input-group">
-                                                <div class="input-group-text" id="btnGroupAddon2">Invoice No :</div>
-                                                <input type="text" id="invoice_no" name="invoice_no"
-                                                    value="{{$maxInvoiceNo+1}}" class="form-control"
-                                                    placeholder="Invoice Number:" aria-label="Invoice Number:"
-                                                    aria-describedby="btnGroupAddon2">
+                                            </div>
+                                            <div class="d-flex gap-3 flex-wrap">
+                                                <div style="flex:1; min-width:140px;">
+                                                    <label class="control-label">To Store</label>
+                                                    <select class="select form-control" id="To_Branch_Code" name="To_Branch_Code" aria-hidden="true">
+                                                        <option value="">Select an item</option>
+                                                        @foreach( $branchName as $branchData)
+                                                        <option value="{{ $branchData->Store_code  }}">{{ $branchData->Store_code }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div style="flex:1; min-width:140px;">
+                                                    <label class="control-label">&nbsp;</label>
+                                                    <select class="select form-control" id="To_Branch_Name" name="To_Branch_Name" aria-hidden="true">
+                                                        <option value="">Select an item</option>
+                                                        @foreach( $branchName as $branchData)
+                                                        <option value="{{ $branchData->Store_name  }}">{{ $branchData->Store_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="stock-info-col">
+                                            <div class="stock-info-box">
+                                                <div class="stock-info-icon"><i class="fas fa-file-alt"></i></div>
+                                                <div>
+                                                    <div class="stock-info-label">Invoice No :</div>
+                                                    <input type="text" id="invoice_no" name="invoice_no"
+                                                        value="{{$maxInvoiceNo+1}}" class="stock-info-input"
+                                                        placeholder="Invoice Number" aria-label="Invoice Number">
+                                                </div>
+                                            </div>
+                                            <div class="stock-info-box">
+                                                <div class="stock-info-icon"><i class="fas fa-calendar-alt"></i></div>
+                                                <div>
+                                                    <div class="stock-info-label">Date :</div>
+                                                    <input type="date" id="invoice_date" name="invoice_date"
+                                                        class="stock-info-input" aria-label="Date">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
+                                    <div class="customer-data"></div>
+                                    <div class="showCustomer"></div>
 
-
-                                    <div class="row mt-3">
-                                                  <div class="col-md-3">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" id="btnGroupAddon1">To Store  : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        </div>
-                                                            <select class="select form-control " id="To_Branch_Code"
-                                                            name="To_Branch_Code" aria-hidden="true">
-                                                            <option value="">Select an item</option>
-                                                            @foreach( $branchName as $branchData)
-                                                            <option value="{{ $branchData->Store_code  }}">
-                                                                {{ $branchData->Store_code }}</option>
-                                                            @endforeach
-                                                        </select>
-
-                                                        <div class="input-group-append">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                             <select class="select form-control " id="To_Branch_Name"
-                                                            name="To_Branch_Name" aria-hidden="true">
-                                                            <option value="">Select an item</option>
-                                                            @foreach( $branchName as $branchData)
-                                                            <option value="{{ $branchData->Store_name  }}">
-                                                                {{ $branchData->Store_name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                </div>
-                                        <div class="col-md-2"> </div>
-                                         <div class="col-md-4">
-                                            <div class="input-group">
-                                                <div class="input-group-text" id="btnGroupAddon3">Date :
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>
-                                                <input type="date" id="invoice_date" name="invoice_date"
-                                                    class="form-control" aria-label="Date:"
-                                                    aria-describedby="btnGroupAddon3">
-                                            </div>
-                                        </div>
-
-                                        </div>
+                            {{-- Item Details card --}}
+                            <div class="card">
+                                <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-list" style="color:var(--tr-blue);"></i>
+                                        <strong style="font-size:15px;color:var(--tr-navy);">Item Details</strong>
                                     </div>
-
-                            </div>
-                            <br>
-                            <br>
-                            {{-- heading inputs --}}
-                            <div class="row form-group">
-                                <div class="col-md-4 ">
+                                    <div style="position:relative;">
+                                        <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--tr-text-muted); font-size:12px;"></i>
+                                        <input type="text" id="stockItemSearch" class="form-control" style="padding-left:32px; width:260px;" placeholder="Search item code or description...">
+                                    </div>
                                 </div>
-                                <div class="row">
-
-                                    <div class="customer-data">
-
-                                    </div>
-                                    <div class="showCustomer">
-
-                                    </div>
-
-                                </div>
-                            </div>
-
                             {{-- dynamicAdded table --}}
                             <table class="table table-bordered">
-                                <thead style="background-color: rgb(46, 152, 214)">
+                                <thead class="thead-light">
                                     <tr>
                                         <th style="width:15%; text-align: center;">Item Code</th>
                                         <th style="width:20%; text-align: center;">Description</th>
@@ -216,18 +197,16 @@
                                         </select>
                                         </td> --}}
                                         <td id="showItems">
-
-                                            <div class="input-group">
-
-                                                <input type="text" id="item_code" name="item_code" class="form-control"
-                                                    placeholder="item Code" required aria-label="item Code"
-                                                    aria-describedby="btnGroupAddon1">
-                                                <div class="input-group-append">
-                                                    <button type="button" class="btn btn-success btn-lg form-control "
-                                                        data-bs-toggle="modal" data-bs-target="#searchItemModel">
-                                                        <i class="fas fa-plus" style="color: white"></i>
-                                                    </button>
+                                            <div class="stock-item-search-row">
+                                                <div class="stock-item-search-wrap">
+                                                    <i class="fas fa-search"></i>
+                                                    <input type="text" id="item_code" name="item_code" class="form-control"
+                                                        placeholder="Enter item code..." required aria-label="item Code">
                                                 </div>
+                                                <button type="button" class="stock-item-search-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#searchItemModel" title="Browse items">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
                                             </div>
 
 
@@ -352,29 +331,28 @@
                             {{-- table footer for total calculations --}}
                             <table class="table table-bordered">
                                 <tbody>
-                                    <tr class="table-success">
+                                    <tr class="stock-total-row">
                                         <td style="width:8%;"> </td>
-                                        <td style="width:8%;"><strong>
-                                                <p>TOTAL :</p>
-                                            </strong> </td>
+                                        <td style="width:8%;"><strong>TOTAL :</strong></td>
                                         <td style="width:5%;"> </td>
                                         <td style="width:5%;"></td>
                                         <td class="total-unit-price text-center" style="width:8%;">
-                                            <p><strong>0.00</strong></p>
+                                            <span class="stock-total-badge">0.00</span>
                                         </td>
                                         <td class="total-total_weight text-center" style="width:8%;">
-                                            <p><strong></strong></p>
                                         </td>
                                         <td class="total-discount text-center" style="width:8%;">
-                                            <p><strong>0.00</strong></p>
+                                            <span class="stock-total-badge">0.00</span>
                                         </td>
                                         <td class="total-value text-center" style="width:8%;">
-                                            <p><strong>0.00</strong></p>
+                                            <span class="stock-total-badge">0.00</span>
                                         </td>
                                         <td style="width:11%;"></td>
                                     </tr>
                                 </tbody>
                             </table>
+                                </div>
+                            </div>
 
                             {{-- bottom values section  --}}
                             <div class="row mt-3">
@@ -456,22 +434,18 @@
                             </div>
 
                             {{-- bottom buttons  --}}
-                            <div class="row">
-                                <div class="col-md-3">
-                                </div>
-                                <div class="col-md-9">
-                                    <br>
-                                    <button type="submit" name="save"
-                                        class="btn btn-outline-info btn-lg shadow">SAVE</button>
-                                    <button type="button" name="print"
-                                        class="btn btn-outline-primary printReceipt btn-lg shadow">PRINT</button>
-                                    <button type="button" name="pawn_delete" id="pawn_delete"
-                                        class="btn btn-outline-danger btn-lg shadow pawn_delete">DELETE</button>
-                                    <button type="button" name="pawn_cancel" id="pawn_cancel"
-                                        class="btn btn-outline-warning btn-lg shadow pawn_cancel">CANCEL</button>
-                                    <button type="reset" name="reset"
-                                        class="btn btn-outline-secondary btn-lg shadow">RESET</button>
-                                </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <button type="submit" name="save" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button type="button" name="print" class="btn printReceipt btn-outline-primary">
+                                    <i class="fas fa-print"></i> Print
+                                </button>
+                                <button type="button" name="pawn_delete" id="pawn_delete"
+                                    class="btn btn-outline-danger pawn_delete d-none">DELETE</button>
+                                <button type="button" name="pawn_cancel" id="pawn_cancel"
+                                    class="btn btn-outline-warning pawn_cancel d-none"
+                                    onclick="if(confirm('Discard this form and start over?')) window.location.reload();">CANCEL</button>
                             </div>
 
                             </form>
@@ -570,6 +544,17 @@
     </div>
 
     {!! Toastr::message() !!}
+
+    {{-- filter already-added item rows by code/description --}}
+    <script>
+        $(document).on('keyup', '#stockItemSearch', function () {
+            let q = $(this).val().toLowerCase();
+            $('#dynamicAdded tr').each(function () {
+                let text = $(this).text().toLowerCase();
+                $(this).toggle(text.indexOf(q) !== -1);
+            });
+        });
+    </script>
 
     {{-- form default date set for today --}}
     <script>
