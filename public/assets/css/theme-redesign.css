@@ -673,29 +673,130 @@ button[name="reset"].btn-outline-secondary:hover {
 /* Stock forms (Opening Stock, Stock Adjustment, Stock Transfer): top row
    with Store Code/Name on the left and Invoice No/Date as icon info-boxes
    on the right, plus the item-code search cell and totals row below it. */
+/* "Search item code or description" box above the item table — the
+   inline `padding-left` used to lose to `.form-control`'s own
+   `!important` padding rule (a non-!important inline style never beats
+   an !important stylesheet rule regardless of specificity), so the
+   search icon overlapped the placeholder text. */
+.stock-search-wrap {
+  position: relative;
+}
+.stock-search-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tr-text-muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+.stock-search-wrap input.form-control {
+  padding-left: 32px !important;
+  width: 260px;
+}
+
+/* Opening Stock: unified top information card (Store Code / Store Name /
+   Invoice No / Date) as a single 4-column grid instead of the old
+   Bootstrap input-group boxes. */
+.stock-info-card {
+  background: #FFFFFF;
+  border: 1px solid var(--tr-border);
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px rgba(20, 33, 61, 0.04);
+  margin-bottom: 20px;
+}
+.stock-info-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr 0.9fr 1fr;
+  gap: 20px;
+}
+.si-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tr-navy);
+  margin-bottom: 8px;
+}
+.si-field .form-control {
+  height: 46px !important;
+  background: var(--tr-white) !important;
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 9px !important;
+  padding: 0 14px !important;
+  font-size: 14px !important;
+  color: var(--tr-text) !important;
+}
+.si-field textarea.form-control {
+  height: auto !important;
+  min-height: 46px;
+  padding: 12px 14px !important;
+}
+/* Small icon inside the Invoice No / Date fields, matching left-icon
+   inputs used elsewhere (search boxes etc). */
+.si-icon-wrap {
+  position: relative;
+}
+.si-icon-wrap > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tr-blue);
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 2;
+}
+.stock-info-grid .si-field .si-icon-wrap input.form-control,
+.stock-info-grid-3 .si-field .si-icon-wrap input.form-control {
+  padding-left: 38px !important;
+}
+@media (max-width: 992px) {
+  .stock-info-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 576px) {
+  .stock-info-grid { grid-template-columns: 1fr; }
+}
+
+/* Stock Transfer: 6 fields (From Store code/name, To Store code/name,
+   Invoice No, Date) instead of 4 — same unified card, a balanced 3-column
+   grid across two rows. */
+.stock-info-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 992px) {
+  .stock-info-grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 576px) {
+  .stock-info-grid-3 { grid-template-columns: 1fr; }
+}
+
 .stock-top-row {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 24px;
   margin-bottom: 20px;
 }
 .stock-store-fields {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   flex-wrap: wrap;
-  flex: 1;
-  min-width: 320px;
+  flex: 1 1 60%;
+  min-width: 340px;
 }
 .stock-store-fields > div {
   flex: 1;
-  min-width: 180px;
+  min-width: 200px;
 }
 .stock-info-col {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 220px;
+  flex: 0 0 auto;
+  min-width: 240px;
 }
 .stock-info-box {
   display: flex;
@@ -901,6 +1002,61 @@ button[name="reset"].btn-outline-secondary:hover {
 .alert-success {
   background: #EAFBEF !important;
   color: #128A3E !important;
+}
+
+/* Success toast — shown after a form save completes (server redirects
+   back with a flash message). A centered checkmark badge that pops in
+   with a little bounce, plus the message below it, auto-dismissing. */
+.save-success-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  background: var(--tr-white);
+  border: 1px solid var(--tr-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(20, 33, 61, 0.18);
+  padding: 16px 28px 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: tr-toast-in .4s cubic-bezier(.16,1,.3,1) both, tr-toast-out .4s ease 3.6s forwards;
+}
+.save-success-toast .toast-check {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--tr-success);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  animation: tr-check-pop .5s cubic-bezier(.34,1.56,.64,1) .15s both;
+}
+.save-success-toast .toast-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tr-navy);
+}
+.save-success-toast .toast-subtext {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--tr-text-secondary);
+  margin-top: 1px;
+}
+@keyframes tr-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes tr-toast-out {
+  to { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+}
+@keyframes tr-check-pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
 }
 
 /* Checkboxes */

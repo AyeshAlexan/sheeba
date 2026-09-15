@@ -68,86 +68,77 @@
                                 </div>
                                 @endif
                                 @if (Session::has('done'))
-                                <div class="alert alert-success text-center">
-                                    <p>{{ Session::get('done') }}</p>
+                                <div class="save-success-toast">
+                                    <div class="toast-check"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="toast-text">Saved!</div>
+                                        <div class="toast-subtext">{{ Session::get('done') }}</div>
+                                    </div>
                                 </div>
                                 <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Replace 'your_pdf_link_here' with the actual variable containing the PDF link
-                                        var pdfLink = "{{ Session::get('pdfLink') }}";
-                                        var newWindow = window.open(pdfLink, '_blank');
-
-                                        // Wait for the new window load, then trigger the print function
-                                        newWindow.onload = function () {
-                                            newWindow.print();
-                                        };
-                                    });
-
+                                    setTimeout(function () {
+                                        var t = document.querySelector('.save-success-toast');
+                                        if (t) t.remove();
+                                    }, 4000);
                                 </script>
                                 @endif
 
 
                                 <form action="{{route('add_stock_transfer')}}" method="post" id="sales_form">
                                     @csrf
-                                    <div class="stock-top-row">
-                                        <div style="flex:1; min-width:340px; display:flex; flex-direction:column; gap:14px;">
-                                            <div class="d-flex gap-3 flex-wrap">
-                                                <div style="flex:1; min-width:140px;">
-                                                    <label class="control-label">From Store</label>
-                                                    <select class="select form-control" id="Branch_Code" name="Branch_Code" aria-hidden="true">
-                                                        <option value="">Select an item</option>
-                                                        @foreach( $branchName as $branchData)
-                                                        <option value="{{ $branchData->Store_code  }}">{{ $branchData->Store_code }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div style="flex:1; min-width:140px;">
-                                                    <label class="control-label">&nbsp;</label>
-                                                    <select class="select form-control" id="Branch_Name" name="Branch_Name" aria-hidden="true">
-                                                        <option value="">Select an item</option>
-                                                        @foreach( $branchName as $branchData)
-                                                        <option value="{{ $branchData->Store_name  }}">{{ $branchData->Store_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                    <div class="stock-info-card">
+                                        <div class="stock-info-grid-3">
+                                            <div class="si-field">
+                                                <label>From Store</label>
+                                                <select class="select form-control" id="Branch_Code" name="Branch_Code" aria-hidden="true">
+                                                    <option value="">Select an item</option>
+                                                    @foreach( $branchName as $branchData)
+                                                    <option value="{{ $branchData->Store_code  }}">{{ $branchData->Store_code }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="d-flex gap-3 flex-wrap">
-                                                <div style="flex:1; min-width:140px;">
-                                                    <label class="control-label">To Store</label>
-                                                    <select class="select form-control" id="To_Branch_Code" name="To_Branch_Code" aria-hidden="true">
-                                                        <option value="">Select an item</option>
-                                                        @foreach( $branchName as $branchData)
-                                                        <option value="{{ $branchData->Store_code  }}">{{ $branchData->Store_code }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div style="flex:1; min-width:140px;">
-                                                    <label class="control-label">&nbsp;</label>
-                                                    <select class="select form-control" id="To_Branch_Name" name="To_Branch_Name" aria-hidden="true">
-                                                        <option value="">Select an item</option>
-                                                        @foreach( $branchName as $branchData)
-                                                        <option value="{{ $branchData->Store_name  }}">{{ $branchData->Store_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                            <div class="si-field">
+                                                <label>From Store Name</label>
+                                                <select class="select form-control" id="Branch_Name" name="Branch_Name" aria-hidden="true">
+                                                    <option value="">Select an item</option>
+                                                    @foreach( $branchName as $branchData)
+                                                    <option value="{{ $branchData->Store_name  }}">{{ $branchData->Store_name }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                        </div>
-                                        <div class="stock-info-col">
-                                            <div class="stock-info-box">
-                                                <div class="stock-info-icon"><i class="fas fa-file-alt"></i></div>
-                                                <div>
-                                                    <div class="stock-info-label">Invoice No :</div>
+                                            <div class="si-field">
+                                                <label>Invoice No.</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-file-alt"></i>
                                                     <input type="text" id="invoice_no" name="invoice_no"
-                                                        value="{{$maxInvoiceNo+1}}" class="stock-info-input"
+                                                        value="{{$maxInvoiceNo+1}}" class="form-control"
                                                         placeholder="Invoice Number" aria-label="Invoice Number">
                                                 </div>
                                             </div>
-                                            <div class="stock-info-box">
-                                                <div class="stock-info-icon"><i class="fas fa-calendar-alt"></i></div>
-                                                <div>
-                                                    <div class="stock-info-label">Date :</div>
+                                            <div class="si-field">
+                                                <label>To Store</label>
+                                                <select class="select form-control" id="To_Branch_Code" name="To_Branch_Code" aria-hidden="true">
+                                                    <option value="">Select an item</option>
+                                                    @foreach( $branchName as $branchData)
+                                                    <option value="{{ $branchData->Store_code  }}">{{ $branchData->Store_code }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="si-field">
+                                                <label>To Store Name</label>
+                                                <select class="select form-control" id="To_Branch_Name" name="To_Branch_Name" aria-hidden="true">
+                                                    <option value="">Select an item</option>
+                                                    @foreach( $branchName as $branchData)
+                                                    <option value="{{ $branchData->Store_name  }}">{{ $branchData->Store_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="si-field">
+                                                <label>Date</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-calendar-alt"></i>
                                                     <input type="date" id="invoice_date" name="invoice_date"
-                                                        class="stock-info-input" aria-label="Date">
+                                                        class="form-control" aria-label="Date">
                                                 </div>
                                             </div>
                                         </div>
@@ -164,9 +155,9 @@
                                         <i class="fas fa-list" style="color:var(--tr-blue);"></i>
                                         <strong style="font-size:15px;color:var(--tr-navy);">Item Details</strong>
                                     </div>
-                                    <div style="position:relative;">
-                                        <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--tr-text-muted); font-size:12px;"></i>
-                                        <input type="text" id="stockItemSearch" class="form-control" style="padding-left:32px; width:260px;" placeholder="Search item code or description...">
+                                    <div class="stock-search-wrap">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" id="stockItemSearch" class="form-control" placeholder="Search item code or description...">
                                     </div>
                                 </div>
                             {{-- dynamicAdded table --}}
@@ -255,67 +246,50 @@
                             {{--------------search Item Model----------------- --}}
                             <div class="modal fade" id="searchItemModel" tabindex="-1" role="dialog"
                                 aria-labelledby="searchItemModelLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
+                                <div class="modal-dialog modal-xl">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h4 class="modal-title m-2" id="searchItemModelLabel"> Search Item </h4>
+                                            <h5 class="modal-title" id="searchItemModelLabel">Search Item</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close">
                                             </button>
                                         </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="card">
-                                                        <div class="card-body">
-                                                            {{-- -------------Item Details Table -------------- --}}
-                                                            <div class="card-body ">
-                                                                <div class="table-responsive ">
-                                                                    <div class="table-data ">
-                                                                        <table
-                                                                            class="table table-bordered table-center table-hover mt-3"
-                                                                            id="ItemTable">
-                                                                            <thead>
-                                                                                <tr class="table-secondary">
-                                                                                    <th>Code</th>
-                                                                                    <th>Name</th>
-                                                                                    <th>Price</th>
-                                                                                    <th>Action</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                @foreach ($itemDetails as $key=>$ItemData)
-                                                                                <tr>
-                                                                                    <td>{{$ItemData->Item_code }}</td>
-                                                                                    <td>{{$ItemData->Item_description}}</td>
-                                                                                    <td>{{$ItemData->saleprice}}</td>
-                                                                                    <td>
-                                                                                        <a href=""
-                                                                                            class="btn btn-outline-info btn-sm shadow"
-                                                                                            name="add_item"
-                                                                                            id="add_item"
-                                                                                            data-bs-toggle="modal"
-                                                                                            data-bs-target="#searchItemModel"
-                                                                                            data-id="{{$ItemData->id}}"
-                                                                                            data-add_item_code="{{$ItemData->Item_code}}"
-                                                                                            data-Item_description="{{$ItemData->Item_description}}">
-                                                                                            Add <i class="fas fa-plus"></i>
-                                                                                        </a>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                @endforeach
-                                                                            </tbody>
-                                                                        </table>
-                                                                        <div class="ml-4 mb-3 mt-1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                        <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-center table-hover"
+                                                    id="ItemTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Code</th>
+                                                            <th>Name</th>
+                                                            <th>Price</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($itemDetails as $key=>$ItemData)
+                                                        <tr>
+                                                            <td>{{$ItemData->Item_code }}</td>
+                                                            <td>{{$ItemData->Item_description}}</td>
+                                                            <td>{{$ItemData->saleprice}}</td>
+                                                            <td>
+                                                                <a href="javascript:void(0)"
+                                                                    class="dt-act-btn dt-act-edit"
+                                                                    name="add_item"
+                                                                    id="add_item"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#searchItemModel"
+                                                                    data-id="{{$ItemData->id}}"
+                                                                    data-add_item_code="{{$ItemData->Item_code}}"
+                                                                    data-Item_description="{{$ItemData->Item_description}}"
+                                                                    title="Add">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -355,81 +329,63 @@
                             </div>
 
                             {{-- bottom values section  --}}
-                            <div class="row mt-3">
-                                <div class="row mt-1 justify-content-between">
-                                    <div class="col-md-4">
-                                        <div class="input-group ">
-                                            <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon4">
-                                                CASH PAY :</div>
-                                            <input type="number" style="font-weight:bold;" class="form-control"
-                                                placeholder="CASH PAY :" id="cash_payment" name="cash_payment"
-                                                aria-label="CASH PAY :" aria-describedby="btnGroupAddon4">
+                            <div class="stock-info-card mt-3">
+                                <div class="stock-info-grid-3">
+                                    <div class="si-field">
+                                        <label>Cash Pay</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                            <input type="number" class="form-control" placeholder="0.00"
+                                                id="cash_payment" name="cash_payment" aria-label="Cash Pay">
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <div class="input-group">
-                                            <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon5">
-                                                GROSS AMOUNT :</div>
-                                            <input type="number" style="font-weight:bold;" class="form-control"
-                                                placeholder="GROSS AMOUNT :" id="total_amount" name="gross_amount"
-                                                aria-label="GROSS AMOUNT :" aria-describedby="btnGroupAddon5" />
+                                    <div class="si-field">
+                                        <label>Credit</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-credit-card"></i>
+                                            <input type="number" class="form-control" placeholder="0.00"
+                                                id="credite_payment" name="credite_payment" aria-label="Credit">
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="row mt-3 justify-content-between">
-                                    <div class="col-md-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon6">
-                                                CREDITE :&nbsp;&nbsp;</div>
-                                            <input type="number" style="font-weight:bold;" class="form-control"
-                                                placeholder="CREDITE :" id="credite_payment" name="credite_payment"
-                                                aria-label="CREDITE :" aria-describedby="btnGroupAddon6">
+                                    <div class="si-field">
+                                        <label>Cheque</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-money-check-alt"></i>
+                                            <input type="number" class="form-control" placeholder="0.00"
+                                                id="cheque_payment" name="cheque_payment" aria-label="Cheque">
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <div class="input-group">
-                                            <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon7">
-                                                DISCOUNT
-                                                :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            </div>
-                                            <input type="number" style="font-weight:bold;" class="form-control"
-                                                placeholder="DISCOUNT :" id="paid_discount" name="discount"
-                                                aria-label="DISCOUNT :" aria-describedby="btnGroupAddon7" required>
+                                    <div class="si-field">
+                                        <label>Gross Amount</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-coins"></i>
+                                            <input type="number" class="form-control" placeholder="0.00"
+                                                id="total_amount" name="gross_amount" aria-label="Gross Amount">
                                         </div>
                                     </div>
-                                </div>
-
-
-                                <div class="row mt-3 justify-content-between">
-                                    <div class="col-md-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon8">
-                                                CHEQUE :&nbsp;&nbsp;</div>
-                                            <input type="number" style="font-weight:bold;" class="form-control"
-                                                placeholder="CHEQUE :" id="cheque_payment" name="cheque_payment"
-                                                aria-label="CHEQUE :" aria-describedby="btnGroupAddon8">
+                                    <div class="si-field">
+                                        <label>Discount</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-percent"></i>
+                                            <input type="number" class="form-control" placeholder="0.00"
+                                                id="paid_discount" name="discount" aria-label="Discount" required>
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <div class="input-group">
-                                            <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon9">
-                                                NET AMOUNT :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                                            <input type="number" style="font-weight:bold;" class="form-control"
-                                                placeholder="NET AMOUNT :" id="paid_amount" name="net_amount"
-                                                aria-label="NET AMOUNT :" aria-describedby="btnGroupAddon9" required>
+                                    <div class="si-field">
+                                        <label>Net Amount</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-wallet"></i>
+                                            <input type="number" class="form-control" placeholder="0.00"
+                                                id="paid_amount" name="net_amount" aria-label="Net Amount" required>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="row mt-3 justify-content-between">
-                                    <div class="col-md-4">
-                                        <div class="input-group">
-                                            <span class="input-group-text">Serial Number</span>
-                                            <textarea class="form-control" aria-label="With textarea" id="serial_number" name="serial_number"></textarea>
-                                          </div>
+                                <div class="si-field mt-3">
+                                    <label>Serial Number</label>
+                                    <div class="si-icon-wrap">
+                                        <i class="fas fa-barcode" style="top:22px; transform:none;"></i>
+                                        <textarea class="form-control" style="padding-left:38px !important;" aria-label="Serial Number" id="serial_number" name="serial_number"></textarea>
                                     </div>
-
                                 </div>
                             </div>
 
@@ -438,14 +394,14 @@
                                 <button type="submit" name="save" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Save
                                 </button>
-                                <button type="button" name="print" class="btn printReceipt btn-outline-primary">
+                                <button type="button" name="print" class="btn printReceipt btn-outline-primary" onclick="window.print();">
                                     <i class="fas fa-print"></i> Print
                                 </button>
-                                <button type="button" name="pawn_delete" id="pawn_delete"
-                                    class="btn btn-outline-danger pawn_delete d-none">DELETE</button>
                                 <button type="button" name="pawn_cancel" id="pawn_cancel"
-                                    class="btn btn-outline-warning pawn_cancel d-none"
-                                    onclick="if(confirm('Discard this form and start over?')) window.location.reload();">CANCEL</button>
+                                    class="btn btn-outline-warning pawn_cancel"
+                                    onclick="if(confirm('Discard this form and start over?')) window.location.reload();">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
                             </div>
 
                             </form>
@@ -837,7 +793,6 @@ Branch Add --}}
             setItemDetails();
             $("#searchItemModel").modal('hide');
             $('#item_name').val("");
-            $('#getItemCode').reset();
         });
     }
 </script>

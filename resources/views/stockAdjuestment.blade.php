@@ -59,62 +59,57 @@
                                 </div>
                                 @endif
                                 @if (Session::has('done'))
-                                <div class="alert alert-success text-center">
-                                    <p>{{ Session::get('done') }}</p>
+                                <div class="save-success-toast">
+                                    <div class="toast-check"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="toast-text">Saved!</div>
+                                        <div class="toast-subtext">{{ Session::get('done') }}</div>
+                                    </div>
                                 </div>
                                 <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Replace 'your_pdf_link_here' with the actual variable containing the PDF link
-                                        var pdfLink = "{{ Session::get('pdfLink') }}";
-                                        var newWindow = window.open(pdfLink, '_blank');
-
-                                        // Wait for the new window load, then trigger the print function
-                                        newWindow.onload = function () {
-                                            newWindow.print();
-                                        };
-                                    });
-
+                                    setTimeout(function () {
+                                        var t = document.querySelector('.save-success-toast');
+                                        if (t) t.remove();
+                                    }, 4000);
                                 </script>
                                 @endif
 
 
                                 <form action="{{route('add_StockAdjuestment')}}" method="post">
                                     @csrf
-                                    <div class="stock-top-row">
-                                        <div class="stock-store-fields">
-                                            <div>
-                                                <label class="control-label">Store Code</label>
+                                    <div class="stock-info-card">
+                                        <div class="stock-info-grid">
+                                            <div class="si-field">
+                                                <label>Store Code</label>
                                                 <select class="select form-control" id="Store_code" name="Store_code" aria-hidden="true">
                                                     @foreach($storeDta as $Data)
                                                     <option selected="selected" value="{{ $Data->Store_code}}">{{ $Data->Store_code}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div>
-                                                <label class="control-label">Store Name</label>
+                                            <div class="si-field">
+                                                <label>Store Name</label>
                                                 <select class="select form-control" id="StoreDescription" name="StoreDescription" aria-hidden="true">
                                                     @foreach($storeDta as $Data)
                                                     <option selected="selected" value="{{ $Data->Store_name}}">{{ $Data->Store_name}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="stock-info-col">
-                                            <div class="stock-info-box">
-                                                <div class="stock-info-icon"><i class="fas fa-file-alt"></i></div>
-                                                <div>
-                                                    <div class="stock-info-label">Invoice No :</div>
+                                            <div class="si-field">
+                                                <label>Invoice No.</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-file-alt"></i>
                                                     <input type="text" id="invoice_no" name="invoice_no"
-                                                        value="{{$maxInvoiceNo+1}}" class="stock-info-input"
+                                                        value="{{$maxInvoiceNo+1}}" class="form-control"
                                                         placeholder="Invoice Number" aria-label="Invoice Number">
                                                 </div>
                                             </div>
-                                            <div class="stock-info-box">
-                                                <div class="stock-info-icon"><i class="fas fa-calendar-alt"></i></div>
-                                                <div>
-                                                    <div class="stock-info-label">Date :</div>
+                                            <div class="si-field">
+                                                <label>Date</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-calendar-alt"></i>
                                                     <input type="date" id="invoice_date" name="invoice_date"
-                                                        class="stock-info-input" aria-label="Date">
+                                                        class="form-control" aria-label="Date">
                                                 </div>
                                             </div>
                                         </div>
@@ -144,9 +139,9 @@
                                         <i class="fas fa-list" style="color:var(--tr-blue);"></i>
                                         <strong style="font-size:15px;color:var(--tr-navy);">Item Details</strong>
                                     </div>
-                                    <div style="position:relative;">
-                                        <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--tr-text-muted); font-size:12px;"></i>
-                                        <input type="text" id="stockItemSearch" class="form-control" style="padding-left:32px; width:260px;" placeholder="Search item code or description...">
+                                    <div class="stock-search-wrap">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" id="stockItemSearch" class="form-control" placeholder="Search item code or description...">
                                     </div>
                                 </div>
                             {{-- dynamicAdded table --}}
@@ -222,99 +217,71 @@
                             {{--------------search Item Model----------------- --}}
                             <div class="modal fade" id="searchItemModel" tabindex="-1" role="dialog"
                                 aria-labelledby="searchItemModelLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-md">
+                                <div class="modal-dialog modal-xl">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h4 class="modal-title m-2" id="searchItemModelLabel"> Search Item </h4>
+                                            <h5 class="modal-title" id="searchItemModelLabel">Search Item</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close">
                                             </button>
                                         </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="card">
-                                                        <div class="card-body">
-                                                            <div class="errMsgContainer"></div>
-                                                            <form action="" method="post" id="getItemCode">
-                                                                @csrf
-                                                                <div class="col"></div>
-                                                                <div class="col-md-7">
-                                                                    <div class="input-group">
-                                                                        <div class="input-group-text"
-                                                                            id="btnGroupAddonItem1">Item Name :</div>
-                                                                        <input type="text" id="item_name"
-                                                                            name="item_name" class="form-control"
-                                                                            placeholder="Enter Item Name :"
-                                                                            aria-label="Item Name :"
-                                                                            aria-describedby="Item1">
-                                                                    </div>
-                                                                </div>
+                                        <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                                            <div class="errMsgContainer"></div>
+                                            <div id="getItemCode" class="mb-3" style="max-width:360px;">
+                                                <label class="control-label">Item Name</label>
+                                                <input type="text" id="item_name" name="item_name" class="form-control"
+                                                    placeholder="Enter Item Name">
+                                            </div>
 
-                                                                <div class="col"></div>
-                                                            </form>
-
-                                                            {{-- -------------Item Details Table -------------- --}}
-                                                            <div class="card-body ">
-                                                                <div class="table-responsive ">
-                                                                    <div class="table-data ">
-                                                                        <table
-                                                                            class="table table-bordered table-center table-hover mt-3"
-                                                                            id="ItemTable">
-                                                                            <thead>
-                                                                                <tr class="table-secondary">
-                                                                                    <th>Code</th>
-                                                                                    <th>Name</th>
-                                                                                    <th>Price</th>
-                                                                                    <th>Action</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                @foreach ($itemDetails as $key=>$ItemData)
-                                                                                <tr>
-                                                                                    <td>{{$ItemData->Item_code }}</td>
-                                                                                    <td>{{$ItemData->Item_description}}
-                                                                                    </td>
-                                                                                    {{-- <td>{{$ItemData->purchasePrice}}
-                                                                                    </td> --}}
-                                                                                    <td>{{$ItemData->saleprice}}</td>
-                                                                                    {{-- <td>{{$ItemData->Branch}}</td>
-                                                                                    <td>{{$ItemData->BranchCode}}</td>
-                                                                                    --}}
-
-                                                                                    <td>
-                                                                                        <a href=""
-                                                                                            class="btn btn-outline-info btn-sm shadow"
-                                                                                            name="add_item"
-                                                                                            id="add_item"
-                                                                                            data-bs-toggle="modal"
-                                                                                            data-bs-target="#searchItemModel"
-                                                                                            data-id="{{$ItemData->id}}"
-                                                                                            data-add_item_code="{{$ItemData->Item_code}}"
-                                                                                            data-Item_description="{{$ItemData->Item_description}}">
-                                                                                            Add <i class="fas fa-plus"></i>
-                                                                                        </a>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                @endforeach
-                                                                            </tbody>
-                                                                        </table>
-                                                                        
-                                                                        <div class="ml-4 mb-3 mt-1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-center table-hover"
+                                                    id="ItemTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Code</th>
+                                                            <th>Name</th>
+                                                            <th>Price</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($itemDetails as $key=>$ItemData)
+                                                        <tr>
+                                                            <td>{{$ItemData->Item_code }}</td>
+                                                            <td>{{$ItemData->Item_description}}</td>
+                                                            <td>{{$ItemData->saleprice}}</td>
+                                                            <td>
+                                                                <a href="javascript:void(0)"
+                                                                    class="dt-act-btn dt-act-edit"
+                                                                    name="add_item"
+                                                                    id="add_item"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#searchItemModel"
+                                                                    data-id="{{$ItemData->id}}"
+                                                                    data-add_item_code="{{$ItemData->Item_code}}"
+                                                                    data-Item_description="{{$ItemData->Item_description}}"
+                                                                    title="Add">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <script>
+                                $(document).ready(function() {
+                                    $('#ItemTable').DataTable({
+                                        order: [[0, 'desc']],
+                                        pageLength: 10,
+                                        lengthMenu: [10, 25, 50, 100],
+                                    });
+                                });
+                            </script>
 
 
 
@@ -344,7 +311,20 @@
                             </div>
 
                             {{-- bottom values section  --}}
-                            <div class="d-flex justify-content-end mt-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-2">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" name="save" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button type="button" name="print" class="btn printReceipt btn-outline-primary" onclick="window.print();">
+                                        <i class="fas fa-print"></i> Print
+                                    </button>
+                                    <button type="button" name="pawn_cancel" id="pawn_cancel"
+                                        class="btn btn-outline-warning pawn_cancel"
+                                        onclick="if(confirm('Discard this form and start over?')) window.location.reload();">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
                                 <div class="stock-amount-box">
                                     <div class="stock-amount-icon"><i class="fas fa-coins"></i></div>
                                     <div>
@@ -353,19 +333,6 @@
                                             id="total_amount" name="Amount" aria-label="Total Amount" />
                                     </div>
                                 </div>
-                            </div>
-                            <div class="d-flex gap-2 mt-3">
-                                <button type="submit" name="save" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
-                                <button type="button" name="print" class="btn printReceipt btn-outline-primary">
-                                    <i class="fas fa-print"></i> Print
-                                </button>
-                                <button type="button" name="pawn_delete" id="pawn_delete"
-                                    class="btn btn-outline-danger pawn_delete d-none">DELETE</button>
-                                <button type="button" name="pawn_cancel" id="pawn_cancel"
-                                    class="btn btn-outline-warning pawn_cancel d-none"
-                                    onclick="if(confirm('Discard this form and start over?')) window.location.reload();">CANCEL</button>
                             </div>
 
 
@@ -711,7 +678,6 @@
             setItemDetails();
             $("#searchItemModel").modal('hide');
             $('#item_name').val("");
-            $('#getItemCode').reset();
         });
     }
 </script>

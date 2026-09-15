@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"\\\\$\\(\\\\\"form\\\\\"\\)\\\\|\\\\$\\('form'\\)\\\\|form.*submit\\\\|preventDefault\\\\|ajax\\\\|add_openingStock\" resources/views/openingStock.blade.php)",
+      "Bash(grep -n \"^/\\\\* Alerts \\\\*/\" public/assets/css/theme-redesign.css)",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_save.js\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:8123/stock_open -b /tmp/cookies.txt)",
+      "Bash(curl -s http://127.0.0.1:8123/stock_open -b /tmp/cookies.txt)",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_save2.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_save3.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_save4.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_save5.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_save_adj.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/shot_stock_all.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/shot_final2.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/shot_top_and_modal.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/shot_modal2.js\")",
+      "Bash(node \"/c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/shot_final3.js\")"
+    ]
+  }
+}
