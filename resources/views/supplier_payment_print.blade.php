@@ -161,8 +161,8 @@
             </tr>
             @if(!is_null($payment->totalBalance))
             <tr>
-                <td>Remaining Balance</td>
-                <td class="amount">{{ number_format($payment->totalBalance, 2) }}</td>
+                <td>{{ $payment->totalBalance < 0 ? 'Overpaid' : 'Remaining Balance' }}</td>
+                <td class="amount">{{ number_format(abs($payment->totalBalance), 2) }}</td>
             </tr>
             @endif
         </tbody>

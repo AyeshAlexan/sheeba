@@ -88,7 +88,15 @@
                                             @endif
                                         </td>
                                         <td>{{ $cheque->trans_no }}</td>
-                                        <td>{{ !is_null($cheque->pending_amount) ? number_format((float) $cheque->pending_amount, 2) : '—' }}</td>
+                                        <td>
+                                            @if(is_null($cheque->pending_amount))
+                                                —
+                                            @elseif($cheque->pending_amount < 0)
+                                                <span class="text-danger">Overpaid {{ number_format(abs($cheque->pending_amount), 2) }}</span>
+                                            @else
+                                                {{ number_format((float) $cheque->pending_amount, 2) }}
+                                            @endif
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr>

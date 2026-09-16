@@ -159,11 +159,35 @@ public function create(Request $request)
     $cashPayment    = is_numeric($request->cash_payment)    ? (float) $request->cash_payment    : 0;
     $cardPayment    = is_numeric($request->card_payment)    ? (float) $request->card_payment    : 0;
     $bankTransfer   = is_numeric($request->bank_transfer)   ? (float) $request->bank_transfer   : 0;
-    $totalBalance   = is_numeric($request->totalBalance)    ? (float) $request->totalBalance    : 0;
     $chequePayment  = is_numeric($request->total_cheque_amount) ? (float) $request->total_cheque_amount : 0;
 
     DB::beginTransaction();
     try {
+
+    // Work out what's still owed on this invoice after this payment —
+    // computed fresh from the database, not trusted from the browser,
+    // since the browser's copy can go stale if another payment landed
+    // on this same invoice since the page was last searched/refreshed.
+    $purchaseInvoice   = TPurchasesSum::where('Invoice_no', $request->purchse_no)
+                            ->where('BC', $branch_code)
+                            ->first();
+    $paid_amount       = $purchaseInvoice->paid_amount ?? 0;
+    $invoiceTotal      = $purchaseInvoice->credit_payment ?? null;
+
+    // Block the payment outright if this invoice has no balance left —
+    // computed from the database, so a stale/cached screen can't slip
+    // an overpayment through.
+    if ($invoiceTotal !== null && round($invoiceTotal - $paid_amount, 2) <= 0) {
+        DB::rollBack();
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'This invoice is already fully paid — no further payment can be recorded against it.',
+        ], 422);
+    }
+
+    $totaAmount        = $paid_amount + $request->amount;
+    $pendingAfterThis  = $invoiceTotal !== null ? round($invoiceTotal - $totaAmount, 2) : null;
+    $isPartialPayment  = $pendingAfterThis !== null ? $pendingAfterThis > 0.01 : null;
 
     // Save Supplier Payment
     $SupplierPayment = new TSupplierPayment;
@@ -177,7 +201,7 @@ public function create(Request $request)
     $SupplierPayment->Payment_Amount = $request->amount;
     $SupplierPayment->cash_payment   = $cashPayment;
     $SupplierPayment->card_payment   = $cardPayment;
-    $SupplierPayment->totalBalance   = $totalBalance;
+    $SupplierPayment->totalBalance   = $pendingAfterThis ?? 0;
 
     if (!empty($dataArray)) {
         $SupplierPayment->cheque_payment = $chequePayment;
@@ -204,19 +228,6 @@ public function create(Request $request)
     $SupPurchaseTrance->bc            = $branch_code;
     $SupPurchaseTrance->oc            = $user_name;
     $SupPurchaseTrance->save();
-
-    // Work out what's still owed on this invoice after this payment, so
-    // each cheque saved below can record whether it was a partial payment
-    // and what remains pending — computed once, up front, from the same
-    // figures used to update the invoice's paid_amount below.
-    $purchaseInvoice   = TPurchasesSum::where('Invoice_no', $request->purchse_no)
-                            ->where('BC', $branch_code)
-                            ->first();
-    $paid_amount       = $purchaseInvoice->paid_amount ?? 0;
-    $totaAmount        = $paid_amount + $request->amount;
-    $invoiceTotal      = $purchaseInvoice->credit_payment ?? null;
-    $pendingAfterThis  = $invoiceTotal !== null ? round($invoiceTotal - $totaAmount, 2) : null;
-    $isPartialPayment  = $pendingAfterThis !== null ? $pendingAfterThis > 0.01 : null;
 
     // Save Cheques
     if (!empty($dataArray)) {

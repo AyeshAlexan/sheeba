@@ -801,10 +801,17 @@ $(document).ready(function () {
             },
             error: function (err) {
                 $('.errMsgContainer2').html('');
-                let error = err.responseJSON;
-                $.each(error.errors, function (index, value) {
-                    $('.errMsgContainer2').append('<span class="text-danger">' + value + '<span><br>');
-                });
+                let error = err.responseJSON || {};
+                if (error.message) {
+                    $('.errMsgContainer2').append('<span class="text-danger">' + error.message + '</span><br>');
+                    alert(error.message);
+                } else if (error.errors) {
+                    $.each(error.errors, function (index, value) {
+                        $('.errMsgContainer2').append('<span class="text-danger">' + value + '<span><br>');
+                    });
+                } else {
+                    alert('Something went wrong while saving the payment.');
+                }
             }
         });
     });
