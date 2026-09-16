@@ -164,6 +164,9 @@
                         <li class="{{ Request::is('Bank_Branch') ? 'active' : '' }}">
                             <a href="{{route('Bank_Branch')}}"><i class="fa fa-angle-right"></i>Bank Branch</a>
                         </li>
+                        <li class="{{ Request::is('ChequeBanks') ? 'active' : '' }}">
+                            <a href="{{route('ChequeBanks')}}"><i class="fa fa-angle-right"></i>Account</a>
+                        </li>
                            {{-- Route --}}
 
                         <li class="{{ Request::is('Route') ? 'active' : '' }}">
@@ -362,23 +365,23 @@
                 </li>
 
 
-                <li class="">
+                <li class="dropdown {{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') ? 'active' : '' }}">
                     <a href="#">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span> Banking </span> <span
                             class="menu-arrow"></span></a>
-                            <ul style="">
-                                <li class="">
-                                    <a href="">
+                            <ul style="{{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') ? 'display:block;' : '' }}">
+                                <li class="{{ Request::is('cheque-deposit') ? 'active' : '' }}">
+                                    <a href="{{ route('cheque.deposit') }}">
                                     <i class="fa fa-angle-right"></i>
                                     Cheque Deposit</a>
                                 </li>
-                                <li class="">
-                                    <a href="">
+                                <li class="{{ Request::is('issued-cheques') ? 'active' : '' }}">
+                                    <a href="{{ route('issued.cheques') }}">
                                     <i class="fa fa-angle-right"></i>
                                     Issued Cheques </a>
                                 </li>
-                                <li class="">
-                                    <a href="">
+                                <li class="{{ Request::is('cheque-return') ? 'active' : '' }}">
+                                    <a href="{{ route('cheque.return') }}">
                                     <i class="fa fa-angle-right"></i>
                                     Cheque Return</a>
                                 </li>

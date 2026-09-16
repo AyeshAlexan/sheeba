@@ -83,7 +83,7 @@
                                 @endif
 
 
-                                <form method="post" id="installment">
+                                <form method="post" id="installment" onsubmit="return false;">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-5">
@@ -412,9 +412,9 @@
                                                                                 <tr>
                                                                                     <td>
                                                                                         <select class="form-control" id="bank_name">
-                                                                                            <option value="">Select Bank</option>
-                                                                                            @foreach($bank as $data)
-                                                                                                <option value="{{ $data->description }}">{{ $data->description }}</option>
+                                                                                            <option value="" data-account-no="">Select Bank</option>
+                                                                                            @foreach($chequeBanks as $data)
+                                                                                                <option value="{{ $data->id }}" data-label="{{ $data->bank_name }}{{ $data->branch ? ' - '.$data->branch : '' }}" data-account-no="{{ $data->account_no }}">{{ $data->bank_name }}{{ $data->branch ? ' - '.$data->branch : '' }}</option>
                                                                                             @endforeach
                                                                                         </select>
                                                                                     </td>
@@ -422,7 +422,7 @@
                                                                                         <input type="date" id="cheque_date" class="form-control" required>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <input type="text" id="account_no" class="form-control" placeholder="Account No" required>
+                                                                                        <input type="text" id="account_no" class="form-control" placeholder="Select a bank first" readonly required>
                                                                                     </td>
                                                                                     <td>
                                                                                         <input type="text" id="cheque_no" class="form-control" placeholder="Cheque No" required>
@@ -541,15 +541,23 @@
         return str === null || str.match(/^ *$/) !== null;
     }
 
+    // Auto-fill the account number when a cheque bank is selected
+    $(document).on('change', '#bank_name', function () {
+        let selected = $(this).find('option:selected');
+        $('#account_no').val(selected.data('account-no') || '');
+    });
+
     // Add item
     $(".add-item").click(function () {
-        let bank_name = $('#bank_name').val();
+        let cheque_bank_id = $('#bank_name').val();
+        let selectedOption = $('#bank_name').find('option:selected');
+        let bank_name = selectedOption.data('label') || '';
         let cheque_date = $('#cheque_date').val();
         let account_no = $('#account_no').val();
         let cheque_no = $('#cheque_no').val();
         let cheque_ammount = $('#cheque_ammount').val();
 
-        if (isEmptyOrSpaces(bank_name) || isEmptyOrSpaces(cheque_date) ||
+        if (isEmptyOrSpaces(cheque_bank_id) || isEmptyOrSpaces(cheque_date) ||
             isEmptyOrSpaces(account_no) || isEmptyOrSpaces(cheque_no) ||
             isEmptyOrSpaces(cheque_ammount)) {
             alert("Please fill in all the fields.");
@@ -558,7 +566,7 @@
 
         // Save to array
         let newRowData = {
-            bank_name, cheque_date, account_no, cheque_no, cheque_ammount
+            cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, cheque_ammount
         };
         dataArray.push(newRowData);
 

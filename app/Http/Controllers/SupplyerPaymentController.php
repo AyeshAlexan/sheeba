@@ -11,6 +11,7 @@ use App\Models\TSupPurchaseTrance;
 use App\Models\TSupCheque;
 use App\Models\BankDetails;
 use App\Models\BankBranch;
+use App\Models\ChequeBank;
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
 
@@ -26,6 +27,7 @@ class SupplyerPaymentController extends Controller
         $Suppliers = Suppliers::all();
         $Banks = BankDetails::all();
         $Bank_branch = BankBranch::all();
+        $ChequeBanks = ChequeBank::where('is_active', true)->get();
 
         $credit_purchases = TPurchasesSum::whereNotNull('credit_payment')
                             ->get();
@@ -58,6 +60,7 @@ class SupplyerPaymentController extends Controller
         -> with("credit_purchases", $credit_purchases)
         -> with("bank", $Banks)
         -> with("bank_branch", $Bank_branch)
+        -> with("chequeBanks", $ChequeBanks)
         -> with("supplier", $Suppliers);
     }
 
@@ -75,14 +78,18 @@ public function findSupplierPayment(Request $request)
                  ->where('pay.bc', $branch_code)
                  ->where('pay.trance_type', 'SUP_PAY');
         })
+        ->leftJoin('suppliers', 'suppliers.Code', '=', 's.Customer_NIC')
         ->where('s.bc', $branch_code)
         ->where('s.Customer_NIC', $supplier_code)
         ->select(
             's.Invoice_no',
             's.Invoice_date',
             's.Customer_NIC',
-            's.Customer_Name',
-            's.Customer_Phone',
+            // Older purchase records were sometimes saved without a supplier
+            // name/phone captured on the invoice itself — fall back to the
+            // Suppliers master so payment validation doesn't dead-end on them.
+            DB::raw('COALESCE(s.Customer_Name, suppliers.Name) as Customer_Name'),
+            DB::raw('COALESCE(s.Customer_Phone, suppliers.Contact_1) as Customer_Phone'),
             's.Ref_no',
             's.credit_payment',
             DB::raw('COALESCE(SUM(pay.cr_amount), 0) as paid_amount')
@@ -93,6 +100,8 @@ public function findSupplierPayment(Request $request)
             's.Customer_NIC',
             's.Customer_Name',
             's.Customer_Phone',
+            'suppliers.Name',
+            'suppliers.Contact_1',
             's.Ref_no',
             's.credit_payment'
         )
@@ -145,6 +154,17 @@ public function create(Request $request)
         'purchse_date'    => 'required|date',
     ]);
 
+    // Blank/unused payment-method fields arrive as '' from the form, which
+    // MySQL rejects for decimal columns — normalize them to 0 up front.
+    $cashPayment    = is_numeric($request->cash_payment)    ? (float) $request->cash_payment    : 0;
+    $cardPayment    = is_numeric($request->card_payment)    ? (float) $request->card_payment    : 0;
+    $bankTransfer   = is_numeric($request->bank_transfer)   ? (float) $request->bank_transfer   : 0;
+    $totalBalance   = is_numeric($request->totalBalance)    ? (float) $request->totalBalance    : 0;
+    $chequePayment  = is_numeric($request->total_cheque_amount) ? (float) $request->total_cheque_amount : 0;
+
+    DB::beginTransaction();
+    try {
+
     // Save Supplier Payment
     $SupplierPayment = new TSupplierPayment;
     $SupplierPayment->Purchase_no    = $request->purchse_no;
@@ -155,15 +175,15 @@ public function create(Request $request)
     $SupplierPayment->Supplier_Phone = $request->supplier_phone;
     $SupplierPayment->Payment_note   = $request->payment_note;
     $SupplierPayment->Payment_Amount = $request->amount;
-    $SupplierPayment->cash_payment   = $request->cash_payment;
-    $SupplierPayment->card_payment   = $request->card_payment;
-    $SupplierPayment->totalBalance   = $request->totalBalance;
+    $SupplierPayment->cash_payment   = $cashPayment;
+    $SupplierPayment->card_payment   = $cardPayment;
+    $SupplierPayment->totalBalance   = $totalBalance;
 
     if (!empty($dataArray)) {
-        $SupplierPayment->cheque_payment = $request->total_cheque_amount;
+        $SupplierPayment->cheque_payment = $chequePayment;
     }
 
-    $SupplierPayment->bank_transfer = $request->bank_transfer;
+    $SupplierPayment->bank_transfer = $bankTransfer;
     $SupplierPayment->BC            = $branch_code;
     $SupplierPayment->OC            = $user_name;
     $SupplierPayment->save();
@@ -185,17 +205,36 @@ public function create(Request $request)
     $SupPurchaseTrance->oc            = $user_name;
     $SupPurchaseTrance->save();
 
+    // Work out what's still owed on this invoice after this payment, so
+    // each cheque saved below can record whether it was a partial payment
+    // and what remains pending — computed once, up front, from the same
+    // figures used to update the invoice's paid_amount below.
+    $purchaseInvoice   = TPurchasesSum::where('Invoice_no', $request->purchse_no)
+                            ->where('BC', $branch_code)
+                            ->first();
+    $paid_amount       = $purchaseInvoice->paid_amount ?? 0;
+    $totaAmount        = $paid_amount + $request->amount;
+    $invoiceTotal      = $purchaseInvoice->credit_payment ?? null;
+    $pendingAfterThis  = $invoiceTotal !== null ? round($invoiceTotal - $totaAmount, 2) : null;
+    $isPartialPayment  = $pendingAfterThis !== null ? $pendingAfterThis > 0.01 : null;
+
     // Save Cheques
     if (!empty($dataArray)) {
         foreach ($dataArray as $value) {
             $supplyerCheque = new TSupCheque;
             $supplyerCheque->trans_no    = $request->purchse_no;
+            $supplyerCheque->supplier_code = $request->supplier_code;
+            $supplyerCheque->supplier_name = $request->supplier_name;
             $supplyerCheque->trans_type  = 'PURCHASE';
             $supplyerCheque->bank        = $value->bank_name;
+            $supplyerCheque->cheque_bank_id = $value->cheque_bank_id ?? null;
+            $supplyerCheque->cheque_status = 'PENDING';
             $supplyerCheque->cheques_no  = $value->cheque_no;
             $supplyerCheque->acc_no      = $value->account_no;
             $supplyerCheque->release_date= $value->cheque_date; // fixed
             $supplyerCheque->amount      = $value->cheque_ammount;
+            $supplyerCheque->is_partial_payment = $isPartialPayment;
+            $supplyerCheque->pending_amount     = $pendingAfterThis;
             $supplyerCheque->Payment_date  = $request->payment_date;
             $supplyerCheque->oc          = $user_name;
             $supplyerCheque->bc          = $branch_code;
@@ -204,11 +243,6 @@ public function create(Request $request)
     }
 
     // Update Paid Amount in Purchases
-    $paid_amount = TPurchasesSum::where('Invoice_no', $request->purchse_no)
-                    ->where('BC', $branch_code)
-                    ->sum('paid_amount');
-
-    $totaAmount = $paid_amount + $request->amount;
 
     TPurchasesSum::where('Invoice_no', $request->purchse_no)
         ->where('BC', $branch_code)
@@ -233,10 +267,20 @@ public function create(Request $request)
     $pdfPath = public_path('assets/pdf/Supplier_Payment_Invoice.pdf');
     $pdf->save($pdfPath);
 
+    DB::commit();
+
     return response()->json([
         'status' => 'success',
         'data'   => asset('assets/pdf/Supplier_Payment_Invoice.pdf'),
     ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Payment could not be saved: ' . $e->getMessage(),
+        ], 500);
+    }
 }
 
 

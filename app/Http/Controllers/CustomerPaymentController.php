@@ -9,6 +9,7 @@ use App\Models\TCusCheque;
 use App\Models\TAccountTrans;          // ← ADD THIS
 use App\Models\BankDetails;
 use App\Models\BankBranch;
+use App\Models\ChequeBank;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
@@ -24,6 +25,7 @@ class CustomerPaymentController extends Controller
         $Banks         = BankDetails::all();
         $Bank_branch   = BankBranch::all();
         $Customerdata  = Customer::all();
+        $ChequeBanks   = ChequeBank::where('is_active', true)->get();
 
         $maxCustomerNo = TCustomerPayment::orderBy('Payment_no', 'desc')->value('Payment_no');
         $maxInvoiceNos = str_pad($maxCustomerNo, 4, '0', STR_PAD_LEFT);
@@ -33,6 +35,7 @@ class CustomerPaymentController extends Controller
             ->with('maxInvoiceNo',    $maxInvoiceNos)
             ->with('bank',            $Banks)
             ->with('bank_branch',     $Bank_branch)
+            ->with('chequeBanks',     $ChequeBanks)
             ->with('customer',        $Customer);
     }
 
@@ -258,15 +261,27 @@ class CustomerPaymentController extends Controller
                     ->value('trans_order_no');
                 $maxInvoice = $maxchequeNo ? (int) $maxchequeNo : 0;
 
+                // The ledger entry above already reflects this payment, so the
+                // customer's outstanding balance right now is what's still
+                // pending after it — record that alongside each cheque saved.
+                $custTotalCr = TCusSaleTrance::where('customer', $request->customer_code)->sum('cr_amount');
+                $custTotalDr = TCusSaleTrance::where('customer', $request->customer_code)->sum('dr_amount');
+                $custPending = round($custTotalCr - $custTotalDr, 2);
+                $custIsPartial = $custPending > 0.01;
+
                 foreach ($dataArray as $value) {
                     $cheque                 = new TCusCheque;
                     $cheque->trans_no       = $request->customer_code;
                     $cheque->trans_type     = 'CUS_RECEIPT_TCP';
                     $cheque->cheque_status  = 'P';
                     $cheque->bank           = $value->bank_name;
+                    $cheque->cheque_bank_id = $value->cheque_bank_id ?? null;
+                    $cheque->acc_no         = $value->account_no ?? null;
                     $cheque->cheques_no     = $value->cheque_no;
                     $cheque->release_date   = $value->cheque_date;
                     $cheque->amount         = $value->cheque_ammount;
+                    $cheque->is_partial_payment = $custIsPartial;
+                    $cheque->pending_amount     = $custPending;
                     $cheque->trans_order_no = str_pad($maxInvoice + 1, 4, '0', STR_PAD_LEFT);
                     $cheque->oc             = $user_name;
                     $cheque->bc             = $branch_code;
@@ -433,15 +448,27 @@ class CustomerPaymentController extends Controller
                     ->orderBy('trans_order_no', 'desc')->value('trans_order_no');
                 $maxInvoice = $maxchequeNo ? (int) $maxchequeNo : 0;
 
+                // The ledger entry above already reflects this payment, so the
+                // customer's outstanding balance right now is what's still
+                // pending after it — record that alongside each cheque saved.
+                $custTotalCr = TCusSaleTrance::where('customer', $request->customer_code)->sum('cr_amount');
+                $custTotalDr = TCusSaleTrance::where('customer', $request->customer_code)->sum('dr_amount');
+                $custPending = round($custTotalCr - $custTotalDr, 2);
+                $custIsPartial = $custPending > 0.01;
+
                 foreach ($dataArray as $value) {
                     $supplyerCheque                 = new TCusCheque;
                     $supplyerCheque->trans_no       = $request->sales_no;
                     $supplyerCheque->trans_type     = 'CUS_RECEIPT';
                     $supplyerCheque->cheque_status  = 'P';
                     $supplyerCheque->bank           = $value->bank_name;
+                    $supplyerCheque->cheque_bank_id = $value->cheque_bank_id ?? null;
+                    $supplyerCheque->acc_no         = $value->account_no ?? null;
                     $supplyerCheque->cheques_no     = $value->cheque_no;
                     $supplyerCheque->release_date   = $value->cheque_date;
                     $supplyerCheque->amount         = $value->cheque_ammount;
+                    $supplyerCheque->is_partial_payment = $custIsPartial;
+                    $supplyerCheque->pending_amount     = $custPending;
                     $supplyerCheque->trans_order_no = str_pad($maxInvoice + 1, 4, '0', STR_PAD_LEFT);
                     $supplyerCheque->oc             = $user_name;
                     $supplyerCheque->bc             = $branch_code;

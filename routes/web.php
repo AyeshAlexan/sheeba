@@ -390,6 +390,23 @@ Route::post('Bank_store', [BankController::class, 'Bank_store']);
 Route::post('Bank_edit', [BankController::class, 'Bank_edit']);
 Route::post('Bank_delete', [BankController::class, 'Bank_delete']);
 
+//Account (company bank accounts used to issue/deposit cheques)
+Route::get('ChequeBanks', [App\Http\Controllers\ChequeBankController::class, 'index'])->name('ChequeBanks');
+Route::post('ChequeBank_store', [App\Http\Controllers\ChequeBankController::class, 'store'])->name('ChequeBank_store');
+Route::post('ChequeBank_toggle', [App\Http\Controllers\ChequeBankController::class, 'toggleActive'])->name('ChequeBank_toggle');
+
+//Banking > Issued Cheques (supplier cheques prepared but not yet handed over)
+Route::get('issued-cheques', [App\Http\Controllers\IssuedChequeController::class, 'index'])->name('issued.cheques');
+Route::post('issued-cheques/mark-issued', [App\Http\Controllers\IssuedChequeController::class, 'markIssued'])->name('issued.cheques.mark');
+
+//Banking > Cheque Deposit (both supplier-issued and customer-received cheques)
+Route::get('cheque-deposit', [App\Http\Controllers\ChequeDepositController::class, 'index'])->name('cheque.deposit');
+Route::post('cheque-deposit/process', [App\Http\Controllers\ChequeDepositController::class, 'deposit'])->name('cheque.deposit.process');
+
+//Banking > Cheque Return (bounced supplier and customer cheques)
+Route::get('cheque-return', [App\Http\Controllers\ChequeReturnController::class, 'index'])->name('cheque.return');
+Route::post('cheque-return/process', [App\Http\Controllers\ChequeReturnController::class, 'returnCheque'])->name('cheque.return.process');
+
 
 Route::get('/SchemaType', [App\Http\Controllers\SchemaController::class, 'index'])->name('SchemaType');
 Route::post('/addSchemaType', [App\Http\Controllers\SchemaController::class, 'createSchemaType'])->name('add_SchemaType_ajax');
