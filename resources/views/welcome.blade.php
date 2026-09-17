@@ -2,167 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login | Smart Omega</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>Login | Sheeba</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/img/icon.png') }}">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        :root {
-            --primary-color: #4e73df;
-            --secondary-color: #224abe;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            /* Modern Gradient Background */
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Entrance Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-container {
-            animation: fadeInUp 0.8s ease-out;
-            max-width: 1000px;
-            width: 100%;
-            padding: 20px;
-        }
-
-        .login-card {
-            border: none;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-        }
-
-        .login-image {
-            background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        /* Overlay on Image */
-        .login-image::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(78, 115, 223, 0.2);
-        }
-
-        .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 1px solid #e1e1e1;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(78, 115, 223, 0.1);
-            transform: translateX(5px); /* Subtle animation on focus */
-        }
-
-        .btn-login {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(78, 115, 223, 0.4);
-        }
-
-        .company-name {
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 5px;
-        }
-
-        .footer-text {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/theme-redesign.css') }}?v={{ filemtime(public_path('assets/css/theme-redesign.css')) }}">
 </head>
-<body>
-
-<div class="login-container">
-    <div class="card login-card">
-        <div class="row g-0">
-            <div class="col-md-6 d-none d-md-block login-image"></div>
-
-            <div class="col-md-6 p-4 p-lg-5">
-                <div class="text-center mb-5">
-                    @foreach($Company as $Details)
-                        <h2 class="company-name">{{ $Details->name }}</h2>
-                        <p class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i> {{ $Details->address }}</p>
-                    @endforeach
-                </div>
-
-                <form action="{{ route('login') }}" method="post">
-                    @csrf
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-secondary">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-transparent border-end-0"><i class="fas fa-user text-muted"></i></span>
-                            <input id="username" type="text" class="form-control border-start-0 @error('username') is-invalid @enderror"
-                                   name="username" value="{{ old('username') }}" placeholder="Enter username" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-secondary">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-transparent border-end-0"><i class="fas fa-lock text-muted"></i></span>
-                            <input id="password" type="password" class="form-control border-start-0 @error('password') is-invalid @enderror"
-                                   name="password" placeholder="••••••••" required>
-                        </div>
-                    </div>
-
-                    <div class="d-grid mt-5">
-                        <button type="submit" class="btn btn-primary btn-login">
-                            LOGIN TO SYSTEM <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
-                    </div>
-                </form>
-
-                <div class="text-center footer-text">
-                    <p>© {{ date('Y') }} Smart Omega (PVT) Ltd. <br>
-                    <small>Enterprise Management System v2.0</small></p>
-                </div>
+<body class="auth-body">
+    <x-loading-screen label="Loading..." />
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <span class="logo-mark" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                        <polyline points="3.29 7 12 12 20.71 7"/>
+                        <line x1="12" y1="22" x2="12" y2="12"/>
+                    </svg>
+                </span>
+                @foreach($Company as $Details)
+                    <span class="logo-text">{{ $Details->name }}</span>
+                @endforeach
             </div>
+
+            <h3 class="auth-title">Welcome back</h3>
+            @foreach($Company as $Details)
+                <p class="auth-subtitle"><i class="fas fa-map-marker-alt me-1"></i>{{ $Details->address }}</p>
+            @endforeach
+
+            <form action="{{ route('login') }}" method="post">
+                @csrf
+
+                <div class="si-field mb-3">
+                    <label for="username">Username</label>
+                    <div class="si-icon-wrap">
+                        <i class="fas fa-user"></i>
+                        <input id="username" type="text" class="form-control @error('username') is-invalid @enderror"
+                            name="username" value="{{ old('username') }}" required autocomplete="username" autofocus
+                            placeholder="Enter your username">
+                    </div>
+                    @error('username')
+                        <span class="invalid-feedback d-block" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="si-field mb-4">
+                    <label for="password">Password</label>
+                    <div class="si-icon-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
+                            name="password" required autocomplete="current-password" placeholder="••••••••">
+                    </div>
+                    @error('password')
+                        <span class="invalid-feedback d-block" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 auth-submit">
+                    Login to System <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+            </form>
+
+            <p class="auth-footer">© {{ date('Y') }} Smart Omega (PVT) Ltd.<br>Enterprise Management System v2.0</p>
         </div>
     </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

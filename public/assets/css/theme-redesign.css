@@ -747,9 +747,8 @@ button[name="reset"].btn-outline-secondary:hover {
   pointer-events: none;
   z-index: 2;
 }
-.stock-info-grid .si-field .si-icon-wrap input.form-control,
-.stock-info-grid-3 .si-field .si-icon-wrap input.form-control,
-.stock-info-grid-p .si-field .si-icon-wrap input.form-control {
+.si-icon-wrap input.form-control,
+.si-icon-wrap textarea.form-control {
   padding-left: 38px !important;
 }
 @media (max-width: 992px) {
@@ -1461,3 +1460,129 @@ table.dataTable thead th.sorting_desc:after {
   float: none !important;
   margin: 0 !important;
 }
+
+/* --------------------------------------------------------------------------
+   Auth pages (Login) — standalone screens with no sidebar/topbar, so they
+   get their own centered-card layout instead of reusing the app shell.
+   -------------------------------------------------------------------------- */
+.auth-body {
+  background: var(--tr-bg) !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--tr-font);
+  padding: 24px;
+}
+.auth-wrap {
+  width: 100%;
+  max-width: 408px;
+}
+.auth-card {
+  background: var(--tr-white);
+  border: 1px solid var(--tr-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(20, 33, 61, 0.08);
+  padding: 36px 32px;
+}
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.auth-logo .logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(155deg, var(--tr-blue), #3b8bff);
+  color: var(--tr-white);
+  flex-shrink: 0;
+}
+.auth-logo .logo-text {
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--tr-navy);
+  letter-spacing: -0.01em;
+}
+.auth-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--tr-navy);
+  margin: 0 0 4px;
+}
+.auth-subtitle {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--tr-text-secondary);
+  margin: 0 0 28px;
+}
+.auth-card .si-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tr-navy);
+  margin-bottom: 8px;
+}
+.auth-card .form-control {
+  height: 46px !important;
+  border-radius: 9px !important;
+}
+.auth-card .invalid-feedback {
+  font-size: 12.5px;
+}
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.auth-options .form-check-label {
+  font-size: 13.5px;
+  color: var(--tr-text-secondary);
+}
+.auth-link {
+  font-size: 13.5px;
+  color: var(--tr-blue) !important;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+.auth-link:hover {
+  text-decoration: underline !important;
+}
+.auth-submit {
+  height: 46px;
+  border-radius: 9px !important;
+  background: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s ease;
+}
+.auth-submit:hover {
+  opacity: 0.9;
+}
+.auth-footer {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--tr-text-secondary);
+  margin: 22px 0 0;
+}
+.auth-footer a {
+  color: var(--tr-blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Full-screen loading overlay styling now lives inline in
+   components/loading-screen.blade.php itself (not here) so it can never
+   render unstyled while this stylesheet is still loading. */

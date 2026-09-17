@@ -672,6 +672,7 @@
 </head>
 
 <body class="nk-body bg-lighter npc-default has-sidebar no-touch nk-nio-theme">
+<x-loading-screen label="Loading dashboard..." />
 <div class="main-wrapper">
     <div class="page-wrapper">
         <div class="content container-fluid">
