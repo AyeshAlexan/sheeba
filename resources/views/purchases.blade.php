@@ -41,13 +41,23 @@
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
+                <div class="page-header ph-flex">
+                    <div class="ph-left">
+                        <div class="ph-icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="page-title">Purchase Invoice</h3>
+                            <p class="page-subtitle">Record incoming stock purchases from suppliers</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Reset this form and start over?')) window.location.reload();">
+                        <i class="fas fa-redo-alt"></i> Reset
+                    </button>
+                </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="card shadow">
-                            <div class="col-md-9">
-                                <h4 class="card-title m-3">Purchase Invoice</h4>
-                            </div>
-                            <hr style="height: 5px; color: blue;">
+                        <div class="card">
                             <div class="card-body">
                                 {{-- alerts section --}}
                                 @if (session('delete'))
@@ -70,21 +80,18 @@
                                 </div>
                                 @endif
                                 @if (Session::has('done'))
-                                <div class="alert alert-success text-center">
-                                    <p>{{ Session::get('done') }}</p>
+                                <div class="save-success-toast">
+                                    <div class="toast-check"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="toast-text">Saved!</div>
+                                        <div class="toast-subtext">{{ Session::get('done') }}</div>
+                                    </div>
                                 </div>
                                 <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Replace 'your_pdf_link_here' with the actual variable containing the PDF link
-                                        var pdfLink = "{{ Session::get('pdfLink') }}";
-                                        var newWindow = window.open(pdfLink, '_blank');
-
-                                        // Wait for the new window load, then trigger the print function
-                                        newWindow.onload = function () {
-                                            newWindow.print();
-                                        };
-                                    });
-
+                                    setTimeout(function () {
+                                        var t = document.querySelector('.save-success-toast');
+                                        if (t) t.remove();
+                                    }, 4000);
                                 </script>
                                 @endif
 
@@ -92,104 +99,59 @@
                                 <form action="{{route('add_Purchases')}}" method="post" id="purchase_form">
                                     @csrf
                                     <div class="row ">
-                                        <div class="row mb-1 form-group justify-content-between">
-                                            <div class="row">
-                                                <div class="col-md-5">
-
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" id="btnGroupAddon1">Supplier Code :
-                                                        </div>
+                                    <div class="stock-info-card">
+                                        <div class="stock-info-grid-p">
+                                            <div class="si-field">
+                                                <label>Supplier Code <span class="text-danger">*</span></label>
+                                                <div class="stock-item-search-row">
+                                                    <div class="stock-item-search-wrap">
+                                                        <i class="fas fa-search"></i>
                                                         <input type="text" id="searchCustomer" name="customer_nic"
-                                                            class="form-control" placeholder="Enter Supplier Code :"
-                                                            required aria-label="Invoice Number:"
-                                                            aria-describedby="btnGroupAddon1">
-                                                        <div class="input-group-append">
-
-                                                            <button type="button"
-                                                            class="btn btn-info btn-lg form-control "
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#addguarantor1Model">
-                                                            <i class="fas fa-eye eye-icon" style="color: white"></i>
-                                                        </button>
-                                                            <button type="button"
-                                                                class="btn btn-success btn-lg form-control "
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#addCustomerModel">
-                                                                <i class="fas fa-plus" style="color: white"></i>
-                                                            </button>
-
-                                                        </div>
+                                                            class="form-control" placeholder="Enter Supplier Code"
+                                                            required aria-label="Supplier Code">
                                                     </div>
-
-                                                </div>
-
-                                                <div class="col-md-2 payment-history">
-                                                </div>
-
-                                                <div class="col-md-1">
-                                                </div>
-
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" id="btnGroupAddon2">No :
-                                                            &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        </div>
-                                                        <input type="text" id="invoice_no" name="invoice_no"
-                                                            value="{{$maxInvoiceNo+1}}" class="form-control"
-                                                            placeholder="Invoice Number:" aria-label="Invoice Number:"
-                                                            aria-describedby="btnGroupAddon2">
-                                                    </div>
-
+                                                    <button type="button" class="stock-item-search-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#addguarantor1Model" title="Search supplier">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="stock-item-search-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#addCustomerModel" title="Add new supplier">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
                                                 </div>
                                             </div>
-
-                                            <div class="row mt-3">
-                                                <div class="col-md-8"></div>
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" id="btnGroupAddon2">Purchase No :
-
-                                                        </div>
-                                                        <input type="text" id="sales_invoice_no" name="sales_invoice_no"
-                                                            class="form-control"
-                                                            placeholder="Stock Sales No" aria-label="Stock Sales No:"
-                                                            aria-describedby="btnGroupAddon2">
-                                                    </div>
+                                            <div class="si-field">
+                                                <label>No.</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-file-alt"></i>
+                                                    <input type="text" id="invoice_no" name="invoice_no"
+                                                        value="{{$maxInvoiceNo+1}}" class="form-control"
+                                                        placeholder="Invoice Number" aria-label="Invoice Number">
                                                 </div>
                                             </div>
-
-                                            <div class="row mt-3">
-                                                <div class="col-md-8">
-                                                </div>
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" id="btnGroupAddon3">Date :
-                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        </div>
-                                                        <input type="date" id="invoice_date" name="invoice_date"
-                                                            class="form-control" aria-label="Date:"
-                                                            aria-describedby="btnGroupAddon3">
-                                                    </div>
+                                            <div class="si-field">
+                                                <label>Purchase No.</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-receipt"></i>
+                                                    <input type="text" id="sales_invoice_no" name="sales_invoice_no"
+                                                        class="form-control"
+                                                        placeholder="Stock Sales No" aria-label="Stock Sales No">
                                                 </div>
                                             </div>
-
-                                        </div>
-
-                                        {{-- heading inputs --}}
-                                        <div class="row form-group">
-                                            <div class="col-md-4 ">
-                                            </div>
-                                            <div class="row">
-
-                                                <div class="customer-data">
-
+                                            <div class="si-field">
+                                                <label>Date</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                    <input type="date" id="invoice_date" name="invoice_date"
+                                                        class="form-control" aria-label="Date">
                                                 </div>
-                                                <div class="showCustomer">
-
-                                                </div>
-
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="customer-data"></div>
+                                    <div class="showCustomer"></div>
+                                    <div class="payment-history" style="display:none;"></div>
 
 <!-- Manual Serial Number Modal -->
 <div class="modal fade" id="addSerialNoModal" tabindex="-1" role="dialog" aria-labelledby="addSerialNoModalLabel" aria-hidden="true">
@@ -240,44 +202,47 @@
 
 
 
-                                        {{-- dynamicAdded table --}}
+                                        {{-- Item Details card --}}
+                                        <div class="card">
+                                            <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="fas fa-list" style="color:var(--tr-blue);"></i>
+                                                    <strong style="font-size:15px;color:var(--tr-navy);">Item Details</strong>
+                                                </div>
+                                                <div class="stock-search-wrap">
+                                                    <i class="fas fa-search"></i>
+                                                    <input type="text" id="stockItemSearch" class="form-control" placeholder="Search item code or description...">
+                                                </div>
+                                            </div>
                                         <div class="table-responsive">
                                         <table class="table table-bordered" >
-                                            <thead  style="background-color: #22a9ec;">
+                                            <thead class="thead-light">
                                                 <tr>
-
-                                                    <th style=" center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Item Code&nbsp;&nbsp;&nbsp;</th>
-                                                    <th style=" text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-
-                                                    <th style=" text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GRN Price&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                                                       <th style=" text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;QTY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-
-                                                    <th style=" text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;Net Value&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                                                    <th class="text-center" style="">Action</th>
+                                                    <th style="text-align:center;">Item Code</th>
+                                                    <th style="text-align: center;">Description</th>
+                                                    <th style="text-align: center;">GRN Price</th>
+                                                    <th style="text-align: center;">QTY</th>
+                                                    <th style="text-align: center;">Net Value</th>
+                                                    <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
 
                                                 <tr>
                                                     <td id="showItems">
-
-                                                        <div class="input-group">
-
-                                                            <input type="hidden" id="item_code" name="item_code" class="form-control"
-                                                                placeholder="item Code" required aria-label="item Code"
-                                                                aria-describedby="btnGroupAddon1">
-                                                            <input type="text" id="item_s_code" name="item_s_code" class="form-control"
-                                                                placeholder="item Code" required aria-label="item Code"
-                                                                aria-describedby="btnGroupAddon1">
-                                                            <div class="input-group-append">
-                                                                <button type="button" class="btn btn-success btn-lg form-control "
-                                                                    data-bs-toggle="modal" data-bs-target="#searchItemModel">
-                                                                    <i class="fas fa-plus" style="color: white"></i>
-                                                                </button>
+                                                        <div class="stock-item-search-row">
+                                                            <input type="hidden" id="item_code" name="item_code" class="form-control">
+                                                            <div class="stock-item-search-wrap">
+                                                                <i class="fas fa-search"></i>
+                                                                <input type="text" id="item_s_code" name="item_s_code" class="form-control"
+                                                                    placeholder="Enter item code..." required aria-label="item Code">
                                                             </div>
+                                                            <button type="button" class="stock-item-search-btn"
+                                                                data-bs-toggle="modal" data-bs-target="#searchItemModel" title="Browse items">
+                                                                <i class="fas fa-plus"></i>
+                                                            </button>
                                                         </div>
-
-
                                                     </td>
                                                     <td>
                                                         <select class="select form-control " id="item_description"
@@ -319,105 +284,79 @@
                                             </tbody>
                                         </table>
                                         </div>
-                                        <br>
-
-                                        <div id="addSerial">
-
+                                            </div>
                                         </div>
 
+                                        <div id="addSerial"></div>
 
                                         {{--------------search Item Model----------------- --}}
                                         <div class="modal fade" id="searchItemModel" tabindex="-1" role="dialog"
                                             aria-labelledby="searchItemModelLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg">
+                                            <div class="modal-dialog modal-xl">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title m-2" id="searchItemModelLabel"> Search Item </h4>
+                                                        <h5 class="modal-title" id="searchItemModelLabel">Search Item</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close">
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="card">
-                                                                    <div class="card-body">
-                                                                        <div class="errMsgContainer"></div>
-
-                                                                        {{-- -------------Item Details Table -------------- --}}
-                                                                        <div class="card-body ">
-                                                                            <div class="table-responsive ">
-                                                                                <div class="table-data ">
-                                                                                    <table
-                                                                                        class="table table-bordered table-center table-hover mt-5"
-                                                                                        id="ItemTable">
-                                                                                        <thead>
-                                                                                            <tr class="table-secondary">
-                                                                                                <th style="display:none;">Code</th>
-                                                                                                <th style="text-align: center">Code</th>
-                                                                                                <th style="text-align: center">Bar Code</th>
-                                                                                                <th style="text-align: center">Name</th>
-                                                                                                <th style="text-align: center">Credit Price</th>
-                                                                                                <th style="text-align: center">Price</th>
-                                                                                                <th style="text-align: center">Action</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            @foreach ($itemDetails as $key=>$ItemData)
-                                                                                            <tr>
-                                                                                                <td style="display:none;">{{$ItemData->Item_code }}</td>
-                                                                                                <td >{{$ItemData->Item_code }}</td>
-                                                                                                  <td>
-                                                                                        <div class="item-description-wrapper">
-                                                                                            {{$ItemData->Bar_code}}
-                                                                                        </div>
-                                                                                    </td>
-                                                                                                <td>
-                                                                                                    <div class="item-description-wrapper">
-                                                                                                        {{$ItemData->Item_description}}
-                                                                                                    </div>
-                                                                                                </td>
-                                                                                                <td style="text-align: right">{{$ItemData->Credit}}</td>
-                                                                                                <td style="text-align: right">{{$ItemData->purchasePrice}}</td>
-                                                                                                <td>
-                                                                                                    <a href=""
-                                                                                                        class="btn btn-outline-info btn-sm shadow"
-                                                                                                        name="add_item"
-                                                                                                        id="add_item"
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-target="#searchItemModel"
-                                                                                                        data-id="{{$ItemData->id}}"
-                                                                                                        data-add_item_code="{{$ItemData->Item_code}}"
-                                                                                                        data-Item_description="{{$ItemData->Item_description}}"
-                                                                                                        data-Bar_code="{{$ItemData->Bar_code}}">
-                                                                                                        Add <i class="fas fa-plus"></i>
-                                                                                                    </a>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                            @endforeach
-                                                                                        </tbody>
-                                                                                    </table>
-
-                                                                                    <script>
-                                                                                        $(document).ready(function() {
-                                                                                        $('#ItemTable').DataTable();
-                                                                                    });
-
-                                                                                    </script>
-
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-
-
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                    <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                                                        <div class="errMsgContainer"></div>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered table-center table-hover"
+                                                                id="ItemTable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="display:none;">Code</th>
+                                                                        <th>Code</th>
+                                                                        <th>Bar Code</th>
+                                                                        <th>Name</th>
+                                                                        <th>Credit Price</th>
+                                                                        <th>Price</th>
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($itemDetails as $key=>$ItemData)
+                                                                    <tr>
+                                                                        <td style="display:none;">{{$ItemData->Item_code }}</td>
+                                                                        <td>{{$ItemData->Item_code }}</td>
+                                                                        <td>{{$ItemData->Bar_code}}</td>
+                                                                        <td>{{$ItemData->Item_description}}</td>
+                                                                        <td style="text-align: right">{{$ItemData->Credit}}</td>
+                                                                        <td style="text-align: right">{{$ItemData->purchasePrice}}</td>
+                                                                        <td>
+                                                                            <a href="javascript:void(0)"
+                                                                                class="dt-act-btn dt-act-edit"
+                                                                                name="add_item"
+                                                                                id="add_item"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#searchItemModel"
+                                                                                data-id="{{$ItemData->id}}"
+                                                                                data-add_item_code="{{$ItemData->Item_code}}"
+                                                                                data-Item_description="{{$ItemData->Item_description}}"
+                                                                                data-Bar_code="{{$ItemData->Bar_code}}"
+                                                                                title="Add">
+                                                                                <i class="fas fa-plus"></i>
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <script>
+                                            $(document).ready(function() {
+                                                $('#ItemTable').DataTable({
+                                                    pageLength: 10,
+                                                    lengthMenu: [10, 25, 50, 100],
+                                                });
+                                            });
+                                        </script>
 
                                         {{-- dynamicAdded table --}}
                                         <table class="table table-bordered" id="dynamicAdded">
@@ -427,25 +366,21 @@
                                         {{-- table footer for total calculations --}}
                                         <table class="table table-bordered" id="green_total_row">
                                             <tbody>
-                                                <tr class="table-success">
+                                                <tr class="stock-total-row">
                                                     <td style="width:8%;"> </td>
-                                                    <td style="width:8%;"><strong>
-                                                            <p>TOTAL :</p>
-                                                        </strong> </td>
+                                                    <td style="width:8%;"><strong>TOTAL :</strong></td>
                                                     <td style="width:5%;"> </td>
                                                     <td style="width:5%;"></td>
-
-                                            <td class="total-unit-price text-center" style="width:8%;">
-                                                        <p ><strong>0.00</strong></p>
+                                                    <td class="total-unit-price text-center" style="width:8%;">
+                                                        <span class="stock-total-badge">0.00</span>
                                                     </td>
                                                     <td class="total-total_weight text-center" style="width:8%;">
-                                                        <p><strong></strong></p>
                                                     </td>
                                                     <td class="total-discount text-center" style="width:8%;">
-                                                        <p><strong>0.00</strong></p>
+                                                        <span class="stock-total-badge">0.00</span>
                                                     </td>
                                                     <td class="total-value text-center" style="width:8%;">
-                                                        <p><strong>0.00</strong></p>
+                                                        <span class="stock-total-badge">0.00</span>
                                                     </td>
                                                     <td style="width:11%;"></td>
                                                 </tr>
@@ -453,92 +388,75 @@
                                         </table>
 
                                         {{-- bottom values section  --}}
-                                        <div class="row mt-3">
-                                            <div class="row mt-1 justify-content-between">
-                                                <div class="col-md-4">
-                                                    <div class="input-group ">
-                                                        <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon4">
-                                                            CASH PAY :</div>
-                                                        <input type="text" style="font-weight:bold;" class="form-control"
-                                                            placeholder="CASH PAY :" id="cash_payment" name="cash_payment"
-                                                            aria-label="CASH PAY :" aria-describedby="btnGroupAddon4" >
+                                        <div class="stock-info-card mt-3">
+                                            <div class="stock-info-grid-3">
+                                                <div class="si-field">
+                                                    <label>Cash Pay</label>
+                                                    <div class="si-icon-wrap">
+                                                        <i class="fas fa-money-bill-wave"></i>
+                                                        <input type="text" class="form-control" placeholder="0.00"
+                                                            id="cash_payment" name="cash_payment" aria-label="Cash Pay">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon5">
-                                                            GROSS AMOUNT :</div>
-                                                        <input type="text" style="font-weight:bold;" class="form-control"
-                                                            placeholder="GROSS AMOUNT :" id="total_amount" name="gross_amount"
-                                                            aria-label="GROSS AMOUNT :" aria-describedby="btnGroupAddon5" />
+                                                <div class="si-field">
+                                                    <label>Credit</label>
+                                                    <div class="si-icon-wrap">
+                                                        <i class="fas fa-credit-card"></i>
+                                                        <input type="text" class="form-control" placeholder="0.00"
+                                                            id="credite_payment" name="credite_payment" aria-label="Credit">
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="row mt-3 justify-content-between">
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon6">
-                                                            CREDITE :&nbsp;&nbsp;</div>
-                                                        <input type="text" style="font-weight:bold;" class="form-control"
-                                                            placeholder="CREDITE :" id="credite_payment" name="credite_payment"
-                                                            aria-label="CREDITE :" aria-describedby="btnGroupAddon6" >
+                                                <div class="si-field">
+                                                    <label>Cheque</label>
+                                                    <div class="si-icon-wrap">
+                                                        <i class="fas fa-money-check-alt"></i>
+                                                        <input type="text" class="form-control" placeholder="0.00"
+                                                            id="cheque_payment" name="cheque_payment" aria-label="Cheque">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon7">
-                                                            DISCOUNT
-                                                            :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        </div>
-                                                        <input type="text" style="font-weight:bold;" class="form-control"
-                                                            placeholder="DISCOUNT :" id="paid_discount" name="discount"
-                                                            aria-label="DISCOUNT :" aria-describedby="btnGroupAddon7" required>
+                                                <div class="si-field">
+                                                    <label>Gross Amount</label>
+                                                    <div class="si-icon-wrap">
+                                                        <i class="fas fa-coins"></i>
+                                                        <input type="text" class="form-control" placeholder="0.00"
+                                                            id="total_amount" name="gross_amount" aria-label="Gross Amount">
                                                     </div>
                                                 </div>
-                                            </div>
-
-
-                                            <div class="row mt-3 justify-content-between">
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon8">
-                                                            CHEQUE :&nbsp;&nbsp;</div>
-                                                        <input type="text" style="font-weight:bold;" class="form-control"
-                                                            placeholder="CHEQUE :" id="cheque_payment" name="cheque_payment"
-                                                            aria-label="CHEQUE :" aria-describedby="btnGroupAddon8">
+                                                <div class="si-field">
+                                                    <label>Discount</label>
+                                                    <div class="si-icon-wrap">
+                                                        <i class="fas fa-percent"></i>
+                                                        <input type="text" class="form-control" placeholder="0.00"
+                                                            id="paid_discount" name="discount" aria-label="Discount" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <div class="input-group">
-                                                        <div class="input-group-text" style="font-weight:bold;" id="btnGroupAddon9">
-                                                            NET AMOUNT :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                                                        <input type="text" style="font-weight:bold;" class="form-control"
-                                                            placeholder="NET AMOUNT :" id="paid_amount" name="net_amount"
-                                                            aria-label="NET AMOUNT :" aria-describedby="btnGroupAddon9" required>
+                                                <div class="si-field">
+                                                    <label>Net Amount</label>
+                                                    <div class="si-icon-wrap">
+                                                        <i class="fas fa-wallet"></i>
+                                                        <input type="text" class="form-control" placeholder="0.00"
+                                                            id="paid_amount" name="net_amount" aria-label="Net Amount" required>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {{-- bottom buttons  --}}
-                                        <div class="row">
-                                            <div class="col-md-5"></div>
-                                            <div class="col-md-7">
-                                                <br>
-                                                <button type="submit" name="save" id="save"
-                                                    class="btn btn-outline-info btn-lg shadow" >SAVE</button>
-                                                <button type="button" name="submit_recall" id="submit_recall" style="display: none;"
-                                                    class="btn btn-outline-info btn-lg shadow">ADD</button>
-                                                <button type="button" name="print"
-                                                    class="btn btn-outline-primary printReceipt btn-lg shadow">PRINT</button>
-                                                <button type="button" name="pawn_delete" id="pawn_delete"
-                                                    class="btn btn-outline-danger btn-lg shadow pawn_delete">DELETE</button>
-                                                <button type="button" name="pawn_cancel" id="pawn_cancel"
-                                                    class="btn btn-outline-warning btn-lg shadow pawn_cancel">CANCEL</button>
-                                                <button type="reset" name="reset"
-                                                    class="btn btn-outline-secondary btn-lg shadow">RESET</button>
-                                            </div>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button type="submit" name="save" id="save" class="btn btn-primary">
+                                                <i class="fas fa-save"></i> Save
+                                            </button>
+                                            <button type="button" name="submit_recall" id="submit_recall" style="display: none;" class="btn btn-primary">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                            <button type="button" name="print" class="btn printReceipt btn-outline-primary" onclick="window.print();">
+                                                <i class="fas fa-print"></i> Print
+                                            </button>
+                                            <button type="button" name="pawn_delete" id="pawn_delete" class="btn btn-outline-danger pawn_delete d-none">DELETE</button>
+                                            <button type="button" name="pawn_cancel" id="pawn_cancel" class="btn btn-outline-warning pawn_cancel"
+                                                onclick="if(confirm('Discard this form and start over?')) window.location.reload();">
+                                                <i class="fas fa-times"></i> Cancel
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -549,7 +467,7 @@
         </div>
 
         <div class="modal fade" id="addguarantor1Model" tabindex="-1" role="dialog" aria-labelledby="addguarantor1Model" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <!-- Modal Header -->
                     <div class="modal-header">
@@ -558,76 +476,54 @@
                     </div>
 
                     <!-- Modal Body -->
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <!-- Error Message Container -->
-                                        <div class="errMsgContainer"></div>
+                    <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                        <!-- Error Message Container -->
+                        <div class="errMsgContainer"></div>
 
-                                        <!-- Search Form (currently not in use, commented out) -->
-                                        <form action="" method="post" id="getItemCode">
-                                            @csrf
-                                            <div class="col-md-7">
-                                                {{--
-                                                <div class="input-group">
-                                                    <div class="input-group-text" id="btnGroupAddonItem1">Customer Name :</div>
-                                                    <input type="text" id="cus_name" name="cus_name" class="form-control" placeholder="Enter Customer Name :" aria-label="Customer Name :" aria-describedby="Cus1">
-                                                </div>
-                                                --}}
-                                            </div>
-                                        </form>
-
-                                        <!-- Guarantor Table -->
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <div class="cus-table-data">
-                                                    <table class="table table-bordered table-center table-hover mt-3" id="Guaranttableone">
-                                                        <thead>
-                                                            <tr class="table-secondary">
-                                                                <th>Code</th>
-                                                                <th>Name</th>
-                                                                <th>Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach ($SupplierData as $data)
-                                                            <tr>
-                                                                <td>{{ $data->Code  }}</td>
-                                                                <td>
-                                                                    <div class="item-description-wrapper">{{ $data->Name }}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <a href="#" onclick="fillGuarantOneCode('{{ $data->Code }}')" class="btn btn-outline-info btn-sm shadow" data-bs-dismiss="modal">
-                                                                        Add <i class="fas fa-plus"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- DataTable Initialization -->
-                                        <script>
-                                            $(document).ready(function() {
-                                                $('#Guaranttableone').DataTable();
-                                            });
-                                        </script>
-
-                                        <!-- Fill Guarantor Code Function -->
-                                        <script>
-                                            function fillGuarantOneCode(Code) {
-                                                document.getElementById('searchCustomer').value = Code;
-                                            }
-                                        </script>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Guarantor Table -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-center table-hover" id="Guaranttableone">
+                                <thead>
+                                    <tr class="table-secondary">
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($SupplierData as $data)
+                                    <tr>
+                                        <td>{{ $data->Code  }}</td>
+                                        <td>
+                                            <div class="item-description-wrapper">{{ $data->Name }}</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0)" onclick="fillGuarantOneCode('{{ $data->Code }}')" class="dt-act-btn dt-act-edit" data-bs-dismiss="modal" title="Add">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
+
+                        <!-- DataTable Initialization -->
+                        <script>
+                            $(document).ready(function() {
+                                $('#Guaranttableone').DataTable({
+                                    pageLength: 10,
+                                    lengthMenu: [10, 25, 50, 100],
+                                });
+                            });
+                        </script>
+
+                        <!-- Fill Guarantor Code Function -->
+                        <script>
+                            function fillGuarantOneCode(Code) {
+                                document.getElementById('searchCustomer').value = Code;
+                            }
+                        </script>
                     </div>
                 </div>
             </div>
@@ -804,6 +700,17 @@
 </div>
 
 {!! Toastr::message() !!}
+
+{{-- filter already-added item rows by code/description --}}
+<script>
+    $(document).on('keyup', '#stockItemSearch', function () {
+        let q = $(this).val().toLowerCase();
+        $('#dynamicAdded tr').each(function () {
+            let text = $(this).text().toLowerCase();
+            $(this).toggle(text.indexOf(q) !== -1);
+        });
+    });
+</script>
 
 {{-- form default date set for today --}}
 <script>

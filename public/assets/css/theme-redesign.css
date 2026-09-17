@@ -748,7 +748,8 @@ button[name="reset"].btn-outline-secondary:hover {
   z-index: 2;
 }
 .stock-info-grid .si-field .si-icon-wrap input.form-control,
-.stock-info-grid-3 .si-field .si-icon-wrap input.form-control {
+.stock-info-grid-3 .si-field .si-icon-wrap input.form-control,
+.stock-info-grid-p .si-field .si-icon-wrap input.form-control {
   padding-left: 38px !important;
 }
 @media (max-width: 992px) {
@@ -771,6 +772,20 @@ button[name="reset"].btn-outline-secondary:hover {
 }
 @media (max-width: 576px) {
   .stock-info-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Purchase pages: Supplier Code (needs extra room for its search + add
+   buttons) plus No / Purchase No / Date. */
+.stock-info-grid-p {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 992px) {
+  .stock-info-grid-p { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 576px) {
+  .stock-info-grid-p { grid-template-columns: 1fr; }
 }
 
 .stock-top-row {
@@ -859,7 +874,7 @@ button[name="reset"].btn-outline-secondary:hover {
   font-size: 12px;
   pointer-events: none;
 }
-.stock-item-search-wrap input {
+.stock-item-search-wrap input.form-control {
   padding-left: 28px !important;
 }
 .stock-item-search-btn {
@@ -1074,40 +1089,108 @@ button[name="reset"].btn-outline-secondary:hover {
   margin-bottom: 0 !important;
 }
 
+/* Reveal transition for tables that populate via AJAX (e.g. Supplier
+   Payment's outstanding-invoices list) instead of rendering empty on
+   page load — avoids showing ghost rows before there's any data. */
+.stock-reveal {
+  animation: tr-reveal-in 0.35s ease;
+}
+@keyframes tr-reveal-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stock-empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--tr-text-muted);
+  font-size: 14px;
+}
+.stock-empty-state i {
+  font-size: 30px;
+  color: var(--tr-border);
+  margin-bottom: 12px;
+  display: block;
+}
+
 /* Pagination — both Laravel's default {{ $x->links() }} Bootstrap markup
    and DataTables' auto-generated paginate_button controls default to
    Bootstrap's stock indigo/purple; retint to match. */
+.pagination {
+  gap: 6px !important;
+}
+.page-item {
+  margin: 0 !important;
+}
 .page-link {
-  color: var(--tr-blue) !important;
-  border-color: var(--tr-border) !important;
+  color: var(--tr-navy) !important;
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 8px !important;
   font-size: 13.5px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px !important;
+  box-shadow: none !important;
 }
 .page-link:hover {
   background: var(--tr-blue-light) !important;
+  border-color: var(--tr-blue) !important;
   color: var(--tr-blue) !important;
 }
+.page-link:focus {
+  box-shadow: none !important;
+}
 .page-item.active .page-link {
-  background: var(--tr-bg) !important;
-  border-color: var(--tr-border) !important;
-  color: var(--tr-navy) !important;
+  background: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
+  color: #fff !important;
   font-weight: 700 !important;
 }
 .page-item.disabled .page-link {
   color: var(--tr-text-muted) !important;
+  background: var(--tr-bg) !important;
+  border-color: var(--tr-border) !important;
+}
+.dataTables_wrapper .dataTables_paginate {
+  display: flex !important;
+  gap: 6px !important;
+}
+.dataTables_wrapper .paginate_button {
+  box-sizing: border-box;
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 8px !important;
+  background: var(--tr-white) !important;
+  color: var(--tr-navy) !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px !important;
+  margin: 0 !important;
 }
 .dataTables_wrapper .paginate_button.current,
 .dataTables_wrapper .paginate_button.current:hover {
-  background: var(--tr-bg) !important;
-  border-color: var(--tr-border) !important;
-  color: var(--tr-navy) !important;
-  font-weight: 700 !important;
+  background: var(--tr-blue) !important;
+  border-color: var(--tr-blue) !important;
   color: #fff !important;
+  font-weight: 700 !important;
 }
 .dataTables_wrapper .paginate_button:hover {
   background: var(--tr-blue-light) !important;
   border-color: var(--tr-blue) !important;
-  color: var(--tr-navy) !important;
+  color: var(--tr-blue) !important;
+}
+.dataTables_wrapper .paginate_button.disabled,
+.dataTables_wrapper .paginate_button.disabled:hover {
+  color: var(--tr-text-muted) !important;
+  background: var(--tr-bg) !important;
+  border-color: var(--tr-border) !important;
 }
 
 /* DataTables' own auto-generated length / search / info controls —
@@ -1145,6 +1228,59 @@ button[name="reset"].btn-outline-secondary:hover {
 .dataTables_wrapper .dataTables_info {
   color: var(--tr-text-secondary) !important;
   font-size: 13.5px !important;
+}
+
+/* DataTables' built-in sort-icon CSS (jquery.dataTables.css, loaded from
+   the CDN on some legacy pages alongside the bundled plugin copy) stacks
+   its own ::before/::after glyphs, which — when two copies of the library
+   load on one page — renders as a garbled cluster of triangles next to
+   the header text. Strip whatever DataTables drew and replace it with one
+   clean, consistently-styled arrow regardless of which copy is active. */
+table.dataTable thead th.sorting,
+table.dataTable thead th.sorting_asc,
+table.dataTable thead th.sorting_desc,
+table.dataTable thead th.sorting_asc_disabled,
+table.dataTable thead th.sorting_desc_disabled {
+  background-image: none !important;
+  position: relative;
+  padding-right: 22px !important;
+}
+table.dataTable thead th.sorting:before,
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:before,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:before,
+table.dataTable thead th.sorting_desc:after,
+table.dataTable thead th.sorting_asc_disabled:before,
+table.dataTable thead th.sorting_asc_disabled:after,
+table.dataTable thead th.sorting_desc_disabled:before,
+table.dataTable thead th.sorting_desc_disabled:after {
+  content: none !important;
+  display: none !important;
+}
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:after {
+  display: inline-block !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900 !important;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  opacity: 0.4;
+}
+table.dataTable thead th.sorting:after { content: "\f0dc" !important; }
+table.dataTable thead th.sorting_asc:after {
+  content: "\f0de" !important;
+  opacity: 0.9 !important;
+  color: var(--tr-blue) !important;
+}
+table.dataTable thead th.sorting_desc:after {
+  content: "\f0dd" !important;
+  opacity: 0.9 !important;
+  color: var(--tr-blue) !important;
 }
 
 /* DataTables "Processing…" indicator: by default it's centered on the

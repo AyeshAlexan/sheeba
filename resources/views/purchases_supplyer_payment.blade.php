@@ -35,13 +35,23 @@
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
+                <div class="page-header ph-flex">
+                    <div class="ph-left">
+                        <div class="ph-icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2M13 12h8m0 0-3-3m3 3-3 3"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="page-title">Supplier Payment</h3>
+                            <p class="page-subtitle">Settle outstanding purchase invoices with a supplier</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Reset this form and start over?')) window.location.reload();">
+                        <i class="fas fa-redo-alt"></i> Reset
+                    </button>
+                </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="card shadow">
-                            <div class="col-md-9">
-                                <h4 class="card-title m-3">Supplyer Payments</h4>
-                            </div>
-                            <hr style="height: 5px; color: blue;">
+                        <div class="card">
                             <div class="card-body">
                                 {{-- alerts section --}}
                                 @if (session('delete'))
@@ -64,99 +74,71 @@
                                 </div>
                                 @endif
                                 @if (Session::has('done'))
-                                <div class="alert alert-success text-center">
-                                    <p>{{ Session::get('done') }}</p>
+                                <div class="save-success-toast">
+                                    <div class="toast-check"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="toast-text">Saved!</div>
+                                        <div class="toast-subtext">{{ Session::get('done') }}</div>
+                                    </div>
                                 </div>
                                 <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Replace 'your_pdf_link_here' with the actual variable containing the PDF link
-                                        var pdfLink = "{{ Session::get('pdfLink') }}";
-                                        var newWindow = window.open(pdfLink, '_blank');
-
-                                        // Wait for the new window load, then trigger the print function
-                                        newWindow.onload = function () {
-                                            newWindow.print();
-                                        };
-                                    });
-
+                                    setTimeout(function () {
+                                        var t = document.querySelector('.save-success-toast');
+                                        if (t) t.remove();
+                                    }, 4000);
                                 </script>
                                 @endif
 
 
                                 <form method="post" id="installment" onsubmit="return false;">
                                     @csrf
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="row">
-                                                <div class="input-group">
-                                                    <div class="input-group-text" id="btnGroupAddon1">Supplier Code :
-                                                    </div>
-                                                    <input type="text" id="searchSupplier" name="supplier_code"
-                                                        class="form-control" placeholder="Enter Supplier Code :"
-                                                        required aria-label="Invoice Number:"
-                                                        aria-describedby="btnGroupAddon1">
-                                                        <select class="form-control" id="supplier_code_select" name="supplier_code_select" required>
-                                                            <option value="">Select a Supplier</option>
-                                                            @foreach($supplier as $data)
-                                                                <option value="{{ $data->Code }}">{{ $data->Name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    <div class="input-group-append">
-                                                        <button type="button"
-                                                            class="btn btn-success btn-lg form-control "
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#addCustomerModel">
-                                                            <i class="fas fa-plus" style="color: white"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                    <div class="stock-info-card">
+                                        <div class="stock-info-grid-3">
+                                            <div class="si-field">
+                                                <label>Supplier <span class="text-danger">*</span></label>
+                                                <select class="form-control" id="supplier_code_select" name="supplier_code_select" required>
+                                                    <option value="">Select a Supplier</option>
+                                                    @foreach($supplier as $data)
+                                                        <option value="{{ $data->Code }}">{{ $data->Name }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="row">
-                                                <br><br>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3 payment-history">
-                                        </div>
-
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="input-group">
-                                                    <div class="input-group-text" id="btnGroupAddon2">
-                                                        Payment No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
-                                                    </div>
+                                            <div class="si-field">
+                                                <label>Payment No.</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-hashtag"></i>
                                                     <input type="text" id="payment_no"
                                                         name="payment_no" value="{{$maxInvoiceNo+1}}" class="form-control"
-                                                        placeholder="Hire Purchase No" aria-label="Invoice Number"
-                                                        aria-describedby="btnGroupAddon2" required>
+                                                        placeholder="Payment No" aria-label="Payment No">
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="input-group">
-                                                    <div class="input-group-text" id="btnGroupAddon2">
-                                                        Payment Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
-                                                    </div>
+                                            <div class="si-field">
+                                                <label>Payment Date</label>
+                                                <div class="si-icon-wrap">
+                                                    <i class="fas fa-calendar-alt"></i>
                                                     <input type="date" id="payment_date" name="payment_date" value=""
-                                                        class="form-control" placeholder="Payment Date"
-                                                        aria-label="Payment Date" aria-describedby="btnGroupAddon2"
-                                                        required>
+                                                        class="form-control" aria-label="Payment Date" required>
                                                 </div>
                                             </div>
-                                            <input type="hidden" id="supplier_name" name="supplier_name">
-                                            <input type="hidden" id="supplier_phone" name="supplier_phone">
-                                            {{-- <input type="text" id="invoice_no" name="invoice_no">
-                                            <input type="text" id="invoice_date" name="invoice_date"> --}}
-
-
                                         </div>
                                     </div>
+                                    <input type="hidden" id="supplier_name" name="supplier_name">
+                                    <input type="hidden" id="supplier_phone" name="supplier_phone">
 
-                                    <div class="row mt-4 mb-4">
-                                        <div class="col">
-                                            <div class="" id="errMsgContainer2"></div>
-                                            <div class="table-responsive" id="data_tables">
-                                                <div class="table-data">
-                                                    <table class="table table-bordered table-center table-hover "
+                                    <div class="mt-3 mb-4">
+                                        <div class="" id="errMsgContainer2"></div>
+
+                                        <div id="data_empty_state" class="card">
+                                            <div class="stock-empty-state">
+                                                <i class="fas fa-hand-holding-usd"></i>
+                                                Select a supplier above to view their outstanding purchases.
+                                            </div>
+                                        </div>
+
+                                        <div class="card d-none" id="data_tables">
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-center table-hover"
                                                         id="data_table">
                                                         <thead>
                                                             <tr class="table-secondary text-center">
@@ -172,56 +154,12 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr style="height: 50px">
-                                                                <td></td>
-                                                                <td></td>
-                                                                 <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr style="height: 50px">
-                                                                <td></td>
-                                                                <td></td>
-                                                                 <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr style="height: 50px">
-                                                                <td></td>
-                                                                <td></td>
-                                                                 <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr style="height: 50px">
-                                                                <td></td>
-                                                                <td></td>
-                                                                 <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                            </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
                                             </div>
-
                                         </div>
+
                                     </div>
 
 
@@ -312,87 +250,68 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="row mt-4">
-                                                        <div class="col">
-                                                            <div class="input-group">
-                                                                <div class="input-group-text" id="btnGroupAddon2">
-                                                                    Payment Date&nbsp;&nbsp;&nbsp;:
+                                                    <div class="stock-info-card mt-4">
+                                                        <div class="stock-info-grid-3">
+                                                            <div class="si-field">
+                                                                <label>Payment Date</label>
+                                                                <div class="si-icon-wrap">
+                                                                    <i class="fas fa-calendar-alt"></i>
+                                                                    <input type="date" class="form-control" id="up_payment_date"
+                                                                        name="payment_date" aria-label="Payment Date">
                                                                 </div>
-                                                                <input type="date" class="form-control" id="up_payment_date" placeholder="Payment Note"
-                                                                    name="payment_date" rows="3">
                                                             </div>
-                                                        </div>
-                                                        <div class="col">
-                                                            <div class="input-group">
-                                                                <div class="input-group-text" id="btnGroupAddon2">
-                                                                    Payment Note&nbsp;&nbsp;&nbsp;:
+                                                            <div class="si-field">
+                                                                <label>Payment Note</label>
+                                                                <div class="si-icon-wrap">
+                                                                    <i class="fas fa-sticky-note" style="top:22px; transform:none;"></i>
+                                                                    <textarea class="form-control" id="up_payment_note" placeholder="Payment Note"
+                                                                        name="payment_note" rows="2" style="padding-left:38px !important;"></textarea>
                                                                 </div>
-                                                                <textarea class="form-control" id="up_payment_note" placeholder="Payment Note"
-                                                                    name="payment_note" rows="3"></textarea>
                                                             </div>
-                                                        </div>
-                                                        <div class="col">
-                                                            <div class="input-group">
-                                                                <div class="input-group-text" id="btnGroupAddon2">
-                                                                    Paying Amount&nbsp;:
+                                                            <div class="si-field">
+                                                                <label>Paying Amount <span class="text-danger">*</span></label>
+                                                                <div class="si-icon-wrap">
+                                                                    <i class="fas fa-wallet"></i>
+                                                                    <input type="text" id="up_paying_amount" name="paying_amount" class="form-control"
+                                                                        placeholder="0.00" aria-label="Paying Amount" required>
                                                                 </div>
-                                                                <input type="text" id="up_paying_amount" name="paying_amount" class="form-control"
-                                                                    placeholder="Paying Amount" aria-label="Paying Amount" aria-describedby="btnGroupAddon2"
-                                                                    required>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     {{-- payment options --}}
-                                                    <div class="row mt-4 ">
-                                                        <div class="row mt-1 justify-content-between">
-                                                            <div class="col">
-                                                                <p>Payment Options</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mt-2 justify-content-between">
-                                                            <div class="col">
-                                                                <div class="input-group ">
-                                                                    <div class="input-group-text" style="font-weight:bold;"
-                                                                        id="btnGroupAddon4">
-                                                                        Cash Pay :</div>
-                                                                    <input type="text" style="font-weight:bold;"
-                                                                        class="form-control" placeholder="Cash Pay"
-                                                                        id="cash_payment" name="cash_payment" aria-label="Cash Pay"
-                                                                        aria-describedby="btnGroupAddon4">
+                                                    <h5 class="mt-4 mb-2"><i class="fas fa-cash-register text-primary me-2"></i>Payment Options</h5>
+                                                    <div class="stock-info-card">
+                                                        <div class="stock-info-grid-3">
+                                                            <div class="si-field">
+                                                                <label>Cash Pay</label>
+                                                                <div class="si-icon-wrap">
+                                                                    <i class="fas fa-money-bill-wave"></i>
+                                                                    <input type="text" class="form-control" placeholder="0.00"
+                                                                        id="cash_payment" name="cash_payment" aria-label="Cash Pay">
                                                                 </div>
                                                             </div>
-                                                            <div class="col">
-                                                                <div class="input-group">
-                                                                    <div class="input-group-text" style="font-weight:bold;"
-                                                                        id="btnGroupAddon6">
-                                                                        Card Pay&nbsp;:</div>
-                                                                    <input type="text" style="font-weight:bold;"
-                                                                        class="form-control" placeholder="Card Pay"
-                                                                        id="card_payment" name="card_payment" aria-label="Card Pay"
-                                                                        aria-describedby="btnGroupAddon6">
+                                                            <div class="si-field">
+                                                                <label>Card Pay</label>
+                                                                <div class="si-icon-wrap">
+                                                                    <i class="fas fa-credit-card"></i>
+                                                                    <input type="text" class="form-control" placeholder="0.00"
+                                                                        id="card_payment" name="card_payment" aria-label="Card Pay">
                                                                 </div>
                                                             </div>
-                                                            <div class="col">
-                                                                <div class="input-group">
-                                                                    <div class="input-group-text" style="font-weight:bold;"
-                                                                        id="btnGroupAddon8">
-                                                                        Bank Tr.&nbsp;&nbsp;:</div>
-                                                                    <input type="text" style="font-weight:bold;"
-                                                                        class="form-control" placeholder="Bank Transfer"
+                                                            <div class="si-field">
+                                                                <label>Bank Transfer</label>
+                                                                <div class="si-icon-wrap">
+                                                                    <i class="fas fa-university"></i>
+                                                                    <input type="text" class="form-control" placeholder="0.00"
                                                                         id="bank_transfer" name="bank_transfer"
-                                                                        aria-label="Bank Transfer"
-                                                                        aria-describedby="btnGroupAddon8">
+                                                                        aria-label="Bank Transfer">
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="row mt-4 justify-content-between">
-                                                            <div class="col">
-                                                                <p>Cheque Payment</p>
-                                                            </div>
-                                                        </div>
-
+                                                    <h5 class="mt-4 mb-2"><i class="fas fa-money-check-alt text-primary me-2"></i>Cheque Payment</h5>
 
                                                             <div id="multi_cheques" class="mt-2">
                                                                 <div class="table-responsive">
@@ -480,7 +399,6 @@
                                                             </tbody>
                                                         </table>
                                                         <input type="hidden" id="total_cheque_amount" name="total_cheque_amount">
-                                                    </div>
                                             </div>
                                             <div class="modal-footer ">
                                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
@@ -654,6 +572,18 @@
 
 <script>
 $(document).ready(function () {
+    function showResultsTable() {
+        $('#data_empty_state').addClass('d-none');
+        $('#data_tables').removeClass('d-none').removeClass('stock-reveal');
+        void document.getElementById('data_tables').offsetWidth; // restart animation
+        $('#data_tables').addClass('stock-reveal');
+    }
+
+    function showEmptyState() {
+        $('#data_tables').addClass('d-none');
+        $('#data_empty_state').removeClass('d-none');
+    }
+
     $('#supplier_code_select').on('change', function () {
         var search_string = $(this).val();
 
@@ -661,7 +591,10 @@ $(document).ready(function () {
         $('#supplier_name').val('');
         $('#supplier_phone').val('');
 
-        if (!search_string) return;
+        if (!search_string) {
+            showEmptyState();
+            return;
+        }
 
         $.ajax({
             url: "{{ route('get_supplyer_purshases_data_using_no_ajax') }}",
@@ -711,11 +644,14 @@ $(document).ready(function () {
                     $('#supplier_name').val(records[0].Customer_Name);
                     $('#supplier_phone').val(records[0].Customer_Phone);
 
+                    showResultsTable();
+
                 } else {
                     $('#data_table tbody').html(`
                         <tr>
                             <td colspan="9" class="text-center text-danger">Invoice Not Found.!!</td>
                         </tr>`);
+                    showResultsTable();
                 }
             },
             error: function () {
@@ -723,6 +659,7 @@ $(document).ready(function () {
                     <tr>
                         <td colspan="9" class="text-center text-danger">Error fetching data.</td>
                     </tr>`);
+                showResultsTable();
             }
         });
     });

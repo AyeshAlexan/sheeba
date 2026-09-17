@@ -549,7 +549,10 @@ SEARCH ITEM MODAL
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <input type="text" id="item_name" class="form-control mb-2" placeholder="Search by name...">
+                <div class="stock-search-wrap mb-3">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="item_name" class="form-control" placeholder="Search by name...">
+                </div>
                 <div class="table-responsive">
                     <div class="table-data">
                         <table class="table table-bordered table-hover mt-3" id="ItemTableCustomer">
