@@ -107,6 +107,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div id="SalesManCustomPager"></div>
                             </div>
                         </div>
                     </div>
@@ -229,6 +230,30 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+    </script>
+
+    {{-- This page loads a second, later jQuery build (cdn.bootcss.com) after the
+         DataTables plugin scripts above attached themselves to the first one,
+         which silently orphans $.fn.DataTable on the jQuery instance actually
+         in scope by the time this block runs. Re-including the plugin here
+         re-attaches it to whichever jQuery is current. --}}
+    <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="assets/plugins/datatables/datatables.min.js"></script>
+    <script src="assets/js/dt-custom-pager.js"></script>
+    <script>
+        $(document).ready(function () {
+            var branchTable = $('#branchTable').DataTable({
+                paging: true,
+                lengthChange: false,
+                pageLength: 15,
+                columnDefs: [
+                    { orderable: false, targets: -1 }
+                ],
+            });
+
+            $('#branchTable_wrapper').addClass('dt-collapsed');
+            DTCustomPager.init(branchTable, '#SalesManCustomPager');
         });
     </script>
 

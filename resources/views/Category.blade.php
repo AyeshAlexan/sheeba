@@ -49,6 +49,7 @@
             </thead>
         </table>
         </div>
+        <div id="CategoryCustomPager"></div>
         </div>
     </div>
 
@@ -100,6 +101,7 @@
 </div>
 
 <!-- ✅ SCRIPT -->
+<script src="assets/js/dt-custom-pager.js"></script>
 <script>
 $(document).ready(function(){
 
@@ -109,7 +111,7 @@ $(document).ready(function(){
         }
     });
 
-    $('#MBrand').DataTable({
+    var MBrandTable = $('#MBrand').DataTable({
         processing: true,
         serverSide: true,
         ajax: "{{ url('Category') }}",
@@ -119,10 +121,15 @@ $(document).ready(function(){
             { data: 'Cate_code' },
             { data: 'action', orderable:false }
         ],
+        pageLength: 15,
+        lengthChange: false,
         initComplete: function () {
             dtFixToolbar(this, '#addCategoryBtn');
         }
     });
+
+    $('#MBrand_wrapper').addClass('dt-collapsed');
+    DTCustomPager.init(MBrandTable, '#CategoryCustomPager');
 
 });
 

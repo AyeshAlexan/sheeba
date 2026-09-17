@@ -67,6 +67,7 @@
                                 </thead>
                             </table>
                                 </div>
+                                <div id="ChequeBanksCustomPager"></div>
                             </div>
                         </div>
                     </div>
@@ -139,6 +140,7 @@
             </div>
          </div>
                     <!-- end bootstrap modal -->
+                    <script src="assets/js/dt-custom-pager.js"></script>
                     <script type="text/javascript">
                     $(document).ready( function () {
                         $.ajaxSetup({
@@ -147,7 +149,7 @@
                             }
                         });
 
-                        $('#ChequeBanksTable').DataTable({
+                        var ChequeBanksTable = $('#ChequeBanksTable').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: "{{ url('ChequeBanks') }}",
@@ -161,10 +163,15 @@
                                 { data: 'action', name: 'action', orderable: false},
                             ],
                             order: [[0, 'desc']],
+                            pageLength: 15,
+                            lengthChange: false,
                             initComplete: function () {
                                 dtFixToolbar(this, '#addChequeBankBtn');
                             }
                         });
+
+                        $('#ChequeBanksTable_wrapper').addClass('dt-collapsed');
+                        DTCustomPager.init(ChequeBanksTable, '#ChequeBanksCustomPager');
                     });
 
                     function add(){

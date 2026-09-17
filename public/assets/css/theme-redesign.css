@@ -1191,6 +1191,28 @@ button[name="reset"].btn-outline-secondary:hover {
   background: var(--tr-bg) !important;
   border-color: var(--tr-border) !important;
 }
+/* The "simple_numbers" pager type wraps its numbered buttons (and the
+   "…" ellipsis) in a plain <span> with no layout of its own, which can
+   let them sit at a different baseline than the boxed Previous/Next
+   buttons beside it. Give that span — and the ellipsis itself — the
+   same flex row/box treatment so everything lines up on one row. */
+.dataTables_wrapper .dataTables_paginate > span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.dataTables_wrapper .paginate_button.ellipsis,
+.dataTables_wrapper .ellipsis {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 36px;
+  height: 36px;
+  color: var(--tr-text-muted) !important;
+  font-weight: 600 !important;
+  border: none !important;
+  background: transparent !important;
+}
 
 /* DataTables' own auto-generated length / search / info controls —
    used by any page with a real server-side DataTable (Userrole and many
@@ -1586,3 +1608,126 @@ table.dataTable thead th.sorting_desc:after {
 /* Full-screen loading overlay styling now lives inline in
    components/loading-screen.blade.php itself (not here) so it can never
    render unstyled while this stylesheet is still loading. */
+
+/* "View More" collapsed DataTable state (e.g. Master > Item): hides the
+   length/info/pagination footer while collapsed so only the search box
+   and first page of rows show, alongside a manual "View More" button. */
+.dt-collapsed .dataTables_length,
+.dt-collapsed .dataTables_info,
+.dt-collapsed .dataTables_paginate {
+  display: none !important;
+}
+
+/* Custom pill-style pager (assets/js/dt-custom-pager.js) — replaces
+   DataTables' own pagination footer, which could grow wider than its
+   card and force a horizontal scrollbar. Single centered pill, with a
+   clear gap from the table above it. */
+.dt-custom-pager-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+.dt-custom-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--tr-white);
+  border: 1px solid var(--tr-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 10px rgba(20, 33, 61, 0.06);
+  max-width: 100%;
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+.dt-custom-pager .dt-pg-arrow,
+.dt-custom-pager .dt-pg-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--tr-font);
+  color: var(--tr-navy);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.dt-custom-pager .dt-pg-arrow {
+  color: var(--tr-text-secondary);
+  font-size: 12px;
+}
+.dt-custom-pager .dt-pg-arrow:hover,
+.dt-custom-pager .dt-pg-num:hover {
+  background: var(--tr-blue-light);
+  color: var(--tr-blue);
+}
+.dt-custom-pager .dt-pg-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.dt-custom-pager .dt-pg-arrow:disabled:hover {
+  background: transparent;
+  color: var(--tr-text-secondary);
+}
+.dt-custom-pager .dt-pg-num.active {
+  background: var(--tr-blue-light);
+  color: var(--tr-blue);
+  border: 2px solid var(--tr-blue);
+}
+.dt-custom-pager .dt-pg-ellipsis {
+  width: 20px;
+  text-align: center;
+  color: var(--tr-text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.dt-custom-pager .dt-pg-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--tr-border);
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+.dt-custom-pager .dt-pg-len {
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 999px !important;
+  padding: 5px 12px !important;
+  height: auto !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--tr-navy) !important;
+  background: var(--tr-white) !important;
+  font-family: var(--tr-font);
+  flex-shrink: 0;
+}
+.dt-custom-pager .dt-pg-goto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tr-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dt-custom-pager .dt-pg-goto-input {
+  width: 48px;
+  border: 1px solid var(--tr-border);
+  border-radius: 999px;
+  padding: 5px 8px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--tr-text);
+  font-family: var(--tr-font);
+}
+.dt-custom-pager .dt-pg-goto-input:focus {
+  outline: none;
+  border-color: var(--tr-blue);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}

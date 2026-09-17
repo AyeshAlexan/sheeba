@@ -7,7 +7,7 @@ class SuppliersController extends Controller
 {
     public function index()
     {
-        $data = Suppliers::latest()->paginate(5);
+        $data = Suppliers::latest()->get();
 
          // get max Customer number code
          $maxSupplierNo = Suppliers::orderBy('Code', 'desc')->value('Code');

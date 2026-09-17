@@ -68,6 +68,7 @@
                                 </thead>
                             </table>
                                 </div>
+                                <div id="SchemaCustomPager"></div>
                             </div>
                         </div>
                     </div>
@@ -178,6 +179,7 @@
             </div>
          </div>
                     <!-- end bootstrap model -->
+                    <script src="assets/js/dt-custom-pager.js"></script>
                     <script type="text/javascript">
                     $(document).ready( function () {
                         $.ajaxSetup({
@@ -186,7 +188,7 @@
                             }
                         });
 
-                        $('#MSchema').DataTable({
+                        var MSchemaTable = $('#MSchema').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: "{{ url('SchemaType') }}",
@@ -200,10 +202,15 @@
                                 { data: 'action', name: 'action', orderable: false},
                             ],
                             order: [[0, 'desc']],
+                            pageLength: 15,
+                            lengthChange: false,
                             initComplete: function () {
                                 dtFixToolbar(this, '#addSchemaBtn');
                             }
                         });
+
+                        $('#MSchema_wrapper').addClass('dt-collapsed');
+                        DTCustomPager.init(MSchemaTable, '#SchemaCustomPager');
                     });
 
                     function add(){

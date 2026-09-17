@@ -64,11 +64,12 @@
                                 </thead>
                             </table>
                                 </div>
+                                <div id="StoreCustomPager"></div>
                             </div>
                         </div>
                     </div>
 
-                     
+
                     <!-- boostrap employee model -->
                     <div class="modal fade" id="Store-modal" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
@@ -124,6 +125,7 @@
             </div>
          </div>
                     <!-- end bootstrap model -->
+                    <script src="assets/js/dt-custom-pager.js"></script>
                     <script type="text/javascript">
                     $(document).ready( function () {
                         $.ajaxSetup({
@@ -131,8 +133,8 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             }
                         });
-                     
-                        $('#Store').DataTable({
+
+                        var StoreTable = $('#Store').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: "{{ url('Store') }}",
@@ -142,10 +144,15 @@
                                 { data: 'action', name: 'action', orderable: false},
                             ],
                             order: [[0, 'desc']],
+                            pageLength: 15,
+                            lengthChange: false,
                             initComplete: function () {
                                 dtFixToolbar(this, '#addStoreBtn');
                             }
                         });
+
+                        $('#Store_wrapper').addClass('dt-collapsed');
+                        DTCustomPager.init(StoreTable, '#StoreCustomPager');
                     });
 
                     function add(){

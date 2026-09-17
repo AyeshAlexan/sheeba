@@ -64,7 +64,7 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <div class="table-data">
-                                    <table class="table table-bordered table-center table-hover datatable" id="customerTable">
+                                    <table class="table table-bordered table-center table-hover" id="customerTable">
                                         <thead>
                                             <tr>
                                                 <th>Code</th>
@@ -131,6 +131,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div id="CustomerCustomPager"></div>
                             </div>
                         </div>
                     </div>
@@ -592,15 +593,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="assets/js/dt-custom-pager.js"></script>
     <script>
         $(document).ready(function() {
-            $('#customerTable').DataTable({
+            var customerTable = $('#customerTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
                 info: true,
-                lengthChange: true,
-                pageLength: 10,
+                lengthChange: false,
+                pageLength: 15,
                 columnDefs: [
                     { orderable: false, targets: -1 }
                 ],
@@ -608,6 +610,9 @@
                     dtFixToolbar(this, '#addCustomerBtn');
                 }
             });
+
+            $('#customerTable_wrapper').addClass('dt-collapsed');
+            DTCustomPager.init(customerTable, '#CustomerCustomPager');
         });
     </script>
 

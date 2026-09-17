@@ -242,6 +242,7 @@
                                         </thead>
                                     </table>
                                 </div>
+                                <div id="itemCustomPager"></div>
                                 </div>
                             </div>
             </div>
@@ -648,6 +649,7 @@
 {{-- ============================================================
      SCRIPTS
 ============================================================ --}}
+<script src="assets/js/dt-custom-pager.js"></script>
 <script>
 $(document).ready(function () {
     $.ajaxSetup({
@@ -655,28 +657,38 @@ $(document).ready(function () {
     });
 
     // ── DataTable ─────────────────────────────────────────────
-$('#Item').DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: "{{ url('Item') }}",
-    columns: [
-        { data: 'action',            name: 'action',            orderable: false },
-        { data: 'category',          name: 'category' },
-        { data: 'Department',        name: 'Department' },
-        { data: 'Item_code',         name: 'Item_code' },
-        { data: 'Bar_code',          name: 'Bar_code' },
-        { data: 'Item_description',  name: 'Item_description' },
-        { data: 'Per',               name: 'Per' },
-        { data: 'purchasePrice',     name: 'purchasePrice' },
-        { data: 'saleprice',         name: 'saleprice' },
-        { data: 'Credit',            name: 'Credit' },
-        { data: 'RecorderQuantitiy', name: 'RecorderQuantitiy' },
-        { data: 'ReorderLevel',      name: 'ReorderLevel' },
-    ],
-    order: [[0, 'desc']],
-    paging: false,          // ← disables pagination
-    pageLength: -1,         // ← tells server to return all records
-});
+    // Starts collapsed: 15 rows, no length/info/pagination chrome, just
+    // a "View More" button — clicking it reveals the normal DataTables
+    // pagination footer so the rest can be paged through. The search
+    // box (top-right, part of 'lfrtip') always stays visible and still
+    // hits the server (serverSide: true), so it searches the FULL
+    // dataset regardless of collapsed/expanded state.
+    var itemsTable = $('#Item').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ url('Item') }}",
+        columns: [
+            { data: 'action',            name: 'action',            orderable: false },
+            { data: 'category',          name: 'category' },
+            { data: 'Department',        name: 'Department' },
+            { data: 'Item_code',         name: 'Item_code' },
+            { data: 'Bar_code',          name: 'Bar_code' },
+            { data: 'Item_description',  name: 'Item_description' },
+            { data: 'Per',               name: 'Per' },
+            { data: 'purchasePrice',     name: 'purchasePrice' },
+            { data: 'saleprice',         name: 'saleprice' },
+            { data: 'Credit',            name: 'Credit' },
+            { data: 'RecorderQuantitiy', name: 'RecorderQuantitiy' },
+            { data: 'ReorderLevel',      name: 'ReorderLevel' },
+        ],
+        order: [[0, 'desc']],
+        paging: true,
+        pageLength: 15,
+        lengthChange: false,
+    });
+
+    $('#Item_wrapper').addClass('dt-collapsed');
+    DTCustomPager.init(itemsTable, '#itemCustomPager');
 
     // ── Package autocomplete search ───────────────────────────
     let pkgSearchTimer = null;

@@ -59,6 +59,7 @@
                                         </tr>
                                     </thead>
                                 </table>
+                                <div id="BankBranchCustomPager"></div>
                             </div>
                             </div>
                         </div>
@@ -123,6 +124,7 @@
     </div>
 
 
+    <script src="assets/js/dt-custom-pager.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $.ajaxSetup({
@@ -131,7 +133,7 @@
                 }
             });
 
-            $('#Bank_Branch').DataTable({
+            var Bank_BranchTable = $('#Bank_Branch').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ url('Bank_Branch') }}",
@@ -157,10 +159,15 @@
                 order: [
                     [0, 'desc']
                 ],
+                pageLength: 15,
+                lengthChange: false,
                 initComplete: function () {
                     dtFixToolbar(this, '#addBankBranchBtn');
                 }
             });
+
+            $('#Bank_Branch_wrapper').addClass('dt-collapsed');
+            DTCustomPager.init(Bank_BranchTable, '#BankBranchCustomPager');
         });
 
         function add() {

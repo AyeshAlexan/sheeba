@@ -64,11 +64,12 @@
                                 </thead>
                             </table>
                                 </div>
+                                <div id="ColorCustomPager"></div>
                             </div>
                         </div>
                     </div>
 
-                     
+
                     <!-- boostrap employee model -->
                     <div class="modal fade" id="Store-modal" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
@@ -125,6 +126,7 @@
             </div>
          </div>
                     <!-- end bootstrap model -->
+                    <script src="assets/js/dt-custom-pager.js"></script>
                     <script type="text/javascript">
                     $(document).ready( function () {
                         $.ajaxSetup({
@@ -132,8 +134,8 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             }
                         });
-                     
-                        $('#MColor').DataTable({
+
+                        var MColorTable = $('#MColor').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: "{{ url('MColor') }}",
@@ -143,10 +145,15 @@
                                 { data: 'action', name: 'action', orderable: false},
                             ],
                             order: [[0, 'desc']],
+                            pageLength: 15,
+                            lengthChange: false,
                             initComplete: function () {
                                 dtFixToolbar(this, '#addColorBtn');
                             }
                         });
+
+                        $('#MColor_wrapper').addClass('dt-collapsed');
+                        DTCustomPager.init(MColorTable, '#ColorCustomPager');
                     });
 
                     function add(){

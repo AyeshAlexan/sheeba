@@ -7,7 +7,7 @@ class MGuarantorController extends Controller
 {
     public function index()
     {
-        $data = MGuarantor::latest()->paginate(5);
+        $data = MGuarantor::latest()->get();
 
          // get max Customer number code
          $maxSupplierNo = MGuarantor::orderBy('Code', 'desc')->value('Code');
