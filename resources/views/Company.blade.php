@@ -240,6 +240,7 @@
                                         </thead>
                                     </table>
                                 </div>
+                                <div id="CompanyCustomPager"></div>
                             </div>
                         </div>
                     </div>
@@ -315,6 +316,7 @@
                         </div>
                     </div>
                     <!-- end bootstrap model -->
+                    <script src="assets/js/dt-custom-pager.js"></script>
                     <script type="text/javascript">
                     $(document).ready( function () {
                         $.ajaxSetup({
@@ -323,7 +325,7 @@
                             }
                         });
 
-                        $('#Company').DataTable({
+                        var CompanyTable = $('#Company').DataTable({
                             processing: true,
                             serverSide: true,
                             ajax: "{{ url('Company') }}",
@@ -342,6 +344,7 @@
                                 { data: 'action', name: 'action', orderable: false},
                             ],
                             order: [[0, 'desc']],
+                            pageLength: 15,
                             initComplete: function () {
                                 var $wrapper = $('#Company_wrapper');
                                 // "Show N entries" — its own dedicated row above
@@ -354,6 +357,9 @@
                                 $wrapper.find('.dataTables_filter').appendTo('#companySearchSlot');
                             }
                         });
+
+                        $('#Company_wrapper').addClass('dt-collapsed');
+                        DTCustomPager.init(CompanyTable, '#CompanyCustomPager');
                     });
 
                     function add(){

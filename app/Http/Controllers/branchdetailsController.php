@@ -15,8 +15,7 @@ class branchdetailsController extends Controller
      */
     public function index()
     {
-        $branch =branchDel::latest()->paginate(5);
-        // $branch =branchDel::all();
+        $branch = branchDel::latest()->get();
         return view('branchdetails')->with("branchDel" , $branch);
     }
 

@@ -167,7 +167,7 @@
                                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
                                     </div>
                                     <div>
-                                        <div class="br-stat-num">{{ $branchDel->total() }}</div>
+                                        <div class="br-stat-num">{{ $branchDel->count() }}</div>
                                         <div class="br-stat-lbl">Total Branches</div>
                                     </div>
                                 </div>
@@ -229,9 +229,7 @@
                                                             @endforeach
                                                         </tbody>
                                                     </table>
-                                                    <div class="ml-4 mb-3 mt-1" id="branchPager">
-                                                    {!! $branchDel->links() !!}
-                                                    </div>
+                                                    <div id="branchCustomPager"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -433,6 +431,14 @@
         });
     </script>
 
+    {{-- This page loads a second, later jQuery build (cdn.bootcss.com) after the
+         DataTables plugin scripts above attached themselves to the first one,
+         which silently orphans $.fn.DataTable on the jQuery instance actually
+         in scope by the time this block runs. Re-including the plugin here
+         re-attaches it to whichever jQuery is current. --}}
+    <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="assets/plugins/datatables/datatables.min.js"></script>
+    <script src="assets/js/dt-custom-pager.js"></script>
     <script>
         $(document).ready(function () {
             //add new branch
@@ -459,7 +465,7 @@
                         if (res.status == 'success') {
                             $("#addBranchModel").modal('hide');
                             $('#addBranch')[0].reset();
-                            $('.table').load(location.href + ' .table');
+                            setTimeout(function () { location.reload(); }, 800);
                             Command: toastr["success"]("Branch Added ...!", "Success")
                             toastr.options = {
                                 "closeButton": true,
@@ -537,7 +543,7 @@
                         if (res.status == 'success') {
                             $("#updateBranchModel").modal('hide');
                             $('#updateBranch')[0].reset();
-                            $('.table').load(location.href + ' .table');
+                            setTimeout(function () { location.reload(); }, 800);
                             Command: toastr["success"]("Branch datails updated...",
                                 "Success")
                             toastr.options = {
@@ -586,7 +592,7 @@
                         },
                         success: function (res) {
                             if (res.status == 'success') {
-                                $('.table').load(location.href + ' .table');
+                                setTimeout(function () { location.reload(); }, 800);
                                 Command: toastr["success"]("Branch deleted...", "Success")
                                 toastr.options = {
                                     "closeButton": true,
@@ -611,42 +617,23 @@
                 }
             })
 
-            // pagination
-            $(document).on('click', '.pagination a', function (e) {
-                e.preventDefault();
-                let page = $(this).attr('href').split('page=')[1]
-                branchdetails(page)
-            })
+            var branchTable = $('#branchTable').DataTable({
+                paging: true,
+                lengthChange: false,
+                pageLength: 15,
+                dom: 't',
+                columnDefs: [
+                    { orderable: false, targets: -1 }
+                ],
+            });
 
-            function branchdetails(page) {
-                $.ajax({
-                    url: "/branch_pagination?page=" + page,
-                    success: function (res) {
-                        $('.table-data').html(res);
-                    }
-                })
-            }
+            $('#branchTable_wrapper').addClass('dt-collapsed');
+            DTCustomPager.init(branchTable, '#branchCustomPager');
 
-            // search branch data
-            $(document).on('keyup', function (e) {
-                e.preventDefault();
-                let search_string = $('#search').val();
-                // console.log(search_string);
-                $.ajax({
-                    url: "{{ route('search_branch_ajax') }}",
-                    method: 'GET',
-                    data: {
-                        search_string: search_string
-                    },
-                    success: function (res) {
-                        $('.table-data').html(res);
-                        if (res.status == 'not_found') {
-                            $('.table-data').html('<span class="text-danger">' +
-                                'Nothing found...' + '</span>');
-                        }
-                    }
-                });
-            })
+            // search branch data — filters the same table the pager paginates
+            $('#search').on('keyup', function () {
+                branchTable.search($(this).val()).draw();
+            });
         });
     </script>
 </body>
