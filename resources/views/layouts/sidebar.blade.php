@@ -626,28 +626,10 @@
 
 
 
-                  <li class="menu-item">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle">
-                      <div class="text-truncate" data-i18n="Customer">Purchase Report<span
-                        class="menu-arrow"></span></div>
+                  <li class="menu-item {{ Request::is('purchasing-report') ? 'active' : '' }}">
+                    <a href="{{ route('purchasing.report') }}" class="menu-link">
+                      <div class="text-truncate" data-i18n="Customer">Purchasing Report</div>
                     </a>
-                    <ul class="menu-sub">
-                        <li class="menu-item">
-                            <a href="{{route("Purchase_wish_sales_report")}}" target ="_ blank" class="menu-link">
-                              <div class="text-truncate" data-i18n="All Customers">Item wish Purchase </div>
-                            </a>
-                        </li>
-                      <li class="menu-item">
-                        <a href="{{route("Purchasereport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="All Customers">Purchase Summery</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route('Purchase_detail_report')}}" target ="_ blank" class="menu-link menu-toggle">
-                          <div class="text-truncate" data-i18n="Customer Details">Purchase Details</div>
-                        </a>
-                      </li>
-                    </ul>
                   </li>
 
 

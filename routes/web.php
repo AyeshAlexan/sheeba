@@ -629,6 +629,10 @@ Route::get('/reports.ZerostockReport', [App\Http\Controllers\ZerostockreportCont
 Route::get('/reports.Sales_summary_report', [App\Http\Controllers\SalessummaryreportController::class,'index'])->name('Sales_summary_report');
 //Purchase Summary
 Route::get('/reports.Purchase_Summary_report', [App\Http\Controllers\PurchasereportController::class,'index'])->name('Purchase_Summary_report');
+
+//Purchasing Report (consolidated — replaces the summary/detail/item-wish reports above)
+Route::get('/purchasing-report', [App\Http\Controllers\PurchasingReportController::class, 'index'])->name('purchasing.report');
+Route::get('/purchasing-report/detail', [App\Http\Controllers\PurchasingReportController::class, 'detail'])->name('purchasing.report.detail');
 //Purchase detail report
 Route::get('/reports.Purchase_Detail_report', [App\Http\Controllers\PurchasedetailreportController::class,'index'])->name('Purchase_Detail_report');
 //PurchaseorderdetailreportController
