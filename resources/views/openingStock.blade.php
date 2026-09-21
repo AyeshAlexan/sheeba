@@ -14,6 +14,25 @@
     <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+    <style>
+        .stock-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
+        .stock-table-card > .card-body { padding:0; }
+        .stock-item-details-table, .stock-total-table { width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+        .stock-item-details-table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
+        .stock-item-details-table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
+        .stock-item-details-table .form-control { min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+        .stock-item-details-table .add-item { background:linear-gradient(135deg,#4c8cf7,#2d6ce9); color:#fff; border:0; border-radius:9px; min-height:38px; min-width:100px; }
+        .stock-total-table { margin-top:10px; }
+        .stock-total-table td { background:#edf4ff !important; color:#234b7d; border-color:#d9e3ee !important; font-weight:700; }
+        .opening-stock-total td:nth-child(1) { width:15% !important; }
+        .opening-stock-total td:nth-child(2) { width:20% !important; }
+        .opening-stock-total td:nth-child(3) { width:12% !important; }
+        .opening-stock-total td:nth-child(4) { width:12% !important; }
+        .opening-stock-total td:nth-child(5) { width:13% !important; }
+        .opening-stock-total td:nth-child(6) { width:12% !important; }
+        .stock-table-card .stock-search-wrap { max-width:360px; }
+        .stock-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+    </style>
 </head>
 
 <body>
@@ -116,7 +135,7 @@
                                     <div class="showCustomer"></div>
 
                             {{-- Item Details card --}}
-                            <div class="card">
+                            <div class="card stock-table-card">
                                 <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                                     <div class="d-flex align-items-center gap-2">
@@ -129,7 +148,7 @@
                                     </div>
                                 </div>
                             {{-- dynamicAdded table --}}
-                            <table class="table table-bordered">
+                            <table class="table table-bordered stock-item-details-table">
                                 <thead class="thead-light">
                                     <tr>
                                         {{-- <th style="width:15%; text-align: center;">Category</th> --}}
@@ -268,24 +287,22 @@
 
 
                             {{-- dynamicAdded table --}}
-                            <table class="table table-bordered " id="dynamicAdded">
+                            <table class="table table-bordered stock-item-details-table" id="dynamicAdded">
 
                             </table>
 
                             {{-- table footer for total calculations --}}
-                            <table class="table table-bordered">
+                            <table class="table table-bordered stock-total-table opening-stock-total">
                                 <tbody>
                                     <tr class="stock-total-row">
-                                        <td style="width:8%;"> </td>
-                                        <td style="width:8%;"><strong>TOTAL :</strong></td>
-                                        <td style="width:5%;"> </td>
-                                        <td style="width:5%;"></td>
-                                        <td class="total-unit-price text-center" style="width:8%;">
+                                        <td> </td>
+                                        <td><strong>TOTAL :</strong></td>
+                                        <td> </td>
+                                        <td class="total-unit-price text-center">
                                             <span class="stock-total-badge">0.00</span>
                                         </td>
-                                        <td class="total-total_weight text-center" style="width:8%;">
-                                        </td>
-                                        <td style="width:11%;"></td>
+                                        <td class="total-total_weight text-center"></td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -14,6 +14,28 @@
     <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+    <style>
+        .purchase-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
+        .purchase-table-card > .card-body { padding:0; }
+        .purchase-item-table, .purchase-total-table { width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+        .purchase-item-table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
+        .purchase-item-table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
+        .purchase-item-table .form-control { min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+        .purchase-item-table .add-item { background:linear-gradient(135deg,#4c8cf7,#2d6ce9); color:#fff; border:0; border-radius:9px; min-height:38px; min-width:100px; }
+        .purchase-total-table { margin-top:10px; }
+        .purchase-total-table td { background:#edf4ff !important; color:#234b7d; border-color:#d9e3ee !important; font-weight:700; }
+        .purchase-total-table .stock-total-badge { background:transparent !important; color:inherit !important; padding:0 !important; border-radius:0 !important; }
+        .purchase-item-table th:nth-child(1), .purchase-item-table td:nth-child(1), .purchase-total-table td:nth-child(1) { width:15% !important; }
+        .purchase-item-table th:nth-child(2), .purchase-item-table td:nth-child(2), .purchase-total-table td:nth-child(2) { width:20% !important; }
+        .purchase-item-table th:nth-child(3), .purchase-item-table td:nth-child(3), .purchase-total-table td:nth-child(3) { width:12% !important; }
+        .purchase-item-table th:nth-child(4), .purchase-item-table td:nth-child(4), .purchase-total-table td:nth-child(4) { width:12% !important; }
+        .purchase-item-table th:nth-child(5), .purchase-item-table td:nth-child(5), .purchase-total-table td:nth-child(5) { width:12% !important; }
+        .purchase-item-table th:nth-child(6), .purchase-item-table td:nth-child(6), .purchase-total-table td:nth-child(6) { width:12% !important; }
+        .purchase-item-table th:nth-child(7), .purchase-item-table td:nth-child(7), .purchase-total-table td:nth-child(7) { width:13% !important; }
+        .purchase-item-table th:nth-child(8), .purchase-item-table td:nth-child(8), .purchase-total-table td:nth-child(8) { width:12% !important; }
+        .purchase-table-card .stock-search-wrap { max-width:360px; }
+        .purchase-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+    </style>
 </head>
 
 <body>
@@ -128,7 +150,7 @@
                                     <div class="payment-history" style="display:none;"></div>
 
                             {{-- dynamicAdded table --}}
-                            <div class="card">
+                            <div class="card purchase-table-card">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                                         <h5 class="mb-0"><i class="fas fa-list text-primary me-2"></i>Item Details</h5>
@@ -137,7 +159,7 @@
                                             <input type="text" class="form-control" id="stockItemSearch" placeholder="Search item code or description...">
                                         </div>
                                     </div>
-                            <table class="table table-bordered">
+                            <table class="table table-bordered purchase-item-table">
                                 <thead class="thead-light">
                                     <tr>
                                         {{-- <th style="width:15%; text-align: center;">Category</th> --}}
@@ -288,34 +310,33 @@
                             </div>
 
                             {{-- dynamicAdded table --}}
-                            <table class="table table-bordered" id="dynamicAdded">
+                            <table class="table table-bordered purchase-item-table" id="dynamicAdded">
 
                             </table>
 
                             {{-- table footer for total calculations --}}
-                            <table class="table table-bordered" id="green_total_row">
+                            <table class="table table-bordered purchase-total-table" id="green_total_row">
                                 <tbody>
                                     <tr class="stock-total-row">
-                                        <td style="width:8%;"> </td>
-                                        <td style="width:8%;"><strong>
+                                        <td> </td>
+                                        <td><strong>
                                                 <p>TOTAL :</p>
                                             </strong> </td>
-                                        <td style="width:5%;"> </td>
-                                        <td style="width:5%;"></td>
+                                        <td> </td>
 
-                                <td class="total-unit-price text-center" style="width:8%;">
+                                <td class="total-unit-price text-center">
                                             <span class="stock-total-badge">0.00</span>
                                         </td>
-                                        <td class="total-total_weight text-center" style="width:8%;">
+                                        <td class="total-total_weight text-center">
                                             <span class="stock-total-badge"></span>
                                         </td>
-                                        <td class="total-discount text-center" style="width:8%;">
+                                        <td class="total-discount text-center">
                                             <span class="stock-total-badge">0.00</span>
                                         </td>
-                                        <td class="total-value text-center" style="width:8%;">
+                                        <td class="total-value text-center">
                                             <span class="stock-total-badge">0.00</span>
                                         </td>
-                                        <td style="width:11%;"></td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>

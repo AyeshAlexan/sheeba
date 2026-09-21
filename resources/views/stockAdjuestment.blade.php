@@ -14,6 +14,32 @@
     <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+    <style>
+        .stock-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
+        .stock-table-card > .card-body { padding:0; }
+        .stock-item-details-table, .stock-total-table { width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+        .stock-item-details-table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
+        .stock-item-details-table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
+        .stock-item-details-table .form-control { min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+        .stock-total-table { margin-top:10px; }
+        .stock-total-table td { background:#edf4ff !important; color:#234b7d; border-color:#d9e3ee !important; font-weight:700; }
+        .stock-adjustment-total td:nth-child(1) { width:10% !important; }
+        .stock-adjustment-total td:nth-child(2) { width:25% !important; }
+        .stock-adjustment-total td:nth-child(3) { width:10% !important; }
+        .stock-adjustment-total td:nth-child(4) { width:10% !important; }
+        .stock-adjustment-total td:nth-child(5) { width:15% !important; }
+        .stock-adjustment-total td:nth-child(6) { width:10% !important; }
+        .stock-adjustment-total td:nth-child(7) { width:20% !important; }
+        .stock-adjustment-table th:nth-child(1), .stock-adjustment-table td:nth-child(1), .stock-adjustment-total td:nth-child(1) { width:13.64% !important; }
+        .stock-adjustment-table th:nth-child(2), .stock-adjustment-table td:nth-child(2), .stock-adjustment-total td:nth-child(2) { width:18.18% !important; }
+        .stock-adjustment-table th:nth-child(3), .stock-adjustment-table td:nth-child(3), .stock-adjustment-total td:nth-child(3) { width:13.64% !important; }
+        .stock-adjustment-table th:nth-child(4), .stock-adjustment-table td:nth-child(4), .stock-adjustment-total td:nth-child(4) { width:13.64% !important; }
+        .stock-adjustment-table th:nth-child(5), .stock-adjustment-table td:nth-child(5), .stock-adjustment-total td:nth-child(5) { width:13.64% !important; }
+        .stock-adjustment-table th:nth-child(6), .stock-adjustment-table td:nth-child(6), .stock-adjustment-total td:nth-child(6) { width:13.64% !important; }
+        .stock-adjustment-table th:nth-child(7), .stock-adjustment-table td:nth-child(7), .stock-adjustment-total td:nth-child(7) { width:13.64% !important; }
+        .stock-table-card .stock-search-wrap { max-width:360px; }
+        .stock-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+    </style>
 </head>
 
 <body>
@@ -132,7 +158,7 @@
                             </div>
 
                             {{-- Item Details card --}}
-                            <div class="card">
+                            <div class="card stock-table-card">
                                 <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                                     <div class="d-flex align-items-center gap-2">
@@ -145,7 +171,7 @@
                                     </div>
                                 </div>
                             {{-- dynamicAdded table --}}
-                            <table class="table table-bordered">
+                            <table class="table table-bordered stock-item-details-table stock-adjustment-table">
                                 <thead class="thead-light">
                                     <tr>
                                         {{-- <th style="width:15%; text-align: center;">Category</th> --}}
@@ -286,12 +312,12 @@
 
 
                             {{-- dynamicAdded table --}}
-                            <table class="table table-bordered " id="dynamicAdded">
+                            <table class="table table-bordered stock-item-details-table stock-adjustment-table" id="dynamicAdded">
 
                             </table>
 
                             {{-- table footer for total calculations --}}
-                            <table class="table table-bordered">
+                            <table class="table table-bordered stock-total-table stock-adjustment-total">
                                 <tbody>
                                     <tr class="stock-total-row">
                                         <td style="width:8%;"> </td>

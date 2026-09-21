@@ -14,6 +14,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <style>
+        .purchase-payment-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
+        .purchase-payment-table-card > .card-body { padding:0; }
+        #data_table { width:100% !important; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+        #data_table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
+        #data_table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
+        #data_table tbody tr:hover { background:#f7fbff; }
+    </style>
+    <style>
 .make_payment_form[disabled] {
     background-color: #ccc !important;
     color: #666 !important;
@@ -135,7 +143,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="card d-none" id="data_tables">
+                                        <div class="card purchase-payment-table-card d-none" id="data_tables">
                                             <div class="card-body">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered table-center table-hover"

@@ -634,12 +634,14 @@ button[name="save"].btn-outline-info:hover {
   background: #128A3E !important;
   border-color: #128A3E !important;
 }
-.printReceipt.btn-outline-primary {
+.printReceipt.btn-outline-primary,
+.print_invoice.btn-outline-primary {
   background: var(--tr-blue) !important;
   border-color: var(--tr-blue) !important;
   color: #fff !important;
 }
-.printReceipt.btn-outline-primary:hover {
+.printReceipt.btn-outline-primary:hover,
+.print_invoice.btn-outline-primary:hover {
   background: #0F68E0 !important;
   border-color: #0F68E0 !important;
 }
@@ -771,6 +773,17 @@ button[name="reset"].btn-outline-secondary:hover {
 }
 @media (max-width: 576px) {
   .stock-info-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Two-column variant — used where fields are meant to be read in
+   explicit left/right pairs (e.g. Sales Invoice payment section). */
+.stock-info-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 576px) {
+  .stock-info-grid-2 { grid-template-columns: 1fr; }
 }
 
 /* Purchase pages: Supplier Code (needs extra room for its search + add
