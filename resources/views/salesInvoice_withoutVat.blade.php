@@ -983,36 +983,39 @@ SELECT CUSTOMER MODAL
                 <h4 class="modal-title m-2">Search Customer</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <input type="text" id="cus_name" class="form-control mb-2" placeholder="Search by name...">
+            <div class="modal-body" style="max-height:65vh; overflow-y:auto;">
+                <div class="stock-search-wrap mb-3">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="cus_name" class="form-control" placeholder="Search by name...">
+                </div>
                 <div class="table-responsive">
-                    <div class="cus-table-data">
-                        <table class="table table-bordered table-hover mt-3" id="ItemTable">
-                            <thead>
-                                <tr class="table-secondary">
-                                    <th>Code</th><th>Name</th><th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($Customerdetails as $data)
-                                <tr>
-                                    <td>{{ $data->Code }}</td>
-                                    <td><div class="item-description-wrapper">{{ $data->First_name }}</div></td>
-                                    <td>
-                                        <a href="" class="btn btn-outline-info btn-sm shadow"
-                                            id="add_cus"
-                                            data-bs-toggle="modal" data-bs-target="#selectCustomerModel"
-                                            data-id="{{ $data->id }}"
-                                            data-cus_code="{{ $data->Code }}"
-                                            data-cus_name="{{ $data->First_name }}">
-                                            Add <i class="fas fa-plus"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table table-bordered table-hover table-sm" id="ItemTable">
+                        <thead>
+                            <tr class="table-secondary">
+                                <th>Code</th><th>Name</th><th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($Customerdetails as $data)
+                            <tr>
+                                <td>{{ $data->Code }}</td>
+                                <td><div class="item-description-wrapper">{{ $data->First_name }}</div></td>
+                                <td class="text-center">
+                                    <a href="javascript:void(0)" class="dt-act-btn dt-act-edit"
+                                        id="add_cus"
+                                        data-bs-toggle="modal" data-bs-target="#selectCustomerModel"
+                                        data-id="{{ $data->id }}"
+                                        data-cus_code="{{ $data->Code }}"
+                                        data-cus_name="{{ $data->First_name }}"
+                                        title="Add">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div id="ItemTableCustomPager"></div>
                 </div>
             </div>
         </div>
@@ -1029,48 +1032,48 @@ SEARCH ITEM MODAL
                 <h4 class="modal-title m-2">Search Item</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="max-height:65vh; overflow-y:auto;">
                 <div class="stock-search-wrap mb-3">
                     <i class="fas fa-search"></i>
                     <input type="text" id="item_name" class="form-control" placeholder="Search by name...">
                 </div>
                 <div class="table-responsive">
-                    <div class="table-data">
-                        <table class="table table-bordered table-hover mt-3" id="ItemTableCustomer">
-                            <thead>
-                                <tr class="table-secondary">
-                                    <th>Code</th><th>Name</th><th>Price</th>
-                                    <th>Wholesale Price</th><th>Stock</th><th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($itemDetails as $ItemData)
-                                <tr>
-                                    <td>{{ $ItemData->Item_code }}</td>
-                                    <td><div class="item-description-wrapper">{{ $ItemData->Item_description }}</div></td>
-                                    <td>{{ $ItemData->saleprice }}</td>
-                                    <td>{{ $ItemData->Credit }}</td>
-                                    <td>
-                                        <div class="{{ $ItemData->total_qun_in - $ItemData->total_qun_out < 0 ? 'text-danger' : '' }}">
-                                            {{ $ItemData->total_qun_in - $ItemData->total_qun_out }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="" class="btn btn-outline-info btn-sm shadow"
-                                            id="add_item"
-                                            data-bs-toggle="modal" data-bs-target="#searchItemModel"
-                                            data-id="{{ $ItemData->id }}"
-                                            data-add_item_code="{{ $ItemData->Item_code }}"
-                                            data-Item_description="{{ $ItemData->Item_description }}"
-                                            data-purchase_price="{{ $ItemData->purchasePrice }}">
-                                            Add <i class="fas fa-plus"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table table-bordered table-hover table-sm" id="ItemTableCustomer">
+                        <thead>
+                            <tr class="table-secondary">
+                                <th>Code</th><th>Name</th><th>Price</th>
+                                <th>Wholesale Price</th><th>Stock</th><th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($itemDetails as $ItemData)
+                            <tr>
+                                <td>{{ $ItemData->Item_code }}</td>
+                                <td><div class="item-description-wrapper">{{ $ItemData->Item_description }}</div></td>
+                                <td>{{ $ItemData->saleprice }}</td>
+                                <td>{{ $ItemData->Credit }}</td>
+                                <td>
+                                    <div class="{{ $ItemData->total_qun_in - $ItemData->total_qun_out < 0 ? 'text-danger' : '' }}">
+                                        {{ $ItemData->total_qun_in - $ItemData->total_qun_out }}
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <a href="javascript:void(0)" class="dt-act-btn dt-act-edit"
+                                        id="add_item"
+                                        data-bs-toggle="modal" data-bs-target="#searchItemModel"
+                                        data-id="{{ $ItemData->id }}"
+                                        data-add_item_code="{{ $ItemData->Item_code }}"
+                                        data-Item_description="{{ $ItemData->Item_description }}"
+                                        data-purchase_price="{{ $ItemData->purchasePrice }}"
+                                        title="Add">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div id="ItemTableCustomerCustomPager"></div>
                 </div>
             </div>
         </div>
@@ -1087,8 +1090,7 @@ ADD CUSTOMER MODAL
                 <h4 class="modal-title m-2">Add Customer</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="card"><div class="card-body">
+            <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
                     <div class="errMsgContainer"></div>
                     <form id="addCustomer">
                         @csrf
@@ -1161,7 +1163,6 @@ ADD CUSTOMER MODAL
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
-                </div></div>
             </div>
         </div>
     </div>
@@ -1662,27 +1663,6 @@ $(document).on('blur', '#searchCustomer', function () {
 });
 </script>
 
-{{-- ── Search customer by name inside modal ── --}}
-<script>
-$('#cus_name').on('keyup', function (e) {
-    e.preventDefault();
-    $.get("{{ route('search_customer_invoice_ajax') }}", { search_string: $(this).val() })
-    .done(function (res) {
-        $('.cus-table-data').html(res.status === 'not_found' ? '<span class="text-danger">Nothing found...</span>' : res);
-    });
-});
-</script>
-
-{{-- ── Search item inside item modal ── --}}
-<script>
-$('#item_name').on('keyup', function (e) {
-    e.preventDefault();
-    $.get("{{ route('search_items_ajax') }}", { search_string: $(this).val() })
-    .done(function (res) {
-        $('.table-data').html(res.status === 'not_found' ? '<span class="text-danger">Nothing found...</span>' : res);
-    });
-});
-</script>
 
 {{-- ── Add new customer via Ajax ── --}}
 <script>
@@ -1958,15 +1938,25 @@ $(document).on('click', '.remove-new-row', function () {
 {{-- ══════════════════════════════════════════════════════════
 DATATABLES
 ══════════════════════════════════════════════════════════ --}}
+<script src="assets/js/dt-custom-pager.js"></script>
 <script>
 $(document).ready(function () {
-    $('#ItemTable').DataTable({
-        paging: true, searching: true, ordering: true, info: true,
-        lengthMenu: [100, 10, 15, 25]
+    var CustomerPickerTable = $('#ItemTable').DataTable({
+        paging: true, searching: true, ordering: true, info: false,
+        lengthChange: false, pageLength: 10, dom: 't',
     });
-    $('#ItemTableCustomer').DataTable({
-        paging: true, searching: true, ordering: true, info: true,
-        lengthMenu: [100, 10, 15, 25]
+    DTCustomPager.init(CustomerPickerTable, '#ItemTableCustomPager');
+    $('#cus_name').on('keyup', function () {
+        CustomerPickerTable.search($(this).val()).draw();
+    });
+
+    var ItemPickerTable = $('#ItemTableCustomer').DataTable({
+        paging: true, searching: true, ordering: true, info: false,
+        lengthChange: false, pageLength: 10, dom: 't',
+    });
+    DTCustomPager.init(ItemPickerTable, '#ItemTableCustomerCustomPager');
+    $('#item_name').on('keyup', function () {
+        ItemPickerTable.search($(this).val()).draw();
     });
 });
 </script>

@@ -269,18 +269,22 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
+                                                <div id="ItemTableCustomPager"></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <script src="assets/js/dt-custom-pager.js"></script>
                             <script>
                                 $(document).ready(function() {
-                                    $('#ItemTable').DataTable({
+                                    var ItemTableDt = $('#ItemTable').DataTable({
                                         order: [[0, 'desc']],
                                         pageLength: 10,
-                                        lengthMenu: [10, 25, 50, 100],
+                                        lengthChange: false,
+                                        dom: 'ft',
                                     });
+                                    DTCustomPager.init(ItemTableDt, '#ItemTableCustomPager');
                                 });
                             </script>
 

@@ -366,17 +366,21 @@
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
+                                                            <div id="ItemTableCustomPager"></div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <script src="assets/js/dt-custom-pager.js"></script>
                                         <script>
                                             $(document).ready(function() {
-                                                $('#ItemTable').DataTable({
+                                                var ItemTableDt = $('#ItemTable').DataTable({
                                                     pageLength: 10,
-                                                    lengthMenu: [10, 25, 50, 100],
+                                                    lengthChange: false,
+                                                    dom: 'ft',
                                                 });
+                                                DTCustomPager.init(ItemTableDt, '#ItemTableCustomPager');
                                             });
                                         </script>
 
@@ -522,15 +526,19 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div id="GuaranttableoneCustomPager"></div>
                         </div>
 
                         <!-- DataTable Initialization -->
+                        <script src="assets/js/dt-custom-pager.js"></script>
                         <script>
                             $(document).ready(function() {
-                                $('#Guaranttableone').DataTable({
+                                var GuaranttableoneDt = $('#Guaranttableone').DataTable({
                                     pageLength: 10,
-                                    lengthMenu: [10, 25, 50, 100],
+                                    lengthChange: false,
+                                    dom: 'ft',
                                 });
+                                DTCustomPager.init(GuaranttableoneDt, '#GuaranttableoneCustomPager');
                             });
                         </script>
 
@@ -1131,19 +1139,13 @@
 
 {{-- select items using table row as a button --}}
 <script>
-    var table = document.getElementById("ItemTable");
-    var rows = table.getElementsByTagName("tr");
-    // Add a click event listener to each row
-    for (var i = 0; i < rows.length; i++) {
-        rows[i].addEventListener("click", function() {
-            var item_code_add = this.cells[0].textContent;
-            $('#item_code').val(item_code_add);
-            setItemDetails();
-            $("#searchItemModel").modal('hide');
-            $('#item_name').val("");
-            // $('#getItemCode').reset();
-        });
-    }
+    $(document).on('click', '#ItemTable tbody tr', function () {
+        var item_code_add = this.cells[0].textContent;
+        $('#item_code').val(item_code_add);
+        setItemDetails();
+        $("#searchItemModel").modal('hide');
+        $('#item_name').val("");
+    });
 </script>
 
 {{-- set item data function when inserting the item code or name --}}
@@ -1213,28 +1215,6 @@
             setItemDetails();
         });
     });
-</script>
-
-{{-- search item data using item name --}}
-<script>
-    $('#item_name').on('keyup', function (e) {
-                e.preventDefault();
-                let search_string = $('#item_name').val();
-                $.ajax({
-                    url: "{{ route('search_items_purchase_price_ajax') }}",
-                    method: 'GET',
-                    data: {
-                        search_string: search_string
-                    },
-                    success: function (res) {
-                        $('.table-data').html(res);
-                        if (res.status == 'not_found') {
-                            $('.table-data').html('<span class="text-danger">' +
-                                'Nothing found...' + '</span>');
-                        }
-                    }
-                });
-            })
 </script>
 
 {{--  get supplier data inserting Code --}}

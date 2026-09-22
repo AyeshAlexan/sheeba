@@ -19,21 +19,21 @@
 <style>
     .stock-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
     .stock-table-card > .card-body { padding:0; }
-    .stock-item-details-table, .stock-total-table { width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+    .stock-item-details-table, .stock-total-table { width:100%; min-width:900px; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
     .stock-item-details-table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
     .stock-item-details-table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
     .stock-item-details-table .form-control { min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
     .stock-item-details-table .add-item { background:linear-gradient(135deg,#4c8cf7,#2d6ce9); color:#fff; border:0; border-radius:9px; min-height:38px; min-width:100px; }
     .stock-total-table { margin-top:10px; }
     .stock-total-table td { background:#edf4ff !important; color:#234b7d; border-color:#d9e3ee !important; font-weight:700; }
-    .stock-transfer-total td:nth-child(1) { width:15% !important; }
-    .stock-transfer-total td:nth-child(2) { width:20% !important; }
-    .stock-transfer-total td:nth-child(3) { width:12% !important; }
-    .stock-transfer-total td:nth-child(4) { width:12% !important; }
-    .stock-transfer-total td:nth-child(5) { width:12% !important; }
-    .stock-transfer-total td:nth-child(6) { width:12% !important; }
-    .stock-transfer-total td:nth-child(7) { width:13% !important; }
-    .stock-transfer-total td:nth-child(8) { width:12% !important; }
+    .stock-transfer-total td:nth-child(1) { width:18% !important; }
+    .stock-transfer-total td:nth-child(2) { width:17% !important; }
+    .stock-transfer-total td:nth-child(3) { width:11% !important; }
+    .stock-transfer-total td:nth-child(4) { width:11% !important; }
+    .stock-transfer-total td:nth-child(5) { width:11% !important; }
+    .stock-transfer-total td:nth-child(6) { width:11% !important; }
+    .stock-transfer-total td:nth-child(7) { width:11% !important; }
+    .stock-transfer-total td:nth-child(8) { width:10% !important; }
     .stock-table-card .stock-search-wrap { max-width:360px; }
     .stock-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
 </style>
@@ -182,17 +182,18 @@
                                     </div>
                                 </div>
                             {{-- dynamicAdded table --}}
+                            <div class="table-responsive">
                             <table class="table table-bordered stock-item-details-table">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th style="width:15%; text-align: center;">Item Code</th>
-                                        <th style="width:20%; text-align: center;">Description</th>
-                                        <th style="width:12%; text-align: center;">QTY</th>
-                                        <th style="width:12%; text-align: center;">Unit Price</th>
-                                        <th style="width:12%; text-align: center;">Discount (%)</th>
-                                        <th style="width:12%; text-align: center;">Discount Val</th>
-                                        <th style="width:13%; text-align: center;">Net Value</th>
-                                        <th class="text-center" style="width:12%;">Action</th>
+                                        <th style="width:18%; text-align: center;">Item Code</th>
+                                        <th style="width:17%; text-align: center;">Description</th>
+                                        <th style="width:11%; text-align: center;">QTY</th>
+                                        <th style="width:11%; text-align: center;">Unit Price</th>
+                                        <th style="width:11%; text-align: center;">Discount (%)</th>
+                                        <th style="width:11%; text-align: center;">Discount Val</th>
+                                        <th style="width:11%; text-align: center;">Net Value</th>
+                                        <th class="text-center" style="width:10%;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -262,6 +263,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                             <br>
 
                             {{--------------search Item Model----------------- --}}
@@ -311,6 +313,7 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
+                                                <div id="ItemTableCustomPager"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -320,6 +323,7 @@
 
 
                             {{-- dynamicAdded table --}}
+                            <div class="table-responsive">
                             <table class="table table-bordered stock-item-details-table" id="dynamicAdded">
                             </table>
 
@@ -344,6 +348,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                                 </div>
                             </div>
 
@@ -1457,20 +1462,24 @@ Branch Add --}}
 </script>
 
 
+<script src="assets/js/dt-custom-pager.js"></script>
 <script>
     $(document).ready(function () {
-        $('#ItemTable').DataTable({
+        var ItemTableDt = $('#ItemTable').DataTable({
             responsive: true,
             pageLength: 10,
             lengthChange: false,
             ordering: true,
-            info: true,
+            info: false,
             autoWidth: false,
+            dom: 'ft',
             language: {
                 search: "Search:",
                 zeroRecords: "No matching items found"
             }
         });
+        $('#ItemTable_wrapper').addClass('dt-collapsed');
+        DTCustomPager.init(ItemTableDt, '#ItemTableCustomPager');
     });
 </script>
 

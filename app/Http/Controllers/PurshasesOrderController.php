@@ -33,7 +33,7 @@ class PurshasesOrderController extends Controller
         $companyData = Company::latest()->paginate(1);
         $itemCode = Item::all();
         $itemCategory = Category::all();
-        $itemDetails =Item::latest()->paginate(5);
+        $itemDetails = Item::latest()->get();
 
          // get max Customer number code
          $maxSupplierNo = Suppliers::orderBy('Code', 'desc')->value('Code');

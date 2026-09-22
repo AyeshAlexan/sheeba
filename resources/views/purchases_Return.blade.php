@@ -17,7 +17,7 @@
     <style>
         .purchase-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
         .purchase-table-card > .card-body { padding:0; }
-        .purchase-item-table, .purchase-total-table { width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+        .purchase-item-table, .purchase-total-table { width:100%; min-width:900px; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
         .purchase-item-table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
         .purchase-item-table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
         .purchase-item-table .form-control { min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
@@ -25,14 +25,14 @@
         .purchase-total-table { margin-top:10px; }
         .purchase-total-table td { background:#edf4ff !important; color:#234b7d; border-color:#d9e3ee !important; font-weight:700; }
         .purchase-total-table .stock-total-badge { background:transparent !important; color:inherit !important; padding:0 !important; border-radius:0 !important; }
-        .purchase-item-table th:nth-child(1), .purchase-item-table td:nth-child(1), .purchase-total-table td:nth-child(1) { width:15% !important; }
-        .purchase-item-table th:nth-child(2), .purchase-item-table td:nth-child(2), .purchase-total-table td:nth-child(2) { width:20% !important; }
-        .purchase-item-table th:nth-child(3), .purchase-item-table td:nth-child(3), .purchase-total-table td:nth-child(3) { width:12% !important; }
-        .purchase-item-table th:nth-child(4), .purchase-item-table td:nth-child(4), .purchase-total-table td:nth-child(4) { width:12% !important; }
-        .purchase-item-table th:nth-child(5), .purchase-item-table td:nth-child(5), .purchase-total-table td:nth-child(5) { width:12% !important; }
-        .purchase-item-table th:nth-child(6), .purchase-item-table td:nth-child(6), .purchase-total-table td:nth-child(6) { width:12% !important; }
-        .purchase-item-table th:nth-child(7), .purchase-item-table td:nth-child(7), .purchase-total-table td:nth-child(7) { width:13% !important; }
-        .purchase-item-table th:nth-child(8), .purchase-item-table td:nth-child(8), .purchase-total-table td:nth-child(8) { width:12% !important; }
+        .purchase-item-table th:nth-child(1), .purchase-item-table td:nth-child(1), .purchase-total-table td:nth-child(1) { width:18% !important; }
+        .purchase-item-table th:nth-child(2), .purchase-item-table td:nth-child(2), .purchase-total-table td:nth-child(2) { width:17% !important; }
+        .purchase-item-table th:nth-child(3), .purchase-item-table td:nth-child(3), .purchase-total-table td:nth-child(3) { width:11% !important; }
+        .purchase-item-table th:nth-child(4), .purchase-item-table td:nth-child(4), .purchase-total-table td:nth-child(4) { width:11% !important; }
+        .purchase-item-table th:nth-child(5), .purchase-item-table td:nth-child(5), .purchase-total-table td:nth-child(5) { width:11% !important; }
+        .purchase-item-table th:nth-child(6), .purchase-item-table td:nth-child(6), .purchase-total-table td:nth-child(6) { width:11% !important; }
+        .purchase-item-table th:nth-child(7), .purchase-item-table td:nth-child(7), .purchase-total-table td:nth-child(7) { width:11% !important; }
+        .purchase-item-table th:nth-child(8), .purchase-item-table td:nth-child(8), .purchase-total-table td:nth-child(8) { width:10% !important; }
         .purchase-table-card .stock-search-wrap { max-width:360px; }
         .purchase-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
     </style>
@@ -159,18 +159,19 @@
                                             <input type="text" class="form-control" id="stockItemSearch" placeholder="Search item code or description...">
                                         </div>
                                     </div>
+                            <div class="table-responsive">
                             <table class="table table-bordered purchase-item-table">
                                 <thead class="thead-light">
                                     <tr>
                                         {{-- <th style="width:15%; text-align: center;">Category</th> --}}
-                                        <th style="width:15%; text-align: center;">Item Code</th>
-                                        <th style="width:20%; text-align: center;">Description</th>
-                                        <th style="width:12%; text-align: center;">QTY</th>
-                                        <th style="width:12%; text-align: center;">Unit Price</th>
-                                        <th style="width:12%; text-align: center;">Discount (%)</th>
-                                        <th style="width:12%; text-align: center;">Discount Val</th>
-                                        <th style="width:13%; text-align: center;">Net Value</th>
-                                        <th class="text-center" style="width:12%;">Action</th>
+                                        <th style="width:18%; text-align: center;">Item Code</th>
+                                        <th style="width:17%; text-align: center;">Description</th>
+                                        <th style="width:11%; text-align: center;">QTY</th>
+                                        <th style="width:11%; text-align: center;">Unit Price</th>
+                                        <th style="width:11%; text-align: center;">Discount (%)</th>
+                                        <th style="width:11%; text-align: center;">Discount Val</th>
+                                        <th style="width:11%; text-align: center;">Net Value</th>
+                                        <th class="text-center" style="width:10%;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -238,6 +239,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                                 </div>
                             </div>
 
@@ -302,7 +304,7 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
-                                                {!! $itemDetails->links() !!}
+                                                <div id="ItemTableCustomPager"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -310,6 +312,7 @@
                             </div>
 
                             {{-- dynamicAdded table --}}
+                            <div class="table-responsive">
                             <table class="table table-bordered purchase-item-table" id="dynamicAdded">
 
                             </table>
@@ -340,6 +343,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
 
                             {{-- bottom values section  --}}
                             <div class="stock-info-card mt-3">
@@ -435,11 +439,7 @@ aria-hidden="true">
                 data-bs-dismiss="modal"
                 aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body">
+        <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
                             <div class="errMsgContainer"></div>
                             <form action="" method="post"
                                 id="addCustomer">
@@ -578,11 +578,6 @@ aria-hidden="true">
                                             aria-label="Close">Close</button>
                                     </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
@@ -1031,21 +1026,34 @@ aria-hidden="true">
     });
 </script>
 
+{{-- item picker table: pagination + search --}}
+<script src="assets/js/dt-custom-pager.js"></script>
+<script>
+    $(document).ready(function () {
+        var ItemPickerTable = $('#ItemTable').DataTable({
+            pageLength: 10,
+            lengthChange: false,
+            searching: true,
+            dom: 't',
+            columnDefs: [{ orderable: false, targets: -1 }],
+        });
+        DTCustomPager.init(ItemPickerTable, '#ItemTableCustomPager');
+
+        $('#item_name').on('keyup', function () {
+            ItemPickerTable.search($(this).val()).draw();
+        });
+    });
+</script>
+
 {{-- select items using table row as a button --}}
 <script>
-    var table = document.getElementById("ItemTable");
-    var rows = table.getElementsByTagName("tr");
-    // Add a click event listener to each row
-    for (var i = 0; i < rows.length; i++) {
-        rows[i].addEventListener("click", function() {
-            var item_code_add = this.cells[0].textContent;
-            $('#item_code').val(item_code_add);
-            setItemDetails();
-            $("#searchItemModel").modal('hide');
-            $('#item_name').val("");
-            // $('#getItemCode').reset();
-        });
-    }
+    $(document).on('click', '#ItemTable tbody tr', function () {
+        var item_code_add = this.cells[0].textContent;
+        $('#item_code').val(item_code_add);
+        setItemDetails();
+        $("#searchItemModel").modal('hide');
+        $('#item_name').val("");
+    });
 </script>
 
 {{-- set item data function when inserting the item code or name --}}
@@ -1139,28 +1147,6 @@ aria-hidden="true">
             setItemDetails();
         });
     });
-</script>
-
-{{-- search item data using item name --}}
-<script>
-    $('#item_name').on('keyup', function (e) {
-                e.preventDefault();
-                let search_string = $('#item_name').val();
-                $.ajax({
-                    url: "{{ route('search_items_ajax') }}",
-                    method: 'GET',
-                    data: {
-                        search_string: search_string
-                    },
-                    success: function (res) {
-                        $('.table-data').html(res);
-                        if (res.status == 'not_found') {
-                            $('.table-data').html('<span class="text-danger">' +
-                                'Nothing found...' + '</span>');
-                        }
-                    }
-                });
-            })
 </script>
 
     {{--  get supplier data inserting Code --}}
