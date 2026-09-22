@@ -150,6 +150,10 @@ Route::get('PaymentVoucher', [App\Http\Controllers\PaymentVoucherController::cla
 Route::post('/addPaymentVoucher', [App\Http\Controllers\PaymentVoucherController::class,'addPaymentVoucher'])->name('addPaymentVoucher');
 Route::post('/UpdatePaymentVoucher', [App\Http\Controllers\PaymentVoucherController::class,'UpdatePaymentVoucher'])->name('UpdatePaymentVoucher');
 Route::post('/DeletePaymentVoucher', [App\Http\Controllers\PaymentVoucherController::class,'DeletePaymentVoucher'])->name('DeletePaymentVoucher');
+
+//Daily Transactions / Cash Book
+Route::get('daily-transactions', [App\Http\Controllers\DailyTransactionController::class, 'index'])->name('daily.transactions');
+Route::get('cash-book', [App\Http\Controllers\CashBookController::class, 'index'])->name('cash.book');
 Route::get('/show_voucher_ajax',  [App\Http\Controllers\PaymentVoucherController::class, 'GetVoucher'])->name('show_voucher_ajax');
 Route::get('/show_dr_voucher_ajax',  [App\Http\Controllers\PaymentVoucherController::class, 'GetDRVoucher'])->name('show_dr_voucher_ajax');
 

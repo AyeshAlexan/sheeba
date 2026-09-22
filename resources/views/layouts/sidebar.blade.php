@@ -689,6 +689,26 @@
                           <div class="text-truncate" data-i18n="Order Details">Cash & Cheque Transaction</div>
                         </a>
                   </li>
+
+                  <li class="menu-item">
+                       <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                      <div class="text-truncate" data-i18n="Order">Journal<span
+                        class="menu-arrow"></span></div>
+                    </a>
+
+                    <ul class="menu-sub">
+                        <li class="menu-item">
+                            <a href="{{route('daily.transactions')}}" target ="_ blank" class="menu-link">
+                                <div class="text-truncate" data-i18n="Order Details">Daily Transactions</div>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{{route('cash.book')}}" target ="_ blank" class="menu-link">
+                                <div class="text-truncate" data-i18n="Order Details">Cash Book</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                   <!--<li class="menu-item">-->
                   <!--      <a href="{{route("CashTransferreport")}}" target ="_ blank" class="menu-link">-->
                   <!--        <div class="text-truncate" data-i18n="Order Details">Cash In Hand</div>-->

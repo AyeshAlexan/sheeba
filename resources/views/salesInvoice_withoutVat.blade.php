@@ -110,6 +110,90 @@
 .sales-shell > .card-body {
     padding-top: 10px;
 }
+/* Compact customer picker table and reference-style pager. */
+#selectCustomerModel .modal-dialog {
+    max-width: 800px;
+}
+#selectCustomerModel .modal-content {
+    border: 1px solid #dfeaf6;
+    border-radius: 16px;
+    overflow: hidden;
+}
+#selectCustomerModel .modal-header {
+    padding: 14px 18px;
+    background: #f5f9ff;
+    border-bottom: 1px solid #dfeaf6;
+}
+#selectCustomerModel .modal-body {
+    padding: 16px 18px 20px;
+}
+#selectCustomerModel .stock-search-wrap {
+    max-width: 360px;
+    margin-bottom: 14px !important;
+}
+#selectCustomerModel #ItemTable {
+    width: 100% !important;
+    table-layout: fixed;
+    margin: 0 !important;
+    border: 1px solid #d9e3ee;
+    border-radius: 10px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+}
+#selectCustomerModel #ItemTable thead th {
+    background: #fff;
+    color: #2b3e5b;
+    border-bottom: 1px solid #d9e3ee;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: left;
+}
+#selectCustomerModel #ItemTable tbody td {
+    padding: 8px 12px;
+    border-color: #edf1f5;
+    color: #314765;
+    vertical-align: middle;
+}
+#selectCustomerModel #ItemTable th:first-child,
+#selectCustomerModel #ItemTable td:first-child { width: 24%; }
+#selectCustomerModel #ItemTable th:nth-child(2),
+#selectCustomerModel #ItemTable td:nth-child(2) { width: 56%; }
+#selectCustomerModel #ItemTable th:last-child,
+#selectCustomerModel #ItemTable td:last-child { width: 20%; text-align: center; }
+#selectCustomerModel #ItemTable .dt-act-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 8px;
+    color: #2d6ce9;
+    border: 1px solid #bcd3f7;
+    background: #f5f9ff;
+}
+#selectCustomerModel #ItemTable .dt-act-btn:hover {
+    color: #fff;
+    background: #2d6ce9;
+}
+#selectCustomerModel #ItemTableCustomPager {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 18px;
+}
+#selectCustomerModel #ItemTableCustomPager .dt-custom-pager-row {
+    margin-top: 0;
+    width: 100%;
+    justify-content: center;
+}
+#selectCustomerModel #ItemTableCustomPager .dt-custom-pager {
+    padding: 6px 10px;
+    gap: 2px;
+}
 .sales-header {
     display: flex;
     align-items: center;

@@ -38,6 +38,25 @@
         .purchase-item-table th:nth-child(8), .purchase-item-table td:nth-child(8), .purchase-total-table td:nth-child(8) { width:12% !important; }
         .purchase-table-card .stock-search-wrap { max-width:360px; }
         .purchase-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+        #searchItemModel .modal-dialog { max-width:900px; }
+        #searchItemModel .modal-content { border:1px solid #dfeaf6; border-radius:16px; overflow:hidden; }
+        #searchItemModel .modal-header { padding:14px 18px; background:#f5f9ff; border-bottom:1px solid #dfeaf6; }
+        #searchItemModel .modal-body { padding:16px 18px 20px; max-height:65vh !important; }
+        #searchItemModel #ItemTable { width:100% !important; table-layout:fixed; margin:0 !important; border:1px solid #d9e3ee; border-radius:10px; overflow:hidden; border-collapse:separate; border-spacing:0; font-size:13px; }
+        #searchItemModel #ItemTable thead th { background:#fff; color:#2b3e5b; border-bottom:1px solid #d9e3ee; padding:10px 12px; font-size:12px; font-weight:800; text-align:left; }
+        #searchItemModel #ItemTable tbody td { padding:8px 12px; border-color:#edf1f5; color:#314765; vertical-align:middle; }
+        #searchItemModel #ItemTable th:first-child, #searchItemModel #ItemTable td:first-child { width:0; padding:0; border:0; }
+        #searchItemModel #ItemTable th:nth-child(2), #searchItemModel #ItemTable td:nth-child(2) { width:16%; }
+        #searchItemModel #ItemTable th:nth-child(3), #searchItemModel #ItemTable td:nth-child(3) { width:14%; }
+        #searchItemModel #ItemTable th:nth-child(4), #searchItemModel #ItemTable td:nth-child(4) { width:32%; }
+        #searchItemModel #ItemTable th:nth-child(5), #searchItemModel #ItemTable td:nth-child(5) { width:16%; text-align:right; }
+        #searchItemModel #ItemTable th:nth-child(6), #searchItemModel #ItemTable td:nth-child(6) { width:12%; text-align:right; }
+        #searchItemModel #ItemTable th:last-child, #searchItemModel #ItemTable td:last-child { width:10%; text-align:center; }
+        #searchItemModel #ItemTable th:not(:first-child), #searchItemModel #ItemTable td:not(:first-child) { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #searchItemModel #ItemTable .dt-act-btn { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0; border-radius:8px; color:#2d6ce9; border:1px solid #bcd3f7; background:#f5f9ff; }
+        #searchItemModel #ItemTable .dt-act-btn:hover { color:#fff; background:#2d6ce9; }
+        #searchItemModel #ItemTableCustomPager { display:flex; justify-content:center; width:100%; margin-top:18px; }
+        #searchItemModel #ItemTableCustomPager .dt-custom-pager-row { margin-top:0; width:100%; justify-content:center; }
     </style>
     <style>
         .item-description-wrapper {
