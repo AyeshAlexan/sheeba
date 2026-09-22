@@ -227,6 +227,12 @@
                             }
                         });
 
+                        // If we arrived here from a "which receipt was this?" link
+                        // (e.g. Cash & Cheque Transaction report), filter straight
+                        // down to that one receipt instead of showing the full list.
+                        let urlParams = new URLSearchParams(window.location.search);
+                        let jumpToReceipt = urlParams.get('receipt');
+
                         $('#TGentralReceipt').DataTable({
                             processing: true,
                             serverSide: true,
@@ -240,7 +246,8 @@
                                 { data: 'amount', name: 'amount' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            search: jumpToReceipt ? { search: jumpToReceipt } : undefined
                         });
                     });
 

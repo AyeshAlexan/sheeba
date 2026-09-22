@@ -32,10 +32,15 @@ class PaymentVoucherController extends Controller
     }
  
     public function addPaymentVoucher(Request $request)
-    {  
-  
+    {
+        $request->validate([
+            'description' => 'required',
+        ], [
+            'description.required' => 'Please enter a description explaining this voucher.',
+        ]);
+
         $DepartmentId = $request->id;
-  
+
         $Department   =   TPaymentVoucher::updateOrCreate(
                     [
                      'id' => $DepartmentId
@@ -61,6 +66,7 @@ class PaymentVoucherController extends Controller
         $AccountTrans->dr_amount = $request->amount;
         $AccountTrans->AccCode = $request->drcode;
         $AccountTrans->cr_amount = "0";
+        $AccountTrans->Description = $request->description;
         $AccountTrans->trance_no =  $request->invoice_no;
         $AccountTrans->no =  $request->invoice_no;
         $AccountTrans->BC = auth()->user()->BC;
@@ -76,6 +82,7 @@ class PaymentVoucherController extends Controller
         $AccountTrans->dr_amount="0";
         $AccountTrans->cr_amount = $request->amount;
         $AccountTrans->AccCode = $request->crcode;
+        $AccountTrans->Description = $request->description;
         $AccountTrans->trance_no =  $request->invoice_no;
         $AccountTrans->no =  $request->invoice_no;
         $AccountTrans->BC = auth()->user()->BC;

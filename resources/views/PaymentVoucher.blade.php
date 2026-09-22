@@ -276,6 +276,12 @@
                             }
                         });
 
+                        // If we arrived here from a "which voucher was this?" link
+                        // (e.g. Cash & Cheque Transaction report), filter straight
+                        // down to that one voucher instead of showing the full list.
+                        let urlParams = new URLSearchParams(window.location.search);
+                        let jumpToVoucher = urlParams.get('voucher');
+
                         $('#TPaymentVoucher').DataTable({
                             processing: true,
                             serverSide: true,
@@ -289,7 +295,8 @@
                                 { data: 'amount', name: 'amount' },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
-                            order: [[0, 'desc']]
+                            order: [[0, 'desc']],
+                            search: jumpToVoucher ? { search: jumpToVoucher } : undefined
                         });
                     });
 
@@ -357,8 +364,12 @@
                                 $("#btn-save").html('Submit');
                                 $("#btn-save"). attr("disabled", false);
                             },
-                            error: function(data){
-                                console.log(data);
+                            error: function(xhr){
+                                let msg = 'Something went wrong while saving the voucher.';
+                                if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.description) {
+                                    msg = xhr.responseJSON.errors.description[0];
+                                }
+                                alert(msg);
                             }
                         });
                     });

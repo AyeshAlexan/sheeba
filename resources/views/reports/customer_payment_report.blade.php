@@ -212,6 +212,12 @@
 </script>
 <script>
     jQuery(document).ready(function ($) {
+        // If we arrived here from a "which payment was this?" link (e.g.
+        // Cash & Cheque Transaction report), filter straight down to
+        // payments matching that sales/customer reference.
+        let urlParams = new URLSearchParams(window.location.search);
+        let jumpToPayment = urlParams.get('payment');
+
         $('#t_item_movements').DataTable( //database table name
             {
                 dom: 'Bfrtip',
@@ -223,6 +229,7 @@
                     'pdf',
                     // 'print',
                 ],
+                search: jumpToPayment ? { search: jumpToPayment } : undefined,
             }
         );
 

@@ -181,7 +181,9 @@
             <tr>
                 <th>Date</th>
                 <th>No</th>
-                <th>Transaction</th>
+                <th>Transaction Type</th>
+                <th>Description</th>
+                <th>Double Entry</th>
                 <th>DR Amount</th>
                 <th>CR Amount</th>
             </tr>
@@ -193,6 +195,8 @@
                 <td>{{ $fromDate }}</td>
                 <td>-</td>
                 <td><i class="fa-solid fa-lock-open"></i> Opening Balance (Cash)</td>
+                <td></td>
+                <td></td>
                 <td>{{ $cashOpeningBalanceFmt }}</td>
                 <td>0.00</td>
             </tr>
@@ -201,30 +205,38 @@
             <tr>
                 <td>{{ $inv->Ddate }}</td>
                 <td>{{ $inv->trance_no }}</td>
-                   <td>{{ $inv->trance_type }}-{{ $inv->Description }}</td>
+                   <td>
+                        @if($inv->reference_url)
+                            <a href="{{ $inv->reference_url }}" target="_blank">{{ $inv->reference_label }}</a>
+                        @else
+                            {{ $inv->reference_label }}
+                        @endif
+                   </td>
+                <td>{{ $inv->Description }}</td>
+                <td>{{ $inv->logic_summary }}</td>
                 <td>{{ $inv->dr_amount }}</td>
                 <td>{{ $inv->cr_amount }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center text-muted">No cash transactions found.</td>
+                <td colspan="7" class="text-center text-muted">No cash transactions found.</td>
             </tr>
             @endforelse
         </tbody>
 
         <tfoot>
             <tr>
-                <td colspan="3">Total</td>
+                <td colspan="5">Total</td>
                 <td>DR Total:</td>
                 <td>CR Total:</td>
             </tr>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <td>{{ $cashTotalDrFmt }}</td>
                 <td>{{ $cashTotalCrFmt }}</td>
             </tr>
             <tr class="balance-row">
-                <td colspan="3">Cash Balance (DR − CR)</td>
+                <td colspan="5">Cash Balance (DR − CR)</td>
                 <td colspan="2">
                     <span class="{{ str_starts_with($cashBalanceFmt, '-') ? 'negative-balance' : 'positive-balance' }}">
                         {{ $cashBalanceFmt }}
@@ -255,7 +267,9 @@
             <tr>
                 <th>Date</th>
                 <th>No</th>
-                <th>Transaction</th>
+                <th>Transaction Type</th>
+                <th>Description</th>
+                <th>Double Entry</th>
                 <th>DR Amount</th>
                 <th>CR Amount</th>
             </tr>
@@ -267,6 +281,8 @@
                 <td>{{ $fromDate }}</td>
                 <td>-</td>
                 <td><i class="fa-solid fa-lock-open"></i> Opening Balance (Cheque)</td>
+                <td></td>
+                <td></td>
                 <td>{{ $chequeOpeningBalanceFmt }}</td>
                 <td>0.00</td>
             </tr>
@@ -275,30 +291,38 @@
             <tr>
                 <td>{{ $inv->Ddate }}</td>
                 <td>{{ $inv->trance_no }}</td>
-                <td>{{ $inv->trance_type }}-{{ $inv->Description }}</td>
+                <td>
+                    @if($inv->reference_url)
+                        <a href="{{ $inv->reference_url }}" target="_blank">{{ $inv->reference_label }}</a>
+                    @else
+                        {{ $inv->reference_label }}
+                    @endif
+                </td>
+                <td>{{ $inv->Description }}</td>
+                <td>{{ $inv->logic_summary }}</td>
                 <td>{{ $inv->dr_amount }}</td>
                 <td>{{ $inv->cr_amount }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center text-muted">No cheque transactions found.</td>
+                <td colspan="7" class="text-center text-muted">No cheque transactions found.</td>
             </tr>
             @endforelse
         </tbody>
 
         <tfoot>
             <tr>
-                <td colspan="3">Total</td>
+                <td colspan="5">Total</td>
                 <td>DR Total:</td>
                 <td>CR Total:</td>
             </tr>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <td>{{ $chequeTotalDrFmt }}</td>
                 <td>{{ $chequeTotalCrFmt }}</td>
             </tr>
             <tr class="balance-row">
-                <td colspan="3">Cheque Balance (DR − CR)</td>
+                <td colspan="5">Cheque Balance (DR − CR)</td>
                 <td colspan="2">
                     <span class="{{ str_starts_with($chequeBalanceFmt, '-') ? 'negative-balance' : 'positive-balance' }}">
                         {{ $chequeBalanceFmt }}
