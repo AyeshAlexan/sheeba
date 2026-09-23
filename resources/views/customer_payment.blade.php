@@ -15,6 +15,45 @@
 </head>
 
 <style>
+    .customer-payment-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
+    .customer-payment-table-card > .card-body { padding:0; }
+    #data_table, #total_credit_table { width:100% !important; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
+    #data_table thead th, #total_credit_table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
+    #data_table tbody td, #total_credit_table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
+    #data_table tbody tr:hover, #total_credit_table tbody tr:hover { background:#f7fbff; }
+    .customer-code-wrap .customer-picker { position:absolute; top:50%; right:6px; z-index:2; width:64px; height:38px; padding:0; transform:translateY(-50%); border-radius:10px; }
+    #searchCustomer { padding-right:84px; }
+    #selectCustomerModel .modal-dialog { max-width: 800px; }
+    #selectCustomerModel .modal-content { border:1px solid #dfeaf6; border-radius:16px; overflow:hidden; }
+    #selectCustomerModel .modal-header { padding:14px 18px; background:#f5f9ff; border-bottom:1px solid #dfeaf6; }
+    #selectCustomerModel .modal-body { padding:16px 18px 20px; max-height:65vh; overflow-y:auto; }
+    #selectCustomerModel .stock-search-wrap { max-width:360px; margin-bottom:14px; }
+    #selectCustomerModel #ItemTableCus { width:100% !important; margin:0; border:1px solid #d9e3ee; border-radius:10px; overflow:hidden; border-collapse:separate; border-spacing:0; }
+    #selectCustomerModel #ItemTableCus thead th { background:#f8fafc; color:#2b3e5b; border-bottom:1px solid #d9e3ee; padding:10px 12px; font-size:13px; font-weight:700; }
+    #selectCustomerModel #ItemTableCus tbody td { padding:10px 12px; border-color:#edf1f5; vertical-align:middle; }
+    #selectCustomerModel #ItemTableCus .dt-act-btn { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; border-radius:9px; color:#2d6ce9; border:1px solid #bcd3f7; background:#f5f9ff; }
+    #selectCustomerModel #ItemTableCus .dt-act-btn:hover { color:#fff; background:#2d6ce9; }
+    #selectCustomerModel #ItemTableCus th:first-child, #selectCustomerModel #ItemTableCus td:first-child { width:15%; }
+    #selectCustomerModel #ItemTableCus th:nth-child(2), #selectCustomerModel #ItemTableCus td:nth-child(2) { width:30%; }
+    #selectCustomerModel #ItemTableCus th:nth-child(3), #selectCustomerModel #ItemTableCus td:nth-child(3) { width:40%; }
+    #selectCustomerModel #ItemTableCus th:last-child, #selectCustomerModel #ItemTableCus td:last-child { width:15%; text-align:center; }
+    #selectCustomerModel #ItemTableCusCustomPager { display:flex; justify-content:center; width:100%; margin-top:18px; }
+    #selectCustomerModel #ItemTableCusCustomPager .dt-custom-pager-row { margin-top:0; width:100%; justify-content:center; }
+    #selectCustomerModel #ItemTableCusCustomPager .dt-custom-pager { padding:6px 10px; gap:2px; }
+    .customer-payment-modal { border:1px solid #dfeaf6; border-radius:16px; overflow:hidden; }
+    .customer-payment-modal .modal-body { max-height:calc(100vh - 180px); overflow-y:auto; padding:20px; }
+    .customer-payment-modal .modal-header { padding:16px 20px; }
+    .customer-payment-summary { border:1px solid #d9e3ee; border-radius:10px; overflow:hidden; }
+    .customer-payment-summary table { min-width:650px; }
+    .customer-payment-summary thead th { background:#f5f9ff; color:#2b3e5b; text-align:center; vertical-align:middle; }
+    .customer-payment-summary tbody td { background:#fff; vertical-align:middle; }
+    .customer-payment-modal .customer-cheque-table { min-width:900px; margin-bottom:0; }
+    .customer-payment-modal .customer-cheque-table th { background:#f5f9ff; color:#2b3e5b; white-space:nowrap; }
+    .customer-payment-modal .modal-footer { padding:14px 20px; background:#f8fafc; }
+    .customer-payment-modal .modal-header { background:#f5f9ff; color:#243650; border-bottom:1px solid #dfeaf6; }
+    .customer-payment-modal .modal-header .modal-title i { color:#2d6ce9; }
+    .customer-payment-modal .payment-note-wrap > i { top:18px; transform:none; }
+
     /* ── Tab nav ─────────────────────────────────────────────── */
     .payment-tabs .nav-link {
         font-weight: 600;
@@ -74,15 +113,23 @@
 <div class="main-wrapper">
     <div class="page-wrapper">
         <div class="content container-fluid">
+            <div class="page-header ph-flex">
+                            <div class="ph-left">
+                                <div class="ph-icon">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2M13 12h8m0 0-3-3m3 3-3 3"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="page-title">Customer Payment</h3>
+                                    <p class="page-subtitle">Settle outstanding sales invoices with a customer</p>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Reset this form and start over?')) window.location.reload();">
+                                <i class="fas fa-redo-alt"></i> Reset
+                            </button>
+            </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="card shadow">
-
-                        <div class="d-flex align-items-center px-3 pt-3">
-                            <h4 class="card-title mb-0">Customer Payments</h4>
-                        </div>
-                        <hr style="height:4px;background:blue;margin:10px 0 0;">
-
+                    <div class="card">
                         <div class="card-body">
 
                             {{-- Alerts --}}
@@ -104,38 +151,46 @@
                             {{-- Shared controls --}}
                             <form method="post" id="installment">
                                 @csrf
-                                <div class="row g-2 mb-4">
-                                    <div class="col-md-4">
-                                        <div class="input-group">
-                                            <span class="input-group-text">Customer Code :</span>
-                                            <input type="text" id="searchCustomer" name="Customer_code"
-                                                class="form-control" placeholder="Enter Customer Code" required>
-                                            <button type="button" class="btn btn-primary"
-                                                data-bs-toggle="modal" data-bs-target="#selectCustomerModel">
-                                                <i class="fa fa-arrow-left"></i>
-                                            </button>
+                                <div class="stock-info-card">
+                                    <div class="stock-info-grid-3">
+                                        <div class="si-field">
+                                            <label>Customer Code <span class="text-danger">*</span></label>
+                                            <div class="si-icon-wrap customer-code-wrap">
+                                                <input type="text" id="searchCustomer" name="Customer_code"
+                                                    class="form-control" placeholder="Enter Customer Code" required>
+                                                <button type="button" class="btn btn-primary customer-picker" data-bs-toggle="modal" data-bs-target="#selectCustomerModel" aria-label="Select customer">
+                                                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="input-group">
-                                            <span class="input-group-text">Payment No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</span>
-                                            <input type="text" id="payment_no" name="payment_no"
-                                                value="{{$maxInvoiceNo+1}}" class="form-control" required>
+                                        <div class="si-field">
+                                            <label>Payment No.</label>
+                                            <div class="si-icon-wrap">
+                                                <i class="fas fa-hashtag"></i>
+                                                <input type="text" id="payment_no" name="payment_no" value="{{$maxInvoiceNo+1}}" class="form-control" placeholder="Payment No" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="input-group">
-                                            <span class="input-group-text">Payment Date&nbsp;&nbsp;&nbsp;:</span>
-                                            <input type="date" id="payment_date" name="payment_date"
-                                                class="form-control" required>
+                                        <div class="si-field">
+                                            <label>Payment Date</label>
+                                            <div class="si-icon-wrap">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <input type="date" id="payment_date" name="payment_date" class="form-control" required>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <input type="hidden" id="customer_name"  name="customer_name">
                                 <input type="hidden" id="customer_phone" name="customer_phone">
 
+                                <div id="customer_empty_state" class="card">
+                                    <div class="stock-empty-state">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                        Enter a customer code above to view their outstanding invoices.
+                                    </div>
+                                </div>
+
                                 {{-- ── Nav Tabs ──────────────────────────────────── --}}
-                                <ul class="nav nav-tabs payment-tabs" id="paymentTabNav" role="tablist">
+                                <ul class="nav nav-tabs payment-tabs d-none" id="paymentTabNav" role="tablist">
                                        <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="tab-totalcredit"
                                             data-bs-toggle="tab" data-bs-target="#pane-totalcredit"
@@ -156,12 +211,12 @@
                                 </ul>
 
                                 {{-- ── Tab Panes ─────────────────────────────────── --}}
-                                <div class="tab-content" id="paymentTabContent">
+                                <div class="tab-content d-none" id="paymentTabContent">
 
                                     {{-- Tab 1: Invoice Wish --}}
                                     <div class="tab-pane fade show active" id="pane-invoice"
                                         role="tabpanel" aria-labelledby="tab-invoice">
-                                        <div class="tab-panel-card">
+                                        <div class="tab-panel-card customer-payment-table-card d-none" id="invoice_payment_table">
                                             <div id="errMsgContainer_invoice"></div>
                                             <div class="table-responsive">
                                                 <table class="table table-bordered table-center table-hover" id="data_table">
@@ -176,11 +231,7 @@
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
-                                                        @for ($i = 0; $i < 3; $i++)
-                                                        <tr style="height:48px"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                                                        @endfor
-                                                    </tbody>
+                                                    <tbody></tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -189,7 +240,7 @@
                                     {{-- Tab 2: Total Credit --}}
                                     <div class="tab-pane fade" id="pane-totalcredit"
                                         role="tabpanel" aria-labelledby="tab-totalcredit">
-                                        <div class="tab-panel-card">
+                                        <div class="tab-panel-card customer-payment-table-card d-none" id="total_credit_payment_table">
                                             <div id="total_balance_display" style="display:none;" class="total-balance-badge">
                                                 Total Customer Balance :&nbsp;<span id="total_balance_value">0.00</span>
                                             </div>
@@ -206,11 +257,7 @@
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
-                                                        @for ($i = 0; $i < 2; $i++)
-                                                        <tr style="height:48px"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                                                        @endfor
-                                                    </tbody>
+                                                    <tbody></tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -227,12 +274,12 @@
                         {{-- ════════════════════════════════════════════════════ --}}
                         <div class="modal fade" tabindex="-1" id="makePaymentModel" role="dialog" aria-hidden="true">
                             <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-success text-white">
+                                <div class="modal-content customer-payment-modal">
+                                    <div class="modal-header">
                                         <h5 class="modal-title">
                                             <i class="fas fa-file-invoice-dollar me-2"></i>Make Payment — Invoice Wish
                                         </h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="errMsgContainer2 mb-2"></div>
@@ -243,8 +290,8 @@
                                             <input type="hidden" id="up_customer_name"  name="customer_name">
                                             <input type="hidden" id="up_customer_phone" name="customer_phone">
 
-                                            <div class="table-responsive mb-3">
-                                                <table class="table table-bordered">
+                                            <div class="table-responsive mb-3 customer-payment-summary">
+                                                <table class="table table-bordered table-center mb-0">
                                                     <thead class="thead-light">
                                                         <tr align="center">
                                                             <th>Invoice No</th><th>Invoice Date</th>
@@ -263,52 +310,26 @@
                                                 </table>
                                             </div>
 
-                                            <div class="row g-2 mb-3">
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Payment Date&nbsp;:</span>
-                                                        <input type="date" class="form-control" id="up_payment_date" name="payment_date">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Payment Note&nbsp;:</span>
-                                                        <textarea class="form-control" id="up_payment_note" name="payment_note" rows="1"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Paying Amount :</span>
-                                                        <input type="text" id="up_paying_amount" name="paying_amount" class="form-control" placeholder="Paying Amount" required>
-                                                    </div>
+                                            <div class="stock-info-card mt-3">
+                                                <div class="stock-info-grid-3">
+                                                    <div class="si-field"><label>Payment Date</label><div class="si-icon-wrap"><i class="fas fa-calendar-alt"></i><input type="date" class="form-control" id="up_payment_date" name="payment_date"></div></div>
+                                                    <div class="si-field"><label>Payment Note</label><div class="si-icon-wrap payment-note-wrap"><i class="fas fa-sticky-note"></i><textarea class="form-control" id="up_payment_note" name="payment_note" rows="2" placeholder="Payment Note"></textarea></div></div>
+                                                    <div class="si-field"><label>Paying Amount <span class="text-danger">*</span></label><div class="si-icon-wrap"><i class="fas fa-wallet"></i><input type="text" id="up_paying_amount" name="paying_amount" class="form-control" placeholder="0.00" required></div></div>
                                                 </div>
                                             </div>
 
-                                            <p class="mb-2"><strong>Payment Options</strong></p>
-                                            <div class="row g-2 mb-3">
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text fw-bold">Cash Pay&nbsp;:</span>
-                                                        <input type="text" class="form-control fw-bold" id="cash_payment" name="cash_payment" placeholder="Cash Pay">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text fw-bold">Card Pay&nbsp;:</span>
-                                                        <input type="text" class="form-control fw-bold" id="card_payment" name="card_payment" placeholder="Card Pay">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text fw-bold">Bank Tr.&nbsp;&nbsp;:</span>
-                                                        <input type="text" class="form-control fw-bold" id="bank_transfer" name="bank_transfer" placeholder="Bank Transfer">
-                                                    </div>
+                                            <h5 class="mt-4 mb-2"><i class="fas fa-cash-register text-primary me-2"></i>Payment Options</h5>
+                                            <div class="stock-info-card">
+                                                <div class="stock-info-grid-3">
+                                                    <div class="si-field"><label>Cash Pay</label><div class="si-icon-wrap"><i class="fas fa-money-bill-wave"></i><input type="text" class="form-control" id="cash_payment" name="cash_payment" placeholder="0.00"></div></div>
+                                                    <div class="si-field"><label>Card Pay</label><div class="si-icon-wrap"><i class="fas fa-credit-card"></i><input type="text" class="form-control" id="card_payment" name="card_payment" placeholder="0.00"></div></div>
+                                                    <div class="si-field"><label>Bank Transfer</label><div class="si-icon-wrap"><i class="fas fa-university"></i><input type="text" class="form-control" id="bank_transfer" name="bank_transfer" placeholder="0.00"></div></div>
                                                 </div>
                                             </div>
 
-                                            <p class="mb-2"><strong>Cheque Payment</strong></p>
+                                            <h5 class="mt-4 mb-2"><i class="fas fa-money-check-alt text-primary me-2"></i>Cheque Payment</h5>
                                             <div class="table-responsive mb-2">
-                                                <table class="table table-bordered" id="multi_cheques_table_show">
+                                                <table class="table table-bordered customer-cheque-table" id="multi_cheques_table_show">
                                                     <thead class="thead-light">
                                                         <tr>
                                                             <th>Bank Name</th><th>Cheque Date</th><th>Account No</th>
@@ -335,22 +356,13 @@
                                                     <tfoot>
                                                         <tr>
                                                             <td colspan="4" class="text-end"><strong>Total</strong></td>
-                                                            <td class="total-value text-center"><strong>0</strong></td>
+                                                            <td class="invoice-total-value text-center"><strong>0.00</strong></td>
                                                             <td></td>
                                                         </tr>
                                                     </tfoot>
                                                 </table>
                                             </div>
-                                            <table class="table table-bordered mb-2">
-                                                <tbody>
-                                                    <tr class="table-success">
-                                                        <td></td><td><strong>TOTAL :</strong></td><td></td>
-                                                        <td class="total-value text-center"><strong>0.00</strong></td>
-                                                        <td></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <input type="number" id="total_cheque_amount" name="total_cheque_amount" class="form-control" readonly>
+                                            <input type="hidden" id="total_cheque_amount" name="total_cheque_amount" value="0">
                                         </form>
                                     </div>
                                     <div class="modal-footer">
@@ -368,12 +380,12 @@
                         {{-- ════════════════════════════════════════════════════ --}}
                         <div class="modal fade" tabindex="-1" id="makeTotalCreditPaymentModel" role="dialog" aria-hidden="true">
                             <div class="modal-dialog modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-header" style="background:#1565c0;color:#fff;">
+                                <div class="modal-content customer-payment-modal">
+                                    <div class="modal-header">
                                         <h5 class="modal-title">
                                             <i class="fas fa-coins me-2"></i>Make Total Credit Payment
                                         </h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div id="errMsgContainer_tcp" class="mb-2"></div>
@@ -386,8 +398,8 @@
                                             <input type="hidden" id="tcp_total_cr"       name="total_cr">
                                             <input type="hidden" id="tcp_total_dr"       name="total_dr">
 
-                                            <div class="table-responsive mb-3">
-                                                <table class="table table-bordered">
+                                            <div class="table-responsive mb-3 customer-payment-summary">
+                                                <table class="table table-bordered table-center mb-0">
                                                     <thead class="thead-light">
                                                         <tr align="center">
                                                             <th>Customer Code</th><th>Customer Name</th>
@@ -408,52 +420,26 @@
                                                 </table>
                                             </div>
 
-                                            <div class="row g-2 mb-3">
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Payment Date&nbsp;:</span>
-                                                        <input type="date" class="form-control" id="tcp_payment_date" name="payment_date">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Payment Note&nbsp;:</span>
-                                                        <textarea class="form-control" id="tcp_payment_note" name="payment_note" rows="1"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Paying Amount :</span>
-                                                        <input type="text" id="tcp_paying_amount" name="paying_amount" class="form-control" placeholder="Paying Amount" required>
-                                                    </div>
+                                            <div class="stock-info-card mt-3">
+                                                <div class="stock-info-grid-3">
+                                                    <div class="si-field"><label>Payment Date</label><div class="si-icon-wrap"><i class="fas fa-calendar-alt"></i><input type="date" class="form-control" id="tcp_payment_date" name="payment_date"></div></div>
+                                                    <div class="si-field"><label>Payment Note</label><div class="si-icon-wrap payment-note-wrap"><i class="fas fa-sticky-note"></i><textarea class="form-control" id="tcp_payment_note" name="payment_note" rows="2" placeholder="Payment Note"></textarea></div></div>
+                                                    <div class="si-field"><label>Paying Amount <span class="text-danger">*</span></label><div class="si-icon-wrap"><i class="fas fa-wallet"></i><input type="text" id="tcp_paying_amount" name="paying_amount" class="form-control" placeholder="0.00" required></div></div>
                                                 </div>
                                             </div>
 
-                                            <p class="mb-2"><strong>Payment Options</strong></p>
-                                            <div class="row g-2 mb-3">
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text fw-bold">Cash Pay&nbsp;:</span>
-                                                        <input type="text" class="form-control fw-bold" id="tcp_cash_payment" name="cash_payment" placeholder="Cash Pay">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text fw-bold">Card Pay&nbsp;:</span>
-                                                        <input type="text" class="form-control fw-bold" id="tcp_card_payment" name="card_payment" placeholder="Card Pay">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text fw-bold">Bank Tr.&nbsp;&nbsp;:</span>
-                                                        <input type="text" class="form-control fw-bold" id="tcp_bank_transfer" name="bank_transfer" placeholder="Bank Transfer">
-                                                    </div>
+                                            <h5 class="mt-4 mb-2"><i class="fas fa-cash-register text-primary me-2"></i>Payment Options</h5>
+                                            <div class="stock-info-card">
+                                                <div class="stock-info-grid-3">
+                                                    <div class="si-field"><label>Cash Pay</label><div class="si-icon-wrap"><i class="fas fa-money-bill-wave"></i><input type="text" class="form-control" id="tcp_cash_payment" name="cash_payment" placeholder="0.00"></div></div>
+                                                    <div class="si-field"><label>Card Pay</label><div class="si-icon-wrap"><i class="fas fa-credit-card"></i><input type="text" class="form-control" id="tcp_card_payment" name="card_payment" placeholder="0.00"></div></div>
+                                                    <div class="si-field"><label>Bank Transfer</label><div class="si-icon-wrap"><i class="fas fa-university"></i><input type="text" class="form-control" id="tcp_bank_transfer" name="bank_transfer" placeholder="0.00"></div></div>
                                                 </div>
                                             </div>
 
-                                            <p class="mb-2"><strong>Cheque Payment</strong></p>
+                                            <h5 class="mt-4 mb-2"><i class="fas fa-money-check-alt text-primary me-2"></i>Cheque Payment</h5>
                                             <div class="table-responsive mb-2">
-                                                <table class="table table-bordered" id="tcp_cheques_table_show">
+                                                <table class="table table-bordered customer-cheque-table" id="tcp_cheques_table_show">
                                                     <thead class="thead-light">
                                                         <tr>
                                                             <th>Bank Name</th><th>Cheque Date</th><th>Account No</th>
@@ -486,16 +472,7 @@
                                                     </tfoot>
                                                 </table>
                                             </div>
-                                            <table class="table table-bordered mb-2">
-                                                <tbody>
-                                                    <tr class="table-primary">
-                                                        <td></td><td><strong>TOTAL :</strong></td><td></td>
-                                                        <td class="tcp-total-value text-center"><strong>0.00</strong></td>
-                                                        <td></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <input type="number" id="tcp_total_cheque_amount" name="total_cheque_amount" class="form-control" readonly>
+                                            <input type="hidden" id="tcp_total_cheque_amount" name="total_cheque_amount" value="0">
                                         </form>
                                     </div>
                                     <div class="modal-footer">
@@ -527,11 +504,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div class="stock-search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="customerModalSearch" class="form-control" placeholder="Search by name..." aria-label="Search customers by name">
+                </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover mt-2" id="ItemTableCus">
+                    <table class="table table-bordered table-hover table-sm" id="ItemTableCus">
                         <thead>
                             <tr class="table-secondary">
-                                <th>Code</th><th>Name</th><th>Address</th><th>Action</th>
+                                <th>Code</th><th>Name</th><th>Address</th><th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -541,16 +522,16 @@
                                 <td>{{ $data->First_name }}</td>
                                 <td>{{ $data->Address_1 }}</td>
                                 <td>
-                                    <a href="#" onclick="fillCustomerCode('{{ $data->Code }}')"
-                                        class="btn btn-outline-info btn-sm shadow"
-                                        data-bs-toggle="modal" data-bs-target="#selectCustomerModel">
-                                        Add <i class="fas fa-plus"></i>
+                                    <a href="javascript:void(0)" class="dt-act-btn select-payment-customer"
+                                        data-customer-code="{{ $data->Code }}" title="Select customer" aria-label="Select customer {{ $data->Code }}">
+                                        <i class="fas fa-plus" aria-hidden="true"></i>
                                     </a>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    <div id="ItemTableCusCustomPager"></div>
                 </div>
             </div>
         </div>
@@ -570,12 +551,26 @@
     document.getElementById('payment_date').value = new Date().toISOString().slice(0, 10);
 </script>
 
+<script src="assets/js/dt-custom-pager.js"></script>
 <script>
     $(document).ready(function () {
-        $('#ItemTableCus').DataTable({ lengthMenu: [[5,10,25],[5,10,25]] });
+        var customerTable = $('#ItemTableCus').DataTable({
+            paging: true, searching: true, ordering: true, info: false,
+            lengthChange: false, pageLength: 5, dom: 't'
+        });
+        DTCustomPager.init(customerTable, '#ItemTableCusCustomPager');
+        $('#customerModalSearch').on('input', function () {
+            customerTable.search(this.value).draw();
+        });
+        $(document).on('click', '.select-payment-customer', function () {
+            fillCustomerCode($(this).data('customer-code'));
+        });
     });
     function fillCustomerCode(code) {
-        document.getElementById('searchCustomer').value = code;
+        $('#searchCustomer').val(code).trigger($.Event('keyup', { keyCode: 13, which: 13 }));
+        var modalElement = document.getElementById('selectCustomerModel');
+        var modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
     }
 </script>
 
@@ -625,7 +620,7 @@ $(document).on("click", ".remove-input-field", function () {
     setTotal(); row.remove();
 });
 function setTotal() {
-    $(".total-value").html(`<strong>${totalValue.toFixed(2)}</strong>`);
+    $(".invoice-total-value").html(`<strong>${totalValue.toFixed(2)}</strong>`);
     $("#total_cheque_amount").val(totalValue.toFixed(2));
 }
 </script>
@@ -677,6 +672,8 @@ $(document).ready(function () {
     $('#searchCustomer').on('keyup', function (e) {
         var search_string = $(this).val();
         if (!search_string || (e.keyCode != 13 && e.keyCode != 10)) return;
+    $('#customer_empty_state').addClass('d-none');
+    $('#paymentTabNav, #paymentTabContent').removeClass('d-none');
 
         // Tab 1
         $.ajax({
@@ -686,6 +683,7 @@ $(document).ready(function () {
             success: function (response) {
                 $('#data_table tbody').html('');
                 if (response.status == 'success') {
+                        $('#invoice_payment_table').removeClass('d-none');
                     response.data.forEach(record => {
                         let credit  = parseFloat(record.credit_payment) || 0;
                         let paid    = parseFloat(record.paid_amount)    || 0;
@@ -718,6 +716,7 @@ $(document).ready(function () {
                     $('#customer_name').val(response.data[0]?.Customer_Name  || '');
                     $('#customer_phone').val(response.data[0]?.Customer_Phone || '');
                 } else {
+                    $('#invoice_payment_table').addClass('d-none');
                     $('#data_table tbody').append(`
                         <tr><td colspan="7" class="text-center text-danger"
                             style="font-size:16px;background:rgb(236,206,206);">
@@ -736,12 +735,14 @@ $(document).ready(function () {
 function loadTotalCreditSection(customer_code) {
     $('#total_credit_table tbody').html('');
     $('#total_balance_display').hide();
+    $('#total_credit_payment_table').addClass('d-none');
     $.ajax({
         url: "{{ route('get_customer_total_credit_balance_ajax') }}",
         method: 'GET',
         data: { search_string: customer_code },
         success: function (response) {
             if (response.status == 'success') {
+                $('#total_credit_payment_table').removeClass('d-none');
                 let d = response.data;
                 let cr = parseFloat(d.total_cr_amount) || 0;
                 let dr = parseFloat(d.total_dr_amount) || 0;
