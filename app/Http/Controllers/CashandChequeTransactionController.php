@@ -26,6 +26,7 @@ class CashandChequeTransactionController extends Controller
     {
         $fromDate    = $request->input('from_date');
         $toDate      = $request->input('to_date');
+        $search      = trim((string) $request->input('search'));
         $branch_code = auth()->user()->BC;
 
         if (!$fromDate || !$toDate) {
@@ -33,12 +34,25 @@ class CashandChequeTransactionController extends Controller
             $toDate   = now()->endOfMonth()->format('Y-m-d');
         }
 
+        // Applied identically to the row query and both sum queries below,
+        // for both Cash and Cheque, so the DR/CR totals always match what's
+        // actually displayed once a search term narrows the results.
+        $applySearch = function ($query) use ($search) {
+            return $search
+                ? $query->where(function ($q) use ($search) {
+                    $q->where('Description', 'like', "%{$search}%")
+                      ->orWhere('trance_no', 'like', "%{$search}%")
+                      ->orWhere('no', 'like', "%{$search}%");
+                })
+                : $query;
+        };
+
         // ══════════════════════════════════════════
         // CASH  (201-001)
         // ══════════════════════════════════════════
-        $cashInvoice = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $cashInvoice = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
             ->where('AccCode', '201-001')
-            ->where('BC', $branch_code)
+            ->where('BC', $branch_code))
             ->orderBy('Ddate')
             ->get();
 
@@ -47,14 +61,14 @@ class CashandChequeTransactionController extends Controller
             $row->logic_summary = $this->resolveLogic($row);
         }
 
-        $cashSumDr = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $cashSumDr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
             ->where('AccCode', '201-001')
-            ->where('BC', $branch_code)
+            ->where('BC', $branch_code))
             ->sum('dr_amount');
 
-        $cashSumCr = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $cashSumCr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
             ->where('AccCode', '201-001')
-            ->where('BC', $branch_code)
+            ->where('BC', $branch_code))
             ->sum('cr_amount');
 
         $cashOpeningBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate, '201-001');
@@ -64,9 +78,9 @@ class CashandChequeTransactionController extends Controller
         // ══════════════════════════════════════════
         // CHEQUE  (201-123)
         // ══════════════════════════════════════════
-        $chequeInvoice = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $chequeInvoice = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
             ->where('AccCode', '201-123')
-            ->where('BC', $branch_code)
+            ->where('BC', $branch_code))
             ->orderBy('Ddate')
             ->get();
 
@@ -75,14 +89,14 @@ class CashandChequeTransactionController extends Controller
             $row->logic_summary = $this->resolveLogic($row);
         }
 
-        $chequeSumDr = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $chequeSumDr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
             ->where('AccCode', '201-123')
-            ->where('BC', $branch_code)
+            ->where('BC', $branch_code))
             ->sum('dr_amount');
 
-        $chequeSumCr = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $chequeSumCr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
             ->where('AccCode', '201-123')
-            ->where('BC', $branch_code)
+            ->where('BC', $branch_code))
             ->sum('cr_amount');
 
         $chequeOpeningBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate, '201-123');
@@ -128,6 +142,7 @@ class CashandChequeTransactionController extends Controller
             'combinedBalanceFmt',
             'fromDate',
             'toDate',
+            'search',
             'todayIsClosed',
             'lastClosed'
         ));

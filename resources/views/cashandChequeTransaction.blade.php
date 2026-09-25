@@ -150,6 +150,10 @@
         <input type="date" class="form-control form-control-sm" style="width:160px"
                name="to_date" id="to_date" value="{{ $toDate }}">
 
+        <label for="search"><strong>Search:</strong></label>
+        <input type="text" class="form-control form-control-sm" style="width:220px"
+               name="search" id="search" value="{{ $search }}" placeholder="Description or reference no.">
+
         <button type="submit" class="btn btn-sm btn-primary">
             <i class="fa-solid fa-magnifying-glass"></i> Search
         </button>
