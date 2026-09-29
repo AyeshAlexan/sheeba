@@ -56,10 +56,10 @@
                     
                     <form action="" method="get">
                         <label for="date">From Date :</label>
-                        <input type="date" name="from_date" id="from_date">
+                        <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <label for="date">To Date :</label>
-                        <input type="date" name="to_date" id="to_date">
+                        <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {{-- <label for="salesman">Salesman :</label> --}}
                         {{-- <select class="select form-control" name="salesman" id="salesman" aria-hidden="true">
@@ -163,8 +163,11 @@
 
     <!-- Set default date to today -->
     <script>
-        var dateObj = new Date();
-        document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+        var toDateInput = document.getElementById('to_date');
+        if (!toDateInput.value) {
+            var dateObj = new Date();
+            toDateInput.value = dateObj.toISOString().slice(0, 10);
+        }
     </script>
 
 </body>

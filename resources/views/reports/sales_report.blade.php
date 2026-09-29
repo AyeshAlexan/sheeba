@@ -422,6 +422,14 @@
                         <label>To Date</label>
                         <input type="date" name="to_date" id="to_date" value="{{ $toDate }}">
                     </div>
+                    <div class="filter-group">
+                        <label>Customer NIC</label>
+                        <input type="text" name="customer" id="customer" value="{{ $customer }}" placeholder="Customer NIC">
+                    </div>
+                    <div class="filter-group">
+                        <label>Salesman</label>
+                        <input type="text" name="salesman" id="salesman" value="{{ $salesman }}" placeholder="Salesman">
+                    </div>
                     <button type="submit" class="btn-search">
                         <i class="fa-solid fa-magnifying-glass"></i> Search
                     </button>

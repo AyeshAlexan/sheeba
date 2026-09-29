@@ -12,18 +12,11 @@ class OpeningHirepurchaseSumReportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TOpeningHirePurchaseSum::whereBetween('invoice_date', [$fromDate, $toDate])
+        $invoice = TOpeningHirePurchaseSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('invoice_date', [$fromDate, $toDate]))
                     ->where('bc',$branch_code)
                     ->get();
 
-        $query = TOpeningHirePurchaseSum::query();
-
-        if ($fromDate && $toDate) {
-            $query = TOpeningHirePurchaseSum::whereBetween('invoice_date', [$fromDate, $toDate])
-                    ->where('bc',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumGrossAmount = $query->sum('document_charge');
         $totalGrossAmount = number_format($sumGrossAmount,2);

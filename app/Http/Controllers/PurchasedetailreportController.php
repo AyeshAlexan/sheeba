@@ -12,22 +12,11 @@ class PurchasedetailreportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TPurchasesDetails::whereBetween('Invoice_date', [$fromDate, $toDate])
+        $invoice = TPurchasesDetails::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
                     ->where('BC',$branch_code)
                     ->get();
 
-        $query1 = TPurchasesDetails::query();
-
-        $query = TPurchasesDetails::whereBetween('Invoice_date', [$fromDate, $toDate])
-        ->where('BC',$branch_code)
-        ->get();
-
-        if ($fromDate && $toDate) {
-            $query = TPurchasesDetails::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('BC',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $itemCount = $query->sum('QTY');
 

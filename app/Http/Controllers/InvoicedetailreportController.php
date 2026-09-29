@@ -12,18 +12,11 @@ class InvoicedetailreportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TWithoutVatSalesDetails::whereBetween('Invoice_date', [$fromDate, $toDate])
+        $invoice = TWithoutVatSalesDetails::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
                     ->where('BC',$branch_code)
                     ->get();
 
-        $query = TWithoutVatSalesDetails::query();
-
-        if ($fromDate && $toDate) {
-            $query = TWithoutVatSalesDetails::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('BC',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumQTY = $query->sum('QTY');
         $totalQTY= number_format($sumQTY,2);

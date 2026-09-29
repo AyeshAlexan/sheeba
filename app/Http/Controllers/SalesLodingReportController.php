@@ -22,10 +22,11 @@ class SalesLodingReportController extends Controller
         // Optional: Get parameters from the request to filter the data dynamically
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
 
         $selected_salesman = $request->salesman;
 
-        
+
         // Free issues details query
         $freeIssuesQuery = DB::table('t_without_vat_sales_details')
             ->select('Item_code', 'Item_description', DB::raw('SUM(QTY) AS total_qty'),
@@ -34,17 +35,19 @@ class SalesLodingReportController extends Controller
             ->whereNotNull('Invoice_no')
             ->whereNotNull('Item_description')
             ->whereNotNull('QTY')
-            ->whereBetween('Invoice_date', [$fromDate, $toDate])
+            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
+            ->where('BC', $branch_code)
             ->groupBy('Item_code', 'Item_description');
-        
+
         // Invoice details query
         $invoiceDetailsQuery = DB::table('t_invoice_deils')
-            ->select('Item_code', 'Item_description', DB::raw('SUM(QTY) AS total_qty'), 
+            ->select('Item_code', 'Item_description', DB::raw('SUM(QTY) AS total_qty'),
             DB::raw('SUM(Free_Issues) AS total_Free_Issues'),
             DB::raw("'Invoice' AS source"))
             ->whereNotNull('Invoice_no')
             ->whereNotNull('Item_description')
-            ->whereBetween('Invoice_date', [$fromDate, $toDate])
+            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
+            ->where('BC', $branch_code)
             ->whereNotNull('QTY')
             ->groupBy('Item_code', 'Item_description');
         

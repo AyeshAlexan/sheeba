@@ -83,13 +83,16 @@
 
                             </div> --}}
                             <div style="flex: 60%; align-content: center;">
-                                <form action="{{route("customer_payment_report_by_date")}}" method="GET">
+                                <form action="{{route("supplyer_payment_report")}}" method="GET">
                                     @csrf
                                     <label for="date">From Date :</label>
-                                    <input type="date" name="from_date" id="from_date">
+                                    <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <label for="date">To Date :</label>
-                                    <input type="date" name="to_date" id="to_date">
+                                    <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label for="supplier">Supplier :</label>
+                                    <input type="text" name="supplier" id="supplier" placeholder="Supplier code" value="{{ request('supplier') }}">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <button type="submit" id="submit_1">
                                         Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
@@ -216,8 +219,11 @@
 </script>
 
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 
 </script>
 

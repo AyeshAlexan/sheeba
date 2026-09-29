@@ -13,6 +13,7 @@ class HirepurchaseDetailReportController extends Controller
     {
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $customer = $request->input('customer');
         $branch_code = auth()->user()->BC;
 
         $query = THirePurchaseSum::select('t_hire_purchase_sums.*',
@@ -22,7 +23,9 @@ class HirepurchaseDetailReportController extends Controller
          )
             ->join('t_hire_purchase_details', 't_hire_purchase_sums.invoice_no', '=', 't_hire_purchase_details.invoice_no')
             ->where('t_hire_purchase_sums.is_cash_converted',0)
-            ->whereBetween('t_hire_purchase_sums.invoice_date', [$fromDate, $toDate])
+            ->where('t_hire_purchase_sums.bc', $branch_code)
+            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('t_hire_purchase_sums.invoice_date', [$fromDate, $toDate]))
+            ->when($customer, fn ($q) => $q->where('t_hire_purchase_sums.customer_code', $customer))
             ->get();
 
         $totalDocumentCharge = $query->sum('document_charge');
@@ -42,6 +45,9 @@ class HirepurchaseDetailReportController extends Controller
         return view('reports.HirepurchaseDetailReport')
             ->with("invoice", $query)
             ->with("recipts", $query)
+            ->with("fromDate", $fromDate)
+            ->with("toDate", $toDate)
+            ->with("customer", $customer)
             ->with("document_charge", number_format($totalDocumentCharge, 2))
             ->with("down_payment", number_format($totalDownpayment, 2))
             ->with("transport", number_format($totalTransport, 2))

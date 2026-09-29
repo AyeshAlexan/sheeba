@@ -11,15 +11,19 @@ class CustomerChequePaymentReportController extends Controller
 {
     public function index(Request $request)
     {
-        $fromDate = $request->input('from_date', '2000-01-01');
-        $toDate   = $request->input('to_date', now()->toDateString());
+        $fromDate   = $request->input('from_date', '2000-01-01');
+        $toDate     = $request->input('to_date', now()->toDateString());
+        $customer   = $request->input('customer');
+        $branchCode = auth()->user()->BC;
 
         $receipts = TCusCheque::query()
+            ->where('bc', $branchCode)
             ->whereBetween('release_date', [$fromDate, $toDate])
+            ->when($customer, fn ($q) => $q->where('customer', $customer))
             ->orderBy('release_date')
             ->get();
 
-        return view('reports.customer_cheque_payment_report', compact('receipts', 'fromDate', 'toDate'));
+        return view('reports.customer_cheque_payment_report', compact('receipts', 'fromDate', 'toDate', 'customer'));
     }
 
     public function cashReceived(Request $request)

@@ -94,6 +94,10 @@
                 <label class="form-label fw-bold">To Date:</label>
                 <input type="date" name="to_date" id="to_date" class="form-control" value="{{ $toDate }}">
             </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Item Code:</label>
+                <input type="text" name="item_code" class="form-control" value="{{ $itemCode }}" placeholder="Item code">
+            </div>
             <div class="col-md-auto mt-auto">
                 <button type="submit" class="btn btn-primary px-4 mt-2">
                     <i class="fa fa-filter"></i> Filter Report

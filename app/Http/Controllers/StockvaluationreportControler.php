@@ -13,6 +13,7 @@ class StockvaluationreportControler extends Controller
         $branch_code = auth()->user()->BC;
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $itemCode = $request->input('item_code');
 
         $stockDetails = Item::select(
             'items.Item_code',
@@ -24,6 +25,7 @@ class StockvaluationreportControler extends Controller
         )
         ->leftJoin('t_item_movements', 'items.Item_code', '=', 't_item_movements.item_code')
         ->where('t_item_movements.bc', $branch_code)
+        ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
         ->groupBy(
             'items.Item_code',
             'items.Item_description',
@@ -34,7 +36,7 @@ class StockvaluationreportControler extends Controller
         ->orderBy('items.updated_at', 'desc')
         ->get();
 
-        return $this->renderReport($stockDetails, $fromDate, $toDate);
+        return $this->renderReport($stockDetails, $fromDate, $toDate, $itemCode);
     }
 
     public function FilterStoctValuation(Request $request)
@@ -42,6 +44,7 @@ class StockvaluationreportControler extends Controller
         $branch_code = auth()->user()->BC;
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $itemCode = $request->input('item_code');
 
         $stockDetails = Item::select(
             'items.Item_code',
@@ -54,6 +57,7 @@ class StockvaluationreportControler extends Controller
         ->leftJoin('t_item_movements', 'items.Item_code', '=', 't_item_movements.item_code')
         ->where('t_item_movements.bc', $branch_code)
         ->whereBetween('t_item_movements.dDate', [$fromDate, $toDate])
+        ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
         ->groupBy(
             'items.Item_code',
             'items.Item_description',
@@ -64,10 +68,10 @@ class StockvaluationreportControler extends Controller
         ->orderBy('items.updated_at', 'desc')
         ->get();
 
-        return $this->renderReport($stockDetails, $fromDate, $toDate);
+        return $this->renderReport($stockDetails, $fromDate, $toDate, $itemCode);
     }
 
-    private function renderReport($stockDetails, $fromDate, $toDate)
+    private function renderReport($stockDetails, $fromDate, $toDate, $itemCode = null)
     {
         $quain   = $stockDetails->sum('total_qun_in');
         $quaout  = $stockDetails->sum('total_qun_out');
@@ -83,6 +87,7 @@ class StockvaluationreportControler extends Controller
         return view('reports.Stock_valuation_report', compact(
             'fromDate',
             'toDate',
+            'itemCode',
             'stockDetails',
             'quain',
             'quaout',

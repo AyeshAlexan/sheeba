@@ -12,18 +12,11 @@ class HirepurchaseDetailsReportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = THirePurchaseDetails::whereBetween('invoice_date', [$fromDate, $toDate])
+        $invoice = THirePurchaseDetails::when($fromDate && $toDate, fn ($q) => $q->whereBetween('invoice_date', [$fromDate, $toDate]))
                     ->where('bc',$branch_code)
                     ->get();
 
-        $query = THirePurchaseDetails::query();
-
-        if ($fromDate && $toDate) {
-            $query = THirePurchaseDetails::whereBetween('invoice_date', [$fromDate, $toDate])
-                    ->where('bc',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumGrossAmount = $query->sum('qty');
         $totalGrossAmount = number_format($sumGrossAmount,2);
@@ -52,7 +45,7 @@ class HirepurchaseDetailsReportController extends Controller
         -> with("invoice", $invoice)
         -> with("recipts", $query)
         -> with("totalGrossAmount", $totalGrossAmount)
-        -> with("totalUnit",)
+        -> with("totalUnit", $totalUnit)
         -> with("totalDiscount", $totalDiscount)
         -> with("totalNetAmount", $totalNetAmount);
         // -> with("totalCashPay", $totalCashPay)

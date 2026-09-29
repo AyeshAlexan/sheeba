@@ -12,18 +12,11 @@ class SalessummaryreportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TInvoiceDeils::whereBetween('Invoice_date', [$fromDate, $toDate])
+        $invoice = TInvoiceDeils::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
                     ->where('BC',$branch_code)
                     ->get();
 
-        $query = TInvoiceDeils::query();
-
-        if ($fromDate && $toDate) {
-            $query = TInvoiceDeils::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('BC',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumGrossAmount = $query->sum('QTY');
         $totalGrossAmount = number_format($sumGrossAmount,2);

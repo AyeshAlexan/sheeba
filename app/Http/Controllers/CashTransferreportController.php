@@ -14,18 +14,11 @@ class CashTransferreportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+        $invoice = TAccountTrans::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Ddate', [$fromDate, $toDate]))
                     ->where('BC',$branch_code)
                     ->get();
 
-        $query = TAccountTrans::query();
-
-        if ($fromDate && $toDate) {
-            $query = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
-                    ->where('BC',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumDrAmount = $query->sum('dr_amount');
         $totalDrAmount = number_format($sumDrAmount,2);

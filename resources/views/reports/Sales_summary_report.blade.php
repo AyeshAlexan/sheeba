@@ -18,59 +18,37 @@
 
     </button></div>
 
-    <script>
-        // Select wrong element
-// Error as #demo is the `div` element
-$('#t_invoice_deils').DataTable()
-
- // Selector too broad.
- // Error as `.display` is applied to both the div and the table
- $('.display').DataTable();
-    </script>
     <title>Invoice Detail Report</title>
-    <style>
-        table{
-            border-collapse: collapse;
-            width: 100%;
-        }
-    th,td{
-        border: 1px solid rgb(8, 8, 8);
-        padding: 5px;
-    }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/reports-modern.css') }}">
 
 </head>
-<br><br><br><br>
 
 <body>
-    <form action="" method="get">
-        <label for="from_date">From Date:</label>
-        <input type="date" name="from_date" id="from_date">
 
-        <label for="to_date">To Date:</label>
-        <input type="date" name="to_date" id="to_date">
+    <div class="report-page">
+        <div class="report-card">
+            <div class="report-topbar">
+                <h1 class="report-title"><i class="fa-solid fa-file-lines"></i> Invoice Detail Report</h1>
+                <a href="{{ route('home') }}" class="btn btn-back"><i class="fa-solid fa-house"></i> Back</a>
+            </div>
 
-        <button type="submit">Search</button>
-        {{-- <button onclick="printTablefun()">Print</button> --}}
-        <Button ><a href="{{route("home")}}"> Back</a></Button>
-
-    </form>
-
-
-
-    {{-- <div class="card shadow p-3 mb-3 bg-body-tertiary rounded" > --}}
-        <div class="d-flex justify-content-center profile-container">
-            <div class='col-md-6 text-center sort-profile' id='sort-profile'>
-            <div class='row'>
-            <div class='col-md-6 text-center' ><br/>
-                <div styel="background-color: yellow;">
-
-                    <h2 style="text-align:center; background-color:rgb(113, 105, 255);"><b>Invoice Detail Report</b></h2><hr/>
+            <form action="" method="get" class="report-filters">
+                <div class="field">
+                    <label for="from_date">From Date</label>
+                    <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
                 </div>
+                <div class="field">
+                    <label for="to_date">To Date</label>
+                    <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
+                </div>
+                <div class="field field-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </div>
+            </form>
 
-
-            <table class="display" id="t_invoice_deils" style="background-color: transparent; border:1px solid rgb(7, 7, 7); margin-top:15px;">
+            <div class="table-scroll">
+                <table class="display modern-table" id="t_invoice_deils">
                     <thead class="styled-table">
                         <th>Invoice_no</th>
                         <th>Invoice_date</th>
@@ -128,15 +106,13 @@ $('#t_invoice_deils').DataTable()
                     </tr>
                 </tfoot>
             </table>
-        </div>
-    </div>
-
             </div>
         </div>
     </div>
 
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{ asset('js/reports-modern.js') }}"></script>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
@@ -158,7 +134,13 @@ $('#t_invoice_deils').DataTable()
     jQuery(document).ready(function($) {
         $('#t_invoice_deils').DataTable( //database table name
             {
-                dom: 'Bfrtip',
+                dom: 'Bfrtlip',
+                pageLength: 15,
+                lengthMenu: [10, 15, 25, 50, 100],
+                language: {
+                    lengthMenu: '_MENU_',
+                    paginate: { previous: '‹', next: '›' }
+                },
                 buttons: [
                     'copy',
                     'excel',
@@ -200,8 +182,11 @@ $('#t_invoice_deils').DataTable()
 
     {{-- form default date set for today --}}
     <script>
-        var dateObj = new Date();
-        document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+        var toDateInput = document.getElementById('to_date');
+        if (!toDateInput.value) {
+            var dateObj = new Date();
+            toDateInput.value = dateObj.toISOString().slice(0, 10);
+        }
 
     </script>
 </html>

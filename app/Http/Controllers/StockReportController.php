@@ -11,6 +11,9 @@ class StockReportController extends Controller
     public function index(Request $request){
 
         $branch_code = auth()->user()->BC;
+        $itemCode = $request->input('item_code');
+        $category = $request->input('category');
+
         $stock = Item::select(
             'items.Item_code',
             'items.Bar_code',
@@ -26,6 +29,8 @@ class StockReportController extends Controller
             )
          ->leftJoin('t_item_movements', 'items.Item_code', '=', 't_item_movements.item_code')
          ->where('t_item_movements.bc', $branch_code)
+         ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
+         ->when($category, fn ($q) => $q->where('items.category', $category))
          ->groupBy(
                 'items.Item_code',
                 'items.Bar_code',
@@ -48,6 +53,8 @@ class StockReportController extends Controller
             ->with("stockDetails", $stock)
             ->with("fromDate", $fromDate)
             ->with("toDate", $toDate)
+            ->with("itemCode", $itemCode)
+            ->with("category", $category)
             ->with("quain", $quain)
             ->with("quaout", $quaout)
             ->with("balance", $balance);
@@ -63,6 +70,8 @@ class StockReportController extends Controller
 
         $fromDate = $request->from_date;
         $toDate   = $request->to_date;
+        $itemCode = $request->input('item_code');
+        $category = $request->input('category');
 
         $stock = Item::select(
             'items.Item_code',
@@ -78,6 +87,8 @@ class StockReportController extends Controller
             ->selectRaw('MAX(t_item_movements.dDate) as last_movement_date')
             ->selectRaw('SUM(t_item_movements.qun_in) - SUM(t_item_movements.qun_out) AS QTY')
             ->leftJoin('t_item_movements', 'items.Item_code', '=', 't_item_movements.item_code')
+            ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
+            ->when($category, fn ($q) => $q->where('items.category', $category))
             ->groupBy(
                 'items.Item_code',
                 'items.Bar_code',
@@ -99,6 +110,8 @@ class StockReportController extends Controller
             ->with("stockDetails", $stock)
             ->with("fromDate", $fromDate)
             ->with("toDate", $toDate)
+            ->with("itemCode", $itemCode)
+            ->with("category", $category)
             ->with("quain", $quain)
             ->with("quaout", $quaout)
             ->with("balance", $balance);

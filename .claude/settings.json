@@ -23,7 +23,21 @@
       "Bash(node shot_guarantor.js)",
       "Bash(grep -n \"^/\\\\* Pagination\" public/assets/css/theme-redesign.css)",
       "Bash(git show *)",
-      "Bash(php -r ' *)"
+      "Bash(php -r ' *)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(php -l resources/views/reports/Purchase_Summary_report.blade.php)",
+      "Bash(xxd)",
+      "Bash(perl -0777 -pe \"s/^\\([ \\\\t]*\\)dom: 'Bfrtip',\\\\n/TESTMATCH\\\\n/m\" resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(awk 'NR==136' resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(perl -ne \"print if /dom: .Bfrtip./\" resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(perl -0777 -pe \"s/^\\([ \\\\\\\\t]*\\)dom: 'Bfrtip',\\\\\\\\n/MATCHED\\\\\\\\n/m\" resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(perl -0777 -pe \"s/dom: 'Bfrtip',/MATCHED/\" resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(perl -0777 -pe \"s/dom: 'Bfrtip',\\\\n/MATCHED\\\\n/\" resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(perl -0777 -pe 's/dom: \\\\x27Bfrtip\\\\x27,\\\\n/MATCHED\\\\n/' resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(perl -0777 -ne '$i = index\\($_, \"dom: \\\\x27Bfrtip\\\\x27,\"\\); print unpack\\(\"H*\", substr\\($_, $i, 20\\)\\), \"\\\\n\";' resources/views/reports/Purchase_Detail_report.blade.php)",
+      "Bash(php -l app/Http/Controllers/ChartofAccountController.php)",
+      "Bash(php -l app/Http/Controllers/CustomerController.php)",
+      "Bash(php -l app/Http/Controllers/ItemController.php)"
     ]
   }
 }

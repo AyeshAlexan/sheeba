@@ -15,12 +15,14 @@ public function index(Request $request)
 {
     $fromDate = $request->input('from_date');
     $toDate = $request->input('to_date');
+    $itemCode = $request->input('item_code');
     $branch_code = auth()->user()->BC;
 
     // Item-wise sales summary with profit
     $invoice = TWithoutVatSalesDetails::join('items', 't_without_vat_sales_details.Item_code', '=', 'items.Item_code')
         ->whereBetween('t_without_vat_sales_details.Invoice_date', [$fromDate, $toDate])
         ->where('t_without_vat_sales_details.BC', $branch_code)
+        ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
         ->groupBy('items.Item_code', 'items.Item_description', 'items.purchasePrice', 't_without_vat_sales_details.BC')
         ->select(
             'items.Item_code',
@@ -40,7 +42,8 @@ public function index(Request $request)
 
     // Overall sales summary
     $query = TWithoutVatSalesDetails::whereBetween('Invoice_date', [$fromDate, $toDate])
-        ->where('BC', $branch_code);
+        ->where('BC', $branch_code)
+        ->when($itemCode, fn ($q) => $q->where('Item_code', 'like', "%{$itemCode}%"));
 
     $sumGrossAmount = $query->sum('QTY');
     $sumGrossAmountFree_Issues = $query->sum(DB::raw('COALESCE(Free_Issues, 0)'));
@@ -53,6 +56,7 @@ public function index(Request $request)
     $totalProfit = TWithoutVatSalesDetails::join('items', 't_without_vat_sales_details.Item_code', '=', 'items.Item_code')
         ->whereBetween('t_without_vat_sales_details.Invoice_date', [$fromDate, $toDate])
         ->where('t_without_vat_sales_details.BC', $branch_code)
+        ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
         ->selectRaw('
             SUM(
                 (t_without_vat_sales_details.QTY * t_without_vat_sales_details.Unit_price)
@@ -64,6 +68,7 @@ public function index(Request $request)
     return view('reports.Item_wish_sales_report', [
         "fromDate" => $fromDate,
         "toDate" => $toDate,
+        "itemCode" => $itemCode,
         "invoice" => $invoice,
         "recipts" => $query->get(),
         "totalGrossAmount" => number_format($sumGrossAmount, 2),

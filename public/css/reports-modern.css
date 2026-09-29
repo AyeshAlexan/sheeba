@@ -1,0 +1,450 @@
+/* Shared modern styling for report pages (Blade views under resources/views/reports) */
+
+:root {
+    --rp-primary: #6d5df6;
+    --rp-primary-dark: #5b4bd6;
+    --rp-primary-light: #eeecff;
+    --rp-text: #1f2333;
+    --rp-muted: #6b7280;
+    --rp-border: #e5e7eb;
+    --rp-bg: #f3f4f8;
+    --rp-success: #16a34a;
+    --rp-danger: #dc2626;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--rp-bg);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+    color: var(--rp-text);
+    margin: 0;
+    padding: 24px 16px 48px;
+}
+
+.report-page {
+    display: flex;
+    justify-content: center;
+}
+
+.report-card {
+    width: 100%;
+    max-width: 1180px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(31, 35, 51, 0.08);
+    padding: 24px 28px 32px;
+}
+
+.report-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, var(--rp-primary), #9b8bff);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.report-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.2px;
+}
+
+.report-title i {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+.report-subtitle {
+    margin: 4px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.05s ease, box-shadow 0.15s ease, background 0.15s ease;
+    line-height: 1.2;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background: var(--rp-primary);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(109, 93, 246, 0.35);
+}
+
+.btn-primary:hover {
+    background: var(--rp-primary-dark);
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: var(--rp-text);
+    border: 1px solid var(--rp-border);
+}
+
+.btn-secondary:hover {
+    background: #f6f6fb;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+/* Filter bar */
+.report-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    background: var(--rp-primary-light);
+    border: 1px solid #e3e0ff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+}
+
+.report-filters .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.report-filters label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--rp-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.report-filters input[type="date"],
+.report-filters input[type="text"],
+.report-filters select {
+    border: 1px solid var(--rp-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    min-width: 170px;
+    background: #fff;
+    color: var(--rp-text);
+}
+
+.report-filters input:focus,
+.report-filters select:focus {
+    outline: none;
+    border-color: var(--rp-primary);
+    box-shadow: 0 0 0 3px rgba(109, 93, 246, 0.15);
+}
+
+.report-filters .field-actions {
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Table */
+.table-scroll {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--rp-border);
+}
+
+table.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+    font-size: 13.5px;
+}
+
+table.modern-table caption {
+    caption-side: top;
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--rp-text);
+    background: #fafafe;
+    border-bottom: 1px solid var(--rp-border);
+}
+
+table.modern-table thead th {
+    background: var(--rp-primary);
+    color: #fff !important;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: none;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+table.modern-table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rp-border);
+    color: var(--rp-text);
+}
+
+table.modern-table tbody tr:nth-child(even) {
+    background: #fafafe;
+}
+
+table.modern-table tbody tr:hover {
+    background: var(--rp-primary-light);
+}
+
+table.modern-table tfoot td {
+    padding: 12px 14px;
+    font-weight: 700;
+    background: #f1f0ff;
+    border-top: 2px solid var(--rp-primary);
+    color: var(--rp-text);
+}
+
+/* DataTables plugin chrome */
+.dataTables_wrapper {
+    padding-top: 4px;
+}
+
+.dataTables_wrapper:before,
+.dataTables_wrapper:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.dataTables_wrapper .dt-buttons {
+    margin-bottom: 14px;
+    float: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 14px;
+    float: none;
+    display: block;
+    text-align: right;
+}
+
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 14px;
+    float: none;
+    display: block;
+}
+
+.dataTables_wrapper .dataTables_scroll,
+.dataTables_wrapper .table-scroll,
+.dataTables_wrapper > table {
+    clear: both;
+}
+
+.dataTables_wrapper .dt-button,
+.dataTables_wrapper .dt-buttons .dt-button {
+    background: #fff !important;
+    border: 1px solid var(--rp-border) !important;
+    color: var(--rp-text) !important;
+    border-radius: 8px !important;
+    padding: 7px 14px !important;
+    font-size: 13px !important;
+    margin-right: 8px !important;
+    margin-bottom: 8px !important;
+    box-shadow: none !important;
+}
+
+.dataTables_wrapper .dt-button:hover {
+    background: var(--rp-primary-light) !important;
+    border-color: var(--rp-primary) !important;
+    color: var(--rp-primary-dark) !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid var(--rp-border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-left: 6px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    display: none;
+}
+
+/* Custom "Go to Page" pill bar (built by reports-modern.js from the
+   real DataTables length + pagination controls, so behaviour stays native) */
+.rp-pagebar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    width: fit-content;
+    max-width: 100%;
+    margin: 20px auto 4px;
+    padding: 6px 16px;
+    background: #f3f4f8;
+    border-radius: 999px;
+}
+
+.rp-pagebar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rp-pagebar-divider {
+    width: 1px;
+    height: 20px;
+    background: #d7d9e3;
+    flex: none;
+}
+
+.rp-pagebar-label {
+    font-size: 13px;
+    color: var(--rp-muted);
+    white-space: nowrap;
+}
+
+.rp-pagebar-input {
+    width: 46px;
+    text-align: center;
+    border: 1px solid var(--rp-border);
+    border-radius: 999px;
+    padding: 4px 6px;
+    font-size: 13px;
+    background: #fff;
+}
+
+.rp-pagebar-input:focus {
+    outline: none;
+    border-color: var(--rp-primary);
+}
+
+.rp-pagebar-size select {
+    border: 1px solid var(--rp-border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--rp-text);
+}
+
+/* Pill-style pagination (reskins the real DataTables buttons) */
+.dataTables_wrapper .dataTables_paginate {
+    margin: 0 !important;
+    padding: 0 !important;
+    float: none;
+    display: flex;
+    align-items: center;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    margin: 0 1px !important;
+    padding: 0 6px !important;
+    border: 1px solid transparent !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    color: var(--rp-text) !important;
+    font-size: 13px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    border-color: var(--rp-primary) !important;
+    color: var(--rp-primary) !important;
+    background: #fff !important;
+    font-weight: 600;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    opacity: 0.4;
+    background: transparent !important;
+    color: var(--rp-text) !important;
+    cursor: default;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
+    background: #e7e6fb !important;
+    color: var(--rp-primary-dark) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+    color: var(--rp-muted) !important;
+    font-size: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .ellipsis {
+    color: var(--rp-muted) !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--rp-muted);
+    padding: 40px 0;
+    font-size: 15px;
+}
+
+@media (max-width: 640px) {
+    .report-card {
+        padding: 18px 14px 24px;
+    }
+
+    .report-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .report-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .report-filters input,
+    .report-filters select {
+        min-width: 0;
+        width: 100%;
+    }
+}

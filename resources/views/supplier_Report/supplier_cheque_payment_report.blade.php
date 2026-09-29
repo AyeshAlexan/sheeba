@@ -55,10 +55,10 @@ $('.display').DataTable();
                     <form action="" method="GET">
                         @csrf
                         <label for="date">From Date :</label>
-                        <input type="date" name="from_date" id="from_date">
+                        <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <label for="date">To Date :</label>
-                        <input type="date" name="to_date" id="to_date">
+                        <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <button type="submit" id="submit_1">
                             Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
@@ -129,8 +129,11 @@ $('.display').DataTable();
 
     {{-- form default date set for today --}}
     <script>
-        var dateObj = new Date();
-        document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+        var toDateInput = document.getElementById('to_date');
+        if (!toDateInput.value) {
+            var dateObj = new Date();
+            toDateInput.value = dateObj.toISOString().slice(0, 10);
+        }
     </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -173,8 +176,11 @@ src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></scr
     </script>
 
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 
 </script>
 

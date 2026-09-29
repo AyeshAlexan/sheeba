@@ -162,10 +162,16 @@
                             <form action="{{ route('filter_stock_by_date') }}" method="GET">
                                 @csrf
                                 <label for="from_date">From Date :</label>
-                                <input type="date" name="from_date" id="from_date">
+                                <input type="date" name="from_date" id="from_date" value="{{ $fromDate }}">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <label for="to_date">To Date :</label>
-                                <input type="date" name="to_date" id="to_date">
+                                <input type="date" name="to_date" id="to_date" value="{{ $toDate }}">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label for="item_code">Item Code :</label>
+                                <input type="text" name="item_code" id="item_code" value="{{ $itemCode }}" placeholder="Item code">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label for="category">Category :</label>
+                                <input type="text" name="category" id="category" value="{{ $category }}" placeholder="Category">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <button type="submit" id="submit_1">
                                     Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>

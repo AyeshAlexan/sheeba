@@ -26,136 +26,38 @@
 
 
 
-<script>
-    // Select wrong element
-// Error as #demo is the `div` element
-$('#t_hire_purchase_sums').DataTable()
-
-// Selector too broad.
-// Error as `.display` is applied to both the div and the table
-$('.display').DataTable();
-</script>
-<title>Advance Payment Report </title>
-<style>
-.table {
-    display: block;
-    overflow-y: hidden;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-}
-
- .table thead {
-    display: table-header-group;
-    vertical-align: middle;
-    border-color: inherit;
-    color: white;
-    background: darkcyan;
-}
-
-tr {
-    display: table-row;
-    vertical-align: inherit;
-    border-color: inherit;
-}
-
- table th {
-    padding: 16px;
-    text-align: inherit;
-    border-bottom: 1px solid black;
-   color:blue!important;
-}
-
-  tbody {
-    display: table-row-group;
-    vertical-align: middle;
-    border-color: inherit;
-}
-
- table:not(.tr-caption-container) {
-    min-width: 100%;
-    border-radius: 3px;
-}
-
-/* Make sure date inputs are visible */
-input[type="date"] {
-    opacity: 1;
-    /* Add any other necessary styles */
-}
-
-
-  h2 {
-    width: 100%;
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-    text-align: center; /* Center the text if needed */
-    background-color: rgb(113, 105, 255); /* Background color */
-    color: white; /* Text color */
-  }
-
-  #t_hire_purchase_sums {
-    overflow-x: auto; /* Add horizontal scroll if needed */
-    /* Add any other styling properties as needed */
-}
-
- /* Your existing styles */
-
- @media only screen and (max-width: 600px) {
-    /* Styles for small screens */
-    table {
-      width: 100%;
-    }
-
-    th, td {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    th {
-      text-align: left;
-    }
-  }
-
-#t_hire_purchase_sums th, #t_hire_purchase_sums td {
-    width: auto; /* Adjust column widths as needed */
-}
-
-
-</style>
-
+<title>Advance Payment Report</title>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('css/reports-modern.css') }}">
 
 </head>
 
 <body>
-    <br><br>
-<form action="" method="get">
-    <label for="from_date">From Date:</label>
-    <input type="date" name="from_date" id="from_date">
 
-    <label for="to_date">To Date:</label>
-    <input type="date" name="to_date" id="to_date">
-
-    <button type="submit">Search</button>
-    {{-- <button onclick="printTablefun()">Print</button> --}}
-    <Button ><a href="{{route("home")}}"> Back</a></Button>
-
-</form>
-
-
-
-
-{{-- <div class="card shadow p-3 mb-3 bg-body-tertiary rounded" > --}}
-    <div class="d-flex justify-content-center profile-container">
-        <div class='col-md-6 text-center sort-profile' id='sort-profile'>
-        <div class='row'>
-        <div class='col-md-6 text-center' ><br/>
-            <div styel="background-color: yellow; width:100%;">
-
-                <h2 style="text-align:center;  background-color:rgb(113, 105, 255);"><b>Advance Payment Report  </b></h2><hr/>
+    <div class="report-page">
+        <div class="report-card">
+            <div class="report-topbar">
+                <h1 class="report-title"><i class="fa-solid fa-file-lines"></i> Advance Payment Report</h1>
+                <a href="{{ route('home') }}" class="btn btn-back"><i class="fa-solid fa-house"></i> Back</a>
             </div>
 
+            <form action="" method="get" class="report-filters">
+                <div class="field">
+                    <label for="from_date">From Date</label>
+                    <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
+                </div>
+                <div class="field">
+                    <label for="to_date">To Date</label>
+                    <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
+                </div>
+                <div class="field field-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </div>
+            </form>
 
-            <table class="display responsive" id="t_hire_purchase_sums" style="white-space: nowrap; border:1px solid rgb(7, 7, 7); margin-top:15px;width:100%;">                <thead class="styled-table">
+            <div class="table-scroll">
+            <table class="display modern-table" id="t_hire_purchase_sums">
+                <thead class="styled-table">
 
 
                     <th>Invoice No</th>
@@ -200,15 +102,13 @@ input[type="date"] {
                 </tr>
             </tfoot>
         </table>
-    </div>
-</div>
-
+            </div>
         </div>
     </div>
-</div>
 
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{ asset('js/reports-modern.js') }}"></script>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
 
@@ -230,7 +130,13 @@ src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></scr
 jQuery(document).ready(function($) {
     $('#t_hire_purchase_sums').DataTable( //database table name
         {
-            dom: 'Bfrtip',
+            dom: 'Bfrtlip',
+            pageLength: 15,
+            lengthMenu: [10, 15, 25, 50, 100],
+            language: {
+                lengthMenu: '_MENU_',
+                paginate: { previous: '‹', next: '›' }
+            },
             buttons: [
                 'copy',
                 'excel',
@@ -247,8 +153,11 @@ jQuery(document).ready(function($) {
 </script>
 
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 
 </script>
 

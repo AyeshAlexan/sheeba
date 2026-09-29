@@ -10,25 +10,16 @@ class HirepurchaseSumReportController extends Controller
     public function index(Request $request){
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $customer = $request->input('customer');
         $branch_code = auth()->user()->BC;
 
-        $invoice = THirePurchaseSum::whereBetween('invoice_date', [$fromDate, $toDate])
+        $invoice = THirePurchaseSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('invoice_date', [$fromDate, $toDate]))
                     ->where('is_cash_converted',0)
                     ->where('bc',$branch_code)
+                    ->when($customer, fn ($q) => $q->where('customer_code', $customer))
                     ->get();
 
-        $query = THirePurchaseSum::whereBetween('invoice_date', [$fromDate, $toDate])
-                    ->where('is_cash_converted',0)
-                    ->where('bc',$branch_code)
-                    ->get();
-
-        if ($fromDate && $toDate){
-
-            $query = THirePurchaseSum::whereBetween('invoice_date', [$fromDate, $toDate])
-                    ->where('is_cash_converted',0)
-                    ->where('bc',$branch_code)
-                    ->get();
-        }
+        $query = $invoice;
 
         $sumDocumentAmount = $query->sum('document_charge');
         $totalDocumentAmount = number_format($sumDocumentAmount,2);
@@ -72,6 +63,9 @@ class HirepurchaseSumReportController extends Controller
         return view('HirepurchaseSumReport')
         -> with("invoice", $invoice)
         -> with("recipts", $query)
+        -> with("fromDate", $fromDate)
+        -> with("toDate", $toDate)
+        -> with("customer", $customer)
         -> with("document_charge", $totalDocumentAmount)
         -> with("down_payment", $totalUnit)
         -> with("transport", $totalDiscount)

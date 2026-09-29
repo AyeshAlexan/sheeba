@@ -15,22 +15,20 @@ class HirepurchaseArrearsReportController extends Controller
 
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $scheme = $request->input('scheme');
+        $customer = $request->input('customer');
         $branch_code = auth()->user()->BC;
         $schemaData = MSchema::all();
 
         $todayDate = Carbon::now()->format('Y-m-d');
-        $invoice = TInstalment::whereBetween('instalment_date', [$fromDate, $toDate])
+        $invoice = TInstalment::when($fromDate && $toDate, fn ($q) => $q->whereBetween('instalment_date', [$fromDate, $toDate]))
                     ->whereRaw('amount_pay < instalment_amount')
                     ->where('bc', $branch_code)
+                    ->when($scheme, fn ($q) => $q->where('schema_type', $scheme))
+                    ->when($customer, fn ($q) => $q->where('customer_code', $customer))
                     ->get();
-        $query = TInstalment::query();
 
-        if($fromDate && $toDate) {
-            $query = TInstalment::whereBetween('instalment_date', [$fromDate, $toDate])
-                    ->whereRaw('amount_pay < instalment_amount')
-                    ->where('bc', $branch_code)
-                    ->get();
-        }
+        $query = $invoice;
 
         // $sumGrossAmount = $query->sum('document_charge');
         // $totalGrossAmount = number_format($sumGrossAmount,2);
@@ -67,6 +65,8 @@ class HirepurchaseArrearsReportController extends Controller
         return view('reports.HirepurchaseArrearsReport')
         ->with("fromDate", $fromDate)
         ->with("toDate", $toDate)
+        ->with("scheme", $scheme)
+        ->with("customer", $customer)
         ->with("invoice", $invoice)
         ->with("schemaData", $schemaData)
         ->with("recipts", $query);

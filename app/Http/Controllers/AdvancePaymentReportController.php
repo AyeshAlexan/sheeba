@@ -13,18 +13,11 @@ class AdvancePaymentReportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TAdvancCusPayment::whereBetween('date', [$fromDate, $toDate])
+        $invoice = TAdvancCusPayment::when($fromDate && $toDate, fn ($q) => $q->whereBetween('date', [$fromDate, $toDate]))
                     ->where('bc',$branch_code)
                     ->get();
 
-        $query = TAdvancCusPayment::query();
-
-        if ($fromDate && $toDate) {
-            $query = TAdvancCusPayment::whereBetween('date', [$fromDate, $toDate])
-                    ->where('bc',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumGrossAmount = $query->sum('amount');
         $totalGrossAmount = number_format($sumGrossAmount,2);

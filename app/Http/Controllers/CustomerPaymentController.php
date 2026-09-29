@@ -146,6 +146,23 @@ class CustomerPaymentController extends Controller
         try {
             DB::beginTransaction();
 
+            // Work out the customer's current outstanding balance fresh
+            // from the database — mirrors the same guard already in place
+            // for supplier payments, so a customer can't be overpaid.
+            $total_cr = TCusSaleTrance::where('customer', $request->customer_code)
+                ->where('bc', $branch_code)->sum('cr_amount');
+            $total_dr = TCusSaleTrance::where('customer', $request->customer_code)
+                ->where('bc', $branch_code)->sum('dr_amount');
+            $balance  = round($total_cr - $total_dr, 2);
+
+            if ($balance <= 0) {
+                DB::rollBack();
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'This customer has no outstanding balance — no further payment can be recorded.',
+                ], 422);
+            }
+
             $cash_payment   = (float) ($request->cash_payment        ?? 0);
             $card_payment   = (float) ($request->card_payment        ?? 0);
             $bank_transfer  = (float) ($request->bank_transfer       ?? 0);
@@ -335,6 +352,23 @@ class CustomerPaymentController extends Controller
 
         try {
             DB::beginTransaction();
+
+            // Work out what's still owed on this invoice after this payment —
+            // computed fresh from the database, not trusted from the browser,
+            // mirroring the same guard already in place for supplier payments.
+            $invoice      = TInvoiceSum::where('Invoice_no', $request->sales_no)
+                                ->where('BC', $branch_code)
+                                ->first();
+            $paidAmount   = $invoice->Paid_Amount ?? 0;
+            $invoiceCredit = $invoice->Credite ?? null;
+
+            if ($invoiceCredit !== null && round($invoiceCredit - $paidAmount, 2) <= 0) {
+                DB::rollBack();
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'This invoice is already fully paid — no further payment can be recorded against it.',
+                ], 422);
+            }
 
             $cash_payment   = (float) ($request->cash_payment        ?? 0);
             $card_payment   = (float) ($request->card_payment        ?? 0);

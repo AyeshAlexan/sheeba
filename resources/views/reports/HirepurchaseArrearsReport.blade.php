@@ -138,10 +138,21 @@
                             <form action="" method="GET">
                                 @csrf
                                 <label for="date">From Date :</label>
-                                <input type="date" name="from_date" id="from_date">
+                                <input type="date" name="from_date" id="from_date" value="{{ $fromDate }}">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <label for="date">To Date :</label>
-                                <input type="date" name="to_date" id="to_date">
+                                <input type="date" name="to_date" id="to_date" value="{{ $toDate }}">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label for="scheme">Scheme :</label>
+                                <select name="scheme" id="scheme">
+                                    <option value="">All</option>
+                                    @foreach($schemaData as $s)
+                                        <option value="{{ $s->SchemaType }}" @selected($scheme == $s->SchemaType)>{{ $s->SchemaType }}</option>
+                                    @endforeach
+                                </select>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label for="customer">Customer Code :</label>
+                                <input type="text" name="customer" id="customer" value="{{ $customer }}" placeholder="Customer code">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <button type="submit" id="submit_1">
                                     Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
@@ -305,10 +316,13 @@
     }
 </script>
 
-{{-- form default date set for today --}}
+{{-- default To Date to today only if nothing was submitted --}}
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 </script>
 
 </html>

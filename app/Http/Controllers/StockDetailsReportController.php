@@ -15,8 +15,14 @@ class StockDetailsReportController extends Controller
      */
       public function index(Request $request)
         {
+    $fromDate = $request->input('from_date');
+    $toDate   = $request->input('to_date');
+
     $rawData = DB::table('t_item_movements')
     ->join('items', 't_item_movements.item_code', '=', 'items.Item_code')
+    ->when($fromDate && $toDate, function ($q) use ($fromDate, $toDate) {
+        $q->whereBetween('t_item_movements.dDate', [$fromDate, $toDate]);
+    })
     ->select(
         'items.Item_code',
         'items.Item_description',
@@ -27,6 +33,15 @@ class StockDetailsReportController extends Controller
         't_item_movements.dDate'
     )
     ->get();
+
+// A handful of rows have non-numeric junk in these quantity columns (bad
+// legacy data entry, e.g. "chq price"), which crashes Collection::sum()
+// under PHP 8's stricter string+int rules — normalize to 0 instead.
+foreach ($rawData as $row) {
+    $row->qun_in       = is_numeric($row->qun_in) ? $row->qun_in : 0;
+    $row->qun_out      = is_numeric($row->qun_out) ? $row->qun_out : 0;
+    $row->Free_Issues  = is_numeric($row->Free_Issues) ? $row->Free_Issues : 0;
+}
 
 $allTransCodes = $rawData->pluck('trans_code')->unique()->values();
 
@@ -65,6 +80,8 @@ return view('reports.stockDetailsSummeryReport', [
     'stockData' => $stockData,
     'showInCodes' => $showInCodes,
     'showOutCodes' => $showOutCodes,
+    'fromDate' => $fromDate,
+    'toDate' => $toDate,
 ]);
 
 

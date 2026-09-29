@@ -12,18 +12,11 @@ class PurchasereturnreportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TPurchasesReturnSum::whereBetween('Invoice_date', [$fromDate, $toDate])
+        $invoice = TPurchasesReturnSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
                     ->where('BC',$branch_code)
                     ->get();
 
-        $query = TPurchasesReturnSum::query();
-
-        if ($fromDate && $toDate) {
-            $query = TPurchasesReturnSum::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('BC',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumGrossAmount = $query->sum('Gross_Amount');
         $totalGrossAmount = number_format($sumGrossAmount,2);

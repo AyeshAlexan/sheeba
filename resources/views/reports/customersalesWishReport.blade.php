@@ -17,91 +17,54 @@
     {{-- <div><button onClick="window.print()">Print --}}
     </button></div>
 
-    <script>
-        $('#t_invoice_sums').DataTable()
-        $('.display').DataTable();
-
-    </script>
-    <title>Invoice</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid rgb(8, 8, 8);
-            padding: 5px;
-        }
-
-    </style>
+    <title>Customer Sales Wish Report</title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/reports-modern.css') }}">
 
 </head>
 
 
 <body>
 
-    {{-- <div class="card shadow p-3 mb-3 bg-body-tertiary rounded" > --}}
-    <div class="d-flex justify-content-center profile-container">
-        <div class='col-md-6 text-center sort-profile' id='sort-profile'>
-            <div class='row'>
-                <div class='col-md-6 text-center'><br />
-                    <div styel="background-color: yellow;">
+    <div class="report-page">
+        <div class="report-card">
+            <div class="report-topbar">
+                <h1 class="report-title"><i class="fa-solid fa-file-lines"></i> Customer Sales Wish Report</h1>
+                <a href="{{ route('home') }}" class="btn btn-back"><i class="fa-solid fa-house"></i> Back</a>
+            </div>
 
-                        <h2 style="text-align:center; background-color:rgb(113, 105, 255);"><b>Customer Sales Wish Report</b></h2>
-                        <hr />
-                    </div>
-                    <br><br>
+            <form action="" method="get" class="report-filters">
+                <div class="field">
+                    <label for="from_date">From Date</label>
+                    <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
+                </div>
+                <div class="field">
+                    <label for="to_date">To Date</label>
+                    <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
+                </div>
+                <div class="field">
+                    <label for="Customer">Customer Name</label>
+                    <select class="select" name="Customer" id="Customer" aria-hidden="true">
+                        <option value="">Please Select</option>
+                        @foreach ( $Customer as $key=>$CustomerDetails)
+                        <option value="{{ $CustomerDetails->Code}}">
+                            {{ $CustomerDetails->First_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="field field-actions">
+                    <button type="submit" id="submit_1" class="btn btn-primary">
+                        <i class="fa-solid fa-magnifying-glass"></i> Submit
+                    </button>
+                    <button type="button" onclick="printTablefun()" class="btn btn-secondary">
+                        <i class="fa-solid fa-print"></i> Print
+                    </button>
+                </div>
+            </form>
 
-                    <div style="display: flex; text-align: center;">
-
-
-                        <div style="flex: 60%; align-content: center;">
-                            <form action="" method="get">
-                                <label for="date">From Date :</label>
-                                <input type="date" name="from_date" id="from_date">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <label for="date">To Date :</label>
-                                <input type="date" name="to_date" id="to_date">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                                <label for="date">Customer Name :</label>
-                              	<select   class="select form-control" name="Customer" id="Customer"
-									aria-hidden="true">
-										<option value="">Please Select</option>
-									@foreach ( $Customer as $key=>$CustomerDetails)
-										<option value="{{ $CustomerDetails->Code}}">
-											{{ $CustomerDetails->First_name }}</option>
-									 @endforeach
-								</select> 
-
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <button type="submit" id="submit_1">
-                                    Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
-                                </button>
-                                <button onclick="printTablefun()">
-                                    <strong> Print &nbsp;</strong><i class="fa-solid fa-print"></i>
-                                </button>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <Button class="d-inline p-2 text-bg-primary">
-                                    <a href="{{route("home")}}">
-                                        Back
-                                    </a>
-                                    <i class="fa-solid fa-house"></i>
-                                </Button>
-                            </form>
-                        </div>
-
-                    </div>
-
-
-                    <table class="display" id="t_invoice_sums"
-                        style="background-color: transparent; border:1px solid rgb(7, 7, 7); margin-top:15px;">
+            <div class="table-scroll">
+                    <table class="display modern-table" id="t_invoice_sums">
                             @if($fromDate && $toDate)
-                                <caption style="font-size: 18px; font-weight: bold;">
+                                <caption>
                                     Sales Report&nbsp;&nbsp;&nbsp;&nbsp;From: {{$fromDate}}&nbsp;&nbsp;To: {{$toDate}}
                                 <caption>
                             @endif
@@ -166,15 +129,13 @@
                             </tr>
                         </tfoot>
                     </table>
-                </div>
             </div>
-
         </div>
-    </div>
     </div>
 
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{ asset('js/reports-modern.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
@@ -197,8 +158,13 @@
     jQuery(document).ready(function ($) {
         $('#t_invoice_sums').DataTable( //database table name
             {
-                dom: 'Bfrtip',
-                "paging": false,
+                dom: 'Bfrtlip',
+                pageLength: 15,
+                lengthMenu: [10, 15, 25, 50, 100],
+                language: {
+                    lengthMenu: '_MENU_',
+                    paginate: { previous: '‹', next: '›' }
+                },
                 buttons: [
                     'copy',
                     'excel',
@@ -229,11 +195,13 @@
 </script>
 
 
-{{-- form default date set for today --}}
+{{-- default To Date to today only if nothing was submitted --}}
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
-
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 </script>
 
 

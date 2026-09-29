@@ -19,13 +19,14 @@ class SalereportController extends Controller
     {
         $fromDate    = $request->input('from_date');
         $toDate      = $request->input('to_date');
+        $customer    = $request->input('customer');
+        $salesman    = $request->input('salesman');
         $branch_code = auth()->user()->BC;
 
-        $query = TwithoutVatSalesSum::where('BC', $branch_code);
-
-        if ($fromDate && $toDate) {
-            $query->whereBetween('Invoice_date', [$fromDate, $toDate]);
-        }
+        $query = TwithoutVatSalesSum::where('BC', $branch_code)
+            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
+            ->when($customer, fn ($q) => $q->where('Customer_NIC', $customer))
+            ->when($salesman, fn ($q) => $q->where('Salesmen', $salesman));
 
         $invoice = $query->get();
 
@@ -39,6 +40,8 @@ class SalereportController extends Controller
         return view('reports.sales_report', compact(
             'fromDate',
             'toDate',
+            'customer',
+            'salesman',
             'invoice',
             'totalGrossAmount',
             'totalDiscount',

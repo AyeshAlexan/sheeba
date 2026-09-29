@@ -13,6 +13,7 @@ use App\Models\Package;
 use App\Models\PackageItem;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -39,10 +40,12 @@ class ItemController extends Controller
     public function Itemstore(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'Item_code'        => 'required|max:25',
+            'Item_code'        => ['required', 'max:25', Rule::unique('items', 'Item_code')->ignore($request->id)],
             'Item_description' => 'required',
-            'purchasePrice'    => 'required',
-            'saleprice'        => 'required',
+            'purchasePrice'    => 'required|numeric|min:0',
+            'saleprice'        => 'required|numeric|min:0',
+        ], [
+            'Item_code.unique' => 'This item code is already in use — each item must have a unique code.',
         ]);
 
         if ($validator->fails()) {

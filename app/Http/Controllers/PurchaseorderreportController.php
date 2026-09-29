@@ -12,18 +12,11 @@ class PurchaseorderreportController extends Controller
         $toDate = $request->input('to_date');
         $branch_code = auth()->user()->BC;
 
-        $invoice = TPurchaseOrderSum::whereBetween('Invoice_date', [$fromDate, $toDate])
+        $invoice = TPurchaseOrderSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
                     ->where('BC',$branch_code)
                     ->get();
 
-        $query = TPurchaseOrderSum::query();
-
-        if ($fromDate && $toDate) {
-            $query = TPurchaseOrderSum::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('BC',$branch_code)
-                    ->get();
-
-        }
+        $query = $invoice;
 
         $sumGrossAmount = $query->sum('Gross_Amount');
         $totalGrossAmount = number_format($sumGrossAmount,2);

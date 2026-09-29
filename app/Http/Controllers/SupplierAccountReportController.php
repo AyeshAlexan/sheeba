@@ -61,15 +61,13 @@ class SupplierAccountReportController extends Controller
 {
     $branch_code = auth()->user()->BC;
 
-    // Optionally, filter by date if needed
     $fromDate = $request->input('from_date');
     $toDate = $request->input('to_date');
+    $supplierCode = $request->input('supplier');
 
-    $query = TSupplierPayment::where('BC', $branch_code);
-
-    if ($fromDate && $toDate) {
-        $query->whereBetween('Payment_date', [$fromDate, $toDate]);
-    }
+    $query = TSupplierPayment::where('BC', $branch_code)
+        ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('Payment_date', [$fromDate, $toDate]))
+        ->when($supplierCode, fn ($q) => $q->where('Supplier_Code', $supplierCode));
 
     $payments = $query->orderBy('Payment_date', 'desc')->get();
 
@@ -138,32 +136,19 @@ class SupplierAccountReportController extends Controller
      * @return \Illuminate\Http\Response
      */
        public function IndexSupCheque(Request $request){
-        // Get the 'to_date' input from the request
-        $toDate = $request->input('to_date');
+        $fromDate    = $request->input('from_date', '2000-01-01');
+        $toDate      = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
 
-         // Set a default value for $fromDate
-         $fromDate = '2000-01-01';
+        $query = TSupCheque::where('bc', $branch_code)
+            ->when($toDate, fn ($q) => $q->whereBetween('release_date', [$fromDate, $toDate]));
 
-         // Fetch invoices based on the provided date range
-         $SuppplierChequeData = TSupCheque::whereBetween('release_date', [$fromDate, $toDate])
-                     ->whereRaw('amount < release_date')
-                     ->get();
+        $receipts = $query->get();
 
-         // Initialize the query builder
-         $query = TSupCheque::query();
-
-         // Check if both fromDate and toDate are provided
-         if($toDate) {
-             // Update the query builder with the provided date range and condition
-             $query->whereBetween('release_date', [$fromDate, $toDate])
-                   ->whereRaw('amount < release_date');
-         }
-
-         return view('supplier_Report.supplier_cheque_payment_report')
-         ->with("fromDate", $fromDate)
-         ->with("toDate", $toDate)
-         ->with("receipts", $query->get()) // Execute the query and pass the result
-         ->with("SuplierDetails" , $SuppplierChequeData);
+        return view('supplier_Report.supplier_cheque_payment_report')
+        ->with("fromDate", $fromDate)
+        ->with("toDate", $toDate)
+        ->with("receipts", $receipts);
     }
 
     /**

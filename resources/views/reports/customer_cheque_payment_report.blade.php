@@ -680,6 +680,10 @@
                 <label>To Date</label>
                 <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
             </div>
+            <div class="filter-group">
+                <label>Customer Code</label>
+                <input type="text" name="customer" id="customer" value="{{ request('customer') }}" placeholder="Customer code">
+            </div>
             <button type="submit" class="btn btn-primary">
                 <i class="fa-solid fa-magnifying-glass"></i> Search
             </button>
@@ -1060,9 +1064,11 @@ function resetAction(){
 }
 </script>
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
-
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 </script>
 
 </body>

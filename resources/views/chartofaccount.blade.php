@@ -387,8 +387,18 @@
                                     $("#btn-save").html('Submit');
                                     $("#btn-save").attr("disabled", false);
                                 },
-                                error: function (data) {
-                                    console.log(data);
+                                error: function (xhr) {
+                                    $("#btn-save").html('Submit');
+                                    $("#btn-save").attr("disabled", false);
+                                    let msg = 'Something went wrong while saving.';
+                                    if (xhr.responseJSON) {
+                                        if (xhr.responseJSON.errors) {
+                                            msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                                        } else if (xhr.responseJSON.message) {
+                                            msg = xhr.responseJSON.message;
+                                        }
+                                    }
+                                    alert(msg);
                                 }
                             });
                         });

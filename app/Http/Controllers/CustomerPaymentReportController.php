@@ -8,18 +8,21 @@ use App\Models\TCustomerPayment;
 class CustomerPaymentReportController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $branch_code = auth()->user()->BC;
-        $SPayments = TCustomerPayment::where('BC', $branch_code)->get();
+        $customer = $request->input('customer');
+        $fromDate = "";
+        $toDate = "";
 
-        $query = TCustomerPayment::query();
-        $fromDate="";
-        $toDate ="";
+        $SPayments = TCustomerPayment::where('BC', $branch_code)
+            ->when($customer, fn ($q) => $q->where('Customer_Code', $customer))
+            ->get();
 
         return view('reports.customer_payment_report')
         ->with("fromDate", $fromDate)
         ->with("toDate", $toDate)
+        ->with("customer", $customer)
         ->with("paymentDetails", $SPayments);
     }
 
@@ -33,14 +36,17 @@ class CustomerPaymentReportController extends Controller
 
         $fromDate =$request->from_date;
         $toDate = $request->to_date;
+        $customer = $request->input('customer');
 
         $SPayments = TCustomerPayment::whereBetween('Payment_date', [$fromDate, $toDate])
                     ->where('BC', $branch_code)
+                    ->when($customer, fn ($q) => $q->where('Customer_Code', $customer))
                     ->get();
 
         return view('reports.customer_payment_report')
             ->with("fromDate", $fromDate)
             ->with("toDate", $toDate)
+            ->with("customer", $customer)
             ->with("paymentDetails", $SPayments);
     }
 

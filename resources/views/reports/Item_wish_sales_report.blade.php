@@ -54,10 +54,13 @@
                         <div style="flex: 60%; align-content: center;">
                             <form action="" method="get">
                                 <label for="from_date">From Date:</label>
-                                <input type="date" name="from_date" id="from_date">
+                                <input type="date" name="from_date" id="from_date" value="{{ $fromDate }}">
 
                                 <label for="to_date">To Date:</label>
-                                <input type="date" name="to_date" id="to_date">
+                                <input type="date" name="to_date" id="to_date" value="{{ $toDate }}">
+
+                                <label for="item_code">Item Code:</label>
+                                <input type="text" name="item_code" id="item_code" value="{{ $itemCode }}" placeholder="Item code">
 
                                 <button type="submit">
                                     Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
@@ -268,10 +271,13 @@
     }
 </script>
 
-{{-- form default date set for today --}}
+{{-- default To Date to today only if nothing was submitted --}}
 <script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
+    var toDateInput = document.getElementById('to_date');
+    if (!toDateInput.value) {
+        var dateObj = new Date();
+        toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
 </script>
 
 </html>

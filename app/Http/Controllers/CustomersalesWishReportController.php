@@ -22,21 +22,13 @@ class CustomersalesWishReportController extends Controller
         $Customer = $request->input('Customer');
         $branch_code = auth()->user()->BC;
     
-        $invoice = TInvoiceSum::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('Customer_NIC',$Customer)
+        $invoice = TInvoiceSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
+                    ->when($Customer, fn ($q) => $q->where('Customer_NIC', $Customer))
                     ->where('BC',$branch_code)
                     ->get();
-    
-        $query = TInvoiceSum::query();
-    
-        if ($fromDate && $toDate) {
-            $query = TInvoiceSum::whereBetween('Invoice_date', [$fromDate, $toDate])
-                    ->where('Customer_NIC',$Customer)
-                    ->where('BC',$branch_code)
-                    ->get();
-    
-        }
-    
+
+        $query = $invoice;
+
         $sumGrossAmount = $query->sum('Gross_Amount');
         $totalGrossAmount = number_format($sumGrossAmount,2);
     

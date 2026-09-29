@@ -5,6 +5,7 @@ use App\Models\MChartofAccount;
 use App\Models\MMainAccountType;
 use App\Models\MMainCategory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ChartofAccountController extends Controller
 {
@@ -32,7 +33,17 @@ class ChartofAccountController extends Controller
             // 'opening_balance','controlaccount','bankaccount', 'BC','OC' --}}
   
         $ItemId = $request->id;
-  
+
+        $request->validate([
+            'account'         => 'required',
+            'accountsub'      => 'required',
+            'code'            => ['required', Rule::unique('m_chartof_accounts', 'code')->ignore($ItemId)],
+            'description'     => 'required',
+            'opening_balance' => 'nullable|numeric',
+        ], [
+            'code.unique' => 'This account code is already in use — each account must have a unique code.',
+        ]);
+
         $Item  =   MChartofAccount::updateOrCreate(
                     [
                      'id' => $ItemId

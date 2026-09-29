@@ -55,7 +55,7 @@ class CustomerController extends Controller
     public function addCustomer(Request $request)
     {
         $request->validate([
-            'code'=>'required | max:40 |',
+            'code'=>'required | max:40 | unique:customers,Code',
             'name'=>'required | max:200 ',
             'address1'=>'required | max:200 ',
             'address2'=>'max:200 ',
@@ -66,6 +66,8 @@ class CustomerController extends Controller
             'driving_license'=>'max:15 ',
             'passport'=>'max:15 ',
             'other_identifications'=>'max:100 ',
+        ], [
+            'code.unique' => 'This customer code is already in use — each customer must have a unique code.',
         ]);
         $customer = new Customer();
         $customer->Code=$request->code;
@@ -91,17 +93,19 @@ class CustomerController extends Controller
     //  create customer ajax
     public function create(Request $request){
         $request->validate([
-            'code'=>'required | max:40',
+            'code'=>'required | max:40 | unique:customers,Code',
             'first_name'=>'required | max:200 ',
             'address1'=>'max:200',
             'address2'=>'max:200 ',
             'contact1'=>['required','max:10', 'regex:/^0\d{9,}$/'] ,
             'contact2'=>'max:10',
             'email'=>' max:200 ',
-            'nic'=>' max:15 ' ,
+            'nic'=>'nullable | max:15 | unique:customers',
             'driving_license'=>'max:15 ',
             'passport'=>'max:15 ',
             'other_identifications'=>'max:15 ',
+        ], [
+            'code.unique' => 'This customer code is already in use — each customer must have a unique code.',
         ]);
         $customer = new Customer();
         $customer->Code=$request->code;
