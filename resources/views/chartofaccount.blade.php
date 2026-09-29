@@ -22,33 +22,88 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
 </head>
 <style>
-    p {
-      font-weight: bold;
-      font-family: "Noto Sans, sans-serif";
-      size:"7";
-      color: rgb(3, 80, 3)
+    .coa-wrap{ padding: 24px; background: #F8FAFC; }
+    .coa-header{ display:flex; align-items:flex-start; gap:16px; margin-bottom:20px; }
+    .coa-header-icon{
+        width:48px; height:48px; border-radius:12px; background:#DCFCE7; color:#15803D;
+        display:flex; align-items:center; justify-content:center; font-size:20px; flex:0 0 auto;
     }
-
-    h1{
-      font-family: "Times New Roman", Times, serif;
-      size:"6";
-      color: rgb(4, 58, 13)
+    .coa-header-text{ flex:1; }
+    .coa-header-text h3{ margin:0; font-weight:700; color:#0F172A; font-size:22px; }
+    .coa-header-text p{ margin:4px 0 0; color:#64748B; font-size:13.5px; }
+    .coa-add-btn{
+        background:#16A34A; color:#fff; border:none; border-radius:10px; padding:11px 18px;
+        font-weight:600; font-size:13.5px; white-space:nowrap; align-self:flex-start;
     }
+    .coa-add-btn:hover{ background:#15803D; color:#fff; }
 
-    input::placeholder {
-      font-weight: bold;
-      opacity: 0.5;
-      color: rgb(4, 58, 13)
+    .coa-info{
+        display:flex; align-items:center; gap:10px; background:#EFF6FF; border:1px solid #BFDBFE;
+        color:#1D4ED8; border-radius:10px; padding:13px 16px; font-size:13.5px; margin-bottom:20px;
     }
+    .coa-info i{ font-size:15px; flex:0 0 auto; }
 
-    input[type="text"]{
-      background-color: rgb(206, 235, 219);
-      padding: 10px 15px;
-      border-radius: 3px;
+    .coa-card{
+        background:#fff; border:1px solid #E5E7EB; border-radius:14px; margin-bottom:16px;
+        overflow:hidden; box-shadow:0 1px 2px rgba(15,23,42,.04);
     }
+    .coa-card-head{
+        display:flex; align-items:center; gap:10px; padding:16px 18px; cursor:pointer;
+        border-bottom:1px solid #F1F5F9;
+    }
+    .coa-type-icon{
+        width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+        font-size:13px; flex:0 0 auto;
+    }
+    .coa-type-badge{ font-weight:700; font-size:14px; padding:5px 14px; border-radius:999px; flex:0 0 auto; }
+    .coa-spacer{ flex:1; }
+    .coa-count{ color:#94A3B8; font-size:13px; margin-right:12px; }
+    .coa-chevron{ color:#94A3B8; transition:transform .15s; }
+    .coa-card-head.collapsed .coa-chevron{ transform:rotate(180deg); }
 
-    hr{
-      color: rgb(3, 31, 3)
+    .coa-colhead{
+        display:flex; align-items:center; gap:14px; padding:10px 18px;
+        background:#F8FAFC; color:#94A3B8; font-size:11.5px; font-weight:700;
+        text-transform:uppercase; letter-spacing:.04em;
+    }
+    .coa-colhead span:nth-child(1){ width:130px; flex:0 0 auto; }
+    .coa-colhead span:nth-child(2){ flex:1; }
+    .coa-colhead span:nth-child(3){ flex:0 0 auto; }
+
+    .coa-group-row{
+        display:flex; align-items:center; gap:8px; padding:10px 18px;
+        color:#64748B; font-size:13px; background:#FAFBFC; border-top:1px solid #F1F5F9;
+    }
+    .coa-group-dot{ width:6px; height:6px; border-radius:50%; background:#CBD5E1; flex:0 0 auto; }
+
+    .coa-row{
+        display:flex; align-items:center; gap:14px; padding:12px 18px 12px 34px;
+        border-top:1px solid #F1F5F9;
+    }
+    .coa-row:hover{ background:#F8FAFC; }
+    .coa-code{
+        font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size:12.5px; font-weight:600;
+        background:#FEE2E2; color:#B91C1C; border-radius:999px; padding:5px 12px;
+        width:130px; flex:0 0 auto; text-align:center; letter-spacing:.03em;
+    }
+    .coa-name{ flex:1; color:#1E293B; font-size:14px; }
+    .coa-dupe{
+        display:inline-flex; align-items:center; gap:6px; background:#FCA5A5; color:#7F1D1D;
+        font-size:11.5px; font-weight:700; border-radius:999px; padding:5px 12px; flex:0 0 auto;
+        white-space:nowrap;
+    }
+    .coa-icon-btn{
+        width:32px; height:32px; border-radius:9px; border:none; display:inline-flex;
+        align-items:center; justify-content:center; flex:0 0 auto; font-size:13px;
+    }
+    .coa-edit{ background:#DBEAFE; color:#1D4ED8; }
+    .coa-edit:hover{ background:#BFDBFE; }
+    .coa-delete{ background:#FEE2E2; color:#DC2626; }
+    .coa-delete:hover{ background:#FECACA; }
+
+    .coa-empty{
+        background:#fff; border:1px dashed #E5E7EB; border-radius:14px; padding:40px; text-align:center;
+        color:#94A3B8;
     }
 </style>
 
@@ -57,54 +112,94 @@
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
+                <div class="coa-wrap">
 
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card shadow ">
+                    <div class="coa-header">
+                        <div class="coa-header-icon"><i class="fas fa-book"></i></div>
+                        <div class="coa-header-text">
+                            <h3>Chart Of Account</h3>
+                            <p>Manage your chart of accounts and organize your financial structure.</p>
+                        </div>
+                        <button type="button" class="coa-add-btn" onclick="add()">
+                            <i class="fas fa-plus"></i> Add Chart Of Account
+                        </button>
+                    </div>
 
-                            <div class="col-md-9">
-                                <h4 class="card-title m-3">Chart Of Account</h4>
+                    @if ($message = Session::get('success'))
+                    <div class="alert alert-success">
+                        <p>{{ $message }}</p>
+                    </div>
+                    @endif
+
+                    <div class="coa-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>A chart of accounts is a directory of account names and codes — not a report of balances. For live figures, see Trial Balance.</span>
+                    </div>
+
+                    @php
+                        $typeStyle = [
+                            'Assets'      => ['icon' => 'fa-layer-group',     'bg' => '#DCFCE7', 'fg' => '#15803D', 'iconbg' => '#BBF7D0'],
+                            'Liabilities' => ['icon' => 'fa-balance-scale',  'bg' => '#FEF3C7', 'fg' => '#B45309', 'iconbg' => '#FDE68A'],
+                            'Equity'      => ['icon' => 'fa-chart-pie',       'bg' => '#EDE9FE', 'fg' => '#6D28D9', 'iconbg' => '#DDD6FE'],
+                            'Income'      => ['icon' => 'fa-chart-line',  'bg' => '#D1FAE5', 'fg' => '#047857', 'iconbg' => '#A7F3D0'],
+                            'Revenue'     => ['icon' => 'fa-chart-line',  'bg' => '#D1FAE5', 'fg' => '#047857', 'iconbg' => '#A7F3D0'],
+                            'Expenses'    => ['icon' => 'fa-file-invoice',    'bg' => '#DBEAFE', 'fg' => '#1D4ED8', 'iconbg' => '#BFDBFE'],
+                        ];
+                        $defaultStyle = ['icon' => 'fa-folder', 'bg' => '#E5E7EB', 'fg' => '#374151', 'iconbg' => '#D1D5DB'];
+                    @endphp
+
+                    @forelse($tree as $type => $groups)
+                        @php $style = $typeStyle[$type] ?? $defaultStyle; @endphp
+                        <div class="coa-card">
+                            <div class="coa-card-head" role="button" data-bs-toggle="collapse" data-bs-target="#coa-type-{{ $loop->index }}">
+                                <span class="coa-type-icon" style="background: {{ $style['iconbg'] }}; color: {{ $style['fg'] }};">
+                                    <i class="fas {{ $style['icon'] }}"></i>
+                                </span>
+                                <span class="coa-type-badge" style="background: {{ $style['bg'] }}; color: {{ $style['fg'] }};">{{ $type }}</span>
+                                <span class="coa-spacer"></span>
+                                <span class="coa-count">{{ $groups->flatten(1)->count() }} accounts</span>
+                                <i class="fas fa-chevron-up coa-chevron"></i>
                             </div>
-                            <hr style="height: 5px; color: blue;">
 
-                            <div class="container mt-2">
-                                <div class="row">
-                                    <div class="col-lg-12 margin-tb">
-                                        <div class="pull-left">
+                            <div class="collapse show" id="coa-type-{{ $loop->index }}">
+                                <div class="coa-colhead">
+                                    <span>Account Code</span>
+                                    <span>Account Name</span>
+                                    <span>Actions</span>
+                                </div>
 
-                                        </div>
-                                        <div class="pull-right mb-2">
-                                            <a class="btn btn-info card-body shadow p-3 mb-2" onClick="add()"
-                                                href="javascript:void(0)">Add Chart Of Account</a>
-                                        </div>
-                                    </div>
+                                @foreach($groups as $group => $rows)
+                                <div class="coa-group-row">
+                                    <span class="coa-group-dot"></span>
+                                    <span>{{ $group }}</span>
+                                    <span class="coa-spacer"></span>
+                                    <span>{{ $rows->count() }} accounts</span>
                                 </div>
-                                @if ($message = Session::get('success'))
-                                <div class="alert alert-success">
-                                    <p>{{ $message }}</p>
+                                @foreach($rows as $row)
+                                <div class="coa-row">
+                                    <span class="coa-code">{{ str_replace('-', ' - ', $row->code) }}</span>
+                                    <span class="coa-name">{{ $row->description }}</span>
+                                    <span class="coa-spacer"></span>
+                                    @if($duplicateCodes->contains($row->code))
+                                    <span class="coa-dupe" title="Another account uses this same code">
+                                        <i class="fas fa-exclamation-triangle"></i> Duplicate code {{ $row->code }}
+                                    </span>
+                                    @endif
+                                    <button type="button" class="coa-icon-btn coa-edit" onclick="editFunc({{ $row->id }})">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button type="button" class="coa-icon-btn coa-delete" onclick="deleteFunc({{ $row->id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                @endif
-
-                                <div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="MChartofAccount"
-                                        >
-                                            <thead>
-                                                <tr style="background-color:hsl(204, 71%, 70%);">
-                                                    <th>Account Type</th>
-                                                    <th>Account Sub</th>
-                                                    <th>Code</th>
-                                                    <th>Description</th>
-                                                    <th>Opening Balance</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                </div>
+                                @endforeach
+                                @endforeach
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="coa-empty">No accounts yet — click "Add Chart Of Account" to create one.</div>
+                    @endforelse
+
                 </div>
             </div>
             @include('layouts.footer')
@@ -128,26 +223,7 @@
                                             <input type="hidden" name="id" id="id">
                                             <div class="row">
                                               <div class="col-sm-6">
-                                                <label for="name" class="col-sm-6 control-label"> Account Type
-                                                    {{-- <span style="color:#FF0000; font-weight: bold; ">*</span> --}}
-                                                </label>
-                                                <select class="select form-control" name="account" id="account"
-                                                    aria-hidden="true">
-                                                    <option value="">Please Select</option>
-                                                    @foreach($AccountTypeData as $categoryData)
-                                                    <option value="{{ $categoryData->description}}">
-                                                        {{ $categoryData->description }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-
-                                            <div class="col-sm-6">
-                                                <label for="name" class="col-sm-6 control-label"> Account Sub Type
-                                                    {{-- <span style="color:#FF0000; font-weight: bold; ">*</span> --}}
-                                                </label>
-                                                {{-- <input type="text" class="form-control" id="accountsub"
-                                                value="{{ $maxCustomer+1}}"
-                                                 name="accountsub" placeholder="Code" maxlength="15" required=""> --}}
+                                                <label for="accountsub" class="col-sm-6 control-label">Account Type</label>
                                                 <select class="select form-control" name="accountsub" id="accountsub"
                                                     aria-hidden="true">
                                                     <option value="">Please Select</option>
@@ -156,6 +232,20 @@
                                                         {{ $categoryData->category }}</option>
                                                     @endforeach
                                                 </select>
+                                                <small class="text-muted">Assets / Liabilities / Equity / Income / Expenses</small>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <label for="account" class="col-sm-6 control-label">Account Group</label>
+                                                <select class="select form-control" name="account" id="account"
+                                                    aria-hidden="true">
+                                                    <option value="">Please Select</option>
+                                                    @foreach($AccountTypeData as $categoryData)
+                                                    <option value="{{ $categoryData->description}}">
+                                                        {{ $categoryData->description }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <small class="text-muted">Which section of the Account Type this belongs under</small>
                                             </div>
                                         </div>
                                         <br>
@@ -187,19 +277,6 @@
                                       </div>
                                      </div>
                                    </div>
-                                   <br>
-                                   <div class="row">
-                                    <div class="form-group">
-                                        <label for="name" class="col-sm-2 control-label">Opening Balance
-                                            {{-- <span style="color:#FF0000; font-weight: bold; ">*</span> --}}
-                                        </label>
-                                        <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="opening_balance"
-                                                name="opening_balance" placeholder="Opening Balance" maxlength="25"
-                                                required="">
-                                        </div>
-                                    </div>
-                              </div>
                                 <div class="row">
                                     <div class="col-sm-6">
                                       <div class="card">
@@ -263,60 +340,6 @@
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 }
                             });
-
-                            $('#MChartofAccount').DataTable({
-                                processing: true,
-                                serverSide: true,
-                                ajax: "{{ url('chartofaccount') }}",
-                                columns: [
-                                    {
-                                        data: 'account',
-                                        name: 'account'
-                                    },
-                                    {
-                                        data: 'accountsub',
-                                        name: 'accountsub'
-                                    },
-
-                                    {
-                                        data: 'code',
-                                        name: 'code'
-                                    },
-
-                                    {
-                                        data: 'description',
-                                        name: 'description'
-                                    },
-                                    {
-                                        data: 'opening_balance',
-                                        name: 'opening_balance'
-                                    },
-                                    // {
-                                    //     data: 'controlaccount',
-                                    //     name: 'controlaccount'
-                                    // },
-                                    // {
-                                    //     data: 'bankaccount',
-                                    //     name: 'bankaccount'
-                                    // },
-                                    // {
-                                    //     data: 'BC',
-                                    //     name: 'BC'
-                                    // },
-                                    // {
-                                    //     data: 'OC',
-                                    //     name: 'OC'
-                                    // },
-                                    {
-                                        data: 'action',
-                                        name: 'action',
-                                        orderable: false
-                                    },
-                                ],
-                                order: [
-                                    [0, 'desc']
-                                ]
-                            });
                         });
 
                         function add() {
@@ -342,7 +365,6 @@
                                     $('#accountsub').val(res.accountsub);
                                     $('#code').val(res.code);
                                     $('#description').val(res.description);
-                                    $('#opening_balance').val(res.opening_balance);
                                     $('#controlaccount').val(res.controlaccount);
                                     $('#bankaccount').val(res.bankaccount);
                                     $('#BC').val(res.BC);
@@ -363,8 +385,7 @@
                                     },
                                     dataType: 'json',
                                     success: function (res) {
-                                        var oTable = $('#Item').dataTable();
-                                        oTable.fnDraw(false);
+                                        window.location.reload();
                                     }
                                 });
                             }
@@ -381,11 +402,7 @@
                                 contentType: false,
                                 processData: false,
                                 success: (data) => {
-                                    $("#Item-modal").modal('hide');
-                                    var oTable = $('#Item').dataTable();
-                                    oTable.fnDraw(false);
-                                    $("#btn-save").html('Submit');
-                                    $("#btn-save").attr("disabled", false);
+                                    window.location.reload();
                                 },
                                 error: function (xhr) {
                                     $("#btn-save").html('Submit');

@@ -11,19 +11,30 @@ class ChartofAccountController extends Controller
 {
     public function index()
     {
-        if(request()->ajax()) {
-            return datatables()->of(MChartofAccount::select('*'))
-            ->addColumn('action', 'Action_button')
-            ->rawColumns(['action'])
-            ->addIndexColumn()
-            ->make(true);
-        }
-
         $AccountType = MMainAccountType::all();
         $MainCategory = MMainCategory::all();
+
+        $accounts = MChartofAccount::orderBy('accountsub')
+            ->orderBy('account')
+            ->orderBy('code')
+            ->get();
+
+        // A code shared by more than one account is a structural error —
+        // flag it in the tree so it's impossible to miss.
+        $duplicateCodes = $accounts->countBy('code')
+            ->filter(fn ($count) => $count > 1)
+            ->keys();
+
+        // Type → Group → Accounts, matching how a chart of accounts is
+        // actually organized (not a flat list).
+        $tree = $accounts->groupBy(fn ($a) => $a->accountsub ?: 'Unclassified')
+            ->map(fn ($typeAccounts) => $typeAccounts->groupBy(fn ($a) => $a->account ?: 'Ungrouped'));
+
         return view('chartofaccount')
         ->with("AccountTypeData" , $AccountType)
-        ->with("MainCategoryData" , $MainCategory);
+        ->with("MainCategoryData" , $MainCategory)
+        ->with("tree", $tree)
+        ->with("duplicateCodes", $duplicateCodes);
     }
 
 
@@ -39,9 +50,10 @@ class ChartofAccountController extends Controller
             'accountsub'      => 'required',
             'code'            => ['required', Rule::unique('m_chartof_accounts', 'code')->ignore($ItemId)],
             'description'     => 'required',
-            'opening_balance' => 'nullable|numeric',
         ], [
-            'code.unique' => 'This account code is already in use — each account must have a unique code.',
+            'account.required'    => 'Account Group is required.',
+            'accountsub.required' => 'Account Type is required.',
+            'code.unique'         => 'This account code is already in use — each account must have a unique code.',
         ]);
 
         $Item  =   MChartofAccount::updateOrCreate(
@@ -49,18 +61,17 @@ class ChartofAccountController extends Controller
                      'id' => $ItemId
                     ],
                     [
-                    'account' => $request->account, 
+                    'account' => $request->account,
                     'accountsub'  => $request->accountsub,
                     'code' => $request->code,
                     'Bar_code'=> $request->Bar_code,
                     'description' => $request->description,
-                    'opening_balance' => $request->opening_balance,
                     'controlaccount' => $request->controlaccount,
                     'bankaccount' => $request->bankaccount,
-                    'BC' => $request->BC, 
+                    'BC' => $request->BC,
                     'OC' => $request->OC,
-                    ]);  
-            return response()->json('Image uploaded successfully');
+                    ]);
+            return response()->json('Chart of account saved successfully');
     }
  
     public function ChartofAccountEdit(Request $request)

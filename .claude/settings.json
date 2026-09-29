@@ -37,7 +37,8 @@
       "Bash(perl -0777 -ne '$i = index\\($_, \"dom: \\\\x27Bfrtip\\\\x27,\"\\); print unpack\\(\"H*\", substr\\($_, $i, 20\\)\\), \"\\\\n\";' resources/views/reports/Purchase_Detail_report.blade.php)",
       "Bash(php -l app/Http/Controllers/ChartofAccountController.php)",
       "Bash(php -l app/Http/Controllers/CustomerController.php)",
-      "Bash(php -l app/Http/Controllers/ItemController.php)"
+      "Bash(php -l app/Http/Controllers/ItemController.php)",
+      "Bash(perl -pi -e ' *)"
     ]
   }
 }
