@@ -52,7 +52,15 @@
                                 </form>
 
                                 <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-bordered table-hover" style="table-layout:fixed; width:100%;">
+                                <colgroup>
+                                    <col style="width:9%">
+                                    <col style="width:16%">
+                                    <col style="width:28%">
+                                    <col style="width:22%">
+                                    <col style="width:12.5%">
+                                    <col style="width:12.5%">
+                                </colgroup>
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Date</th>
@@ -67,15 +75,15 @@
                                     @forelse($transactions as $row)
                                     <tr>
                                         <td>{{ $row->Ddate }}</td>
-                                        <td>
+                                        <td class="text-truncate" style="max-width:0;" title="{{ $row->reference_label }}">
                                             @if($row->reference_url)
                                                 <a href="{{ $row->reference_url }}" target="_blank">{{ $row->reference_label }}</a>
                                             @else
                                                 {{ $row->reference_label }}
                                             @endif
                                         </td>
-                                        <td>{{ $row->Description }}</td>
-                                        <td>{{ $row->logic_summary }}</td>
+                                        <td class="text-truncate" style="max-width:0;" title="{{ $row->Description }}">{{ $row->Description }}</td>
+                                        <td class="text-truncate" style="max-width:0;" title="{{ $row->logic_summary }}">{{ $row->logic_summary }}</td>
                                         <td>{{ number_format((float) $row->dr_amount, 2) }}</td>
                                         <td>{{ number_format((float) $row->cr_amount, 2) }}</td>
                                     </tr>

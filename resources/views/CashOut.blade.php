@@ -11,147 +11,99 @@
     <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
-    <title>ADD Expense</title>
-
-    <style>
-        .form-style-2{
-            max-width: 1000px;
-            padding: 30px 15px 10px 20px;
-            font: 14px Arial, Helvetica, sans-serif;
-        }
-        .form-style-2-heading{
-            font-weight: bold;
-            font-style: italic;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 20px;
-            font-size: 15px;
-            padding-bottom: 3px;
-        }
-        .form-style-2 label{
-            display: block;
-            margin: 0px 0px 15px 0px;
-        }
-        .form-style-2 label > span{
-            width: 100px;
-            font-weight: bold;
-            float: left;
-            padding-top: 8px;
-            padding-right: 5px;
-        }
-        .form-style-2 span.required{
-            color:red;
-        }
-        .form-style-2 .tel-number-field{
-            width: 40px;
-            text-align: center;
-        }
-        .form-style-2 input.input-field, .form-style-2 .select-field{
-            width: 48%;	
-        }
-        .form-style-2 input.input-field, 
-        .form-style-2 .tel-number-field, 
-        .form-style-2 .textarea-field, 
-         .form-style-2 .select-field{
-            box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            border: 1px solid #C2C2C2;
-            box-shadow: 1px 1px 4px #EBEBEB;
-            -moz-box-shadow: 1px 1px 4px #EBEBEB;
-            -webkit-box-shadow: 1px 1px 4px #EBEBEB;
-            border-radius: 3px;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-            padding: 7px;
-            outline: none;
-        }
-        .form-style-2 .input-field:focus, 
-        .form-style-2 .tel-number-field:focus, 
-        .form-style-2 .textarea-field:focus,  
-        .form-style-2 .select-field:focus{
-            border: 1px solid #0C0;
-        }
-        .form-style-2 .textarea-field{
-            height:100px;
-            width: 55%;
-        }
-        .form-style-2 input[type=submit],
-        .form-style-2 input[type=button]{
-            border: none;
-            padding: 8px 15px 8px 15px;
-            background: #FF8500;
-            color: #fff;
-            box-shadow: 1px 1px 4px #DADADA;
-            -moz-box-shadow: 1px 1px 4px #DADADA;
-            -webkit-box-shadow: 1px 1px 4px #DADADA;
-            border-radius: 3px;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-        }
-        .form-style-2 input[type=submit]:hover,
-        .form-style-2 input[type=button]:hover{
-            background: #EA7B00;
-            color: #fff;
-        }
-        </style>
+    <title>Cash Out</title>
 </head>
 <body>
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
+                <div class="page-header ph-flex">
+                    <div class="ph-left">
+                        <div class="ph-icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="page-title">Cash Out</h3>
+                            <p class="page-subtitle">Record a cash disbursement from the register</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="card">
+                    <div class="card-body">
+                        @if(session('status'))
+                            <div class="alert alert-success text-center" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
 
-<div class="container mt-4">
-    @if(session('status'))
-      <div class="alert alert-success">
-          {{ session('status') }}
-      </div>
-    @endif
+                        <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('store-form')}}">
+                            @csrf
 
+                            <div class="stock-info-card">
+                                <div class="stock-info-grid-3">
+                                    <div class="si-field">
+                                        <label>Cash Out No <span class="text-danger">*</span></label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-hashtag"></i>
+                                            <input type="number" id="Cashout_no" name="Cashout_no" class="form-control" required aria-label="Cash Out No">
+                                        </div>
+                                    </div>
+                                    <div class="si-field">
+                                        <label>Date</label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <input type="date" id="Cashout_date" name="Cashout_date" class="form-control" required aria-label="Date">
+                                        </div>
+                                    </div>
+                                    <div class="si-field">
+                                        <label>Title <span class="text-danger">*</span></label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-tag"></i>
+                                            <input type="text" id="Account" name="Account" class="form-control" required aria-label="Title">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <div class="stock-info-card mt-3">
+                                <div class="stock-info-grid-2">
+                                    <div class="si-field">
+                                        <label>Description <span class="text-danger">*</span></label>
+                                        <textarea name="Cashout_note" id="Cashout_note" class="form-control" rows="3" required placeholder="Enter a description..."></textarea>
+                                    </div>
+                                    <div class="si-field">
+                                        <label>Cash Out Amount <span class="text-danger">*</span></label>
+                                        <div class="si-icon-wrap">
+                                            <i class="fas fa-coins"></i>
+                                            <input type="text" id="Cashout_amount" name="Cashout_amount" class="form-control" required placeholder="0.00" aria-label="Cash Out Amount">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-
-
-      <div class="card-body">
-        <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('store-form')}}">
-            @csrf
-          <div class="form-group">
-            <label for="exampleInputEmail1">date</label>
-            <input type="date" id="Cashout_date" name="Cashout_date" class="form-control" required="">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Cashout_no</label>
-            <input type="number" id="Cashout_no" name="Cashout_no" class="form-control" required="">
-          </div>
-
-          <div class="form-group">
-            <label for="exampleInputEmail1">Cashout amount</label>
-            <input type="text" id="Cashout_amount" name="Cashout_amount" class="form-control" required="">
-          </div>
-
-          <div class="form-group">
-            <label for="exampleInputEmail1">Title</label>
-            <input type="text" id="Account" name="Account" class="form-control" required="">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Description</label>
-            <textarea name="Cashout_note" id="Cashout_note" class="form-control" required=""></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <button type="submit" name="save" id="save" class="btn btn-outline-info btn-lg shadow">
+                                    <i class="fas fa-save"></i> SAVE</button>
+                                <button type="button" name="pawn_cancel" id="pawn_cancel"
+                                    class="btn btn-outline-warning btn-lg shadow pawn_cancel">
+                                    <i class="fas fa-times"></i> CANCEL</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @include('layouts.footer')
+        </div>
     </div>
-  </div>
 
   <script>
     var dateObj = new Date();
     document.getElementById('Cashout_date').value = dateObj.toISOString().slice(0, 10);
-
-</script>
+  </script>
 
   <script src="assets/js/jquery-3.6.0.min.js"></script>
   <script src="assets/js/feather.min.js"></script>
-  {{-- <script src="assets/plugins/select2/js/select2.min.js"></script> --}}
   <script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
   <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
   <script src="assets/plugins/datatables/datatables.min.js"></script>
@@ -163,4 +115,3 @@
 </body>
 @endsection
 </html>
-

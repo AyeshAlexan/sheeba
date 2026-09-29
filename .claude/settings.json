@@ -22,7 +22,8 @@
       "Bash(node -e ' *)",
       "Bash(node shot_guarantor.js)",
       "Bash(grep -n \"^/\\\\* Pagination\" public/assets/css/theme-redesign.css)",
-      "Bash(git show *)"
+      "Bash(git show *)",
+      "Bash(php -r ' *)"
     ]
   }
 }

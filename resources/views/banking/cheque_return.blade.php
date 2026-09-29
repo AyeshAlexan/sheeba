@@ -49,10 +49,10 @@
                                 <label class="form-label mb-0 small">To Date</label>
                                 <input type="date" id="toDate" class="form-control" value="{{ $toDate }}">
                             </div>
-                            <div class="col-md-1">
-                                <button type="button" id="searchBtn" class="btn btn-outline-secondary w-100">Search</button>
+                            <div class="col-md-2">
+                                <button type="button" id="searchBtn" class="btn btn-primary w-100"><i class="fas fa-search"></i> Search</button>
                             </div>
-                            <div class="col-md-4 text-end">
+                            <div class="col-md-3 text-end">
                                 <button type="button" id="returnBtn" class="btn btn-danger" disabled>
                                     <i class="fas fa-undo"></i> Return Selected
                                 </button>
