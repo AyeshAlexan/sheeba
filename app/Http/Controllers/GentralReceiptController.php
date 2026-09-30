@@ -16,7 +16,22 @@ class GentralReceiptController extends Controller
     public function index()
     {
         if(request()->ajax()) {
-            return datatables()->of(TGentralReceipt::where('BC', auth()->user()->BC)->select('*'))
+            $query = TGentralReceipt::where('BC', auth()->user()->BC);
+
+            if (request()->filled('from_date') && request()->filled('to_date')) {
+                $query->whereBetween('date', [request('from_date'), request('to_date')]);
+            }
+            if (request()->filled('voucher_no')) {
+                $query->where('invoice_no', request('voucher_no'));
+            }
+            if (request()->filled('account')) {
+                $account = request('account');
+                $query->where(function ($q) use ($account) {
+                    $q->where('crcode', $account)->orWhere('drcode', $account);
+                });
+            }
+
+            return datatables()->of($query->select('*'))
             ->addColumn('action', 'Action_button')
             ->rawColumns(['action'])
             ->addIndexColumn()
@@ -26,8 +41,15 @@ class GentralReceiptController extends Controller
 
 
         $ChartAccount = MChartofAccount::all();
+        $voucherNos = TGentralReceipt::where('BC', auth()->user()->BC)
+            ->orderBy('invoice_no', 'desc')
+            ->pluck('invoice_no')
+            ->unique()
+            ->values();
+
         return view('gentralreceipt')
-        -> with("Amount", $ChartAccount);
+        ->with("Amount", $ChartAccount)
+        ->with("voucherNos", $voucherNos);
     }
 
 

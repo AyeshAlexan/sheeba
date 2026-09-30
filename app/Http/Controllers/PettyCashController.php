@@ -36,22 +36,44 @@ class PettyCashController extends Controller
     public function index()
     {
         if(request()->ajax()) {
-            return datatables()->of(TPettyCash::where('BC', auth()->user()->BC)->select('*'))
+            $query = TPettyCash::where('BC', auth()->user()->BC);
+
+            if (request()->filled('from_date') && request()->filled('to_date')) {
+                $query->whereBetween('date', [request('from_date'), request('to_date')]);
+            }
+            if (request()->filled('voucher_no')) {
+                $query->where('invoice_no', request('voucher_no'));
+            }
+            if (request()->filled('account')) {
+                $account = request('account');
+                $query->where(function ($q) use ($account) {
+                    $q->where('crcode', $account)->orWhere('drcode', $account);
+                });
+            }
+
+            return datatables()->of($query->select('*'))
             ->addColumn('action', 'Action_button')
             ->rawColumns(['action'])
             ->addIndexColumn()
             ->make(true);
         }
 
-        
+
         $maxCustomerNo = TPettyCash::orderBy('invoice_no', 'desc')->value('invoice_no');
         $maxCustomerNos = str_pad($maxCustomerNo, 4, '0', STR_PAD_LEFT);
 
-    
+
         $ChartAccount = MChartofAccount::all();
+        $voucherNos = TPettyCash::where('BC', auth()->user()->BC)
+            ->orderBy('invoice_no', 'desc')
+            ->pluck('invoice_no')
+            ->unique()
+            ->values();
+
         return view('PettyCash')
         ->with("maxCustomer", $maxCustomerNos)
-        ->with("Amount", $ChartAccount);
+        ->with("Amount", $ChartAccount)
+        ->with("voucherNos", $voucherNos);
     }
     
     

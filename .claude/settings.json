@@ -63,7 +63,13 @@
       "Read(//c/wamp64/www/**)",
       "Bash(echo \"exit code: $?\")",
       "Bash(cd /tmp)",
-      "Bash(curl -s -b cookies.txt -c cookies.txt __TRACKED_VAR__/home -o home.html)"
+      "Bash(curl -s -b cookies.txt -c cookies.txt __TRACKED_VAR__/home -o home.html)",
+      "Bash(grep -n 'protected $fillable\\\\|protected $table' app/Models/MChartofAccount.php app/Models/TPettyCash.php app/Models/TPaymentVoucher.php app/Models/TGentralReceipt.php)",
+      "Bash(xargs grep -n \"date\")",
+      "Bash(curl -s -b /tmp/cookies.txt http://127.0.0.1:8123/PettyCash)",
+      "Bash(node /c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_voucher.js)",
+      "Bash(rm -f e:/sheeba/sheeba/v_*.png)",
+      "Bash(rm -f storage/app/pettycash_rendered.html)"
     ]
   }
 }
