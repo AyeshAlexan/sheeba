@@ -70,8 +70,9 @@
 
 
                 {{-- User Management --}}
-                <li class="submenu {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user')  ? 'active' : '' }} ">
-                    <a href="#" class=" {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') ? 'subdrop' : '' }} ">
+@if(\App\Support\Permissions::can('user_management'))
+                <li class="submenu {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') || Request::is('role-permissions')  ? 'active' : '' }} ">
+                    <a href="#" class=" {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') || Request::is('role-permissions') ? 'subdrop' : '' }} ">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span> User Management</span>
                         <span class="menu-arrow"></span></a>
                     <ul style=" {{ Request::is('users') || Request::is('add_user') ? 'display:block;' : '' }} ">
@@ -86,13 +87,22 @@
                                 <i class="fa fa-angle-right"></i>
                                 Roles</a>
                         </li>
+@if(\App\Support\Permissions::can('role_permissions'))
+                        <li class="{{ Request::is('role-permissions') ? 'active ' : '' }}">
+                            <a href="{{route("role_permissions")}}">
+                                <i class="fa fa-angle-right"></i>
+                                Role Permissions</a>
+                        </li>
+@endif
 
 
                     </ul>
                 </li>
+@endif
 
                 {{-- system --}}
 
+@if(\App\Support\Permissions::can('system'))
                 <li class="{{ Request::is('Company*') ? 'active' : '' }}">
                     <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg> <span>System</span>
                         <span class="menu-arrow"></span></a>
@@ -110,8 +120,10 @@
                         </li>
                     </ul>
                 </li>
+@endif
 
                 {{-- Master --}}
+@if(\App\Support\Permissions::can('master'))
                 <li
                     class="dropdown {{ Request::is('master*')  || Request::is('SalesMan') || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MGuarantor') || Request::is('SchemaType')  || Request::is('MColor')  || Request::is('M_Make')  || Request::is('MBrand')  || Request::is('Category') || Request::is('Store') || Request::is('Department') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category') ? 'active' : '' }} ">
                     <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M12 9v3M12 12H6v3M12 12h6v3"/></svg> <span> Master</span> <span class="menu-arrow"></span></a>
@@ -184,10 +196,12 @@
 
                     </ul>
                 </li>
+@endif
 
 
                 {{-- Stock --}}
 
+@if(\App\Support\Permissions::can('stock'))
                 <li class="{{ Request::is('stock*') ? 'active' : '' }}">
                     <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg> <span>Stock</span>
                         <span class="menu-arrow"></span></a>
@@ -223,8 +237,10 @@
                         </li>
                     </ul>
                 </li>
+@endif
 
 
+@if(\App\Support\Permissions::can('purchases'))
                 <li class=" dropdown {{ Request::is('purchases*') ? 'active' : '' }} ">
                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> <span>Purchases</span>
                        <span class="menu-arrow"></span></a>
@@ -252,7 +268,9 @@
                        </li>
                    </ul>
                </li>
+@endif
 
+@if(\App\Support\Permissions::can('sales'))
                 <li class=" dropdown {{ Request::is('sales*') ? 'active' : '' }} ">
                     <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> <span>Sales</span>
                         <span class="menu-arrow"></span></a>
@@ -312,9 +330,11 @@
 
                     </ul>
                 </li>
+@endif
 
 
 
+@if(\App\Support\Permissions::can('vouchers'))
                 <li
                  {{-- class="{{ Request::is('PaymentVoucher*') ? 'active' : '' }}||
                 {{ Request::is('PaymentVoucher*') ? 'active' : '' }} " --}}
@@ -345,7 +365,9 @@
                     </li>
                 </ul>
                 </li>
+@endif
 
+@if(\App\Support\Permissions::can('expense'))
                 <li class="{{ Request::is('AddExpense*') ? 'active' : '' }}">
                     <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> <span>Expense</span>
                         <span class="menu-arrow"></span></a>
@@ -363,8 +385,10 @@
                         </li>
                     </ul>
                 </li>
+@endif
 
 
+@if(\App\Support\Permissions::can('banking'))
                 <li class="dropdown {{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') ? 'active' : '' }}">
                     <a href="#">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span> Banking </span> <span
@@ -392,9 +416,11 @@
                                 </li>
                             </ul>
                  </li>
+@endif
 
 
                 {{-- Accounting --}}
+@if(\App\Support\Permissions::can('accounting'))
                 <li class="">
                     <a href="#">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/></svg> <span> Accounting</span> <span
@@ -418,7 +444,9 @@
 
                             </ul>
                  </li>
+@endif
 
+@if(\App\Support\Permissions::can('reports'))
             <li class="">
                 <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> <span>Reports</span> <span
                     class="menu-arrow"></span></a>
@@ -790,6 +818,7 @@
                 </ul>
 
               </li>
+@endif
             </ul>
         </div>
     </div>

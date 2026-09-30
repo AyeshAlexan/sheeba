@@ -38,7 +38,32 @@
       "Bash(php -l app/Http/Controllers/ChartofAccountController.php)",
       "Bash(php -l app/Http/Controllers/CustomerController.php)",
       "Bash(php -l app/Http/Controllers/ItemController.php)",
-      "Bash(perl -pi -e ' *)"
+      "Bash(perl -pi -e ' *)",
+      "Bash(php -l app/Http/Controllers/RolePermissionController.php)",
+      "Bash(php -l app/Models/RolePermission.php)",
+      "Bash(cd e:/sheeba/sheeba && grep -n \"\\\\.page-header\\\\.ph-flex\\\\|\\\\.ph-icon\\\\|\\\\.page-title\\\\|\\\\.page-subtitle\\\\|--primary\\\\|\\\\.btn-primary\" resources/../public/assets/css/style.css 2>/dev/null | head -30 *)",
+      "Read(//e/sheeba/sheeba/public/assets/css/**)",
+      "Bash(php \"C:\\\\Users\\\\SINGER\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\e--sheeba-sheeba\\\\885374a9-9a6d-45e3-a2d1-d09b65396bde\\\\scratchpad\\\\gate_sidebar.php\")",
+      "Bash(grep -n \"@if\\(\\\\\\\\\\\\\\\\App\\\\\\\\\\\\\\\\Support\\\\\\\\\\\\\\\\Permissions::can\\\\|@endif\" resources/views/layouts/sidebar.blade.php)",
+      "Bash(php -l app/Support/Permissions.php)",
+      "Bash(php -l app/Http/Middleware/CheckModuleAccess.php)",
+      "Bash(php -l app/Http/Kernel.php)",
+      "Bash(php -l app/Http/Controllers/UserRoleController.php)",
+      "Bash(php -i)",
+      "Bash(netstat -ano)",
+      "Bash(tasklist //FI \"PID eq 14888\")",
+      "Bash(tasklist //FI \"PID eq 21664\")",
+      "Read(//c/wamp64/**)",
+      "Read(//c/wamp64/alias/**)",
+      "Read(//c/wamp64/bin/apache/**)",
+      "Bash(grep -B2 -A2 \"sheeba\" /c/wamp64/bin/apache/apache2.4.65/conf/extra/httpd-vhosts.conf)",
+      "Read(//c/wamp64/bin/apache/apache2.4.65/conf/extra/**)",
+      "Bash(cat /c/wamp64/bin/apache/apache2.4.65/conf/extra/httpd-vhosts.conf)",
+      "Bash(ls \"/c/wamp64/www\" 2>/dev/null)",
+      "Read(//c/wamp64/www/**)",
+      "Bash(echo \"exit code: $?\")",
+      "Bash(cd /tmp)",
+      "Bash(curl -s -b cookies.txt -c cookies.txt __TRACKED_VAR__/home -o home.html)"
     ]
   }
 }

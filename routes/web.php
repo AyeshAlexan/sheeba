@@ -122,6 +122,10 @@ Route::post('role_store', [App\Http\Controllers\UserRoleController::class, 'role
 Route::post('role_edit', [App\Http\Controllers\UserRoleController::class, 'role_edit']);
 Route::post('role_delete', [App\Http\Controllers\UserRoleController::class, 'role_delete']);
 
+// Role Permissions
+Route::get('/role-permissions', [App\Http\Controllers\RolePermissionController::class, 'index'])->name('role_permissions');
+Route::post('/role-permissions/save', [App\Http\Controllers\RolePermissionController::class, 'save'])->name('role_permissions.save');
+
 
 
 // delete branch

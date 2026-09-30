@@ -82,6 +82,7 @@
                                             <tr>
                                                 <th>Role Code</th>
                                                 <th>Role Name</th>
+                                                <th>Permissions</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -160,6 +161,7 @@
                             columns: [
                                 { data: 'role_code', name: 'role_code' },
                                 { data: 'role_name', name: 'role_name' },
+                                { data: 'permissions', name: 'permissions', orderable: false, searchable: false },
                                 { data: 'action', name: 'action', orderable: false},
                             ],
                             order: [[0, 'desc']],
