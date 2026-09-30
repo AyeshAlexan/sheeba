@@ -19,7 +19,7 @@ return [
         'SchemaType', 'MGuarantor', 'BankDeltails', 'Bank_Branch', 'ChequeBanks',
         'Route', 'Area', 'SalesMan',
     ],
-    'stock' => ['stock_open', 'stockAdjuestment', 'stockAdjuestmentNew', 'stock_transfer'],
+    'stock' => ['stock_open', 'stockAdjuestment', 'stockAdjuestmentNew', 'stock_transfer', 'stock_damage', 'stock_movements'],
     'purchases' => ['purchases_order', 'purchases', 'purchases_supplyer_payment', 'purchases_return'],
     'sales' => [
         'salesInvoice_withoutVat', 'sales_advance_payment', 'sales_return', 'sales_quatation',

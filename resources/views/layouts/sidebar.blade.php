@@ -225,9 +225,15 @@
                         </li>
 
                         <li class="{{ Request::is('stock_damage') ? 'active' : '' }}">
-                            <a href="">
+                            <a href="{{route("stock_damage")}}">
                                 <i class="fa fa-angle-right"></i>
                                 Damage Stock</a>
+                        </li>
+
+                        <li class="{{ Request::is('stock_movements') ? 'active' : '' }}">
+                            <a href="{{route("stock_movements")}}">
+                                <i class="fa fa-angle-right"></i>
+                                Stock Movements</a>
                         </li>
 
                         <li class="{{ Request::is('stock_transfer') ? 'active' : '' }}">

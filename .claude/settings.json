@@ -69,7 +69,11 @@
       "Bash(curl -s -b /tmp/cookies.txt http://127.0.0.1:8123/PettyCash)",
       "Bash(node /c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba-sheeba/e3ff85d6-9603-4ee1-9987-d968d09cb0d1/scratchpad/test_voucher.js)",
       "Bash(rm -f e:/sheeba/sheeba/v_*.png)",
-      "Bash(rm -f storage/app/pettycash_rendered.html)"
+      "Bash(rm -f storage/app/pettycash_rendered.html)",
+      "Bash(php -l app/Http/Controllers/StockDamageController.php)",
+      "Bash(php -l app/Models/StockDamageSum.php)",
+      "Bash(php -l app/Models/StockDamageDetail.php)",
+      "Bash(php -l app/Http/Controllers/StockMovementController.php)"
     ]
   }
 }

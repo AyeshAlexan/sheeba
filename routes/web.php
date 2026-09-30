@@ -171,7 +171,12 @@ Route::post('/DeletePettycash', [App\Http\Controllers\PettyCashController::class
 Route::get('/stock_adjestment', [App\Http\Controllers\StockAdjestmentController::class, 'index'])->name('stock_adjestment');
 
 // Show Damage Stock
-Route::get('/stock_damage', [App\Http\Controllers\DamageStockController::class, 'index'])->name('stock_damage');
+Route::get('/stock_damage', [App\Http\Controllers\StockDamageController::class, 'index'])->name('stock_damage');
+Route::post('/stock_damage/store', [App\Http\Controllers\StockDamageController::class, 'store'])->name('stock_damage.store');
+Route::post('/stock_damage/item-balance', [App\Http\Controllers\StockDamageController::class, 'itemBalance'])->name('stock_damage.item_balance');
+Route::get('/stock_movements', [App\Http\Controllers\StockMovementController::class, 'index'])->name('stock_movements');
+Route::post('/stock_damage/edit', [App\Http\Controllers\StockDamageController::class, 'edit'])->name('stock_damage.edit');
+Route::post('/stock_damage/delete', [App\Http\Controllers\StockDamageController::class, 'destroy'])->name('stock_damage.delete');
 
 
 
