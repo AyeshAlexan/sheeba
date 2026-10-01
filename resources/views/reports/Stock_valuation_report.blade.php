@@ -1,166 +1,138 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Valuation Report</title>
+@extends('layouts.topnavbar')
+@extends('layouts.sidebar')
+@section('content')
+          <!DOCTYPE html>
+            <html lang="en">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+                <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+                <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+                <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+                <title>Stock Valuation Report</title>
+                <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+                <link rel="stylesheet" href="../assets/plugins/fontawesome/css/fontawesome.min.css">
+                <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
+                <link rel="stylesheet" href="../assets/css/style.css">
+            </head>
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .report-header {
-            background-color: #7169ff;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .styled-table thead tr {
-            background-color: #009879;
-            color: #ffffff;
-            text-align: left;
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-        }
-        .table-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .dt-buttons {
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .dt-buttons a.dt-button,
-        .dt-buttons button.dt-button {
-            display: inline-flex !important;
-            align-items: center;
-            gap: 5px;
-        }
+            <style>
+                tr.qty-positive{ background-color:#EAFBEF !important; color:#0F5132; }
+                tr.qty-zero{ background-color:#FEF9E7 !important; color:#7A5B08; }
+                tr.qty-negative{ background-color:#FEECEC !important; color:#842029; }
 
-        /* Row color coding */
-        tr.qty-positive {
-            background-color: #d4edda !important;
-            color: #155724;
-        }
-        tr.qty-zero {
-            background-color: #fff3cd !important;
-            color: #856404;
-        }
-        tr.qty-negative {
-            background-color: #f8d7da !important;
-            color: #721c24;
-        }
+                .legend{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+                .legend-pill{
+                    display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600;
+                    padding:6px 14px; border-radius:999px; color:var(--tr-navy); background:var(--tr-bg);
+                    border:1px solid var(--tr-border);
+                }
+                .legend-dot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
 
-        /* Legend badges */
-        .legend-box {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-    </style>
-</head>
-<body>
+                #myTable thead th{
+                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
+                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
+                }
+                #myTable tbody tr:hover{ background:var(--tr-blue-light) !important; }
+            </style>
 
-<div class="container-fluid p-4">
+            <body>
 
-    <div class="report-header text-center">
-        <h2><i class="fa-solid fa-boxes-stacked me-2"></i><b>Stock Valuation Report</b></h2>
-    </div>
+        <div class="main-wrapper">
+            <div class="page-wrapper">
+                <div class="content container-fluid">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="page-title">Stock Valuation</h3>
+                                <p class="page-subtitle">Stock-on-hand valued at purchase price for every item.</p>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="card p-4 shadow-sm mb-4">
-        <form action="{{ route('filter_stock_by_FilterStoctValuation') }}" method="GET" class="row g-3 align-items-center justify-content-center">
-            <div class="col-md-3">
-                <label class="form-label fw-bold">From Date:</label>
-                <input type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
+                    <div class="container-fluid px-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="{{ route('filter_stock_by_FilterStoctValuation') }}" method="GET" class="row g-2 mb-3 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">From Date</label>
+                                        <input type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">To Date</label>
+                                        <input type="date" name="to_date" id="to_date" class="form-control" value="{{ $toDate }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">Item Code</label>
+                                        <input type="text" name="item_code" class="form-control" value="{{ $itemCode }}" placeholder="Item code">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-outline-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
+                                    </div>
+                                </form>
+
+                                <div class="legend">
+                                    <span class="legend-pill"><span class="legend-dot" style="background:var(--tr-success);"></span>Positive Stock</span>
+                                    <span class="legend-pill"><span class="legend-dot" style="background:var(--tr-warning);"></span>Zero Stock</span>
+                                    <span class="legend-pill"><span class="legend-dot" style="background:var(--tr-danger);"></span>Negative Stock</span>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered w-100" id="myTable">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>MODEL</th>
+                                                <th>Item Name</th>
+                                                <th class="text-end">Purchase Price</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-end">Total Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($stockDetails as $stock)
+                                            @php
+                                                $qty       = $stock->total_qun_in - $stock->total_qun_out;
+                                                $lineTotal = $qty * $stock->purchasePrice;
+                                                $rowClass  = $qty > 0 ? 'qty-positive' : ($qty == 0 ? 'qty-zero' : 'qty-negative');
+                                            @endphp
+                                            <tr class="{{ $rowClass }}">
+                                                <td>{{ $stock->Item_code }}</td>
+                                                <td>{{ $stock->Item_description }}</td>
+                                                <td class="text-end">{{ number_format($stock->purchasePrice, 2) }}</td>
+                                                <td class="text-center">{{ $qty }}</td>
+                                                <td class="text-end">{{ number_format($lineTotal, 2) }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="fw-bold" style="background-color:#f4f6f9;" id="grand-total-row">
+                                                <td colspan="2">GRAND TOTALS</td>
+                                                <td class="text-end">{{ number_format($sumPurchase, 2) }}</td>
+                                                <td class="text-center">{{ $balance }}</td>
+                                                <td class="text-end text-primary">{{ number_format($grandTotal, 2) }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div id="stockValuationCustomPager"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @include('layouts.footer')
             </div>
-            <div class="col-md-3">
-                <label class="form-label fw-bold">To Date:</label>
-                <input type="date" name="to_date" id="to_date" class="form-control" value="{{ $toDate }}">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Item Code:</label>
-                <input type="text" name="item_code" class="form-control" value="{{ $itemCode }}" placeholder="Item code">
-            </div>
-            <div class="col-md-auto mt-auto">
-                <button type="submit" class="btn btn-primary px-4 mt-2">
-                    <i class="fa fa-filter"></i> Filter Report
-                </button>
-            </div>
-        </form>
-    </div>
+         </div>
 
-    {{-- Color legend --}}
-    <div class="mb-3 d-flex gap-4 align-items-center px-1">
-        <span><span class="legend-box" style="background:#d4edda; border:1px solid #c3e6cb;"></span> Positive Stock</span>
-        <span><span class="legend-box" style="background:#fff3cd; border:1px solid #ffeeba;"></span> Zero Stock</span>
-        <span><span class="legend-box" style="background:#f8d7da; border:1px solid #f5c6cb;"></span> Negative Stock</span>
-    </div>
-
-    <div class="table-container">
-        <table class="table table-hover styled-table w-100" id="myTable">
-            <thead>
-                <tr>
-                    <th>MODEL</th>
-                    <th>Item Name</th>
-                    <th class="text-end">Purchase Price</th>
-                    <th class="text-center">Quantity</th>
-                    <th class="text-end">Total Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($stockDetails as $stock)
-                    @php
-                        $qty       = $stock->total_qun_in - $stock->total_qun_out;
-                        $lineTotal = $qty * $stock->purchasePrice;
-
-                        if ($qty > 0) {
-                            $rowClass = 'qty-positive';
-                        } elseif ($qty == 0) {
-                            $rowClass = 'qty-zero';
-                        } else {
-                            $rowClass = 'qty-negative';
-                        }
-                    @endphp
-                    <tr class="{{ $rowClass }}">
-                        <td>{{ $stock->Item_code }}</td>
-                        <td>{{ $stock->Item_description }}</td>
-                        <td class="text-end">{{ number_format($stock->purchasePrice, 2) }}</td>
-                        <td class="text-center">{{ $qty }}</td>
-                        <td class="text-end">{{ number_format($lineTotal, 2) }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr class="table-secondary fw-bold" id="grand-total-row">
-                    <td colspan="2">GRAND TOTALS</td>
-                    <td class="text-end">{{ number_format($sumPurchase, 2) }}</td>
-                    <td class="text-center">{{ $balance }}</td>
-                    <td class="text-end text-primary">{{ number_format($grandTotal, 2) }}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="assets/js/jquery-3.6.0.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/feather.min.js"></script>
+<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
@@ -168,15 +140,18 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+<script src="assets/js/script.js"></script>
+<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
     $(document).ready(function () {
 
         if (!$.fn.DataTable.isDataTable('#myTable')) {
-            $('#myTable').DataTable({
+            var stockValuationTable = $('#myTable').DataTable({
                 dom: 'Bfrtip',
                 paging: true,
-                pageLength: 5000,
+                pageLength: 15,
+                lengthChange: false,
                 ordering: true,
                 info: true,
 
@@ -402,6 +377,9 @@
             });
         }
 
+        $('#myTable_wrapper').addClass('dt-collapsed');
+        DTCustomPager.init($('#myTable').DataTable(), '#stockValuationCustomPager');
+
         // Set default To Date if empty
         var today = new Date().toISOString().split('T')[0];
         if (!$('#to_date').val()) {
@@ -412,4 +390,6 @@
 </script>
 
 </body>
+@endsection
+
 </html>

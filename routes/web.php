@@ -136,12 +136,14 @@ Route::get('account_category', [AccountCategoryController::class, 'index'])->nam
 Route::post('/add_Account_Category_ajax', [App\Http\Controllers\AccountCategoryController::class, 'createCateAccount'])->name('add_Account_Category_ajax');
 Route::post('/update_Account_Category_ajax', [App\Http\Controllers\AccountCategoryController::class, 'updateCateAccount'])->name('update_Account_Category_ajax');
 Route::post('/delete_Account_Category_ajax', [App\Http\Controllers\AccountCategoryController::class, 'deleteCateAccount'])->name('delete_Account_Category_ajax');
+Route::post('/edit_Account_Category_ajax', [App\Http\Controllers\AccountCategoryController::class, 'editCateAccount'])->name('edit_Account_Category_ajax');
 
 //Account Type
 Route::get('account_type', [Account_typeController::class, 'index'])->name('account_type');
 Route::post('add_Account_Type_ajax', [Account_typeController::class, 'createAccountype'])->name('add_Account_Type_ajax');
 Route::post('update_Account_Type_ajax', [Account_typeController::class, 'updateAccountype'])->name('update_Account_Type_ajax');
 Route::post('delete_Account_Type_ajax', [Account_typeController::class, 'deleteAccountype'])->name('delete_Account_Type_ajax');
+Route::post('edit_Account_Type_ajax', [Account_typeController::class, 'editAccountype'])->name('edit_Account_Type_ajax');
 
 // Chart Of Account
 Route::get('chartofaccount', [ChartofAccountController::class, 'index'])->name('chartofaccount');

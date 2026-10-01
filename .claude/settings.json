@@ -73,7 +73,9 @@
       "Bash(php -l app/Http/Controllers/StockDamageController.php)",
       "Bash(php -l app/Models/StockDamageSum.php)",
       "Bash(php -l app/Models/StockDamageDetail.php)",
-      "Bash(php -l app/Http/Controllers/StockMovementController.php)"
+      "Bash(php -l app/Http/Controllers/StockMovementController.php)",
+      "Bash(php -l app/Http/Controllers/AccountCategoryController.php)",
+      "Bash(php -l app/Http/Controllers/Account_typeController.php)"
     ]
   }
 }

@@ -47,6 +47,22 @@
                 }
                 #StockDamageTable td{ font-size:13.5px; vertical-align:middle; }
                 #StockDamageTable tbody tr:hover{ background:var(--tr-blue-light); }
+
+                .sd-items-card{
+                    background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px;
+                    padding:14px; margin-top:6px; box-shadow:0 10px 25px rgba(42,92,171,.04);
+                }
+                #sdItemsTable{
+                    width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px;
+                    overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0;
+                }
+                #sdItemsTable thead th{
+                    background:#fff; color:#2b3e5b; font-size:12px; font-weight:800;
+                    padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center;
+                }
+                #sdItemsTable tbody td{ padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
+                #sdItemsTable .form-control{ min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+                .sd-search-wrap input, #sd_item_select{ height:42px; border:1px solid #d7e3f1; border-radius:10px; }
             </style>
 
             <body>
@@ -151,6 +167,7 @@
                                 </div>
                             </div>
 
+                            <div class="sd-items-card">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="sdItemsTable">
                                     <colgroup>
@@ -187,6 +204,7 @@
                                         </tr>
                                     </tfoot>
                                 </table>
+                            </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary" id="sd-save-btn">

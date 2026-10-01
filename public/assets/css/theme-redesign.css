@@ -1152,6 +1152,38 @@ button[name="reset"].btn-outline-secondary:hover {
   border-color: var(--tr-blue) !important;
   color: var(--tr-blue) !important;
 }
+
+/* DataTables export toolbar (Copy/Excel/PDF/Print) — the Buttons extension
+   ships plain grey outline squares by default; retint to the same pill
+   button language used everywhere else. */
+.dt-buttons {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 8px !important;
+  margin-bottom: 16px !important;
+}
+.dt-buttons .dt-button,
+button.dt-button,
+a.dt-button {
+  background: var(--tr-white) !important;
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 9px !important;
+  color: var(--tr-navy) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 8px 16px !important;
+  box-shadow: none !important;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.dt-buttons .dt-button:hover,
+button.dt-button:hover,
+a.dt-button:hover {
+  background: var(--tr-blue-light) !important;
+  border-color: var(--tr-blue) !important;
+  color: var(--tr-blue) !important;
+}
+.dt-buttons .dt-button.buttons-excel:hover { background: #EAFBEF !important; border-color: var(--tr-success) !important; color: var(--tr-success) !important; }
+.dt-buttons .dt-button.buttons-pdf:hover   { background: #FEECEC !important; border-color: var(--tr-danger)  !important; color: var(--tr-danger)  !important; }
 .page-link:focus {
   box-shadow: none !important;
 }

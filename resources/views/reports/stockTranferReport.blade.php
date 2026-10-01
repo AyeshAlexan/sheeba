@@ -1,149 +1,140 @@
+@extends('layouts.topnavbar')
+@extends('layouts.sidebar')
+@section('content')
+          <!DOCTYPE html>
+            <html lang="en">
 
-<h2 class="text-center">Stock Tranfer Report</h2>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+                <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+                <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+                <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+                <title>Stock Transfer Report</title>
+                <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+                <link rel="stylesheet" href="../assets/plugins/fontawesome/css/fontawesome.min.css">
+                <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
+                <link rel="stylesheet" href="../assets/css/style.css">
+            </head>
 
-<div class="text-center mb-3">
-    <a href="{{ route('home') }}" class="btn btn-secondary">Back</a>
-</div>
+            <style>
+                #receiptTable thead th{
+                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
+                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
+                }
+                #receiptTable tbody tr:hover{ background:var(--tr-blue-light) !important; }
+            </style>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Stock Tranfer Report</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <body>
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <div class="main-wrapper">
+            <div class="page-wrapper">
+                <div class="content container-fluid">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="page-title">Stock Transfer Report</h3>
+                                <p class="page-subtitle">Stock moved between stores, by store and date range.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary" onclick="printTablefun()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
 
-    <!-- DataTables & Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+                    <div class="container-fluid px-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="{{ route('reports.stockTranferReport') }}" method="GET" class="row g-2 mb-3 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">From Date</label>
+                                        <input type="date" name="from_date" class="form-control" value="{{ request('from_date') }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">To Date</label>
+                                        <input type="date" name="to_date" class="form-control" value="{{ request('to_date', date('Y-m-d')) }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label mb-0 small">Store</label>
+                                        <select class="form-control" id="Store_code" name="storse_id" required>
+                                            <option value="">Please Select</option>
+                                            @foreach($storeDta as $Data)
+                                            <option value="{{ $Data->Store_code }}" {{ $storse_id == $Data->Store_code ? 'selected' : '' }}>{{ $Data->Store_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-outline-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
+                                    </div>
+                                </form>
 
-    <style>
-        body {
-            font-family: cursive;
-             font-size: 14px;
-        }
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover" id="receiptTable">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Transaction Date</th>
+                                                <th>Transaction No</th>
+                                                <th>Transaction Type</th>
+                                                <th>Item Code</th>
+                                                <th>Qty In</th>
+                                                <th>Qty Out</th>
+                                                <th>Store</th>
+                                                <th>From Store</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($recipts as $receipts)
+                                            <tr>
+                                                <td>{{ $receipts->dDate }}</td>
+                                                <td>{{ $receipts->trans_no }}</td>
+                                                <td>{{ $receipts->trans_code }}</td>
+                                                <td>{{ $receipts->item_code }}</td>
+                                                <td>{{ $receipts->qun_in }}</td>
+                                                <td>{{ $receipts->qun_out }}</td>
+                                                <td>{{ $receipts->storse_id }}</td>
+                                                <td>{{ $receipts->From_store }}</td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted">No stock transfers found for the selected filters.</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                        @if($recipts->count())
+                                        <tfoot>
+                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
+                                                <td colspan="4" class="text-end">Total</td>
+                                                <td>{{ number_format($recipts->sum('qun_in'), 2) }}</td>
+                                                <td>{{ number_format($recipts->sum('qun_out'), 2) }}</td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
+                                                <td colspan="4" class="text-end">Total Balance</td>
+                                                <td colspan="2">{{ number_format($recipts->sum('qun_in') - $recipts->sum('qun_out'), 2) }}</td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                        </tfoot>
+                                        @endif
+                                    </table>
+                                </div>
+                                <div id="stockTransferCustomPager"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @include('layouts.footer')
+            </div>
+         </div>
 
-        h2, th {
-            font-weight: bold;
-            font-family: cursive;
-        }
-
-        table.dataTable th, table.dataTable td {
-            white-space: nowrap;
-            font-size: 14px;
-        }
-
-        .btn, label {
-           font-family: cursive;
-        }
-    </style>
-</head>
-
-<body class="p-3">
-
-<!-- Date Filter Form -->
-<div class="d-flex justify-content-center">
-<form action="" method="get" class="mb-4 d-flex gap-3 align-items-end">
-    <div>
-        <label for="from_date" class="form-label">From Date:</label>
-        <input type="date" name="from_date" id="from_date" class="form-control"
-               value="{{ request('from_date') }}">
-    </div>
-
-    <div>
-        <label for="to_date" class="form-label">To Date:</label>
-        <input type="date" name="to_date" id="to_date" class="form-control"
-               value="{{ request('to_date', date('Y-m-d')) }}">
-    </div>
-
-        <div>
-        <label for="to_date" class="form-label">Store :</label>
-       <select class="form-control select" id="Store_code" name="storse_id" required>
-         <option>Please Select</option>
-            @foreach($storeDta as $Data)
-             <option value="{{ $Data->Store_code }}">{{ $Data->Store_name }}</option>
-              @endforeach
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-    </div>
-
-<!-- Receipt Table -->
-<div class="d-flex justify-content-center">
-    <div class="table-responsive" style="width: 70%;">
-
-        <div class="row" >
-            <div class="col-md-2"></div>
-            <div class="col-md-2"><Span> </Span><input type="text" value="{{$storse_id}}" class="form-control"></div>
-            <div class="col-md-1"></div>
-            <div class="col-md-2"><input type="text" value="{{$fromDate}}" class="form-control"></div>
-            <div class="col-md-1"></div>
-            <div class="col-md-2"><input type="text" value="{{$toDate}}" class="form-control"></div>
-        </div>
-        <br>
-
-        <table class="table table-striped table-bordered display nowrap" id="receiptTable">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>Transcation Date</th>
-                    <th>Transcation No</th>
-                    <th>Transcation Type</th>
-                    <th>Item Code</th>
-                    <th>Qty In</th>
-                    <th>Qty Out</th>
-                    <th>Store</th>
-                    <th>From Store</th>  
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($recipts as $receipts)
-                <tr>
-                    <td>{{ $receipts->dDate }}</td>
-                    <td>{{ $receipts->trans_no }}</td>
-                    <td>{{ $receipts->trans_code }}</td>
-                    <td>{{ $receipts->item_code }}</td>
-                    <td>{{ $receipts->qun_in }}</td>
-                    <td>{{ $receipts->qun_out }}</td>
-                    <td>{{ $receipts->storse_id }}</td>
-                    <td>{{ $receipts->From_store }}</td>                 
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot class="fw-bold table-light">
-            <tr>
-                <td colspan="4" class="text-end">Total:</td>
-                <td class="text-end">
-                    {{ number_format($recipts->sum('qun_in'), 2) }}
-                </td>
-                <td class="text-end">
-                    {{ number_format($recipts->sum('qun_out'), 2) }}
-                </td>
-                <td colspan="2"></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="text-end">Total Balance:</td>
-                <td class="text-end" colspan="2">
-                    {{ number_format($recipts->sum('qun_in') - $recipts->sum('qun_out'), 2) }}
-                </td>
-                <td colspan="2"></td>
-            </tr>
-        </tfoot>
-
-
-        </table>
-    </div>
-</div>
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- DataTables and Export Scripts -->
+<script src="assets/js/jquery-3.6.0.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/feather.min.js"></script>
+<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
@@ -151,36 +142,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="assets/js/script.js"></script>
+<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
     $(document).ready(function () {
-        $('#receiptTable').DataTable({
+        var stockTransferTable = $('#receiptTable').DataTable({
             dom: 'Bfrtip',
             buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
             scrollX: true,
-            pageLength: 1000
+            pageLength: 15,
+            lengthChange: false
         });
 
-        calculateTotals();
+        $('#receiptTable_wrapper').addClass('dt-collapsed');
+        DTCustomPager.init(stockTransferTable, '#stockTransferCustomPager');
     });
-
-    function calculateTotals() {
-        let pawnTotal = 0, totalWt = 0, amountTotal = 0;
-
-        $('#receiptTable tbody tr').each(function () {
-            const pawn = parseFloat($(this).find('td:eq(7)').text()) || 0;
-            const total = parseFloat($(this).find('td:eq(8)').text()) || 0;
-            const amount = parseFloat($(this).find('td:eq(9)').text()) || 0;
-
-            pawnTotal += pawn;
-            totalWt += total;
-            amountTotal += amount;
-        });
-
-        $('#totalPawnWt').text(pawnTotal.toFixed(2));
-        $('#totalTotalWt').text(totalWt.toFixed(2));
-        $('#totalAmount').text(amountTotal.toFixed(2));
-    }
 
     function printTablefun() {
         let printContent = document.getElementById("receiptTable").outerHTML;
@@ -194,5 +171,8 @@
         newWin.close();
     }
 </script>
+
 </body>
+@endsection
+
 </html>

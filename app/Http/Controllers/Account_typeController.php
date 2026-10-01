@@ -9,11 +9,17 @@ class Account_typeController extends Controller
 {
     public function index()
     {
-        $itemCategory = MMainAccountType::all();
+        if (request()->ajax()) {
+            return datatables()->of(MMainAccountType::select('*'))
+                ->addColumn('action', 'Action_button')
+                ->rawColumns(['action'])
+                ->addIndexColumn()
+                ->make(true);
+        }
+
         $Category = MMainCategory::all();
         return view('account_type')
-        ->with("Category" , $Category)
-        ->with("CategoryData" , $itemCategory);
+        ->with("Category" , $Category);
 
     }
 
@@ -29,12 +35,19 @@ class Account_typeController extends Controller
         $Accountype->code = $request->code;
         $Accountype->category = $request->categoryName;
         $Accountype->description = $request->description;
-        
+
         $Accountype->save();
 
         return response()->json([
             'status'=>'success',
         ]);
+    }
+
+
+    public function editAccountype(Request $request)
+    {
+        $Accountype = MMainAccountType::find($request->id);
+        return response()->json($Accountype);
     }
 
 
@@ -69,4 +82,3 @@ class Account_typeController extends Controller
 
 
 }
-

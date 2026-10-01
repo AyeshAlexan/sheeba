@@ -8,10 +8,15 @@ class AccountCategoryController extends Controller
 {
     public function index()
     {
-        $itemCategory = MMainCategory::all();
-        return view('account_category')
-        ->with("itemCategoryData" , $itemCategory);
+        if (request()->ajax()) {
+            return datatables()->of(MMainCategory::select('*'))
+                ->addColumn('action', 'Action_button')
+                ->rawColumns(['action'])
+                ->addIndexColumn()
+                ->make(true);
+        }
 
+        return view('account_category');
     }
 
 
@@ -29,6 +34,13 @@ class AccountCategoryController extends Controller
         return response()->json([
             'status'=>'success',
         ]);
+    }
+
+
+    public function editCateAccount(Request $request)
+    {
+        $Category = MMainCategory::find($request->id);
+        return response()->json($Category);
     }
 
 
