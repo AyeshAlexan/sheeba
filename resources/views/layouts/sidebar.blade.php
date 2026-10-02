@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/theme-redesign.css') }}?v={{ filemtime(public_path('assets/css/theme-redesign.css')) }}">
+    <script src="{{ asset('assets/js/dt-custom-pager.js') }}?v={{ filemtime(public_path('assets/js/dt-custom-pager.js')) }}"></script>
 
 
     <style>
@@ -512,7 +513,7 @@
                     <ul class="menu-sub">
                        <li class="menu-item">
                         <a href="{{route("Item_wish_sales_report")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order List">Items wish Sales</div>
+                          <div class="text-truncate" data-i18n="Order List">Item Wise Sales</div>
                         </a>
                       </li>
                       <li class="menu-item">

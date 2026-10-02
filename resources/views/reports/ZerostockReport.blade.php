@@ -18,14 +18,6 @@
                 <link rel="stylesheet" href="../assets/css/style.css">
             </head>
 
-            <style>
-                #t_item_movements thead th{
-                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
-                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
-                }
-                #t_item_movements tbody tr:hover{ background:var(--tr-blue-light) !important; }
-            </style>
-
             <body>
 
         <div class="main-wrapper">
@@ -63,32 +55,30 @@
                                     </div>
                                 </form>
 
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" id="t_item_movements">
-                                        @if($fromDate && $toDate)
-                                        <caption>Stock Zero &nbsp;|&nbsp; {{ $fromDate }} &nbsp;→&nbsp; {{ $toDate }}</caption>
-                                        @endif
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Item Code</th>
-                                                <th>Quantity In</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($invoice as $row)
-                                            <tr>
-                                                <td>{{ $row->dDate }}</td>
-                                                <td>{{ $row->item_code }}</td>
-                                                <td>{{ $row->qun_in }}</td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="3" class="text-center text-muted">No zero-quantity movements found for the selected dates.</td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                <div class="modern-table-card">
+                                    <div class="table-responsive">
+                                        <table class="table" id="t_item_movements">
+                                            @if($fromDate && $toDate)
+                                            <caption>Stock Zero &nbsp;|&nbsp; {{ $fromDate }} &nbsp;→&nbsp; {{ $toDate }}</caption>
+                                            @endif
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Item Code</th>
+                                                    <th>Quantity In</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($invoice as $row)
+                                                <tr>
+                                                    <td>{{ $row->dDate }}</td>
+                                                    <td>{{ $row->item_code }}</td>
+                                                    <td>{{ $row->qun_in }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div id="zeroStockCustomPager"></div>
                             </div>
@@ -111,15 +101,17 @@
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
 <script src="assets/js/script.js"></script>
-<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
+var zeroStockTable;
+
 jQuery(document).ready(function ($) {
-    var zeroStockTable = $('#t_item_movements').DataTable({
+    zeroStockTable = $('#t_item_movements').DataTable({
         dom: 'Bfrtip',
         buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
         pageLength: 15,
         lengthChange: false,
+        language: { emptyTable: 'No zero-quantity movements found for the selected dates.' }
     });
 
     $('#t_item_movements_wrapper').addClass('dt-collapsed');
@@ -131,12 +123,12 @@ jQuery(document).ready(function ($) {
     }
 });
 
+// Routes the page-header "Print" button through DataTables' own print
+// button (which renders a properly bordered/styled printable table)
+// instead of dumping unstyled raw HTML into a blank window.
 function printTablefun() {
-    var divToPrint = document.getElementById("t_item_movements");
-    var newWin = window.open("");
-    newWin.document.write(divToPrint.outerHTML);
-    newWin.print();
-    newWin.close();
+    if (!zeroStockTable) { alert('Table is still loading, please try again in a moment.'); return; }
+    zeroStockTable.button('.buttons-print').trigger();
 }
 </script>
 

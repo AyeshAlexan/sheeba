@@ -492,13 +492,21 @@ body.mini-sidebar #sidebar-menu.sidebar-menu ul ul {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  /* fill-mode is "backwards", not "both": "both" would leave the ending
+     keyframe's `transform: translateY(0)` applied forever, and any
+     non-none transform opens a new CSS stacking context — which silently
+     traps dropdowns opened from .page-header *below* later-painted
+     siblings like .container-fluid > .card (clicks land on whatever's
+     underneath instead of the menu item). "backwards" still prevents a
+     flash of the unanimated state before the delay, but lets the
+     transform/stacking-context clear once the animation finishes. */
   .content > .page-header {
-    animation: tr-fade-up .45s cubic-bezier(.16,1,.3,1) both;
+    animation: tr-fade-up .45s cubic-bezier(.16,1,.3,1) backwards;
   }
   .content > .container-fluid > .card,
   .content > .container-fluid > .static-toolbar,
   .content > .container-fluid > .row > .card {
-    animation: tr-fade-up .45s cubic-bezier(.16,1,.3,1) both;
+    animation: tr-fade-up .45s cubic-bezier(.16,1,.3,1) backwards;
     animation-delay: .06s;
   }
 }
@@ -1775,4 +1783,71 @@ table.dataTable thead th.sorting_desc:after {
   outline: none;
   border-color: var(--tr-blue);
   box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Modern table card — a rounded, borderless alternative to the plain
+   Bootstrap `table-bordered` grid. Wrap a `.table-responsive` (containing
+   any table) in `.modern-table-card` to get rounded corners, centered
+   uppercase headers, and hairline row dividers instead of a full grid.
+   Used across the report pages; apply the same two classes to any table
+   that should match this look elsewhere in the app.
+   -------------------------------------------------------------------------- */
+.modern-table-card {
+  background: var(--tr-white);
+  border: 1px solid var(--tr-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.modern-table-card .dt-buttons {
+  padding: 14px 14px 0;
+  margin-bottom: 10px !important;
+}
+/* These report pages already have a dedicated "Print" button in the page
+   header (wired via JS to trigger this same DataTables print button) —
+   hide the toolbar's own copy so there isn't a confusing second one. */
+.modern-table-card .dt-buttons .buttons-print {
+  display: none !important;
+}
+.modern-table-card table {
+  width: 100% !important;
+  /* `assets/css/style.css` has `.table.dataTable{border-collapse:collapse!important}`,
+     which DataTables triggers by adding its own `dataTable` class to the
+     table — that !important silently wins over a plain `border-collapse:
+     separate` here, which breaks the rounded-card look (collapsed border
+     mode ignores border-radius). Must match its !important to override it. */
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  margin: 0 !important;
+}
+.modern-table-card thead th {
+  background: #fcfdfe;
+  color: var(--tr-navy);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  text-align: center;
+  padding: 14px 10px;
+  border: none !important;
+  border-bottom: 1px solid var(--tr-border) !important;
+}
+.modern-table-card tbody td {
+  padding: 13px 10px;
+  border: none !important;
+  border-bottom: 1px solid #f1f3f6 !important;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 13.5px;
+}
+.modern-table-card tbody tr:last-child td {
+  border-bottom: none !important;
+}
+.modern-table-card tbody tr:hover td {
+  background: var(--tr-bg);
+}
+.modern-table-card tfoot td {
+  border: none !important;
+  border-top: 1px solid var(--tr-border) !important;
+  background: #fcfdfe;
 }

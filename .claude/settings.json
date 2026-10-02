@@ -75,7 +75,11 @@
       "Bash(php -l app/Models/StockDamageDetail.php)",
       "Bash(php -l app/Http/Controllers/StockMovementController.php)",
       "Bash(php -l app/Http/Controllers/AccountCategoryController.php)",
-      "Bash(php -l app/Http/Controllers/Account_typeController.php)"
+      "Bash(php -l app/Http/Controllers/Account_typeController.php)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} -> redirect: %{redirect_url}\\\\n\" \"http://127.0.0.1:8000/reports.Item_wish_sales_report\")",
+      "Bash(rm -f /tmp/login.html /tmp/cookiejar_path.txt)",
+      "Bash(curl -s \"http://127.0.0.1:8000/assets/css/theme-redesign.css\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/filter_stock_by_date\")"
     ]
   }
 }

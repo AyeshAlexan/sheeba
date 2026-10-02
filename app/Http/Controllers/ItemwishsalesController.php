@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TWithoutVatSalesDetails;
+use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 
 
@@ -65,11 +66,14 @@ public function index(Request $request)
         ')
         ->value('total_profit');
 
+    $allItems = Item::select('Item_code', 'Item_description')->orderBy('Item_code')->get();
+
     return view('reports.Item_wish_sales_report', [
         "fromDate" => $fromDate,
         "toDate" => $toDate,
         "itemCode" => $itemCode,
         "invoice" => $invoice,
+        "allItems" => $allItems,
         "recipts" => $query->get(),
         "totalGrossAmount" => number_format($sumGrossAmount, 2),
         "sumGrossAmountFree_Issues" => number_format($sumGrossAmountFree_Issues, 2),

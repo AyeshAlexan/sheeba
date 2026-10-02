@@ -18,14 +18,6 @@
                 <link rel="stylesheet" href="../assets/css/style.css">
             </head>
 
-            <style>
-                #t_item_movements thead th{
-                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
-                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
-                }
-                #t_item_movements tbody tr:hover{ background:var(--tr-blue-light) !important; }
-            </style>
-
             <body>
 
         <div class="main-wrapper">
@@ -87,58 +79,60 @@
                                     </div>
                                 </form>
 
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" id="t_item_movements">
-                                        @if(isset($stockDetails) && $stockDetails != null)
-                                        <caption>Item: {{ $itemName }} &nbsp;|&nbsp; {{ $fromDate }} &nbsp;→&nbsp; {{ $toDate }}</caption>
-                                        @endif
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Tr No</th>
-                                                <th>Invoice No</th>
-                                                <th>Transaction Type</th>
-                                                <th>Item</th>
-                                                <th>Cust. Code</th>
-                                                <th>Customer Name</th>
-                                                <th>In</th>
-                                                <th>Out</th>
-                                                <th>Quantity</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+                                <div class="modern-table-card">
+                                    <div class="table-responsive">
+                                        <table class="table" id="t_item_movements">
                                             @if(isset($stockDetails) && $stockDetails != null)
-                                                @foreach ($stockDetails as $data)
-                                                <tr>
-                                                    <td>{{ $data->dDate }}</td>
-                                                    <td>{{ $data->trans_no }}</td>
-                                                    <td>{{ $data->invoice_no }}</td>
-                                                    <td>{{ $data->trans_code }}</td>
-                                                    <td>{{ $data->item_name }}</td>
-                                                    <td>{{ $data->customer_code }}</td>
-                                                    <td>{{ $data->customer_name }}</td>
-                                                    <td>{{ $data->qun_in }}</td>
-                                                    <td>{{ $data->qun_out }}</td>
-                                                    <td>
-                                                        @if($data->qun_in > $data->qun_out)
-                                                            {{ $data->qun_in }}
-                                                        @else
-                                                            -{{ $data->qun_out }}
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                                @endforeach
+                                            <caption>Item: {{ $itemName }} &nbsp;|&nbsp; {{ $fromDate }} &nbsp;→&nbsp; {{ $toDate }}</caption>
                                             @endif
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
-                                                <td colspan="7" class="text-end">Total Quantity</td>
-                                                <td>{{ $quain ?? 0 }}</td>
-                                                <td>-{{ $quaout ?? 0 }}</td>
-                                                <td>{{ $balance ?? 0 }}</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Tr No</th>
+                                                    <th>Invoice No</th>
+                                                    <th>Transaction Type</th>
+                                                    <th>Item</th>
+                                                    <th>Cust. Code</th>
+                                                    <th>Customer Name</th>
+                                                    <th>In</th>
+                                                    <th>Out</th>
+                                                    <th>Quantity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if(isset($stockDetails) && $stockDetails != null)
+                                                    @foreach ($stockDetails as $data)
+                                                    <tr>
+                                                        <td>{{ $data->dDate }}</td>
+                                                        <td>{{ $data->trans_no }}</td>
+                                                        <td>{{ $data->invoice_no }}</td>
+                                                        <td>{{ $data->trans_code }}</td>
+                                                        <td>{{ $data->item_name }}</td>
+                                                        <td>{{ $data->customer_code }}</td>
+                                                        <td>{{ $data->customer_name }}</td>
+                                                        <td>{{ $data->qun_in }}</td>
+                                                        <td>{{ $data->qun_out }}</td>
+                                                        <td>
+                                                            @if($data->qun_in > $data->qun_out)
+                                                                {{ $data->qun_in }}
+                                                            @else
+                                                                -{{ $data->qun_out }}
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                @endif
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="fw-bold">
+                                                    <td colspan="7" class="text-end">Total Quantity</td>
+                                                    <td>{{ $quain ?? 0 }}</td>
+                                                    <td>-{{ $quaout ?? 0 }}</td>
+                                                    <td>{{ $balance ?? 0 }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div id="binCardCustomPager"></div>
                             </div>
@@ -161,7 +155,6 @@
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
 <script src="assets/js/script.js"></script>
-<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
     var toDateInput = document.getElementById('date');
@@ -180,8 +173,10 @@
         ];
     }));
 
+    var binCardTable;
+
     $(document).ready(function () {
-        var binCardTable = $('#t_item_movements').DataTable({
+        binCardTable = $('#t_item_movements').DataTable({
             dom: 'Bfrtip',
             buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
             pageLength: 15,
@@ -212,12 +207,12 @@
         });
     });
 
+    // Routes the page-header "Print" button through DataTables' own print
+    // button (which renders a properly bordered/styled printable table)
+    // instead of dumping unstyled raw HTML into a blank window.
     function printTablefun() {
-        var divToPrint = document.getElementById("t_item_movements");
-        var newWin = window.open("");
-        newWin.document.write(divToPrint.outerHTML);
-        newWin.print();
-        newWin.close();
+        if (!binCardTable) { alert('Table is still loading, please try again in a moment.'); return; }
+        binCardTable.button('.buttons-print').trigger();
     }
 </script>
 

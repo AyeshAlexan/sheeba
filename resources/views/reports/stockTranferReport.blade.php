@@ -19,14 +19,6 @@
                 <link rel="stylesheet" href="../assets/css/style.css">
             </head>
 
-            <style>
-                #receiptTable thead th{
-                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
-                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
-                }
-                #receiptTable tbody tr:hover{ background:var(--tr-blue-light) !important; }
-            </style>
-
             <body>
 
         <div class="main-wrapper">
@@ -73,54 +65,52 @@
                                     </div>
                                 </form>
 
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" id="receiptTable">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Transaction Date</th>
-                                                <th>Transaction No</th>
-                                                <th>Transaction Type</th>
-                                                <th>Item Code</th>
-                                                <th>Qty In</th>
-                                                <th>Qty Out</th>
-                                                <th>Store</th>
-                                                <th>From Store</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($recipts as $receipts)
-                                            <tr>
-                                                <td>{{ $receipts->dDate }}</td>
-                                                <td>{{ $receipts->trans_no }}</td>
-                                                <td>{{ $receipts->trans_code }}</td>
-                                                <td>{{ $receipts->item_code }}</td>
-                                                <td>{{ $receipts->qun_in }}</td>
-                                                <td>{{ $receipts->qun_out }}</td>
-                                                <td>{{ $receipts->storse_id }}</td>
-                                                <td>{{ $receipts->From_store }}</td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="8" class="text-center text-muted">No stock transfers found for the selected filters.</td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                        @if($recipts->count())
-                                        <tfoot>
-                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
-                                                <td colspan="4" class="text-end">Total</td>
-                                                <td>{{ number_format($recipts->sum('qun_in'), 2) }}</td>
-                                                <td>{{ number_format($recipts->sum('qun_out'), 2) }}</td>
-                                                <td colspan="2"></td>
-                                            </tr>
-                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
-                                                <td colspan="4" class="text-end">Total Balance</td>
-                                                <td colspan="2">{{ number_format($recipts->sum('qun_in') - $recipts->sum('qun_out'), 2) }}</td>
-                                                <td colspan="2"></td>
-                                            </tr>
-                                        </tfoot>
-                                        @endif
-                                    </table>
+                                <div class="modern-table-card">
+                                    <div class="table-responsive">
+                                        <table class="table" id="receiptTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Transaction Date</th>
+                                                    <th>Transaction No</th>
+                                                    <th>Transaction Type</th>
+                                                    <th>Item Code</th>
+                                                    <th>Qty In</th>
+                                                    <th>Qty Out</th>
+                                                    <th>Store</th>
+                                                    <th>From Store</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($recipts as $receipts)
+                                                <tr>
+                                                    <td>{{ $receipts->dDate }}</td>
+                                                    <td>{{ $receipts->trans_no }}</td>
+                                                    <td>{{ $receipts->trans_code }}</td>
+                                                    <td>{{ $receipts->item_code }}</td>
+                                                    <td>{{ $receipts->qun_in }}</td>
+                                                    <td>{{ $receipts->qun_out }}</td>
+                                                    <td>{{ $receipts->storse_id }}</td>
+                                                    <td>{{ $receipts->From_store }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            @if($recipts->count())
+                                            <tfoot>
+                                                <tr class="fw-bold">
+                                                    <td colspan="4" class="text-end">Total</td>
+                                                    <td>{{ number_format($recipts->sum('qun_in'), 2) }}</td>
+                                                    <td>{{ number_format($recipts->sum('qun_out'), 2) }}</td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                                <tr class="fw-bold">
+                                                    <td colspan="4" class="text-end">Total Balance</td>
+                                                    <td colspan="2">{{ number_format($recipts->sum('qun_in') - $recipts->sum('qun_out'), 2) }}</td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                            </tfoot>
+                                            @endif
+                                        </table>
+                                    </div>
                                 </div>
                                 <div id="stockTransferCustomPager"></div>
                             </div>
@@ -143,32 +133,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="assets/js/script.js"></script>
-<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
+    var stockTransferTable;
+
     $(document).ready(function () {
-        var stockTransferTable = $('#receiptTable').DataTable({
+        stockTransferTable = $('#receiptTable').DataTable({
             dom: 'Bfrtip',
             buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
-            scrollX: true,
             pageLength: 15,
-            lengthChange: false
+            lengthChange: false,
+            language: { emptyTable: 'No stock transfers found for the selected filters.' }
         });
 
         $('#receiptTable_wrapper').addClass('dt-collapsed');
         DTCustomPager.init(stockTransferTable, '#stockTransferCustomPager');
     });
 
+    // Routes the page-header "Print" button through DataTables' own print
+    // button (which renders a properly bordered/styled printable table)
+    // instead of dumping unstyled raw HTML into a blank window.
     function printTablefun() {
-        let printContent = document.getElementById("receiptTable").outerHTML;
-        let newWin = window.open("");
-        newWin.document.write("<html><head><title>Print</title>");
-        newWin.document.write("<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'>");
-        newWin.document.write("</head><body>");
-        newWin.document.write(printContent);
-        newWin.document.write("</body></html>");
-        newWin.print();
-        newWin.close();
+        if (!stockTransferTable) { alert('Table is still loading, please try again in a moment.'); return; }
+        stockTransferTable.button('.buttons-print').trigger();
     }
 </script>
 

@@ -6,53 +6,80 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --tr-blue: #1677FF;
+            --tr-navy: #14213D;
+            --tr-bg: #F6F8FC;
+            --tr-blue-light: #EAF3FF;
+            --tr-border: #E5EAF2;
+            --tr-text-secondary: #667085;
+            --tr-success: #16A34A;
+            --tr-danger: #EF4444;
+        }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 11px;
             color: #000;
-            background: #f0f0f0;
+            background: var(--tr-bg);
         }
 
-        /* ── Toolbar ── */
+        /* ── Toolbar (screen only — hidden on the real print via @media print below) ── */
         .no-print {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
+            gap: 10px;
+            padding: 14px 24px;
             background: #fff;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 14px;
+            border-bottom: 1px solid var(--tr-border);
+            margin-bottom: 28px;
+            box-shadow: 0 2px 10px rgba(20, 33, 61, .04);
         }
         .btn {
-            padding: 6px 18px;
-            border: none;
-            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 18px;
+            border: 1px solid transparent;
+            border-radius: 999px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: #fff;
+            transition: background .15s, box-shadow .15s, transform .1s;
         }
-        .btn-print  { background: #1a3a8c; }
-        .btn-print:hover  { background: #142d6e; }
-        .btn-rotate { background: #2e7d32; }
-        .btn-rotate:hover { background: #1b5e20; }
-        .btn-close  { background: #888; }
-        .btn-close:hover  { background: #666; }
+        .btn:active { transform: scale(.97); }
+        .btn-print  { background: var(--tr-blue); }
+        .btn-print:hover  { background: #0e5fe0; box-shadow: 0 4px 12px rgba(22,119,255,.25); }
+        .btn-rotate { background: #fff; color: var(--tr-navy); border-color: var(--tr-border); }
+        .btn-rotate:hover { background: var(--tr-blue-light); border-color: var(--tr-blue); color: var(--tr-blue); }
+        .btn-close  { background: #fff; color: var(--tr-text-secondary); border-color: var(--tr-border); }
+        .btn-close:hover  { background: #FEF2F2; border-color: var(--tr-danger); color: var(--tr-danger); }
         #orientLabel {
-            font-size: 11px;
-            color: #555;
-            margin-left: 6px;
-            font-style: italic;
+            font-size: 12px;
+            color: var(--tr-text-secondary);
+            margin-left: 4px;
+            padding: 6px 14px;
+            background: var(--tr-bg);
+            border-radius: 999px;
+            font-style: normal;
+            font-weight: 600;
         }
 
-        /* ── Page wrapper ── */
+        /* ── Page wrapper (screen backdrop — not part of the print) ── */
         .page-wrapper {
             display: flex;
             justify-content: center;
             flex-direction: column;
+            align-items: center;
+            padding: 8px 20px 40px;
         }
 
-        /* ── Page: default = LANDSCAPE 20cm x 19cm ── */
+        /* ── Page: default = LANDSCAPE 20cm x 19cm ──
+             Screen-only framing (shadow/radius) is added via the
+             `@media screen` rule further down so the printed page itself
+             is pixel-identical to before — field coordinates are untouched. */
         .page {
             position: relative;
             width: 20cm;
@@ -61,6 +88,14 @@
             overflow: hidden;
             margin-bottom: 10px;
             page-break-after: always;
+        }
+
+        @media screen {
+            .page {
+                border-radius: 10px;
+                box-shadow: 0 1px 2px rgba(20,33,61,.04), 0 16px 40px rgba(20,33,61,.12);
+                outline: 1px solid var(--tr-border);
+            }
         }
 
         /* ── Fields ── */

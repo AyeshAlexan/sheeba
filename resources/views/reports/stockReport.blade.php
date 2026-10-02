@@ -30,12 +30,6 @@
                     border:1px solid var(--tr-border);
                 }
                 .legend-dot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
-
-                #t_item_movements thead th{
-                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
-                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
-                }
-                #t_item_movements tbody tr:hover{ background:var(--tr-blue-light) !important; }
             </style>
 
             <body>
@@ -95,38 +89,40 @@
                                     <span class="legend-pill"><span class="legend-dot" style="background:var(--tr-danger);"></span>Negative Stock</span>
                                 </div>
 
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" id="t_item_movements">
-                                        @if($fromDate && $toDate)
-                                        <caption>Stock In Hand &nbsp;|&nbsp; {{ $fromDate }} &nbsp;→&nbsp; {{ $toDate }}</caption>
-                                        @endif
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Item Code</th>
-                                                <th>Item Name</th>
-                                                <th class="text-center">Quantity</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($stockDetails as $item)
-                                            @php
-                                                $qty = $item->total_qun_in - $item->total_qun_out - $item->total_free_issues;
-                                                $rowClass = $qty > 0 ? 'row-positive' : ($qty < 0 ? 'row-negative' : 'row-zero');
-                                            @endphp
-                                            <tr class="{{ $rowClass }}">
-                                                <td>{{ $item->Item_code }}</td>
-                                                <td>{{ $item->Item_description }}</td>
-                                                <td class="text-center">{{ $qty }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
-                                                <td colspan="2" class="text-end">Total Balance</td>
-                                                <td class="text-center">{{ $balance }}</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                <div class="modern-table-card">
+                                    <div class="table-responsive">
+                                        <table class="table" id="t_item_movements">
+                                            @if($fromDate && $toDate)
+                                            <caption>Stock In Hand &nbsp;|&nbsp; {{ $fromDate }} &nbsp;→&nbsp; {{ $toDate }}</caption>
+                                            @endif
+                                            <thead>
+                                                <tr>
+                                                    <th>Item Code</th>
+                                                    <th>Item Name</th>
+                                                    <th class="text-center">Quantity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($stockDetails as $item)
+                                                @php
+                                                    $qty = $item->total_qun_in - $item->total_qun_out - $item->total_free_issues;
+                                                    $rowClass = $qty > 0 ? 'row-positive' : ($qty < 0 ? 'row-negative' : 'row-zero');
+                                                @endphp
+                                                <tr class="{{ $rowClass }}">
+                                                    <td>{{ $item->Item_code }}</td>
+                                                    <td>{{ $item->Item_description }}</td>
+                                                    <td class="text-center">{{ $qty }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="fw-bold">
+                                                    <td colspan="2" class="text-end">Total Balance</td>
+                                                    <td class="text-center">{{ $balance }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div id="stockInHandCustomPager"></div>
                             </div>
@@ -149,13 +145,14 @@
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
 <script src="assets/js/script.js"></script>
-<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
+var stockInHandTable;
+
 jQuery(document).ready(function ($) {
-    var stockInHandTable = $('#t_item_movements').DataTable({
+    stockInHandTable = $('#t_item_movements').DataTable({
         dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'csv', 'pdf'],
+        buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
         pageLength: 15,
         lengthChange: false,
     });
@@ -169,12 +166,12 @@ jQuery(document).ready(function ($) {
     }
 });
 
+// Routes the page-header "Print" button through DataTables' own print
+// button (which renders a properly bordered/styled printable table)
+// instead of dumping unstyled raw HTML into a blank window.
 function printTablefun() {
-    var divToPrint = document.getElementById("t_item_movements");
-    var newWin = window.open("");
-    newWin.document.write(divToPrint.outerHTML);
-    newWin.print();
-    newWin.close();
+    if (!stockInHandTable) { alert('Table is still loading, please try again in a moment.'); return; }
+    stockInHandTable.button('.buttons-print').trigger();
 }
 </script>
 

@@ -141,7 +141,6 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 <script src="assets/js/script.js"></script>
-<script src="assets/js/dt-custom-pager.js"></script>
 
 <script>
     $(document).ready(function () {

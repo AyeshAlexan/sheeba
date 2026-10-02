@@ -148,7 +148,6 @@
                         var itemDetailTable = $('#receiptTable').DataTable({
                             dom: 'Bfrtip',
                             buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
-                            scrollX: true,
                             pageLength: 15,
                             lengthChange: false,
                             columnDefs: [
@@ -218,7 +217,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="assets/js/script.js"></script>
-<script src="assets/js/dt-custom-pager.js"></script>
 
 </body>
 @endsection

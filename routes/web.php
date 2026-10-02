@@ -710,7 +710,7 @@ Route::post('/create_paying_installment', [App\Http\Controllers\InstallmentPayme
 //  Purchase Item wish report
 Route::get('/reports.Purchase_wish_sales_report', [App\Http\Controllers\PurchasewishreportController::class,'index'])->name('Purchase_wish_sales_report');
 // Item Wish Sales Controller
-Route::get('/reports.Item_wish_sales_report', [App\Http\Controllers\ItemwishsalesController::class, 'index'])->name('Item_wish_sales_report');
+Route::get('/reports.Item_wish_sales_report', [App\Http\Controllers\ItemwishsalesController::class, 'index'])->middleware('auth')->name('Item_wish_sales_report');
 
 //Cash in hand report
 Route::get('/reports.Cash_in_out_report', [App\Http\Controllers\CashinoutController::class,'index'])->name('Cash_in_out_report');

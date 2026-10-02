@@ -88,6 +88,64 @@
         });
     }
 
+    /*
+     * Adds a Font Awesome icon in front of the label on every DataTables
+     * export/print button (Copy/Excel/CSV/PDF/Print), app-wide, without
+     * needing to touch each page's button config. Runs once at load for
+     * buttons already on the page, then watches for new ones (DataTables
+     * renders its button toolbar synchronously inside .DataTable({...}),
+     * which can fire before or after this script depending on page order).
+     */
+    var BUTTON_ICONS = {
+        copy: 'fa-copy',
+        copyHtml5: 'fa-copy',
+        excel: 'fa-file-excel',
+        excelHtml5: 'fa-file-excel',
+        csv: 'fa-file-csv',
+        csvHtml5: 'fa-file-csv',
+        pdf: 'fa-file-pdf',
+        pdfHtml5: 'fa-file-pdf',
+        print: 'fa-print'
+    };
+
+    function iconizeButton(btn) {
+        var $btn = $(btn);
+        if ($btn.data('dtIconized')) return;
+        var cls = $btn.attr('class') || '';
+        var match = cls.match(/buttons-([a-zA-Z0-9]+)/);
+        var icon = match && BUTTON_ICONS[match[1]];
+        if (!icon) return;
+        var label = $btn.text().trim();
+        if (!label) return;
+        $btn.html('<i class="fas ' + icon + '"></i> ' + label);
+        $btn.data('dtIconized', true);
+    }
+
+    function iconizeAll(root) {
+        $(root).find('.dt-buttons .dt-button, .dt-buttons button.dt-button, .dt-buttons a.dt-button').each(function () {
+            iconizeButton(this);
+        });
+    }
+
+    $(function () {
+        iconizeAll(document);
+
+        if (typeof MutationObserver !== 'undefined') {
+            new MutationObserver(function (mutations) {
+                mutations.forEach(function (m) {
+                    m.addedNodes.forEach(function (node) {
+                        if (node.nodeType !== 1) return;
+                        if (node.classList && node.classList.contains('dt-buttons')) {
+                            iconizeAll(node.parentNode || document);
+                        } else if (node.querySelectorAll) {
+                            iconizeAll(node);
+                        }
+                    });
+                });
+            }).observe(document.body, { childList: true, subtree: true });
+        }
+    });
+
     root.DTCustomPager = {
         init: function (table, containerSelector) {
             var $container = $(containerSelector);

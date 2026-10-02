@@ -1,185 +1,161 @@
-@if($invoice->count() > 0)
-{{-- <h2>Purchases Report</h2> --}}
+@extends('layouts.topnavbar')
+@extends('layouts.sidebar')
+@section('content')
+          <!DOCTYPE html>
+            <html lang="en">
 
-@else
-<p>No results found.</p>
-@endif
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+                <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+                <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+                <title>Sales Details Report</title>
+                <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+                <link rel="stylesheet" href="../assets/plugins/fontawesome/css/fontawesome.min.css">
+                <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
+                <link rel="stylesheet" href="../assets/css/style.css">
+            </head>
 
+            <style>
+                #t_invoice_deils thead th{
+                    text-transform:uppercase; letter-spacing:.04em; font-size:11.5px !important;
+                    color:var(--tr-text-secondary) !important; background:var(--tr-bg) !important;
+                }
+                #t_invoice_deils tbody tr:hover{ background:var(--tr-blue-light) !important; }
+            </style>
 
-<!DOCTYPE html>
-<html lang="en">
+            <body>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {{-- <div><button onClick="window.print()">Print --}}
+        <div class="main-wrapper">
+            <div class="page-wrapper">
+                <div class="content container-fluid">
+                    <div class="page-header ph-flex">
+                        <div class="ph-left">
+                            <div class="ph-icon">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="page-title">Sales Details Report</h3>
+                                <p class="page-subtitle">Every line item sold — category, quantity, price, and discount.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary" onclick="printTablefun()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
 
-    </button></div>
+                    <div class="container-fluid px-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="" method="GET" class="row g-2 mb-3 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">From Date</label>
+                                        <input type="date" name="from_date" id="from_date" class="form-control" value="{{ request('from_date') }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-0 small">To Date</label>
+                                        <input type="date" name="to_date" id="to_date" class="form-control" value="{{ request('to_date') }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-outline-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
+                                    </div>
+                                </form>
 
-
-
-
-    <title>Sales Details Report</title>
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/reports-modern.css') }}">
-
-</head>
-
-<body>
-
-    <div class="report-page">
-        <div class="report-card">
-            <div class="report-topbar">
-                <h1 class="report-title"><i class="fa-solid fa-file-lines"></i> Sales Details Report</h1>
-                <a href="{{ route('home') }}" class="btn btn-back"><i class="fa-solid fa-house"></i> Back</a>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover" id="t_invoice_deils" style="width:100%;">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Invoice No</th>
+                                                <th>Invoice Date</th>
+                                                <th>Category</th>
+                                                <th>Item Code</th>
+                                                <th>Description</th>
+                                                <th>QTY</th>
+                                                <th>Unit Price</th>
+                                                <th>Discount</th>
+                                                <th>Net Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($invoice as $key=>$item)
+                                            <tr>
+                                                <td>{{ $item->Invoice_no }}</td>
+                                                <td>{{ $item->Invoice_date }}</td>
+                                                <td>{{ $item->Item_category }}</td>
+                                                <td>{{ $item->Item_s_code }}</td>
+                                                <td>{{ $item->Item_description }}</td>
+                                                <td>{{ $item->QTY }}</td>
+                                                <td>{{ $item->Unit_price }}</td>
+                                                <td>{{ $item->Discount }}</td>
+                                                <td>{{ $item->Net_value }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="fw-bold" style="background-color:#f4f6f9;">
+                                                <td colspan="5" class="text-end">Total</td>
+                                                <td>{{ $totalQTY }}</td>
+                                                <td>{{ $totalGrossAmount }}</td>
+                                                <td>{{ $totalDiscount }}</td>
+                                                <td>{{ $totalNetAmount }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div id="salesDetailsCustomPager"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @include('layouts.footer')
             </div>
+         </div>
 
-            <form action="" method="get" class="report-filters">
-                <div class="field">
-                    <label for="from_date">From Date</label>
-                    <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
-                </div>
-                <div class="field">
-                    <label for="to_date">To Date</label>
-                    <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
-                </div>
-                <div class="field field-actions">
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
-                    <button type="button" onclick="printTablefun()" class="btn btn-secondary"><i class="fa-solid fa-print"></i> Print</button>
-                </div>
-            </form>
+<script src="assets/js/jquery-3.6.0.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/feather.min.js"></script>
+<script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script src="assets/js/script.js"></script>
+<script src="assets/js/dt-custom-pager.js"></script>
 
-            <div class="table-scroll">
-                    <table class="display modern-table" id="t_invoice_deils">
-                        <thead class="styled-table">
-                            <th>Invoice No</th>
-                            <th>Invoice date</th>
-                            <th>Item_category</th>
-                            <th>MODEL</th>
-                            <th>Item_description</th>
-                            <th>QTY</th>
-                            <th>Unit_price</th>
-                            <th>Discount</th>
-                            <th>Net_value</th>
-                            {{-- <th>Operator</th>
-                            <th>Branch</th> --}}
-                        </thead>
-                        <tbody>
-                            @foreach ( $invoice as $key=>$invoice)
-                            <tr>
-                                <td>{{$invoice->Invoice_no}}</td>
-                                <td>{{$invoice->Invoice_date}}</td>
-                                <td>{{$invoice->Item_category}}</td>
-                                <td>{{$invoice->Item_s_code}}</td>
-                                <td>{{$invoice->Item_description}}</td>
-                                <td>{{$invoice->QTY}}</td>
-                                <td>{{$invoice->Unit_price}}</td>
-                                <td>{{$invoice->Discount}}</td>
-                                <td>{{$invoice->Net_value}}</td>
-                                {{-- <td>{{$invoice->OC}}</td>
-                                <td>{{$invoice->BC}}</td> --}}
-                            </tr>
-                            @endforeach
-                        </tbody>
-
-                        <tfoot>
-                            <tr>
-                                <td colspan="5" rowspan="2"><strong>Total</strong></td>
-                                <td>QTY:</td>
-                                <td>Gross Amount:</td>
-                                <td>Discount:</td>
-                                <td>Net Amount:</td>
-
-                                {{-- <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td> --}}
-                            </tr>
-                            <tr>
-                                <td><strong>{{$totalQTY}}</strong></td>
-                                <td><strong>{{$totalGrossAmount}}</strong></td>
-                                <td><strong>{{$totalDiscount}}</strong></td>
-                                <td><strong>{{$totalNetAmount}}</strong></td>
-                                {{-- <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td> --}}
-                            </tr>
-                        </tfoot>
-                    </table>
-            </div>
-        </div>
-    </div>
-
-</body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="{{ asset('js/reports-modern.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-<script type="text/javascript" charset="utf8"
-    src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js">
-</script>
-<script type="text/javascript" charset="utf8"
-    src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js">
-</script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js">
-</script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js">
-</script>
 <script>
-    jQuery(document).ready(function ($) {
-        $('#t_invoice_deils').DataTable( //database table name
-            {
-                dom: 'Bfrtlip',
-                pageLength: 15,
-                lengthMenu: [10, 15, 25, 50, 100],
-                language: {
-                    lengthMenu: '_MENU_',
-                    paginate: { previous: '‹', next: '›' }
-                },
-                buttons: [
-                    'copy',
-                    'excel',
-                    'csv',
-                    'pdf',
-                    // 'print',
-                ],
-            }
-        );
-
+jQuery(document).ready(function ($) {
+    var salesDetailsTable = $('#t_invoice_deils').DataTable({
+        dom: 'Bfrtip',
+        buttons: ['copy', 'excel', 'csv', 'pdf'],
+        pageLength: 15,
+        lengthChange: false,
     });
 
-</script>
+    $('#t_invoice_deils_wrapper').addClass('dt-collapsed');
+    DTCustomPager.init(salesDetailsTable, '#salesDetailsCustomPager');
 
-
-
-
-<script>
-    function printTablefun() {
-        var divToPrint = document.getElementById("t_invoice_deils");
-        newWin = window.open("");
-        newWin.document.write(divToPrint.outerHTML);
-        newWin.print();
-        newWin.close();
-    }
-</script>
-
-
-{{-- form default date set for today --}}
-<script>
     var toDateInput = document.getElementById('to_date');
     if (!toDateInput.value) {
         var dateObj = new Date();
         toDateInput.value = dateObj.toISOString().slice(0, 10);
     }
+});
 
+function printTablefun() {
+    var divToPrint = document.getElementById("t_invoice_deils");
+    var newWin = window.open("");
+    newWin.document.write(divToPrint.outerHTML);
+    newWin.print();
+    newWin.close();
+}
 </script>
 
+</body>
+@endsection
 
 </html>
