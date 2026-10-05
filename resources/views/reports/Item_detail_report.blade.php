@@ -56,9 +56,9 @@
                                 <p class="page-subtitle">Every item in the catalog — pricing and, for Set Items, which items make up the set.</p>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="printTablefun()">
+                        <a href="{{ route('Item_detail_report.print') }}" target="_blank" rel="noopener" class="btn btn-primary">
                             <i class="fas fa-print"></i> Print Table
-                        </button>
+                        </a>
                     </div>
 
                     <div class="container-fluid px-0">
@@ -170,39 +170,6 @@
                         });
                     });
 
-                    function printTablefun() {
-                        $('.set-item-detail').show();
-                        let printContent = document.getElementById("receiptTable").outerHTML;
-                        $('.set-item-detail').hide();
-
-                        let newWin = window.open("");
-                        newWin.document.write(`
-                            <html>
-                            <head>
-                                <title>Item Details Report</title>
-                                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-                                <style>
-                                    body { padding: 20px; font-family: sans-serif; }
-                                    table { width: 100%; border-collapse: collapse; }
-                                    th, td { border: 1px solid #ccc; padding: 6px 10px; font-size: 12px; }
-                                    thead { background-color: #343a40; color: #fff; }
-                                    .sub-table thead { background-color: #e9ecef; color: #000; }
-                                    .btn-set-toggle { display: none; }
-                                    .set-item-detail { display: block !important; }
-                                    tr.is-set-item > td { background-color: #f0f7ff !important; }
-                                </style>
-                            </head>
-                            <body>
-                                <h3 style="text-align:center; margin-bottom:16px;">Item Details Report</h3>
-                                ${printContent}
-                            </body>
-                            </html>
-                        `);
-                        newWin.document.close();
-                        newWin.focus();
-                        newWin.print();
-                        newWin.close();
-                    }
                     </script>
 
 <script src="assets/js/jquery-3.6.0.min.js"></script>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TWithoutVatSalesDetails;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class InvoicedetailreportController extends Controller
 {
@@ -47,7 +49,9 @@ class InvoicedetailreportController extends Controller
         -> with("totalQTY", $totalQTY)
         -> with("totalGrossAmount", $totalGrossAmount)
         -> with("totalDiscount", $totalDiscount)
-        -> with("totalNetAmount", $totalNetAmount);
+        -> with("totalNetAmount", $totalNetAmount)
+        -> with("companyData", Company::latest()->first())
+        -> with("branchDel", branchDel::where('bccode', $branch_code)->first());
         // -> with("totalCashPay", $totalCashPay)
         // -> with("totalCredite", $totalCredite)
         // -> with("totalCheque", $totalCheque);

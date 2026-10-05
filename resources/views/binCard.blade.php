@@ -178,7 +178,7 @@
     $(document).ready(function () {
         binCardTable = $('#t_item_movements').DataTable({
             dom: 'Bfrtip',
-            buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
+            buttons: ['copy', 'excel', 'csv', 'pdf'],
             pageLength: 15,
             lengthChange: false
         });
@@ -207,12 +207,12 @@
         });
     });
 
-    // Routes the page-header "Print" button through DataTables' own print
-    // button (which renders a properly bordered/styled printable table)
-    // instead of dumping unstyled raw HTML into a blank window.
+    // Opens a dedicated, server-rendered print page (logo + branch + title +
+    // date range + clean table) in a new tab, carrying forward the currently
+    // applied filters.
     function printTablefun() {
-        if (!binCardTable) { alert('Table is still loading, please try again in a moment.'); return; }
-        binCardTable.button('.buttons-print').trigger();
+        var params = $('form[action="{{ route('get_bin_card_report') }}"]').serialize();
+        window.open('{{ route('bin_card.print') }}?' + params, '_blank');
     }
 </script>
 

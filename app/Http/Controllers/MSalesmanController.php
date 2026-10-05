@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MSalesman;
 use App\Models\branchDel;
+use App\Models\Company;
 use App\Models\TInvoiceSum;
 use App\Models\TInvoiceDeils;
 use Illuminate\Support\Facades\DB;
@@ -130,7 +131,9 @@ public function SalesmanInvoiceReport(Request $request)
         'salesmen' => $branchDel,
         'salesman' => $selected_salesman,
         'fromDate' => $fromDate,
-        'toDate' => $toDate
+        'toDate' => $toDate,
+        'companyData' => Company::latest()->first(),
+        'branchDel' => branchDel::where('bccode', $branch_code)->first(),
     ]);
 }
 
@@ -175,6 +178,8 @@ public function SalesmanInvoiceReport(Request $request)
         'salesman' => $selectedSalesman,
         'fromDate' => $fromDate,
         'toDate' => $toDate,
+        'companyData' => Company::latest()->first(),
+        'branchDel' => branchDel::where('bccode', $branchCode)->first(),
     ]);
 }
 

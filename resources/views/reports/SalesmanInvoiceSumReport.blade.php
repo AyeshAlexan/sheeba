@@ -165,13 +165,13 @@
                                                 <th>NIC</th>
                                                 <th>Phone</th>
                                                 <th>Salesman</th>
-                                                <th>Gross Amount</th>
-                                                <th>Discount</th>
-                                                <th>Net Amount</th>
-                                                <th>Cash Pay</th>
-                                                <th>Credit</th>
-                                                <th>Cheque</th>
-                                                <th>Paid Amount</th>
+                                                <th class="text-end">Gross Amount</th>
+                                                <th class="text-end">Discount</th>
+                                                <th class="text-end">Net Amount</th>
+                                                <th class="text-end">Cash Pay</th>
+                                                <th class="text-end">Credit</th>
+                                                <th class="text-end">Cheque</th>
+                                                <th class="text-end">Paid Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -236,7 +236,7 @@
         if ($('#t_redeem_sums').length) {
             var detailTable = $('#t_redeem_sums').DataTable({
                 dom: 'Bfrtip',
-                buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
+                buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5'],
                 pageLength: 15,
                 lengthChange: false,
             });
@@ -247,22 +247,11 @@
     });
 
     function printTablefun() {
-        let summaryTable = document.getElementById('salesmanSummaryTable');
-        let detailTable = document.getElementById('t_redeem_sums');
-        let newWin = window.open("");
-        newWin.document.write("<html><head><title>Print</title>");
-        newWin.document.write("<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'>");
-        newWin.document.write("<style>table{margin-bottom:20px;} .text-end{text-align:right;}</style>");
-        newWin.document.write("</head><body>");
-        newWin.document.write("<h4 class='text-center mb-3'>Salesman Total Invoice Report</h4>");
-        if (summaryTable) { newWin.document.write("<h5>Salesman Summary</h5>"); newWin.document.write(summaryTable.outerHTML); }
-        if (detailTable) { newWin.document.write("<h5>Detailed Invoices</h5>"); newWin.document.write(detailTable.outerHTML); }
-        newWin.document.write("</body></html>");
-        newWin.print();
-        newWin.close();
+        window.stockReportPrintTables(['#salesmanSummaryTable', '#t_redeem_sums']);
     }
 </script>
 
+<x-report-print-config title="Salesman Total Invoice Report" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel" />
 </body>
 @endsection
 

@@ -108,7 +108,7 @@ var zeroStockTable;
 jQuery(document).ready(function ($) {
     zeroStockTable = $('#t_item_movements').DataTable({
         dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
+        buttons: ['copy', 'excel', 'csv', 'pdf'],
         pageLength: 15,
         lengthChange: false,
         language: { emptyTable: 'No zero-quantity movements found for the selected dates.' }
@@ -123,12 +123,12 @@ jQuery(document).ready(function ($) {
     }
 });
 
-// Routes the page-header "Print" button through DataTables' own print
-// button (which renders a properly bordered/styled printable table)
-// instead of dumping unstyled raw HTML into a blank window.
+// Opens a dedicated, server-rendered print page (logo + branch + title +
+// date range + clean table) in a new tab, carrying forward the currently
+// applied filters.
 function printTablefun() {
-    if (!zeroStockTable) { alert('Table is still loading, please try again in a moment.'); return; }
-    zeroStockTable.button('.buttons-print').trigger();
+    var params = $('form[action="{{ route('ZerostockReport') }}"]').serialize();
+    window.open('{{ route('ZerostockReport.print') }}?' + params, '_blank');
 }
 </script>
 

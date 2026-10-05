@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Company;
+use App\Models\branchDel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -69,6 +71,56 @@ class StockvaluationreportControler extends Controller
         ->get();
 
         return $this->renderReport($stockDetails, $fromDate, $toDate, $itemCode);
+    }
+
+    public function print(Request $request)
+    {
+        $branch_code = auth()->user()->BC;
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $itemCode = $request->input('item_code');
+
+        $stockDetails = Item::select(
+            'items.Item_code',
+            'items.Item_description',
+            'items.purchasePrice',
+            'items.updated_at'
+        )
+        ->selectRaw('SUM(t_item_movements.qun_in) as total_qun_in')
+        ->selectRaw('SUM(t_item_movements.qun_out) as total_qun_out')
+        ->leftJoin('t_item_movements', 'items.Item_code', '=', 't_item_movements.item_code')
+        ->where('t_item_movements.bc', $branch_code)
+        ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('t_item_movements.dDate', [$fromDate, $toDate]))
+        ->when($itemCode, fn ($q) => $q->where('items.Item_code', 'like', "%{$itemCode}%"))
+        ->groupBy(
+            'items.Item_code',
+            'items.Item_description',
+            'items.purchasePrice',
+            'items.updated_at'
+        )
+        ->orderBy('items.updated_at', 'desc')
+        ->get();
+
+        $quain   = $stockDetails->sum('total_qun_in');
+        $quaout  = $stockDetails->sum('total_qun_out');
+        $balance = $quain - $quaout;
+        $sumPurchase = $stockDetails->sum('purchasePrice');
+
+        $grandTotal = $stockDetails->sum(function ($stock) {
+            $qty = $stock->total_qun_in - $stock->total_qun_out;
+            return $qty * $stock->purchasePrice;
+        });
+
+        return view('reports.print.stock-valuation', [
+            'stockDetails' => $stockDetails,
+            'fromDate'     => $fromDate,
+            'toDate'       => $toDate,
+            'sumPurchase'  => $sumPurchase,
+            'balance'      => $balance,
+            'grandTotal'   => $grandTotal,
+            'companyData'  => Company::latest()->first(),
+            'branchDel'    => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 
     private function renderReport($stockDetails, $fromDate, $toDate, $itemCode = null)

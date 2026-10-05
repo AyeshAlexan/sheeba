@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\TInvoiceSum;
 use App\Models\TSupplierPayment;
 use App\Models\Suppliers;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class CashinoutController extends Controller
 {
@@ -48,6 +50,8 @@ class CashinoutController extends Controller
             ->with("supplier", $supplier)
             ->with("totalPayment_Amount", $totalPayment_Amount)
             ->with("totalbalance", $totalbalance)
-            ->with("totalCashPay", $totalCashPay);
+            ->with("totalCashPay", $totalCashPay)
+            ->with("companyData", Company::latest()->first())
+            ->with("branchDel", branchDel::where('bccode', $branchCode)->first());
     }
 }

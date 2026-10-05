@@ -79,7 +79,13 @@
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} -> redirect: %{redirect_url}\\\\n\" \"http://127.0.0.1:8000/reports.Item_wish_sales_report\")",
       "Bash(rm -f /tmp/login.html /tmp/cookiejar_path.txt)",
       "Bash(curl -s \"http://127.0.0.1:8000/assets/css/theme-redesign.css\")",
-      "Bash(curl -s \"http://127.0.0.1:8000/filter_stock_by_date\")"
+      "Bash(curl -s \"http://127.0.0.1:8000/filter_stock_by_date\")",
+      "Bash(php -l app/Http/Controllers/StockReportController.php)",
+      "Bash(php -l app/Http/Controllers/StockvaluationreportControler.php)",
+      "Bash(php -l app/Http/Controllers/BinCardController.php)",
+      "Bash(php -l app/Http/Controllers/ZerostockreportController.php)",
+      "Bash(php -l app/Http/Controllers/StockTransferController.php)",
+      "Bash(php -l app/Http/Controllers/StockDetailsReportController.php)"
     ]
   }
 }

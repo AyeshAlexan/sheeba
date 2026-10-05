@@ -54,6 +54,9 @@
                                 <p class="page-subtitle">Stock-on-hand valued at purchase price for every item.</p>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-outline-secondary" onclick="printTablefun()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
                     </div>
 
                     <div class="container-fluid px-0">
@@ -257,120 +260,6 @@
                             // Push footer row into the PDF table body
                             doc.content[1].table.body.push(footerRow);
                         }
-                    },
-
-                    // ── PRINT ─────────────────────────────────────────────
-                    {
-                        extend: 'print',
-                        className: 'btn btn-dark btn-sm',
-                        text: '<i class="fa-solid fa-print"></i> Print',
-                        customize: function (win) {
-
-                            // ── Inject print styles ──────────────────────────
-                            $(win.document.head).append(`
-                                <style>
-                                    @page {
-                                        size: A4 landscape;
-                                        margin: 15mm 10mm;
-                                    }
-                                    body {
-                                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                                        font-size: 12px;
-                                        color: #212529;
-                                        background: #fff;
-                                    }
-                                    h1.dt-print-view {
-                                        text-align: center;
-                                        font-size: 20px;
-                                        font-weight: 700;
-                                        color: #7169ff;
-                                        padding: 10px 0 6px;
-                                        margin-bottom: 16px;
-                                        border-bottom: 3px solid #7169ff;
-                                        letter-spacing: 0.5px;
-                                    }
-                                    table {
-                                        width: 100% !important;
-                                        border-collapse: collapse;
-                                        margin-top: 8px;
-                                    }
-                                    table thead tr {
-                                        background-color: #009879 !important;
-                                        color: #ffffff !important;
-                                        -webkit-print-color-adjust: exact;
-                                        print-color-adjust: exact;
-                                    }
-                                    table thead th {
-                                        padding: 8px 10px;
-                                        font-size: 14px;
-                                        font-weight: 600;
-                                        border: 1px solid #007a60;
-                                        text-align: left;
-                                    }
-                                    table tbody tr {
-                                        border-bottom: 1px solid #dee2e6;
-                                    }
-                                    table tbody tr:nth-child(even) {
-                                        background-color: #f9f9f9;
-                                        -webkit-print-color-adjust: exact;
-                                        print-color-adjust: exact;
-                                    }
-                                    table tbody td {
-                                        padding: 6px 10px;
-                                        font-size: 16px;
-                                        border: 1px solid #dee2e6;
-                                        vertical-align: middle;
-                                    }
-                                    /* Row color coding */
-                                    tr.qty-positive {
-                                        background-color: #d4edda !important;
-                                        color: #155724 !important;
-                                        -webkit-print-color-adjust: exact;
-                                        print-color-adjust: exact;
-                                    }
-                                    tr.qty-zero {
-                                        background-color: #fff3cd !important;
-                                        color: #856404 !important;
-                                        -webkit-print-color-adjust: exact;
-                                        print-color-adjust: exact;
-                                    }
-                                    tr.qty-negative {
-                                        background-color: #f8d7da !important;
-                                        color: #721c24 !important;
-                                        -webkit-print-color-adjust: exact;
-                                        print-color-adjust: exact;
-                                    }
-                                    /* Footer / grand totals row */
-                                    tfoot tr {
-                                        background-color: #e9ecef !important;
-                                        font-weight: 700 !important;
-                                        -webkit-print-color-adjust: exact;
-                                        print-color-adjust: exact;
-                                    }
-                                    tfoot td {
-                                        padding: 8px 10px;
-                                        font-size: 12px;
-                                        border: 1px solid #adb5bd;
-                                        color: #212529;
-                                    }
-                                    /* Align numbers */
-                                    td:nth-child(3),
-                                    td:nth-child(5),
-                                    th:nth-child(3),
-                                    th:nth-child(5) {
-                                        text-align: right !important;
-                                    }
-                                    td:nth-child(4),
-                                    th:nth-child(4) {
-                                        text-align: center !important;
-                                    }
-                                </style>
-                            `);
-
-                            // ── Clone & append tfoot ─────────────────────────
-                            var $tfoot = $('#myTable tfoot').clone();
-                            $(win.document.body).find('table').append($tfoot);
-                        }
                     }
                 ]
             });
@@ -386,6 +275,14 @@
         }
 
     });
+
+    // Opens a dedicated, server-rendered print page (logo + branch + title +
+    // date range + clean table) in a new tab, carrying forward the currently
+    // applied filters.
+    function printTablefun() {
+        var params = $('form[action="{{ route('filter_stock_by_FilterStoctValuation') }}"]').serialize();
+        window.open('{{ route('Stock_valuation_report.print') }}?' + params, '_blank');
+    }
 </script>
 
 </body>

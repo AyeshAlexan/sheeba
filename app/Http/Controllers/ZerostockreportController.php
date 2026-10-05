@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TItemMovement;
+use App\Models\Company;
+use App\Models\branchDel;
 use Illuminate\Support\Facades\DB;
 
 class ZerostockreportController extends Controller
@@ -47,5 +49,25 @@ class ZerostockreportController extends Controller
         // -> with("totalCredite", $totalCredite)
         // -> with("totalCheque", $totalCheque);
 
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
+
+        $invoice = TItemMovement::where('BC', $branch_code)
+                    ->where('qun_in', 0)
+                    ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('dDate', [$fromDate, $toDate]))
+                    ->get();
+
+        return view('reports.print.stock-zero', [
+            'invoice'     => $invoice,
+            'fromDate'    => $fromDate,
+            'toDate'      => $toDate,
+            'companyData' => Company::latest()->first(),
+            'branchDel'   => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 }

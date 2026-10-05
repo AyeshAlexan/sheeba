@@ -45,6 +45,9 @@
                                 <p class="page-subtitle">Every invoice for a given customer, with the exact items purchased on each one.</p>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-outline-secondary" onclick="printCustomerWishReport()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
                     </div>
 
                     <div class="container-fluid px-0">
@@ -129,7 +132,14 @@
 jQuery(document).ready(function ($) {
     var cwTable = $('#cwItemsTable').DataTable({
         dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'csv', 'pdf'],
+        buttons: ['copy', 'excel', 'csv', 'pdf', {
+            extend: 'print',
+            className: 'buttons-print d-none',
+            title: '',
+            customize: function (win) {
+                window.stockReportPrintCustomize(win);
+            }
+        }],
         pageLength: 15,
         lengthChange: false,
     });
@@ -137,8 +147,13 @@ jQuery(document).ready(function ($) {
     $('#cwItemsTable_wrapper').addClass('dt-collapsed');
     DTCustomPager.init(cwTable, '#customerWishCustomPager');
 });
+
+function printCustomerWishReport() {
+    $('#cwItemsTable').DataTable().button('.buttons-print').trigger();
+}
 </script>
 
+<x-report-print-config title="Customer Wish Item Sales" :companyData="$companyData" :branchDel="$branchDel" />
 </body>
 @endsection
 

@@ -116,25 +116,25 @@
                                     <table id="t_invoice_sums" class="table table-bordered table-hover" style="width:100%;">
                                         <thead class="thead-light">
                                             <tr>
-                                                <th>Action</th>
+                                                <th class="rp-no-print">Action</th>
                                                 <th>Invoice No</th>
                                                 <th>Date</th>
                                                 <th>Customer NIC</th>
                                                 <th>Customer Name</th>
                                                 <th>Route</th>
                                                 <th>Salesman</th>
-                                                <th>Gross Amt</th>
-                                                <th>Discount</th>
-                                                <th>Net Amt</th>
-                                                <th>Cash Pay</th>
-                                                <th>Credit</th>
-                                                <th>Cheque</th>
+                                                <th class="text-end">Gross Amt</th>
+                                                <th class="text-end">Discount</th>
+                                                <th class="text-end">Net Amt</th>
+                                                <th class="text-end">Cash Pay</th>
+                                                <th class="text-end">Credit</th>
+                                                <th class="text-end">Cheque</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($invoice as $inv)
                                             <tr>
-                                                <td style="white-space:nowrap;">
+                                                <td class="rp-no-print" style="white-space:nowrap;">
                                                     <a href="{{ route('print.invoice', [
                                                         'invoice_no'  => $inv->Invoice_no,
                                                         'branch_code' => $inv->BC,
@@ -156,24 +156,24 @@
                                                 <td>{{ $inv->Customer_Name }}</td>
                                                 <td>{{ $inv->Route }}</td>
                                                 <td>{{ $inv->Salesmen }}</td>
-                                                <td>{{ number_format($inv->Gross_Amount, 2) }}</td>
-                                                <td>{{ number_format($inv->Discount, 2) }}</td>
-                                                <td>{{ number_format($inv->Net_Amount, 2) }}</td>
-                                                <td>{{ number_format($inv->Cash_Pay, 2) }}</td>
-                                                <td>{{ number_format($inv->Credite, 2) }}</td>
-                                                <td>{{ number_format($inv->Cheque, 2) }}</td>
+                                                <td class="text-end">{{ number_format($inv->Gross_Amount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($inv->Discount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($inv->Net_Amount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($inv->Cash_Pay, 2) }}</td>
+                                                <td class="text-end">{{ number_format($inv->Credite, 2) }}</td>
+                                                <td class="text-end">{{ number_format($inv->Cheque, 2) }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
                                             <tr class="fw-bold" style="background-color:#f4f6f9;">
                                                 <td colspan="7" class="text-end">Grand Total</td>
-                                                <td>{{ $totalGrossAmount }}</td>
-                                                <td>{{ $totalDiscount }}</td>
-                                                <td>{{ $totalNetAmount }}</td>
-                                                <td>{{ $totalCashPay }}</td>
-                                                <td>{{ $totalCredite }}</td>
-                                                <td>{{ $totalCheque }}</td>
+                                                <td class="text-end">{{ $totalGrossAmount }}</td>
+                                                <td class="text-end">{{ $totalDiscount }}</td>
+                                                <td class="text-end">{{ $totalNetAmount }}</td>
+                                                <td class="text-end">{{ $totalCashPay }}</td>
+                                                <td class="text-end">{{ $totalCredite }}</td>
+                                                <td class="text-end">{{ $totalCheque }}</td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -219,14 +219,11 @@ $(document).ready(function () {
 });
 
 function printTableFun() {
-    var divToPrint = document.getElementById("t_invoice_sums");
-    var newWin = window.open("");
-    newWin.document.write(divToPrint.outerHTML);
-    newWin.print();
-    newWin.close();
+    window.stockReportPrintTables(['#t_invoice_sums']);
 }
 </script>
 
+<x-report-print-config title="Sales Summary" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel" />
 </body>
 @endsection
 

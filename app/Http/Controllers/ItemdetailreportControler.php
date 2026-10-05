@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\PackageItem;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class ItemdetailreportControler extends Controller
 {
@@ -29,5 +31,18 @@ class ItemdetailreportControler extends Controller
             ->with("invoice", $invoice)
             ->with("recipts", $query)
             ->with("PackageItem", $setItems);
+    }
+
+    public function print()
+    {
+        $branchCode = auth()->user()->BC;
+        $invoice = Item::orderBy('Item_code', 'asc')->get();
+
+        return view('reports.print.item-details', [
+            'invoice' => $invoice,
+            'PackageItem' => PackageItem::all(),
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branchCode)->first(),
+        ]);
     }
 }

@@ -134,7 +134,13 @@ jQuery(document).ready(function ($) {
         info: false,
         searching: false,
         ordering: false,
-        buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
+        buttons: ['copy', 'excel', 'csv', 'pdf', {
+            extend: 'print',
+            title: '',
+            customize: function (win) {
+                window.stockReportPrintCustomize(win);
+            }
+        }],
     });
 
     var toDateInput = document.getElementById('to_date');
@@ -145,6 +151,7 @@ jQuery(document).ready(function ($) {
 });
 </script>
 
+<x-report-print-config title="Cash In Out Report" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel" />
 </body>
 @endsection
 

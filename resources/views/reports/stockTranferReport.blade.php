@@ -140,7 +140,7 @@
     $(document).ready(function () {
         stockTransferTable = $('#receiptTable').DataTable({
             dom: 'Bfrtip',
-            buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
+            buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5'],
             pageLength: 15,
             lengthChange: false,
             language: { emptyTable: 'No stock transfers found for the selected filters.' }
@@ -150,12 +150,12 @@
         DTCustomPager.init(stockTransferTable, '#stockTransferCustomPager');
     });
 
-    // Routes the page-header "Print" button through DataTables' own print
-    // button (which renders a properly bordered/styled printable table)
-    // instead of dumping unstyled raw HTML into a blank window.
+    // Opens a dedicated, server-rendered print page (logo + branch + title +
+    // date range + clean table) in a new tab, carrying forward the currently
+    // applied filters.
     function printTablefun() {
-        if (!stockTransferTable) { alert('Table is still loading, please try again in a moment.'); return; }
-        stockTransferTable.button('.buttons-print').trigger();
+        var params = $('form[action="{{ route('reports.stockTranferReport') }}"]').serialize();
+        window.open('{{ route('reports.stockTranferReport.print') }}?' + params, '_blank');
     }
 </script>
 

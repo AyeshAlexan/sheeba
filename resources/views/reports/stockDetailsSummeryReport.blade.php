@@ -124,7 +124,7 @@
     $(document).ready(function () {
         stockDetailsTable = $('#receiptTable').DataTable({
             dom: 'Bfrtip',
-            buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
+            buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5'],
             pageLength: 15,
             lengthChange: false,
             language: { emptyTable: 'No stock movements found for the selected dates.' }
@@ -134,12 +134,12 @@
         DTCustomPager.init(stockDetailsTable, '#stockDetailsCustomPager');
     });
 
-    // Routes the page-header "Print" button through DataTables' own print
-    // button (which renders a properly bordered/styled printable table)
-    // instead of dumping unstyled raw HTML into a blank window.
+    // Opens a dedicated, server-rendered print page (logo + branch + title +
+    // date range + clean table) in a new tab, carrying forward the currently
+    // applied filters.
     function printTablefun() {
-        if (!stockDetailsTable) { alert('Table is still loading, please try again in a moment.'); return; }
-        stockDetailsTable.button('.buttons-print').trigger();
+        var params = $('form[action="{{ route('reports.stockDetailsSummeryReport') }}"]').serialize();
+        window.open('{{ route('reports.stockDetailsSummeryReport.print') }}?' + params, '_blank');
     }
 </script>
 

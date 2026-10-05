@@ -152,7 +152,7 @@ var stockInHandTable;
 jQuery(document).ready(function ($) {
     stockInHandTable = $('#t_item_movements').DataTable({
         dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
+        buttons: ['copy', 'excel', 'csv', 'pdf'],
         pageLength: 15,
         lengthChange: false,
     });
@@ -166,12 +166,12 @@ jQuery(document).ready(function ($) {
     }
 });
 
-// Routes the page-header "Print" button through DataTables' own print
-// button (which renders a properly bordered/styled printable table)
-// instead of dumping unstyled raw HTML into a blank window.
+// Opens a dedicated, server-rendered print page (logo + branch + title +
+// date range + clean table) in a new tab, carrying forward the currently
+// applied filters.
 function printTablefun() {
-    if (!stockInHandTable) { alert('Table is still loading, please try again in a moment.'); return; }
-    stockInHandTable.button('.buttons-print').trigger();
+    var params = $('form[action="{{ route('filter_stock_by_date') }}"]').serialize();
+    window.open('{{ route('stock_report.print') }}?' + params, '_blank');
 }
 </script>
 

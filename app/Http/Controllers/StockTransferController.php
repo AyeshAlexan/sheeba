@@ -327,5 +327,26 @@ public function StockTranferReport(Request $request)
         ->with('recipts', $reciptsdata);
 }
 
+public function printStockTranferReport(Request $request)
+{
+    $branch_code = auth()->user()->BC;
+    $fromDate = $request->input('from_date');
+    $toDate = $request->input('to_date');
+    $StoreCode = $request->input('storse_id');
+
+    $reciptsdata = TItemMovement::where('bc', $branch_code)
+        ->where('storse_id', $StoreCode)
+        ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('dDate', [$fromDate, $toDate]))
+        ->orderBy('dDate', 'asc')
+        ->get();
+
+    return view('reports.print.stock-transfer', [
+        'recipts'     => $reciptsdata,
+        'fromDate'    => $fromDate,
+        'toDate'      => $toDate,
+        'companyData' => Company::latest()->first(),
+        'branchDel'   => branchDel::where('bccode', $branch_code)->first(),
+    ]);
+}
 
 }

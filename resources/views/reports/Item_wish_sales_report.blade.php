@@ -347,7 +347,13 @@ var itemsTable;
 jQuery(document).ready(function ($) {
     itemsTable = $('#t_invoice_deils').DataTable({
         dom: 'Bt',
-        buttons: ['copy', 'excel', 'csv', 'pdf', 'print'],
+        buttons: ['copy', 'excel', 'csv', 'pdf', {
+            extend: 'print',
+            title: '',
+            customize: function (win) {
+                window.stockReportPrintCustomize(win);
+            }
+        }],
         pageLength: 15,
         lengthChange: false,
         columnDefs: [{ orderable: false, targets: 0 }],
@@ -419,6 +425,7 @@ function printTablefun() {
 }
 </script>
 
+<x-report-print-config title="Item Wise Sales" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel" />
 </body>
 @endsection
 

@@ -359,11 +359,13 @@ Route::get('/check_item_has_serial_ajax', [App\Http\Controllers\PurchasesControl
 Route::get('/stock_report', [App\Http\Controllers\StockReportController::class, 'index'])->name('stock_report');
 //filter_stock_by_date
 Route::get('/filter_stock_by_date', [App\Http\Controllers\StockReportController::class, 'filter'])->name('filter_stock_by_date');
+Route::get('/stock_report/print', [App\Http\Controllers\StockReportController::class, 'print'])->middleware('auth')->name('stock_report.print');
 
 //bincard
 Route::get('/bin_card', [App\Http\Controllers\BinCardController::class, 'index'])->name('bin_card');
 //get_bin_card_report
 Route::get('/get_bin_card_report', [App\Http\Controllers\BinCardController::class, 'get'])->name('get_bin_card_report');
+Route::get('/bin_card/print', [App\Http\Controllers\BinCardController::class, 'print'])->middleware('auth')->name('bin_card.print');
 
 // Purchases Return
 Route::get('/purchases_return', [App\Http\Controllers\PurchasesReturnController::class, 'index'])->name('purchases_return');
@@ -640,6 +642,7 @@ Route::get('/reports.Purchase_detail_report', [App\Http\Controllers\Purchasedeta
 
 // Invoice Details
 Route::get('/reports.ZerostockReport', [App\Http\Controllers\ZerostockreportController::class,'index'])->name('ZerostockReport');
+Route::get('/reports.ZerostockReport/print', [App\Http\Controllers\ZerostockreportController::class,'print'])->middleware('auth')->name('ZerostockReport.print');
 //SalessummaryreportController
 Route::get('/reports.Sales_summary_report', [App\Http\Controllers\SalessummaryreportController::class,'index'])->name('Sales_summary_report');
 //Purchase Summary
@@ -654,6 +657,7 @@ Route::get('/reports.Purchase_Detail_report', [App\Http\Controllers\Purchasedeta
 Route::get('/reports.Purchase_order_details_report', [App\Http\Controllers\PurchaseorderdetailreportController::class,'index'])->name('Purchase_order_details_report');
 //ItemdetailreportControler
 Route::get('/reports.Item_detail_report', [App\Http\Controllers\ItemdetailreportControler::class,'index'])->name('Item_detail_report');
+Route::get('/reports.Item_detail_report/print', [App\Http\Controllers\ItemdetailreportControler::class, 'print'])->middleware('auth')->name('Item_detail_report.print');
 // get stock report
 Route::get('/stock_report', [App\Http\Controllers\StockReportController::class, 'index'])->name('stock_report');
 //filter_stock_by_date
@@ -691,6 +695,7 @@ Route::get('/hire_purchase_early_settlement', [App\Http\Controllers\EarlySettlem
 Route::get('/reports.Stock_valuation_report', [App\Http\Controllers\StockvaluationreportControler::class,'index'])->name('Stock_valuation_report');
 //filter_stock_by_date
 Route::get('/filter_stock_by_FilterStoctValuation', [App\Http\Controllers\StockvaluationreportControler::class, 'FilterStoctValuation'])->name('filter_stock_by_FilterStoctValuation');
+Route::get('/reports.Stock_valuation_report/print', [App\Http\Controllers\StockvaluationreportControler::class, 'print'])->middleware('auth')->name('Stock_valuation_report.print');
 
 
 
@@ -827,10 +832,12 @@ Route::get('/reports.salesmanInvoiceReport', [App\Http\Controllers\MSalesmanCont
 Route::get('/show_Branch_Details_ajax_two',  [App\Http\Controllers\StockTransferController::class, 'GetBranchDeatailsTwo'])->name('show_Branch_Details_ajax_two');
 
 Route::get('/reports.stockTranferReport',  [App\Http\Controllers\StockTransferController::class, 'StockTranferReport'])->name('reports.stockTranferReport');
+Route::get('/reports.stockTranferReport/print',  [App\Http\Controllers\StockTransferController::class, 'printStockTranferReport'])->middleware('auth')->name('reports.stockTranferReport.print');
 
 
 
 Route::get('reports.stockDetailsSummeryReport', [App\Http\Controllers\StockDetailsReportController::class, 'index'])->name('reports.stockDetailsSummeryReport');
+Route::get('reports.stockDetailsSummeryReport/print', [App\Http\Controllers\StockDetailsReportController::class, 'print'])->middleware('auth')->name('reports.stockDetailsSummeryReport.print');
 
 
 Route::get('find_sales_details_invoice', [App\Http\Controllers\RecallEditSalesInvoiceController::class, 'FindInvoiceDetails'])->name('find_sales_details_invoice');

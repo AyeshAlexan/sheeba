@@ -80,14 +80,14 @@
                                                 <th>#</th>
                                                 <th>Item Code</th>
                                                 <th>Description</th>
-                                                <th>Total Qty</th>
-                                                <th>Total Free Issues</th>
-                                                <th>Avg. Unit Price</th>
-                                                <th>Total Line Discount</th>
-                                                <th>Total Net Value</th>
-                                                <th>Total Invoice Amount</th>
-                                                <th>Total Invoice Discount</th>
-                                                <th>Total Invoice Net Amount</th>
+                                                <th class="text-end">Total Qty</th>
+                                                <th class="text-end">Total Free Issues</th>
+                                                <th class="text-end">Avg. Unit Price</th>
+                                                <th class="text-end">Total Line Discount</th>
+                                                <th class="text-end">Total Net Value</th>
+                                                <th class="text-end">Total Invoice Amount</th>
+                                                <th class="text-end">Total Invoice Discount</th>
+                                                <th class="text-end">Total Invoice Net Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -96,14 +96,14 @@
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $row->Item_code }}</td>
                                                 <td>{{ $row->Item_description }}</td>
-                                                <td>{{ $row->Total_Qty }}</td>
-                                                <td>{{ $row->Total_Free }}</td>
-                                                <td>{{ number_format($row->Avg_Unit_Price, 2) }}</td>
-                                                <td>{{ number_format($row->Total_Line_Discount, 2) }}</td>
-                                                <td>{{ number_format($row->Total_Net_Value, 2) }}</td>
-                                                <td>{{ number_format($row->Total_Invoice_Amount, 2) }}</td>
-                                                <td>{{ number_format($row->Total_Invoice_Discount, 2) }}</td>
-                                                <td>{{ number_format($row->Total_Invoice_Net_Amount, 2) }}</td>
+                                                <td class="text-end">{{ $row->Total_Qty }}</td>
+                                                <td class="text-end">{{ $row->Total_Free }}</td>
+                                                <td class="text-end">{{ number_format($row->Avg_Unit_Price, 2) }}</td>
+                                                <td class="text-end">{{ number_format($row->Total_Line_Discount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($row->Total_Net_Value, 2) }}</td>
+                                                <td class="text-end">{{ number_format($row->Total_Invoice_Amount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($row->Total_Invoice_Discount, 2) }}</td>
+                                                <td class="text-end">{{ number_format($row->Total_Invoice_Net_Amount, 2) }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -136,7 +136,7 @@
     $(document).ready(function () {
         var salesmanTable = $('#t_redeem_sums').DataTable({
             dom: 'Bfrtip',
-            buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
+            buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5'],
             pageLength: 15,
             lengthChange: false,
         });
@@ -146,18 +146,11 @@
     });
 
     function printTablefun() {
-        let printContent = document.getElementById("t_redeem_sums").outerHTML;
-        let newWin = window.open("");
-        newWin.document.write("<html><head><title>Print</title>");
-        newWin.document.write("<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'>");
-        newWin.document.write("</head><body>");
-        newWin.document.write(printContent);
-        newWin.document.write("</body></html>");
-        newWin.print();
-        newWin.close();
+        window.stockReportPrintTables(['#t_redeem_sums']);
     }
 </script>
 
+<x-report-print-config title="Salesman Invoice Report" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel" />
 </body>
 @endsection
 

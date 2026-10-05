@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TWithoutVatSalesDetails;
 use App\Models\Item;
+use App\Models\Company;
+use App\Models\branchDel;
 use Illuminate\Support\Facades\DB;
 
 
@@ -81,7 +83,9 @@ public function index(Request $request)
         "totalDiscount" => number_format($sumDiscount, 2),
         "totalNetAmount" => number_format($sumNetAmount, 2),
         "totalPawn" => $totalPawn,
-        "totalProfit" => number_format($totalProfit, 2)
+        "totalProfit" => number_format($totalProfit, 2),
+        "companyData" => Company::latest()->first(),
+        "branchDel" => branchDel::where('bccode', $branch_code)->first(),
     ]);
 }
 

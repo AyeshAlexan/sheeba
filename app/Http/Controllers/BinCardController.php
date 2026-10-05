@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\TItemMovement;
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Company;
+use App\Models\branchDel;
 use Illuminate\Support\Facades\DB;
 
 class BinCardController extends Controller
@@ -85,6 +87,63 @@ class BinCardController extends Controller
             ->with("quain", $quain)
             ->with("quaout", $quaout)
             ->with("balance", $balance);
+    }
+
+    public function print(Request $request)
+    {
+        $branch_code = auth()->user()->BC;
+
+        $request->validate([
+            'to_date'   => 'required',
+            'item_code' => 'required',
+        ]);
+
+        $fromDate = $request->from_date;
+        $toDate   = $request->to_date;
+        $itemCode = $request->item_code;
+        $itemName = $request->item_description;
+
+        $stockTransferDetails = DB::select("
+            SELECT
+                im.dDate,
+                im.trans_no,
+                im.trans_code,
+                im.item_code,
+                im.trans_code,
+                it.Item_description AS item_name,
+                im.qun_in,
+                im.qun_out,
+                COALESCE(s.Invoice_no, r.Invoice_no)       AS invoice_no,
+                COALESCE(s.Customer_NIC, r.Customer_NIC)   AS customer_code,
+                COALESCE(s.Customer_Name, r.Customer_Name) AS customer_name
+            FROM t_item_movements im
+            LEFT JOIN items it
+                ON it.Item_code = im.item_code
+            LEFT JOIN t_without_vat_sales_sums s
+                ON s.Invoice_no = im.trans_no AND im.trans_code = 'SALES_OUT_VAT'
+            LEFT JOIN t_sales_return_sums r
+                ON r.Invoice_no = im.trans_no AND im.trans_code = 'SPN'
+            WHERE im.dDate BETWEEN ? AND ?
+                AND im.bc = ?
+                AND im.item_code = ?
+            ORDER BY im.dDate
+        ", [$fromDate, $toDate, $branch_code, $itemCode]);
+
+        $quain   = collect($stockTransferDetails)->sum('qun_in');
+        $quaout  = collect($stockTransferDetails)->sum('qun_out');
+        $balance = $quain - $quaout;
+
+        return view('reports.print.bin-card', [
+            'stockDetails' => $stockTransferDetails,
+            'fromDate'     => $fromDate,
+            'toDate'       => $toDate,
+            'itemName'     => $itemName,
+            'quain'        => $quain,
+            'quaout'       => $quaout,
+            'balance'      => $balance,
+            'companyData'  => Company::latest()->first(),
+            'branchDel'    => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 
     /**

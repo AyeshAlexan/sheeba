@@ -49,7 +49,10 @@ class SalereportController extends Controller
             'totalCashPay',
             'totalCredite',
             'totalCheque'
-        ));
+        ))->with([
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 
     public function printInvoice(Request $request)
@@ -129,6 +132,8 @@ class SalereportController extends Controller
         return view('reports.customer_wish_report', [
             'reportData' => $reportData,
             'currentNic' => $search,
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', auth()->user()->BC)->first(),
         ]);
     }
 }
