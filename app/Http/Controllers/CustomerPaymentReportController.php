@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TCustomerPayment;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class CustomerPaymentReportController extends Controller
 {
@@ -48,6 +50,27 @@ class CustomerPaymentReportController extends Controller
             ->with("toDate", $toDate)
             ->with("customer", $customer)
             ->with("paymentDetails", $SPayments);
+    }
+
+    public function print(Request $request)
+    {
+        $branch_code = auth()->user()->BC;
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $customer = $request->input('customer');
+
+        $SPayments = TCustomerPayment::where('BC', $branch_code)
+            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('Payment_date', [$fromDate, $toDate]))
+            ->when($customer, fn ($q) => $q->where('Customer_Code', $customer))
+            ->get();
+
+        return view('reports.print.customer-payment', [
+            'paymentDetails' => $SPayments,
+            'fromDate'       => $fromDate,
+            'toDate'         => $toDate,
+            'companyData'    => Company::latest()->first(),
+            'branchDel'      => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 
     /**

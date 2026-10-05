@@ -1,4 +1,4 @@
-<x-report-print title="Stock Details Report" :fromDate="$fromDate" :toDate="$toDate" :landscape="true">
+<x-report-print title="Stock Details Report" :fromDate="$fromDate" :toDate="$toDate" :landscape="true" :companyData="$companyData" :branchDel="$branchDel">
     <table class="rp-wide-table">
         <thead>
             <tr>

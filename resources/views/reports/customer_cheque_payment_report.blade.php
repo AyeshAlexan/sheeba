@@ -687,7 +687,7 @@
             <button type="submit" class="btn btn-primary">
                 <i class="fa-solid fa-magnifying-glass"></i> Search
             </button>
-            <button type="button" class="btn btn-success" onclick="window.print()">
+            <button type="button" class="btn btn-success" onclick="printTablefun()">
                 <i class="fa-solid fa-print"></i> Print
             </button>
             <a href="{{ route('home') }}" class="btn btn-neutral">
@@ -1068,6 +1068,11 @@ function resetAction(){
     if (!toDateInput.value) {
         var dateObj = new Date();
         toDateInput.value = dateObj.toISOString().slice(0, 10);
+    }
+
+    function printTablefun() {
+        var params = $('.filter-form').serialize();
+        window.open('{{ route('customer_cheque_payment_report.print') }}?' + params, '_blank');
     }
 </script>
 

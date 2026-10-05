@@ -97,7 +97,7 @@
                                     <button type="submit" id="submit_1">
                                         Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
                                     </button>
-                                    <button onclick="printTablefun()">
+                                    <button type="button" onclick="printTablefun()">
                                         <strong> Print &nbsp;</strong><i class="fa-solid fa-print"></i>
                                     </button>
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -245,12 +245,9 @@
 
 <script>
     function printTablefun() {
-
-        var divToPrint = document.getElementById("t_item_movements");
-        newWin = window.open("");
-        newWin.document.write(divToPrint.outerHTML);
-        newWin.print();
-        newWin.close();
+        var params = $('form[action="{{ route('customer_payment_report_by_date') }}"]').serialize();
+        window.open('{{ route('customer_payment_report.print') }}?' + params, '_blank');
+        return false;
     }
 
 </script>

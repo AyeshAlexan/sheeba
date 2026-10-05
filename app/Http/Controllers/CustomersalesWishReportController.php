@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TInvoiceSum;
 use App\Models\Customer;
+use App\Models\Company;
+use App\Models\branchDel;
 
 
 class CustomersalesWishReportController extends Controller
@@ -68,7 +70,32 @@ class CustomersalesWishReportController extends Controller
         
     }
 
- 
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $Customer = $request->input('Customer');
+        $branch_code = auth()->user()->BC;
+
+        $invoice = TInvoiceSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
+                    ->when($Customer, fn ($q) => $q->where('Customer_NIC', $Customer))
+                    ->where('BC', $branch_code)
+                    ->get();
+
+        return view('reports.print.customer-wish-sale', [
+            'invoice'          => $invoice,
+            'fromDate'         => $fromDate,
+            'toDate'           => $toDate,
+            'totalGrossAmount' => number_format($invoice->sum('Gross_Amount'), 2),
+            'totalDiscount'    => number_format($invoice->sum('Discount'), 2),
+            'totalNetAmount'   => number_format($invoice->sum('Net_Amount'), 2),
+            'totalCashPay'     => number_format($invoice->sum('Cash_Pay'), 2),
+            'totalCredite'     => number_format($invoice->sum('Credite'), 2),
+            'totalCheque'      => number_format($invoice->sum('Cheque'), 2),
+            'companyData'      => Company::latest()->first(),
+            'branchDel'        => branchDel::where('bccode', $branch_code)->first(),
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.

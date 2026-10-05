@@ -120,7 +120,7 @@
 <body>
 
         <h2>Customer Account Report</h2>
-    <form action="" method="get">
+    <form action="" method="get" id="custAccountFilterForm">
 <select name="customer" id="customer" class="form-control">
     <option value="">-- Select Customer --</option>
     @foreach($Customerdata as $customer)
@@ -140,7 +140,8 @@
         <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}">
 
         <button type="submit">Search</button>
-        <button><a href="{{ ('home') }}">Back</a></button>
+        <button type="button" onclick="printTablefun()">Print</button>
+        <button type="button"><a href="{{ route('home') }}">Back</a></button>
     </form>
 
 
@@ -208,7 +209,6 @@
             lengthMenu: [[100, 250, 500, -1], [100, 250, 500, "All"]],
             pageLength: -1, // default "All" rows
             buttons: [
-                { extend: 'print', text: '🖨 Print' },
                 { extend: 'excel', text: '📊 Excel' },
                 { extend: 'csv', text: '📑 CSV' },
                 { extend: 'pdf', text: '📄 PDF' },
@@ -222,6 +222,11 @@
             $('#to_date').val(today);
         }
     });
+
+    function printTablefun() {
+        var params = $('#custAccountFilterForm').serialize();
+        window.open('{{ route('Cust_Transferreport.print') }}?' + params, '_blank');
+    }
 </script>
 
 

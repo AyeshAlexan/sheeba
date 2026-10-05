@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\TCusSaleTrance;
 use App\Models\Customer;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class CustomerBalanceReportController extends Controller
 {
@@ -46,5 +48,42 @@ class CustomerBalanceReportController extends Controller
         ->with("fromDate", $fromDate)
         ->with("toDate", $toDate)
        ;
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $customerCode = $request->input('customer');
+        $branchCode = auth()->user()->BC;
+
+        $query = TCusSaleTrance::select(
+            't_cus_sale_trances.customer',
+            DB::raw('SUM(t_cus_sale_trances.dr_amount) as total_dr_amount'),
+            DB::raw('SUM(t_cus_sale_trances.cr_amount) as total_cr_amount'),
+            'customers.Code',
+            'customers.First_name'
+        )
+        ->join('customers', 'customers.Code', '=', 't_cus_sale_trances.customer')
+        ->groupBy('t_cus_sale_trances.customer', 'customers.Code', 'customers.First_name');
+
+        if ($fromDate && $toDate && $customerCode) {
+            $query->whereBetween('dDate', [$fromDate, $toDate])
+                  ->where('t_cus_sale_trances.customer', $customerCode);
+        } elseif ($fromDate && $toDate) {
+            $query->whereBetween('dDate', [$fromDate, $toDate]);
+        } elseif ($customerCode) {
+            $query->where('t_cus_sale_trances.customer', $customerCode);
+        }
+
+        $customer_details = $query->get();
+
+        return view('reports.print.customer-balance', [
+            'customerData' => $customer_details,
+            'fromDate'     => $fromDate,
+            'toDate'       => $toDate,
+            'companyData'  => Company::latest()->first(),
+            'branchDel'    => branchDel::where('bccode', $branchCode)->first(),
+        ]);
     }
 }

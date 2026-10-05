@@ -1,4 +1,4 @@
-<x-report-print title="Stock In Hand" :fromDate="$fromDate" :toDate="$toDate">
+<x-report-print title="Stock In Hand" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel">
     <table>
         <thead>
             <tr>

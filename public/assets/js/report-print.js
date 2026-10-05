@@ -20,7 +20,8 @@
             'Sales Summary',
             'Salesman Invoice Report',
             'Salesman Total Invoice Report',
-            'Stock Details Report'
+            'Stock Details Report',
+            'Customer Details Report'
         ].indexOf(options.title) !== -1) {
             body.classList.add('rp-wide-report');
         }

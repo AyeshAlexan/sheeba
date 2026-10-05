@@ -184,12 +184,8 @@
 
 <script>
     function printTablefun() {
-
-        var divToPrint = document.getElementById("t_invoice_sums");
-        newWin = window.open("");
-        newWin.document.write(divToPrint.outerHTML);
-        newWin.print();
-        newWin.close();
+        var params = $('form[action=""]').serialize();
+        window.open('{{ route('customersalesWishReport.print') }}?' + params, '_blank');
     }
 
 </script>

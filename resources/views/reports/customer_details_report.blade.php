@@ -1,221 +1,149 @@
+@extends('layouts.topnavbar')
+@extends('layouts.sidebar')
+@section('content')
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Customer Details Report</title>
-
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
+        #customerDetailsTable thead th {
+            color: var(--tr-text-secondary);
+            background: var(--tr-bg);
+            font-size: 11.5px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
         }
-
-        th,
-        td {
-            border: 1px solid rgb(8, 8, 8);
-            padding: 5px;
-        }
-
-        .styled-table {
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 0.9em;
-            font-family: sans-serif;
-            min-width: 400px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .styled-table thead tr {
-            background-color: #009879;
-            color: #ffffff;
-            text-align: left;
-        }
-
-        .styled-table th,
-        .styled-table td {
-            padding: 12px 15px;
-        }
-
-        .styled-table tbody tr {
-            border-bottom: 1px solid #dddddd;
-        }
-
-        .styled-table tbody tr:nth-of-type(even) {
-            background-color: #f3f3f3;
-        }
-
-        .styled-table tbody tr:last-of-type {
-            border-bottom: 2px solid #009879;
-        }
-
+        #customerDetailsTable tbody tr:hover { background: var(--tr-blue-light); }
+        #customerDetailsTable td:nth-child(5) { min-width: 220px; white-space: normal; }
+        #customerDetailsTable_wrapper .dataTables_filter { display: none; }
+        #customerDetailsTable_wrapper .dataTables_length,
+        #customerDetailsTable_wrapper .dataTables_info,
+        #customerDetailsTable_wrapper .dataTables_paginate { display: none !important; }
     </style>
-
 </head>
-
 <body>
-    {{-- <div class="card shadow p-3 mb-3 bg-body-tertiary rounded" > --}}
-    <div class="d-flex justify-content-center profile-container">
-        <div class='col-md-6 text-center sort-profile' id='sort-profile'>
-            <div class='row'>
-                <div class='col-md-6 text-center'><br />
-                    @if ($errors->any())
-                    <div class="alert alert-danger text-center" role="alert">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <ul>{{ $error }}</ul>
-                            @endforeach
-                        </ul>
+    <div class="main-wrapper">
+        <div class="page-wrapper">
+            <div class="content container-fluid">
+                <div class="page-header ph-flex">
+                    <div class="ph-left">
+                        <div class="ph-icon">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="page-title">Customer Details Report</h3>
+                            <p class="page-subtitle">Customer contact and identification details.</p>
+                        </div>
                     </div>
-                    @endif
+                    <button type="button" class="btn btn-outline-secondary" onclick="printCustomerDetailsReport()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
 
-                    <div styel="background-color: yellow;">
-                        <div styel="background-color: yellow;">
-
-                            <h2 style="text-align:center; background-color:rgb(113, 105, 255);"><b>Customer Details Report</b></h2>
-                            <hr />
-                        </div>
-
-                        <div style="display: flex; text-align: center;">
-                            {{-- <div style="flex: 20%;">
-
-                            </div> --}}
-                            <div style="flex: 60%; align-content: center;">
-                                <form action="" method="GET">
-                                    @csrf
-                                    <label for="date">From Date :</label>
-                                    <input type="date" name="from_date" id="from_date">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <label for="date">To Date :</label>
-                                    <input type="date" name="to_date" id="to_date">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <button type="submit" id="submit_1">
-                                        Submit &nbsp;<i class="fa-solid fa-magnifying-glass"></i>
-                                    </button>
-                                    <button onclick="printTablefun()">
-                                        <strong> Print &nbsp;</strong><i class="fa-solid fa-print"></i>
-                                    </button>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <Button class="d-inline p-2 text-bg-primary">
-                                        <a href="{{route("home")}}">
-                                            Back
-                                        </a>
-                                        <i class="fa-solid fa-house"></i>
-                                    </Button>
-                                </form>
-                            </div>
-                            {{-- <div style="flex: 20%; align-content: center;">
-                                <button onclick="printTablefun()">Print</button>
-                            </div> --}}
-                        </div>
-
-                        <br>
-                        <table class="display" id="t_item_movements"
-                            style="background-color: transparent; margin-top:15px;">
-
-                            @if($fromDate && $toDate)
-                                <caption style="font-size: 18px; font-weight: bold;">
-                                    Customer Details Report&nbsp;&nbsp;&nbsp;&nbsp;From: {{$fromDate}}&nbsp;&nbsp;To: {{$toDate}}
-                                <caption>
-                            @endif
-
-                            <thead class="styled-table">
-                                <th >Code</th>
-                                <th >NIC</th>
-                                <th >Name</th>
-                                <th >Gender</th>
-                                <th >Address</th>
-                                <th >Contact</th>
-                                <th >Email</th>
-                                <th >Driving_license</th>
-                                <th >Passport</th>
-                            </thead>
-                            <tbody>
-
-                                @foreach ( $customers as $key=>$data)
-                                <tr>
-                                    <td>{{$data->Code}}</td>
-                                    <td>{{$data->NIC}}</td>
-                                    <td>{{$data->Title }} {{$data->First_name}} {{$data->Middle_name }} {{$data->Last_name }}</td>
-                                    <td>{{$data->Gender}}</td>
-                                    <td>{{$data->Address_1}}</td>
-                                    <td>{{$data->Contact_1}}</td>
-                                    <td>{{$data->Email}}</td>
-                                    <td>{{$data->Driving_license}}</td>
-                                    <td>{{$data->Passport}}</td>
-                                </tr>
+                <div class="card">
+                    <div class="card-body">
+                        @if ($errors->any())
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
                                 @endforeach
-                            </tbody>
-                        </table>
+                            </ul>
+                        </div>
+                        @endif
+
+                        <form action="" method="GET" class="row g-2 mb-3 align-items-end">
+                            <div class="col-md-3">
+                                <label for="from_date" class="form-label mb-0 small">From Date</label>
+                                <input type="date" name="from_date" id="from_date" class="form-control" value="{{ $fromDate }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="to_date" class="form-label mb-0 small">To Date</label>
+                                <input type="date" name="to_date" id="to_date" class="form-control" value="{{ $toDate }}">
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-outline-secondary"><i class="fas fa-filter"></i> Filter</button>
+                                <a href="{{ route('get_customer_details_report') }}" class="btn btn-outline-secondary"><i class="fas fa-undo"></i> Clear</a>
+                            </div>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="customerDetailsTable" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>NIC</th>
+                                        <th>Name</th>
+                                        <th>Gender</th>
+                                        <th>Address</th>
+                                        <th>Contact</th>
+                                        <th>Email</th>
+                                        <th>Driving License</th>
+                                        <th>Passport</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($customers as $customer)
+                                    <tr>
+                                        <td>{{ $customer->Code }}</td>
+                                        <td>{{ $customer->NIC }}</td>
+                                        <td>{{ trim($customer->Title . ' ' . $customer->First_name . ' ' . $customer->Middle_name . ' ' . $customer->Last_name) }}</td>
+                                        <td>{{ $customer->Gender }}</td>
+                                        <td>{{ $customer->Address_1 }}</td>
+                                        <td>{{ $customer->Contact_1 }}</td>
+                                        <td>{{ $customer->Email }}</td>
+                                        <td>{{ $customer->Driving_license }}</td>
+                                        <td>{{ $customer->Passport }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr><td colspan="9" class="text-center text-muted">No customers found.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            <div id="customerDetailsCustomPager"></div>
+                        </div>
                     </div>
                 </div>
             </div>
+            @include('layouts.footer')
         </div>
     </div>
 
-</body>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-<script type="text/javascript" charset="utf8"
-    src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js">
-</script>
-<script type="text/javascript" charset="utf8"
-    src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js">
-</script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js">
-</script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js">
-</script>
-<script>
-    jQuery(document).ready(function ($) {
-        $('#t_item_movements').DataTable( //database table name
-            {
+    <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="{{ asset('assets/js/dt-custom-pager.js') }}"></script>
+    <script src="{{ asset('assets/js/script.js') }}"></script>
+    <script>
+        jQuery(function ($) {
+            var customerDetailsTable = $('#customerDetailsTable').DataTable({
                 dom: 'Bfrtip',
-                "paging": false,
-                buttons: [
-                    'copy',
-                    'excel',
-                    'csv',
-                    'pdf',
-                    // 'print',
-                ],
-            }
-        );
+                buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5'],
+                pageLength: 15,
+                lengthChange: false,
+                language: { emptyTable: 'No customers found.' }
+            });
 
-    });
+            $('#customerDetailsTable_wrapper').addClass('dt-collapsed');
+            DTCustomPager.init(customerDetailsTable, '#customerDetailsCustomPager');
+        });
 
-</script>
-
-
-
-
-<script>
-    function printTablefun() {
-
-        var divToPrint = document.getElementById("t_item_movements");
-        newWin = window.open("");
-        newWin.document.write(divToPrint.outerHTML);
-        newWin.print();
-        newWin.close();
-    }
-
-</script>
-
-<script>
-    var dateObj = new Date();
-    document.getElementById('to_date').value = dateObj.toISOString().slice(0, 10);
-
-</script>
-
+        function printCustomerDetailsReport() {
+            var params = $('form[action=""]').serialize();
+            window.open('{{ route('get_customer_details_report.print') }}?' + params, '_blank');
+        }
+    </script>
+</body>
+@endsection
 </html>

@@ -1,4 +1,4 @@
-<x-report-print title="Item Details Report">
+<x-report-print title="Item Details Report" :companyData="$companyData" :branchDel="$branchDel">
     <table>
         <thead>
             <tr>

@@ -85,7 +85,11 @@
       "Bash(php -l app/Http/Controllers/BinCardController.php)",
       "Bash(php -l app/Http/Controllers/ZerostockreportController.php)",
       "Bash(php -l app/Http/Controllers/StockTransferController.php)",
-      "Bash(php -l app/Http/Controllers/StockDetailsReportController.php)"
+      "Bash(php -l app/Http/Controllers/StockDetailsReportController.php)",
+      "Bash(grep -n \"use App\\\\\\\\\\\\\\\\Models\\\\|class CustomerController\\\\|function customerDetailsReportIndex\" app/Http/Controllers/CustomerController.php)",
+      "Bash(php -l app/Http/Controllers/CustomerPaymentReportController.php)",
+      "Bash(grep -n \"jquery\\\\|</script>\\\\s*$\" resources/views/reports/customer_cheque_payment_report.blade.php)",
+      "Bash(php -l app/Http/Controllers/CustomerChequePaymentReportController.php)"
     ]
   }
 }

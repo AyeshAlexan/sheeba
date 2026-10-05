@@ -7,6 +7,8 @@ use App\Models\Item;
 use App\Models\MRoute;
 use App\Models\TAdvancCusPayment;
 use App\Models\TCusSaleTrance;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class CustomerController extends Controller
 {
@@ -305,19 +307,33 @@ class CustomerController extends Controller
     
        public function customerDetailsReportIndex(Request $request){
 
-        $branch_code = auth()->user()->BC;
         $customers = Customer::all();
-
-        $fromDate="";
-        $toDate ="";
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
 
         return view('reports.customer_details_report')
         ->with("fromDate", $fromDate)
         ->with("toDate", $toDate)
-        ->with("customers", $customers);
+        ->with("customers", $customers)
+        ->with("companyData", Company::latest()->first())
+        ->with("branchDel", branchDel::where('bccode', $branch_code)->first());
     }
-    
-    
+
+    public function printCustomerDetailsReport(Request $request)
+    {
+        $branch_code = auth()->user()->BC;
+
+        return view('reports.print.customer-details', [
+            'customers'   => Customer::all(),
+            'fromDate'    => $request->input('from_date'),
+            'toDate'      => $request->input('to_date'),
+            'companyData' => Company::latest()->first(),
+            'branchDel'   => branchDel::where('bccode', $branch_code)->first(),
+        ]);
+    }
+
+
            public function getReturnCustomer(Request $request)
 {
     $nic = $request->search_string;

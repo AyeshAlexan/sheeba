@@ -147,11 +147,8 @@
     });
 
     function printTablefun() {
-        var divToPrint = document.getElementById("t_item_movements");
-        var newWin = window.open("");
-        newWin.document.write(divToPrint.outerHTML);
-        newWin.print();
-        newWin.close();
+        var params = $('form[action="{{ route('customer_balance_report') }}"]').serialize();
+        window.open('{{ route('customer_balance_report.print') }}?' + params, '_blank');
     }
 
     var dateObj = new Date();

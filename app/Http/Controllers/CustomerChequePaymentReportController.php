@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\TCusCheque;
 use App\Models\TCusSaleTrance;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class CustomerChequePaymentReportController extends Controller
 {
@@ -24,6 +26,29 @@ class CustomerChequePaymentReportController extends Controller
             ->get();
 
         return view('reports.customer_cheque_payment_report', compact('receipts', 'fromDate', 'toDate', 'customer'));
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate   = $request->input('from_date');
+        $toDate     = $request->input('to_date');
+        $customer   = $request->input('customer');
+        $branchCode = auth()->user()->BC;
+
+        $receipts = TCusCheque::query()
+            ->where('bc', $branchCode)
+            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween('release_date', [$fromDate, $toDate]))
+            ->when($customer, fn ($q) => $q->where('customer', $customer))
+            ->orderBy('release_date')
+            ->get();
+
+        return view('reports.print.customer-cheque-payment', [
+            'receipts'    => $receipts,
+            'fromDate'    => $fromDate,
+            'toDate'      => $toDate,
+            'companyData' => Company::latest()->first(),
+            'branchDel'   => branchDel::where('bccode', $branchCode)->first(),
+        ]);
     }
 
     public function cashReceived(Request $request)

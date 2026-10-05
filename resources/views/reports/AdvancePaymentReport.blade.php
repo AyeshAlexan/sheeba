@@ -38,10 +38,11 @@
         <div class="report-card">
             <div class="report-topbar">
                 <h1 class="report-title"><i class="fa-solid fa-file-lines"></i> Advance Payment Report</h1>
+                <button type="button" class="btn btn-primary" onclick="printTablefun()"><i class="fa-solid fa-print"></i> Print</button>
                 <a href="{{ route('home') }}" class="btn btn-back"><i class="fa-solid fa-house"></i> Back</a>
             </div>
 
-            <form action="" method="get" class="report-filters">
+            <form action="" method="get" class="report-filters" id="advancePaymentFilterForm">
                 <div class="field">
                     <label for="from_date">From Date</label>
                     <input type="date" name="from_date" id="from_date" value="{{ request('from_date') }}">
@@ -142,9 +143,6 @@ jQuery(document).ready(function($) {
                 'excel',
                 'csv',
                 'pdf',
-                'print',
-
-
             ],
         }
     );
@@ -159,6 +157,10 @@ jQuery(document).ready(function($) {
         toDateInput.value = dateObj.toISOString().slice(0, 10);
     }
 
+    function printTablefun() {
+        var params = $('#advancePaymentFilterForm').serialize();
+        window.open('{{ route('AdvancePaymentReport.print') }}?' + params, '_blank');
+    }
 </script>
 
 </html>

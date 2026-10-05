@@ -725,6 +725,7 @@ Route::get('/CashTransferreport', [App\Http\Controllers\CashTransferreportContro
 
 //Cust_Transferreport
 Route::get('/Cust_Transferreport', [App\Http\Controllers\Cust_TransferreportController::class,'index'])->name('Cust_Transferreport');
+Route::get('/Cust_Transferreport/print', [App\Http\Controllers\Cust_TransferreportController::class,'print'])->middleware('auth')->name('Cust_Transferreport.print');
 
 
 //Show Customer Payment
@@ -749,6 +750,7 @@ Route::get('/filter_stock_by_FilterStoctValuation', [App\Http\Controllers\Stockv
 
 //AdvancePaymentReport
 Route::get('/AdvancePaymentReport', [App\Http\Controllers\AdvancePaymentReportController::class, 'index'])->name('AdvancePaymentReport');
+Route::get('/AdvancePaymentReport/print', [App\Http\Controllers\AdvancePaymentReportController::class, 'print'])->middleware('auth')->name('AdvancePaymentReport.print');
 
 
 
@@ -782,8 +784,10 @@ Route::get('/find_opening_stock_store_data', [App\Http\Controllers\OpeningStockC
 Route::get('/customer_payment_report', [App\Http\Controllers\CustomerPaymentReportController::class, 'index'])->name('customer_payment_report');
 //supplyer_payment_report_by_date
 Route::get('/customer_payment_report_by_date', [App\Http\Controllers\CustomerPaymentReportController::class, 'filter'])->name('customer_payment_report_by_date');
+Route::get('/customer_payment_report/print', [App\Http\Controllers\CustomerPaymentReportController::class, 'print'])->middleware('auth')->name('customer_payment_report.print');
 //supplyer_cheque_payment_report
 Route::get('/customer_cheque_payment_report', [App\Http\Controllers\CustomerChequePaymentReportController::class, 'index'])->name('customer_cheque_payment_report');
+Route::get('/customer_cheque_payment_report/print', [App\Http\Controllers\CustomerChequePaymentReportController::class, 'print'])->middleware('auth')->name('customer_cheque_payment_report.print');
 //salesman_loding_report
 Route::get('/sales_loding_report', [App\Http\Controllers\SalesLodingReport::class, 'index'])->name('sales_loding_report');
 
@@ -848,6 +852,7 @@ Route::delete('/Sales-invoice/delete/{invoiceNo}', [App\Http\Controllers\RecallE
 
 //get_customer_details_report
 Route::get('/get_customer_details_report', [App\Http\Controllers\CustomerController::class, 'customerDetailsReportIndex'])->name('get_customer_details_report');
+Route::get('/get_customer_details_report/print', [App\Http\Controllers\CustomerController::class, 'printCustomerDetailsReport'])->middleware('auth')->name('get_customer_details_report.print');
 
 //customer_account_report
 Route::get('/customer_account_report', [App\Http\Controllers\CustomerAccountReportController::class,'index'])->name('customer_account_report');
@@ -855,9 +860,11 @@ Route::get('/customer_account_report', [App\Http\Controllers\CustomerAccountRepo
 Route::get('reports.paymentvoucherreport', [App\Http\Controllers\PaymentVoucherReportController::class,'index'])->name('paymentvoucherreport');
 
 Route::get('/customersalesWishReport', [App\Http\Controllers\CustomersalesWishReportController::class, 'index'])->name('customersalesWishReport');
+Route::get('/customersalesWishReport/print', [App\Http\Controllers\CustomersalesWishReportController::class, 'print'])->middleware('auth')->name('customersalesWishReport.print');
 
 //customer_balance_report
 Route::get('/customer_balance_report', [App\Http\Controllers\CustomerBalanceReportController::class, 'index'])->name('customer_balance_report');
+Route::get('/customer_balance_report/print', [App\Http\Controllers\CustomerBalanceReportController::class, 'print'])->middleware('auth')->name('customer_balance_report.print');
 
 
 Route::get('/reports.salesman_invoice_report', [App\Http\Controllers\MSalesmanController::class, 'SalesmanInvoiceReport'])->name('reports.salesman_invoice_report');

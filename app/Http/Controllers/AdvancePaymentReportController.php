@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TAdvancCusPayment;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class AdvancePaymentReportController extends Controller
 {
@@ -65,5 +67,25 @@ class AdvancePaymentReportController extends Controller
         // -> with("net_amount", $totalnet_amount)
         // -> with("cash_payment", $totalcash_payment);
 
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
+
+        $invoice = TAdvancCusPayment::when($fromDate && $toDate, fn ($q) => $q->whereBetween('date', [$fromDate, $toDate]))
+                    ->where('bc', $branch_code)
+                    ->get();
+
+        return view('reports.print.advance-payment', [
+            'invoice'     => $invoice,
+            'fromDate'    => $fromDate,
+            'toDate'      => $toDate,
+            'amount'      => number_format($invoice->sum('amount'), 2),
+            'companyData' => Company::latest()->first(),
+            'branchDel'   => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 }

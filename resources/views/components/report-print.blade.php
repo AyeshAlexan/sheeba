@@ -1,4 +1,4 @@
-@props(['title', 'fromDate' => null, 'toDate' => null, 'landscape' => false])
+@props(['title', 'fromDate' => null, 'toDate' => null, 'landscape' => false, 'companyData' => null, 'branchDel' => null])
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,4 +1,4 @@
-<x-report-print title="Bin Card{{ $itemName ? ' — ' . $itemName : '' }}" :fromDate="$fromDate" :toDate="$toDate">
+<x-report-print title="Bin Card{{ $itemName ? ' — ' . $itemName : '' }}" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel">
     <table>
         <thead>
             <tr>
