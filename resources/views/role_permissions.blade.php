@@ -68,6 +68,19 @@
                 .rp-card-top{ display:flex; align-items:flex-start; gap:10px; }
                 .rp-card-label{ font-weight:600; font-size:13.5px; color:var(--tr-navy); }
 
+                .rp-card-actions{
+                    display:flex; flex-wrap:wrap; gap:6px 10px; margin-top:10px; padding-top:10px;
+                    border-top:1px solid var(--tr-border);
+                }
+                .rp-action-pill{
+                    display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600;
+                    color:var(--tr-text-secondary); cursor:pointer;
+                }
+                .rp-action-pill input{ accent-color:var(--tr-success); cursor:pointer; }
+                .rp-action-pill input:disabled{ cursor:not-allowed; }
+                .rp-card.checked .rp-action-pill{ color:var(--tr-navy); }
+                .rp-card:not(.checked) .rp-card-actions{ opacity:.5; }
+
                 .rp-pane{ display:none; }
                 .rp-pane.active{ display:block; }
 
@@ -130,13 +143,31 @@
 
                                     <div class="rp-grid">
                                         @foreach($modules as $key => $label)
-                                        @php $isChecked = $enabledByRole[$role]->contains($key); @endphp
-                                        <label class="rp-card rp-module-card {{ $isChecked ? 'checked' : '' }}">
-                                            <div class="rp-card-top">
+                                        @php
+                                            $isChecked = $enabledByRole[$role]->contains($key);
+                                            $actionsForModule = $moduleActions[$key] ?? [];
+                                            $enabledActionsForModule = ($enabledActionsByRole[$role][$key] ?? collect());
+                                        @endphp
+                                        <div class="rp-card rp-module-card {{ $isChecked ? 'checked' : '' }}" data-module="{{ $key }}">
+                                            <label class="rp-card-top" style="cursor:pointer;">
                                                 <input type="checkbox" value="{{ $key }}" class="rp-module-checkbox" {{ $isChecked ? 'checked' : '' }}>
                                                 <div class="rp-card-label">{{ $label }}</div>
+                                            </label>
+                                            @if(count($actionsForModule))
+                                            <div class="rp-card-actions">
+                                                @foreach($actionsForModule as $action)
+                                                @php $actionChecked = $enabledActionsForModule->contains($action); @endphp
+                                                <label class="rp-action-pill">
+                                                    <input type="checkbox" value="{{ $action }}"
+                                                        class="rp-action-checkbox" data-module="{{ $key }}"
+                                                        {{ $actionChecked ? 'checked' : '' }}
+                                                        {{ $isChecked ? '' : 'disabled' }}>
+                                                    {{ ucfirst($action) }}
+                                                </label>
+                                                @endforeach
                                             </div>
-                                        </label>
+                                            @endif
+                                        </div>
                                         @endforeach
                                     </div>
 
@@ -174,7 +205,9 @@
 
                         $(document).on('change', '.rp-module-checkbox', function () {
                             var $pane = $(this).closest('.rp-pane');
-                            $(this).closest('.rp-module-card').toggleClass('checked', this.checked);
+                            var $card = $(this).closest('.rp-module-card');
+                            $card.toggleClass('checked', this.checked);
+                            $card.find('.rp-action-checkbox').prop('disabled', !this.checked);
                             syncAllToggle($pane);
                         });
 
@@ -192,11 +225,18 @@
                                 return this.value;
                             }).get();
 
+                            var actions = {};
+                            $pane.find('.rp-action-checkbox:checked').each(function () {
+                                var moduleKey = $(this).data('module');
+                                if (!actions[moduleKey]) actions[moduleKey] = [];
+                                actions[moduleKey].push(this.value);
+                            });
+
                             $btn.prop('disabled', true);
                             $.ajax({
                                 type: 'POST',
                                 url: "{{ route('role_permissions.save') }}",
-                                data: { role_name: role, modules: modules },
+                                data: { role_name: role, modules: modules, actions: actions },
                                 success: function () {
                                     $('.rp-tab[data-role-tab="' + role + '"] .rp-tab-count').text(modules.length);
 

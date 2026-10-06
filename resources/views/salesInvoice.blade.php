@@ -670,21 +670,25 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-md-10">
                                     <br>
+                                    @if(\App\Support\Permissions::canDo('sales', 'add'))
                                     <button type="submit" name="save" class="btn btn-success btn-lg shadow">
                                         <i class="fas fa-save"></i> Save
                                     </button>
+                                    @endif
 
+                                    @if(\App\Support\Permissions::canDo('sales', 'print'))
                                     <button type="button" name="print" class="btn btn-info btn-lg print_invoice shadow">
                                         <i class="fas fa-print"></i> Print
                                     </button>
+                                    @endif
 
-                                    @if(Auth::check() && (Auth::user()->role == 'Admin' || Auth::user()->role == 'developer'))
+                                    @if(\App\Support\Permissions::canDo('sales', 'delete'))
                                         <button type="button" class="btn btn-danger btn-lg shadow" id="deleteInvoice">
                                             <i class="fas fa-trash-alt"></i> Delete
                                         </button>
                                     @endif
 
-                                    @if(Auth::check() && (Auth::user()->role == 'Admin' || Auth::user()->role == 'developer'))
+                                    @if(\App\Support\Permissions::canDo('sales', 'edit'))
                                         <button type="button" id="saveInvoiceBtn" class="btn btn-primary btn-lg shadow">
                                             <i class="fas fa-edit"></i> Update
                                         </button>
