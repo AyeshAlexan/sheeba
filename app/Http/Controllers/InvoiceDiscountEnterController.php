@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TCusSaleTrance;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +14,9 @@ class InvoiceDiscountEnterController extends Controller
      */
     public function index()
     {
-        return view('invoiceDiscountEnter');
+        return view('invoiceDiscountEnter', [
+            'customerDetails' => Customer::all(),
+        ]);
     }
 
     /**

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TAccountTrans;
 use App\Models\DayEndBalance;
+use App\Models\Company;
+use App\Models\branchDel;
 use Carbon\Carbon;
 
 class CashInHandReportController extends Controller
@@ -79,6 +81,55 @@ class CashInHandReportController extends Controller
             'lastClosed',
             'totalCrAmountSum'
         ));
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate    = $request->input('from_date');
+        $toDate      = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
+
+        if (!$fromDate || !$toDate) {
+            $fromDate = now()->startOfMonth()->format('Y-m-d');
+            $toDate   = now()->endOfMonth()->format('Y-m-d');
+        }
+
+        $invoice = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-001')
+            ->where('BC', $branch_code)
+            ->orderBy('Ddate')
+            ->get();
+
+        $sumDrAmount = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-001')
+            ->where('BC', $branch_code)
+            ->sum('dr_amount');
+
+        $sumCrAmount = TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-001')
+            ->where('BC', $branch_code)
+            ->sum('cr_amount');
+
+        $totalCrAmount = number_format($sumCrAmount, 2);
+
+        $openingBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate);
+        $totalDrAmount  = number_format($sumDrAmount + $openingBalance, 2);
+
+        $balance            = ($openingBalance + $sumDrAmount) - $sumCrAmount;
+        $totalBalance       = number_format($balance, 2);
+        $openingBalanceFmt  = number_format($openingBalance, 2);
+
+        return view('reports.print.cash-in-hand', [
+            'invoice' => $invoice,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'totalDrAmount' => $totalDrAmount,
+            'totalCrAmount' => $totalCrAmount,
+            'totalBalance' => $totalBalance,
+            'openingBalanceFmt' => $openingBalanceFmt,
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 
     /**

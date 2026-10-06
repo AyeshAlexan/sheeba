@@ -229,7 +229,7 @@
         $('#TPaymentVoucher').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('sales_customer_payment') }}",
+            ajax: "{{ url('sales_advance_payment') }}",
             columns: [{
                     data: 'date',
                     name: 'date'

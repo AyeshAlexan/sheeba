@@ -75,47 +75,40 @@
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Add Store Details</h5>
+                                    <h5 class="modal-title" id="StoreModal">Add Bank</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-									<div class="card-body shadow p-3 mb-5 bg-body-tertiary rounded">
-                                    <form action="javascript:void(0)"  id="StoreForm" name="StoreForm" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                                    <form action="javascript:void(0)"  id="StoreForm" name="StoreForm" method="POST" enctype="multipart/form-data">
                                         <input type="hidden" name="id" id="id">
-                                        <div class="form-group">
-                                            <label for="name" class="control-label">Store Code</label>
-                                                <div class="col-sm-12">
-                                                <input type="number" class="form-control" id="code" name="code" placeholder="Enter a Store Code" maxlength="15" required="">
-                                            </div>
-                                        </div>  
-                                        <div class="form-group">
-                                            <label for="name" class="control-label">Store Name</label>
-                                                <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="description" name="description" placeholder="Enter a Store Name" maxlength="20" required="">
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="code" class="form-label">Bank Code</label>
+                                            <input type="number" class="form-control" id="code" name="code" placeholder="Enter a Bank Code" maxlength="15" required="">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Bank Name</label>
+                                            <input type="text" class="form-control" id="description" name="description" placeholder="Enter a Bank Name" maxlength="20" required="">
                                         </div>
 
-                                        <div class="row">
+                                        <div class="row g-2 mb-3">
                                             <div class="col-md-6">
+                                                <label class="form-label">Operator</label>
                                                 <input type="text" class="form-control" id="OC"
-                                                name="OC" placeholder="Enter a Department Name"
-                                                value="{{ Auth::user()->username}}" readonly>                                   
+                                                name="OC" placeholder="Operator"
+                                                value="{{ Auth::user()->username}}" readonly>
                                             </div>
-       
+
                                             <div class="col-md-6">
+                                                <label class="form-label">Branch</label>
                                                <input type="text" class="form-control" id="BC"
-                                               name="BC" placeholder="Enter a Department Name"
+                                               name="BC" placeholder="Branch"
                                                value="{{ Auth::user()->Branch}}" readonly>
                                            </div>
                                        </div>
-                                      
-                                        <div class="col-sm-offset-2 col-sm-10"><br/>
-                                            <button type="submit" class="btn btn-primary" id="btn-save">Save changes</button>
-                                        </div>
-                                    </form>
 
+                                        <button type="submit" class="btn btn-primary" id="btn-save">Save changes</button>
+                                    </form>
                                 </div>
-							</div>
                                 <div class="modal-footer"></div>
                             </div>
                         </div>

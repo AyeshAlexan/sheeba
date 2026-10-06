@@ -8,9 +8,10 @@ class Permissions
 {
     /**
      * Whether the logged-in user's role has a given module turned on.
-     * Admin always has full access. Any role/module combination with no
-     * matching row (including roles that don't exist in role_permissions
-     * at all) is denied — access is opt-in, not opt-out.
+     * Every role, including Admin, is governed by the role_permissions
+     * table — access is opt-in, not opt-out. Any role/module combination
+     * with no matching row (including roles that don't exist in
+     * role_permissions at all) is denied.
      */
     public static function can(string $moduleKey): bool
     {
@@ -21,10 +22,6 @@ class Permissions
         }
 
         $role = trim((string) $user->role);
-
-        if ($role === 'Admin') {
-            return true;
-        }
 
         // Role names in the userroles table sometimes carry stray
         // whitespace (e.g. "Operator "); compare trimmed on both sides

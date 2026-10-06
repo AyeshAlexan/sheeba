@@ -181,6 +181,7 @@
                             </tbody>
 
                             </table>
+                            <div id="stockAdjItemsCustomPager"></div>
                                 </div>
                             </div>
                             <div class="d-flex gap-2 mt-2">
@@ -216,13 +217,40 @@
 
 
     
-    {{-- filter item rows by code/description --}}
+    <script src="assets/js/dt-custom-pager.js"></script>
     <script>
-        $(document).on('keyup', '#stockItemSearch', function () {
-            let q = $(this).val().toLowerCase();
-            $('#stockAdjItemsTable tbody tr').each(function () {
-                let text = $(this).text().toLowerCase();
-                $(this).toggle(text.indexOf(q) !== -1);
+        $(document).ready(function () {
+            // The item code/description cells hold their data in readonly
+            // <input value="..."> attributes, not plain cell text, so
+            // DataTables' default text-based search would never match them —
+            // filter against the actual input values instead.
+            $.fn.dataTable.ext.search.push(function (settings, searchData, dataIndex, rowData, counter) {
+                if (settings.nTable.id !== 'stockAdjItemsTable') {
+                    return true;
+                }
+                var q = $('#stockItemSearch').val().toLowerCase();
+                if (!q) {
+                    return true;
+                }
+                var row = stockAdjItemsDt.row(dataIndex).node();
+                var itemCode = $(row).find('input[name="item_code[]"]').val() || '';
+                var itemDescription = $(row).find('input[name="item_description[]"]').val() || '';
+                return (itemCode + ' ' + itemDescription).toLowerCase().indexOf(q) !== -1;
+            });
+
+            var stockAdjItemsDt = $('#stockAdjItemsTable').DataTable({
+                dom: 't',
+                pageLength: 10,
+                lengthChange: false,
+                ordering: true,
+                info: false,
+            });
+
+            $('#stockAdjItemsTable_wrapper').addClass('dt-collapsed');
+            DTCustomPager.init(stockAdjItemsDt, '#stockAdjItemsCustomPager');
+
+            $(document).on('keyup', '#stockItemSearch', function () {
+                stockAdjItemsDt.draw();
             });
         });
     </script>

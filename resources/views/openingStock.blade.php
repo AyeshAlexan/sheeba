@@ -877,7 +877,7 @@
 
                         <td style="width:6%;">
                             <center>
-                                <button type="button" class="btn btn-outline-danger text-center shadow remove-input-field m-2"> <i class="far fa-trash-alt me-1"></i> Delete </button>
+                                <button type="button" class="btn btn-outline-danger shadow remove-input-field m-2" title="Delete"><i class="fas fa-trash"></i></button>
                             </center>
                         </td>
 

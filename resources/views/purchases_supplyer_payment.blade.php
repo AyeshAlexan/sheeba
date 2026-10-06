@@ -104,12 +104,18 @@
                                         <div class="stock-info-grid-3">
                                             <div class="si-field">
                                                 <label>Supplier <span class="text-danger">*</span></label>
-                                                <select class="form-control" id="supplier_code_select" name="supplier_code_select" required>
-                                                    <option value="">Select a Supplier</option>
-                                                    @foreach($supplier as $data)
-                                                        <option value="{{ $data->Code }}">{{ $data->Name }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <div class="stock-item-search-row">
+                                                    <div class="stock-item-search-wrap">
+                                                        <i class="fas fa-search"></i>
+                                                        <input type="text" id="supplier_code_select" name="supplier_code_select"
+                                                            class="form-control" placeholder="Enter Supplier Code"
+                                                            required aria-label="Supplier Code">
+                                                    </div>
+                                                    <button type="button" class="stock-item-search-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#addguarantor1Model" title="Search supplier">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                             <div class="si-field">
                                                 <label>Payment No.</label>
@@ -221,7 +227,7 @@
 
                                                     <div class="table-responsive">
                                                         <div class="table-data">
-                                                            <table class="table table-bordered table-center table-hover" id="multi_cheques_table">
+                                                            <table class="table table-bordered table-center table-hover" id="purchase_summary_table">
                                                                 <thead class="thead-light">
                                                                     <tr align="center">
                                                                         <th class="text-center">Purchase No</th>
@@ -381,13 +387,6 @@
                                                                 </div>
                                                             </div>
 
-                                                        {{-- dynamicAdded table --}}
-                                                        <div class="table-responsive">
-                                                            <div class="table-data">
-                                                            <table class="table table-bordered " id="dynamicAdded">
-                                                            </table>
-                                                            </div>
-                                                        </div>
 
                                                         {{-- table footer for total calculations --}}
                                                         <table class="table table-bordered" id="green_total_row">
@@ -422,6 +421,63 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="addguarantor1Model" tabindex="-1" role="dialog" aria-labelledby="addguarantor1Model" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title m-2" id="addguarantor1ModelLabel">Search Supplier</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-center table-hover" id="Guaranttableone">
+                                    <thead>
+                                        <tr class="table-secondary">
+                                            <th>Code</th>
+                                            <th>Name</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($supplier as $data)
+                                        <tr>
+                                            <td>{{ $data->Code }}</td>
+                                            <td><div class="item-description-wrapper">{{ $data->Name }}</div></td>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0)" onclick="fillSupplierPaymentCode('{{ $data->Code }}')" class="dt-act-btn dt-act-edit" data-bs-dismiss="modal" title="Add">
+                                                    <i class="fas fa-plus"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div id="GuaranttableoneCustomPager"></div>
+                            </div>
+
+                            <script src="assets/js/dt-custom-pager.js"></script>
+                            <script>
+                                $(document).ready(function() {
+                                    var GuaranttableoneDt = $('#Guaranttableone').DataTable({
+                                        pageLength: 10,
+                                        lengthChange: false,
+                                        dom: 'ft',
+                                    });
+                                    DTCustomPager.init(GuaranttableoneDt, '#GuaranttableoneCustomPager');
+                                });
+                            </script>
+
+                            <script>
+                                function fillSupplierPaymentCode(code) {
+                                    document.getElementById('supplier_code_select').value = code;
+                                    $('#supplier_code_select').trigger('change');
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             @include('layouts.footer')
         </div>
     </div>
@@ -490,11 +546,12 @@
             return;
         }
 
-        // Save to array
+        // Save to array (rows are prepended to the DOM, so unshift here keeps
+        // array order matching DOM/row.index() order)
         let newRowData = {
             cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, cheque_ammount
         };
-        dataArray.push(newRowData);
+        dataArray.unshift(newRowData);
 
         // Append new row (readonly inputs so it can be submitted in a form)
         $("#dynamicAdded").prepend(`
@@ -505,8 +562,8 @@
                 <td><input type="text" name="cheque_no[]" class="form-control" value="${cheque_no}" readonly></td>
                 <td><input type="text" name="cheque_ammount[]" class="form-control row-amount" value="${cheque_ammount}" readonly></td>
                 <td>
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-input-field">
-                        <i class="far fa-trash-alt"></i>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-input-field" title="Delete">
+                        <i class="fas fa-trash"></i>
                     </button>
                 </td>
             </tr>
@@ -536,34 +593,16 @@
     // Remove row & update total
     $(document).on('click', '.remove-input-field', function () {
         let row = $(this).closest('tr');
-        let amount = parseFloat(row.find('.row-amount').val());
+        let amount = parseFloat(row.find('.row-amount').val()) || 0;
         totalValue = totalValue - amount;
+
+        let index = row.index();
+        dataArray.splice(index, 1);
+
         row.remove();
         setTotal();
     });
 </script>
-
-    {{-- delete added item rows script --}}
-    <script>
-        $(document).on('click', '.remove-input-field', function () {
-            var row = $(this).parents('tr');
-            var re_bank_name = row.find('#dy_bank_name');
-            var re_bank_branch = row.find('#dy_bank_branch');
-            var re_account_no = row.find('#dy_account_no');
-            var re_cheque_no = row.find('#dy_cheque_no');
-            var re_cheque_ammount = row.find('#dy_cheque_ammount');
-            var re_totalValue = re_cheque_ammount.val();
-
-            totalValue = parseInt(totalValue) - parseInt(re_totalValue);
-
-            // Remove data from the array
-            var index = row.index();
-            dataArray.splice(index, 1);
-
-            $(this).parents('tr').remove();
-            setTotal();
-        });
-    </script>
 
 
     {{-- disable form submit when press enter key --}}
@@ -591,6 +630,12 @@ $(document).ready(function () {
         $('#data_tables').addClass('d-none');
         $('#data_empty_state').removeClass('d-none');
     }
+
+    $('#supplier_code_select').on('keyup', function (e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            $(this).trigger('change');
+        }
+    });
 
     $('#supplier_code_select').on('change', function () {
         var search_string = $(this).val();

@@ -45,6 +45,7 @@ class PurshasesOrderController extends Controller
         ->with("companyData" , $companyData)
         ->with("maxSupplier", $maxSupplierNos)
         ->with("itemDetails", $itemDetails)
+        ->with("SupplierData", Suppliers::all())
         ->with("maxInvoiceNo", $maxInvoice);
     }
 

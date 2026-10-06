@@ -1026,6 +1026,7 @@ Route::post('/reports/customer-cheque/cash-received', [CustomerChequePaymentRepo
 });
 
 Route::get('/cashInHandReport',          [App\Http\Controllers\CashInHandReportController::class, 'index'])->name('cashInHandReport');
+Route::get('/cashInHandReport/print', [App\Http\Controllers\CashInHandReportController::class, 'print'])->middleware('auth')->name('cashInHandReport.print');
 Route::post('/cash-in-hand/day-end', [App\Http\Controllers\CashInHandReportController::class, 'dayEndClose'])->name('cashInHand.dayEndClose');
 
 
@@ -1041,6 +1042,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sales-return-report',
         [App\Http\Controllers\SalesReturnReportController::class, 'index'])
         ->name('sales.return.report');
+
+        Route::get('/sales-return-report/print',
+            [App\Http\Controllers\SalesReturnReportController::class, 'print'])
+            ->name('sales.return.report.print');
 
         Route::get('/sales-return-details/{invoiceNo}',
             [App\Http\Controllers\SalesReturnReportController::class, 'getDetails'])
@@ -1062,6 +1067,9 @@ Route::get('/print-invoice-SalesReturn', [App\Http\Controllers\SalesReturnReport
 Route::middleware(['auth'])->group(function () {
     Route::get('/cashandChequeTransaction', [CashandChequeTransactionController::class, 'index'])
         ->name('cashandChequeTransaction');
+
+    Route::get('/cashandChequeTransaction/print', [CashandChequeTransactionController::class, 'print'])
+        ->name('cashandChequeTransaction.print');
 
     Route::post('/cash-in-hand/day-end-close', [CashandChequeTransactionController::class, 'dayEndChequeClose'])
         ->name('CashandChequeTransaction.dayEndClose');

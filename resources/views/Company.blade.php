@@ -255,60 +255,48 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="javascript:void(0)"  id="ItemForm" name="ItemForm" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                                    <form action="javascript:void(0)"  id="ItemForm" name="ItemForm" method="POST" enctype="multipart/form-data">
                                         <input type="hidden" name="id" id="id">
-                                        <div class="form-group">
-                                            <label for="name" class="col-sm-2 control-label"> Company Code</label>
-                                                <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="co_code" name="co_code" placeholder="" maxlength="15" required="">
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="co_code" class="form-label">Company Code</label>
+                                            <input type="text" class="form-control" id="co_code" name="co_code" placeholder="" maxlength="15" required="">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="name" class="col-sm-2 control-label">Company Name </label>
-                                                <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="name" name="name" placeholder="" maxlength="50" required="">
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Company Name</label>
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="" maxlength="50" required="">
                                         </div>
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Address</label>
-                                                <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="address" name="address" placeholder="" maxlength="100" required="">
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Address</label>
+                                            <input type="text" class="form-control" id="address" name="address" placeholder="" maxlength="100" required="">
                                         </div>
-                                            <div class="form-group">
-                                                <label style="font-weight: bold">Contact Numbers</label>
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" name="co_number" id="co_number" placeholder="Primary Number" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" name="one_number" id="one_number" placeholder="Secondary Number">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" name="two_number" id="two_number" placeholder="Optional Number">
-                                                    </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Contact Numbers</label>
+                                            <div class="row g-2">
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" name="co_number" id="co_number" placeholder="Primary Number" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" name="one_number" id="one_number" placeholder="Secondary Number">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" name="two_number" id="two_number" placeholder="Optional Number">
                                                 </div>
                                             </div>
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Fax Number</label>
-                                                <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="fax_number" name="fax_number" placeholder="" required="" maxlength="15">
-                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Email</label>
-                                                <div class="col-sm-12">
-                                                <input type="email" class="form-control" id="email" name="email" placeholder="" required="" maxlength="50">
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="fax_number" class="form-label">Fax Number</label>
+                                            <input type="text" class="form-control" id="fax_number" name="fax_number" placeholder="" required="" maxlength="15">
                                         </div>
-                                          <div class="mb-3">
-                                            <label for="exampleFormControlTextarea1" class="form-label"> Extra Note</label>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="" required="" maxlength="50">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="Note" class="form-label">Extra Note</label>
                                             <textarea class="form-control" id="Note" name="Note" rows="3"></textarea>
-                                          </div>
-
-                                        <div class="col-sm-offset-2 col-sm-10"><br/>
-                                            <button type="submit" class="btn btn-primary" id="btn-save">Save changes</button>
                                         </div>
+
+                                        <button type="submit" class="btn btn-primary" id="btn-save">Save changes</button>
                                     </form>
                                 </div>
                                 <div class="modal-footer"></div>

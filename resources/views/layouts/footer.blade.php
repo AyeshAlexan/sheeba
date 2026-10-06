@@ -17,7 +17,7 @@
 <body>
 
     <div class="footer">
-        <p> <p class="text-center">© Smart Omega (PVT) Ltd . All Rights Reserved. Designed by Smart Omega</p></p>
+        <p> <p class="text-center">© Kreethya . All Rights Reserved. Designed by Kreethya</p></p>
       </div>
 </body>
 </html>

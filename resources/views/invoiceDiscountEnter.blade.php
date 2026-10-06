@@ -108,6 +108,10 @@
                                         placeholder="Code, Name, NIC, or Phone...">
                                     <div id="customer_list" class="list-group position-absolute w-100 shadow" style="z-index: 1000; display: none;"></div>
                                 </div>
+                                <button type="button" class="stock-item-search-btn"
+                                    data-bs-toggle="modal" data-bs-target="#selectCustomerModel" title="Search customer">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="si-field">
@@ -161,6 +165,62 @@
                 </div>
 
             </div>
+
+            <div class="modal fade" id="selectCustomerModel" tabindex="-1" role="dialog"
+                 aria-labelledby="selectCustomerModelLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title m-2" id="selectCustomerModelLabel">Search Customer</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-center table-hover mt-3" id="DiscountCustomerTable">
+                                    <thead>
+                                        <tr class="table-secondary">
+                                            <th>Code</th>
+                                            <th>Name</th>
+                                            <th>Address</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($customerDetails as $data)
+                                        <tr>
+                                            <td>{{ $data->Code }}</td>
+                                            <td><div class="item-description-wrapper">{{ $data->First_name }}</div></td>
+                                            <td><div class="item-description-wrapper">{{ $data->Address_1 }}</div></td>
+                                            <td>
+                                                <a href="#" class="btn btn-outline-info btn-sm shadow select-customer"
+                                                   data-code="{{ $data->Code }}" data-name="{{ $data->First_name }}"
+                                                   data-bs-dismiss="modal">
+                                                    Add <i class="fas fa-plus"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div id="DiscountCustomerCustomPager"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="assets/js/dt-custom-pager.js"></script>
+            <script>
+                $(document).ready(function () {
+                    var DiscountCustomerDt = $('#DiscountCustomerTable').DataTable({
+                        pageLength: 10,
+                        lengthChange: false,
+                        dom: 'ft',
+                    });
+                    DTCustomPager.init(DiscountCustomerDt, '#DiscountCustomerCustomPager');
+                });
+            </script>
+
             @include('layouts.footer')
         </div>
     </div>

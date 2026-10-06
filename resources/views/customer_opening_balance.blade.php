@@ -207,8 +207,8 @@
                         <div class="col-md-6">
                             <label class="form-label">Amount (LKR) <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text" style="background:var(--tr-blue);color:#fff;border-color:var(--tr-blue);">
-                                    <i class="fas fa-rupee-sign"></i>
+                                <span class="input-group-text" style="background:var(--tr-blue);color:#fff;border-color:var(--tr-blue);font-weight:600;">
+                                    Rs.
                                 </span>
                                 <input type="number" class="form-control" placeholder="0.00"
                                        id="amount" name="amount" min="0" step="0.01">

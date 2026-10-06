@@ -154,6 +154,10 @@
                                                             style="top: 100%; z-index: 1000; display: none; max-height: 200px; overflow-y: auto; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
                                                         </div>
                                                     </div>
+                                                    <button type="button" class="stock-item-search-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#selectCustomerModel" title="Search customer">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="si-field">
@@ -471,6 +475,80 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="selectCustomerModel" tabindex="-1" role="dialog"
+             aria-labelledby="selectCustomerModelLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title m-2" id="selectCustomerModelLabel">Search Customer</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-center table-hover mt-3" id="ReturnCustomerTable">
+                                <thead>
+                                    <tr class="table-secondary">
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Address</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($customerDetails as $data)
+                                    <tr>
+                                        <td>{{ $data->Code }}</td>
+                                        <td><div class="item-description-wrapper">{{ $data->First_name }}</div></td>
+                                        <td><div class="item-description-wrapper">{{ $data->Address_1 }}</div></td>
+                                        <td>
+                                            <a href="#" onclick="fillReturnCustomerCode('{{ $data->Code }}')" class="btn btn-outline-info btn-sm shadow" data-bs-dismiss="modal">
+                                                Add <i class="fas fa-plus"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div id="ReturnCustomerCustomPager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="assets/js/dt-custom-pager.js"></script>
+        <script>
+            $(document).ready(function () {
+                var ReturnCustomerDt = $('#ReturnCustomerTable').DataTable({
+                    pageLength: 10,
+                    lengthChange: false,
+                    dom: 'ft',
+                });
+                DTCustomPager.init(ReturnCustomerDt, '#ReturnCustomerCustomPager');
+            });
+
+            function fillReturnCustomerCode(code) {
+                document.getElementById('searchCustomer').value = code;
+                // Picking from the browse list should populate the customer
+                // info panel exactly like typing a code + Enter does.
+                $.ajax({
+                    url: "{{ route('get_customer_ajax_return_nic') }}",
+                    method: 'GET',
+                    data: { search_string: code },
+                    success: function (res) {
+                        $('.showCustomer').html(res);
+                        if (res.status == 'not_found') {
+                            $('.showCustomer').html(
+                                `<div class="input-group">
+                                    <p class="form-control text-danger text-center">Customer Not Found ..!!</p>
+                                 </div>`
+                            );
+                        }
+                    }
+                });
+            }
+        </script>
+
         @include('layouts.footer')
     </div>
 
@@ -952,8 +1030,9 @@ $(document).on('keyup', '#qty, #unit_price, #discount, #discount_val', function 
                     net_value: net_value,
                 };
 
-                // Add data to the array
-                dataArray.push(newRowData);
+                // Add data to the array (rows are prepended to the DOM, so
+                // unshift here keeps array order matching DOM/row.index() order)
+                dataArray.unshift(newRowData);
                 $("#dynamicAdded").prepend(
                     `
                     <tr>
@@ -1002,7 +1081,7 @@ $(document).on('keyup', '#qty, #unit_price, #discount, #discount_val', function 
 
                         <td style="width:6%;">
                             <center>
-                                <button type="button" class="btn btn-outline-danger text-center shadow remove-input-field m-2"> <i class="far fa-trash-alt me-1"></i> Delete </button>
+                                <button type="button" class="btn btn-outline-danger shadow remove-input-field m-2" title="Delete"><i class="fas fa-trash"></i></button>
                             </center>
                         </td>
 

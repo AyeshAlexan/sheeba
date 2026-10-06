@@ -40,7 +40,43 @@ class SalesReturnReportController extends Controller
         ));
     }
 
-public function getDetails($invoiceNo)
+public function print(Request $request)
+    {
+        $fromDate    = $request->input('from_date');
+        $toDate      = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
+
+        $query = TSalesReturnSum::where('BC', $branch_code);
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('Invoice_date', [$fromDate, $toDate]);
+        }
+
+        $invoice = $query->get();
+
+        $totalGrossAmount = number_format($invoice->sum('Gross_Amount'), 2);
+        $totalDiscount    = number_format($invoice->sum('Discount'),     2);
+        $totalNetAmount   = number_format($invoice->sum('Net_Amount'),   2);
+        $totalCashPay     = number_format($invoice->sum('Cash_Pay'),     2);
+        $totalCredite     = number_format($invoice->sum('Credite'),      2);
+        $totalCheque      = number_format($invoice->sum('Cheque'),       2);
+
+        return view('reports.print.sales-return', [
+            'invoice' => $invoice,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'totalGrossAmount' => $totalGrossAmount,
+            'totalDiscount' => $totalDiscount,
+            'totalNetAmount' => $totalNetAmount,
+            'totalCashPay' => $totalCashPay,
+            'totalCredite' => $totalCredite,
+            'totalCheque' => $totalCheque,
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branch_code)->first(),
+        ]);
+    }
+
+    public function getDetails($invoiceNo)
 {
     $details = TSalesReturnDetails::where('Invoice_no', $invoiceNo)->get();
     return response()->json($details);

@@ -52,10 +52,7 @@
                         <a href="javascript:void(0)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModel">
                             <i class="fas fa-plus"></i> Add Area
                         </a>
-                        <div class="toolbar-search">
-                            Search:
-                            <input type="text" name="search" id="search" class="form-control" placeholder="Search here">
-                        </div>
+                        <div class="toolbar-search" id="areaSearchSlot"></div>
                     </div>
 
                     <div class="card">
@@ -242,6 +239,11 @@
                 columnDefs: [
                     { orderable: false, targets: -1 }
                 ],
+                initComplete: function () {
+                    var $wrapper = $('#DepartmentTable_wrapper');
+                    $wrapper.find('.dataTables_filter input').attr('placeholder', 'Search here');
+                    $wrapper.find('.dataTables_filter').appendTo('#areaSearchSlot');
+                }
             });
 
             $('#DepartmentTable_wrapper').addClass('dt-collapsed');

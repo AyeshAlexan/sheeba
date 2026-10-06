@@ -289,13 +289,12 @@
                 <div id="single-item-section">
                     <div id="error-messages" class="alert alert-danger" style="display:none;"></div>
 
-                    <form action="javascript:void(0)" id="ItemForm" name="ItemForm"
-                          class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    <form action="javascript:void(0)" id="ItemForm" name="ItemForm" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="id" id="id">
 
-                        <div class="row">
+                        <div class="row g-3 mb-3">
                             <div class="col-sm-6">
-                                <label class="control-label">Category
+                                <label class="form-label">Category
                                     <a href="{{ ('Category') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Category</a>
                                 </label>
                                 <select class="form-control" name="category" id="category">
@@ -332,7 +331,7 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <label class="control-label">Department
+                                <label class="form-label">Department
                                     <a href="{{ ('Department') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Department</a>
                                 </label>
                                 <select class="select form-control" name="Department" id="Department">
@@ -346,39 +345,33 @@
                             </div>
                         </div>
 
-                        <br>
-
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group mb-3">
-                                    <label>Item Code</label>
-                                    <div class="input-group">
-                                        <input type="text" id="single_cate_code" class="form-control"
-                                               placeholder="Category Code" readonly>
-                                        <input type="text" id="single_item_number" class="form-control"
-                                               placeholder="Item Number">
-                                    </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Item Code</label>
+                                <div class="input-group">
+                                    <input type="text" id="single_cate_code" class="form-control"
+                                           placeholder="Category Code" readonly>
+                                    <input type="text" id="single_item_number" class="form-control"
+                                           placeholder="Item Number">
                                 </div>
                                 <input type="hidden" name="Item_code" id="Item_code">
                             </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label class="control-label">Model No</label>
-                                    <input type="text" class="form-control" id="Bar_code"
-                                           name="Bar_code" placeholder="Bar Code" maxlength="50">
-                                </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Model No</label>
+                                <input type="text" class="form-control" id="Bar_code"
+                                       name="Bar_code" placeholder="Bar Code" maxlength="50">
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Description <span class="text-danger">*</span></label>
+                        <div class="mb-3">
+                            <label class="form-label">Description <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="Item_description"
                                    name="Item_description" placeholder="Description" maxlength="150" required>
                         </div>
 
-                        <div class="row mt-2">
+                        <div class="row g-3 mb-3">
                             <div class="col-sm-4">
-                                <label>Brand</label>
+                                <label class="form-label">Brand</label>
                                 <select class="form-control" name="Brand" id="Brand">
                                     <option value="">Please Select</option>
                                     @foreach($Brand as $b)
@@ -387,7 +380,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-4">
-                                <label>Color</label>
+                                <label class="form-label">Color</label>
                                 <select class="form-control" name="Color" id="Color">
                                     <option value="">Please Select</option>
                                     @foreach($Color as $c)
@@ -396,7 +389,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-4">
-                                <label>Make</label>
+                                <label class="form-label">Make</label>
                                 <select class="form-control" name="Make" id="Make">
                                     <option value="">Please Select</option>
                                     @foreach($Make as $m)
@@ -406,41 +399,35 @@
                             </div>
                         </div>
 
-                        <br>
-                        <div class="row mt-2">
+                        <div class="row g-3 mb-3">
                             <div class="col-sm-6">
-                                     <div class="form-group">
-                            <label>Per <span class="text-danger"></span></label>
-                            <input type="text" class="form-control" id="Per"
-                                   name="Per" placeholder="Per" maxlength="150">
-                        </div>
+                                <label class="form-label">Per</label>
+                                <input type="text" class="form-control" id="Per"
+                                       name="Per" placeholder="Per" maxlength="150">
                             </div>
                             <div class="col-sm-6">
-                                 <div class="mb-3">
-                            <label class="form-label">Image:</label>
-                            <input type="file" name="image" id="inputImage" class="form-control">
-                        </div>
+                                <label class="form-label">Image:</label>
+                                <input type="file" name="image" id="inputImage" class="form-control">
                             </div>
                         </div>
                         <img id="preview-image" width="300px">
-
 
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <div class="item-section-card">
                                     <h6><i class="fas fa-tag"></i> Prices <span class="text-danger">*</span></h6>
-                                    <div class="form-group mb-2">
-                                        <label>Purchase Price <span class="text-danger">*</span></label>
+                                    <div class="mb-2">
+                                        <label class="form-label">Purchase Price <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="purchasePrice"
                                                name="purchasePrice" placeholder="Purchase Price" maxlength="20" required>
                                     </div>
-                                    <div class="form-group mb-2">
-                                        <label>Sales Price <span class="text-danger">*</span></label>
+                                    <div class="mb-2">
+                                        <label class="form-label">Sales Price <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="saleprice"
                                                name="saleprice" placeholder="Sale Price" maxlength="20" required>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Border Price</label>
+                                    <div class="mb-0">
+                                        <label class="form-label">Border Price</label>
                                         <input type="text" class="form-control" id="Credit"
                                                name="Credit" placeholder="Border price" maxlength="15">
                                     </div>
@@ -449,13 +436,13 @@
                             <div class="col-sm-6">
                                 <div class="item-section-card">
                                     <h6><i class="fas fa-sliders-h"></i> Options</h6>
-                                    <div class="form-group mb-2">
-                                        <label>Reorder Level</label>
+                                    <div class="mb-2">
+                                        <label class="form-label">Reorder Level</label>
                                         <input type="text" class="form-control" id="ReorderLevel"
                                                name="ReorderLevel" placeholder="Reorder Level" maxlength="25">
                                     </div>
-                                    <div class="form-group mb-2">
-                                        <label>Recorder Quantity</label>
+                                    <div class="mb-2">
+                                        <label class="form-label">Recorder Quantity</label>
                                         <input type="text" class="form-control" id="RecorderQuantitiy"
                                                name="RecorderQuantitiy" placeholder="Recorder Quantity" maxlength="25">
                                     </div>
@@ -481,7 +468,7 @@
                         <input type="hidden" name="Branch"     id="Branch"     value="{{ Auth::user()->Branch }}">
                         <input type="hidden" name="BranchCode" id="BranchCode" value="{{ Auth::user()->BC }}">
 
-                        <div class="text-center">
+                        <div class="text-center mt-3">
                             <button type="submit" class="btn btn-primary" id="btn-save">Save Changes</button>
                         </div>
                     </form>

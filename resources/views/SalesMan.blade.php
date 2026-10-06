@@ -52,10 +52,7 @@
                         <a href="javascript:void(0)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBranchModel">
                             <i class="fas fa-plus"></i> Add SalesMan
                         </a>
-                        <div class="toolbar-search">
-                            Search:
-                            <input type="text" name="search" id="search" class="form-control" placeholder="Search here">
-                        </div>
+                        <div class="toolbar-search" id="salesManSearchSlot"></div>
                     </div>
 
                     <div class="card">
@@ -250,6 +247,11 @@
                 columnDefs: [
                     { orderable: false, targets: -1 }
                 ],
+                initComplete: function () {
+                    var $wrapper = $('#branchTable_wrapper');
+                    $wrapper.find('.dataTables_filter input').attr('placeholder', 'Search here');
+                    $wrapper.find('.dataTables_filter').appendTo('#salesManSearchSlot');
+                }
             });
 
             $('#branchTable_wrapper').addClass('dt-collapsed');

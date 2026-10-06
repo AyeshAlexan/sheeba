@@ -11,6 +11,8 @@ use App\Models\TwithoutVatSalesSum;
 use App\Models\TInvoiceSum;
 use App\Models\Customer;
 use App\Models\DailyTransaction;
+use App\Models\Company;
+use App\Models\branchDel;
 use App\Http\Controllers\Concerns\ResolvesLedgerReferences;
 
 class CashandChequeTransactionController extends Controller
@@ -146,6 +148,99 @@ class CashandChequeTransactionController extends Controller
             'todayIsClosed',
             'lastClosed'
         ));
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate    = $request->input('from_date');
+        $toDate      = $request->input('to_date');
+        $search      = trim((string) $request->input('search'));
+        $branch_code = auth()->user()->BC;
+
+        if (!$fromDate || !$toDate) {
+            $fromDate = now()->startOfMonth()->format('Y-m-d');
+            $toDate   = now()->endOfMonth()->format('Y-m-d');
+        }
+
+        $applySearch = function ($query) use ($search) {
+            return $search
+                ? $query->where(function ($q) use ($search) {
+                    $q->where('Description', 'like', "%{$search}%")
+                      ->orWhere('trance_no', 'like', "%{$search}%")
+                      ->orWhere('no', 'like', "%{$search}%");
+                })
+                : $query;
+        };
+
+        $cashInvoice = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-001')
+            ->where('BC', $branch_code))
+            ->orderBy('Ddate')
+            ->get();
+
+        foreach ($cashInvoice as $row) {
+            [$row->reference_label, $row->reference_url] = $this->resolveReference($row);
+            $row->logic_summary = $this->resolveLogic($row);
+        }
+
+        $cashSumDr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-001')
+            ->where('BC', $branch_code))
+            ->sum('dr_amount');
+
+        $cashSumCr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-001')
+            ->where('BC', $branch_code))
+            ->sum('cr_amount');
+
+        $cashOpeningBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate, '201-001');
+        $cashTotalDr        = $cashOpeningBalance + $cashSumDr;
+        $cashBalance        = ($cashOpeningBalance + $cashSumDr) - $cashSumCr;
+
+        $chequeInvoice = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-123')
+            ->where('BC', $branch_code))
+            ->orderBy('Ddate')
+            ->get();
+
+        foreach ($chequeInvoice as $row) {
+            [$row->reference_label, $row->reference_url] = $this->resolveReference($row);
+            $row->logic_summary = $this->resolveLogic($row);
+        }
+
+        $chequeSumDr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-123')
+            ->where('BC', $branch_code))
+            ->sum('dr_amount');
+
+        $chequeSumCr = $applySearch(TAccountTrans::whereBetween('Ddate', [$fromDate, $toDate])
+            ->where('AccCode', '201-123')
+            ->where('BC', $branch_code))
+            ->sum('cr_amount');
+
+        $chequeOpeningBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate, '201-123');
+        $chequeTotalDr        = $chequeOpeningBalance + $chequeSumDr;
+        $chequeBalance        = ($chequeOpeningBalance + $chequeSumDr) - $chequeSumCr;
+
+        $combinedBalance = $cashBalance + $chequeBalance;
+
+        return view('reports.print.cash-and-cheque-transaction', [
+            'cashInvoice' => $cashInvoice,
+            'cashOpeningBalanceFmt' => number_format($cashOpeningBalance, 2),
+            'cashTotalDrFmt' => number_format($cashTotalDr, 2),
+            'cashTotalCrFmt' => number_format($cashSumCr, 2),
+            'cashBalanceFmt' => number_format($cashBalance, 2),
+            'chequeInvoice' => $chequeInvoice,
+            'chequeOpeningBalanceFmt' => number_format($chequeOpeningBalance, 2),
+            'chequeTotalDrFmt' => number_format($chequeTotalDr, 2),
+            'chequeTotalCrFmt' => number_format($chequeSumCr, 2),
+            'chequeBalanceFmt' => number_format($chequeBalance, 2),
+            'combinedBalanceFmt' => number_format($combinedBalance, 2),
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 
     /**

@@ -111,6 +111,10 @@
                                                             required aria-label="Supplier Code">
                                                     </div>
                                                     <button type="button" class="stock-item-search-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#addguarantor1Model" title="Search supplier">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="stock-item-search-btn"
                                                         data-bs-toggle="modal" data-bs-target="#addCustomerModel" title="Add new supplier">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
@@ -423,6 +427,67 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="addguarantor1Model" tabindex="-1" role="dialog" aria-labelledby="addguarantor1Model" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title m-2" id="addguarantor1ModelLabel">Search Supplier</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                        <div class="errMsgContainer"></div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-center table-hover" id="Guaranttableone">
+                                <thead>
+                                    <tr class="table-secondary">
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($SupplierData as $data)
+                                    <tr>
+                                        <td>{{ $data->Code  }}</td>
+                                        <td>
+                                            <div class="item-description-wrapper">{{ $data->Name }}</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0)" onclick="fillGuarantOneCode('{{ $data->Code }}')" class="dt-act-btn dt-act-edit" data-bs-dismiss="modal" title="Add">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div id="GuaranttableoneCustomPager"></div>
+                        </div>
+
+                        <script src="assets/js/dt-custom-pager.js"></script>
+                        <script>
+                            $(document).ready(function() {
+                                var GuaranttableoneDt = $('#Guaranttableone').DataTable({
+                                    pageLength: 10,
+                                    lengthChange: false,
+                                    dom: 'ft',
+                                });
+                                DTCustomPager.init(GuaranttableoneDt, '#GuaranttableoneCustomPager');
+                            });
+                        </script>
+
+                        <script>
+                            function fillGuarantOneCode(Code) {
+                                document.getElementById('searchCustomer').value = Code;
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @include('layouts.footer')
     </div>
 

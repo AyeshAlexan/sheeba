@@ -49,6 +49,7 @@ class SalesReturnController extends Controller
         ->with("companyData" , $companyData)
         ->with("maxCustomer", $maxCustomerNos)
         ->with("itemDetails", $itemDetails)
+        ->with("customerDetails", Customer::all())
         ->with("maxInvoiceNo", $maxInvoice);
     }
 
