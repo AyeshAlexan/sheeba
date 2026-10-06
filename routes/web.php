@@ -592,8 +592,10 @@ Route::get('/print_hp_invoice_ajax', [App\Http\Controllers\HirePurchaseControlle
 
 //OpeningHirepurchaseReportController
 Route::get('/reports.OpeningHirepurchaseReport', [App\Http\Controllers\OpeningHirepurchaseReportController::class, 'index'])->name('OpeningHirepurchaseReport');
+Route::get('/reports.OpeningHirepurchaseReport/print', [App\Http\Controllers\OpeningHirepurchaseReportController::class, 'print'])->middleware('auth')->name('OpeningHirepurchaseReport.print');
 // OpeningHirepurchaseReportController
 Route::get('/reports.OpeningHirepurchaseSumReport', [App\Http\Controllers\OpeningHirepurchaseSumReportController::class, 'index'])->name('OpeningHirepurchaseSumReport');
+Route::get('/reports.OpeningHirepurchaseSumReport/print', [App\Http\Controllers\OpeningHirepurchaseSumReportController::class, 'print'])->middleware('auth')->name('OpeningHirepurchaseSumReport.print');
 
 
 //HirepurchaseReportController
@@ -630,6 +632,7 @@ Route::get('/daily_report', [App\Http\Controllers\DailyreportController::class,'
 Route::get('/reports.Purchase_return_report', [App\Http\Controllers\PurchasereturnreportController::class,'index'])->name('Purchase_return_report');
 //Purchase Order
 Route::get('/reports.Purchase_order_report', [App\Http\Controllers\PurchaseorderreportController::class,'index'])->name('Purchase_order_report');
+Route::get('/reports.Purchase_order_report/print', [App\Http\Controllers\PurchaseorderreportController::class,'print'])->middleware('auth')->name('Purchase_order_report.print');
 // Item Purchase Order
 Route::get('/reports.Item_purchase_report', [App\Http\Controllers\ItemPurchasereportController::class,'index'])->name('Item_purchase_report');
 
@@ -655,6 +658,7 @@ Route::get('/purchasing-report/detail', [App\Http\Controllers\PurchasingReportCo
 Route::get('/reports.Purchase_Detail_report', [App\Http\Controllers\PurchasedetailreportController::class,'index'])->name('Purchase_Detail_report');
 //PurchaseorderdetailreportController
 Route::get('/reports.Purchase_order_details_report', [App\Http\Controllers\PurchaseorderdetailreportController::class,'index'])->name('Purchase_order_details_report');
+Route::get('/reports.Purchase_order_details_report/print', [App\Http\Controllers\PurchaseorderdetailreportController::class,'print'])->middleware('auth')->name('Purchase_order_details_report.print');
 //ItemdetailreportControler
 Route::get('/reports.Item_detail_report', [App\Http\Controllers\ItemdetailreportControler::class,'index'])->name('Item_detail_report');
 Route::get('/reports.Item_detail_report/print', [App\Http\Controllers\ItemdetailreportControler::class, 'print'])->middleware('auth')->name('Item_detail_report.print');
@@ -887,14 +891,19 @@ Route::POST('/make_supplyer_payment', [App\Http\Controllers\SupplyerPaymentContr
 
 //supplier_account_report
 Route::get('/supplier_account_report', [App\Http\Controllers\SupplierAccountReportController::class,'index'])->name('supplier_account_report');
+Route::get('/supplier_account_report/print', [App\Http\Controllers\SupplierAccountReportController::class,'printAccount'])->middleware('auth')->name('supplier_account_report.print');
 
 Route::get('/supplier_Report.supplyer_payment_report', [App\Http\Controllers\SupplierAccountReportController::class,'SupplierPaymentIndex'])->name('supplyer_payment_report');
+Route::get('/supplier_Report.supplyer_payment_report/print', [App\Http\Controllers\SupplierAccountReportController::class,'printPayment'])->middleware('auth')->name('supplyer_payment_report.print');
 
 Route::get('/supplier_Report.supplyer_balance_report', [App\Http\Controllers\SupplierAccountReportController::class,'SupplierBalanceIndex'])->name('supplyer_balance_report');
+Route::get('/supplier_Report.supplyer_balance_report/print', [App\Http\Controllers\SupplierAccountReportController::class,'printBalance'])->middleware('auth')->name('supplyer_balance_report.print');
 
 Route::get('/supplier_Report.supplyer_cheque_payment_report', [App\Http\Controllers\SupplierAccountReportController::class,'IndexSupCheque'])->name('supplyer_cheque_payment_report');
+Route::get('/supplier_Report.supplyer_cheque_payment_report/print', [App\Http\Controllers\SupplierAccountReportController::class,'printCheque'])->middleware('auth')->name('supplyer_cheque_payment_report.print');
 
 Route::get('/get_supplier_details_report', [App\Http\Controllers\SupplierAccountReportController::class, 'supplierDetailsReportIndex'])->name('get_supplier_details_report');
+Route::get('/get_supplier_details_report/print', [App\Http\Controllers\SupplierAccountReportController::class, 'printDetails'])->middleware('auth')->name('get_supplier_details_report.print');
 
 
 Route::get('/check_item_has_AutoSerial_ajax', [App\Http\Controllers\OpeningStockController::class,'AutoSerial'])->name('check_item_has_AutoSerial_ajax');

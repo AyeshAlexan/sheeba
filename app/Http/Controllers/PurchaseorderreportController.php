@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TPurchaseOrderSum;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class PurchaseorderreportController extends Controller
 {
@@ -48,5 +50,31 @@ class PurchaseorderreportController extends Controller
         // -> with("totalCredite", $totalCredite)
         // -> with("totalCheque", $totalCheque);
 
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
+
+        $invoice = TPurchaseOrderSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('Invoice_date', [$fromDate, $toDate]))
+                    ->where('BC', $branch_code)
+                    ->get();
+
+        $totalGrossAmount = number_format($invoice->sum('Gross_Amount'), 2);
+        $totalDiscount = number_format($invoice->sum('Discount'), 2);
+        $totalNetAmount = number_format($invoice->sum('Net_Amount'), 2);
+
+        return view('reports.print.purchase-order-summary', [
+            'invoice' => $invoice,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'totalGrossAmount' => $totalGrossAmount,
+            'totalDiscount' => $totalDiscount,
+            'totalNetAmount' => $totalNetAmount,
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 }

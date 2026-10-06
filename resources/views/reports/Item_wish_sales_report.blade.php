@@ -347,13 +347,7 @@ var itemsTable;
 jQuery(document).ready(function ($) {
     itemsTable = $('#t_invoice_deils').DataTable({
         dom: 'Bt',
-        buttons: ['copy', 'excel', 'csv', 'pdf', {
-            extend: 'print',
-            title: '',
-            customize: function (win) {
-                window.stockReportPrintCustomize(win);
-            }
-        }],
+        buttons: ['copy', 'excel', 'csv', 'pdf'],
         pageLength: 15,
         lengthChange: false,
         columnDefs: [{ orderable: false, targets: 0 }],
@@ -416,12 +410,8 @@ function exportItemsTable(type) {
     itemsTable.button('.buttons-' + type).trigger();
 }
 
-// Routes the "Print Report" button through DataTables' own print button
-// (which renders a properly bordered/styled printable table) instead of
-// dumping unstyled raw HTML into a blank window.
 function printTablefun() {
-    if (!itemsTable) { alert('Table is still loading, please try again in a moment.'); return; }
-    itemsTable.button('.buttons-print').trigger();
+    window.stockReportPrintTables(['#t_invoice_deils']);
 }
 </script>
 

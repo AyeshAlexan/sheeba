@@ -42,6 +42,9 @@
                                 <p class="page-subtitle">Cash received from sales versus cash paid out to suppliers, with net balance.</p>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-outline-secondary" onclick="printCashInOutReport()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
                     </div>
 
                     <div class="container-fluid px-0">
@@ -134,13 +137,7 @@ jQuery(document).ready(function ($) {
         info: false,
         searching: false,
         ordering: false,
-        buttons: ['copy', 'excel', 'csv', 'pdf', {
-            extend: 'print',
-            title: '',
-            customize: function (win) {
-                window.stockReportPrintCustomize(win);
-            }
-        }],
+        buttons: ['copy', 'excel', 'csv', 'pdf'],
     });
 
     var toDateInput = document.getElementById('to_date');
@@ -149,6 +146,10 @@ jQuery(document).ready(function ($) {
         toDateInput.value = dateObj.toISOString().slice(0, 10);
     }
 });
+
+function printCashInOutReport() {
+    window.stockReportPrintTables(['#t_invoice_sum']);
+}
 </script>
 
 <x-report-print-config title="Cash In Out Report" :fromDate="$fromDate" :toDate="$toDate" :companyData="$companyData" :branchDel="$branchDel" />

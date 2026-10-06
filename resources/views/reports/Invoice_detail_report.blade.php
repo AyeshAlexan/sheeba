@@ -131,14 +131,7 @@
 jQuery(document).ready(function ($) {
     var salesDetailsTable = $('#t_invoice_deils').DataTable({
         dom: 'Bfrtip',
-        buttons: ['copy', 'excel', 'csv', 'pdf', {
-            extend: 'print',
-            className: 'buttons-print d-none',
-            title: '',
-            customize: function (win) {
-                window.stockReportPrintCustomize(win);
-            }
-        }],
+        buttons: ['copy', 'excel', 'csv', 'pdf'],
         pageLength: 15,
         lengthChange: false,
     });
@@ -154,7 +147,7 @@ jQuery(document).ready(function ($) {
 });
 
 function printTablefun() {
-    $('#t_invoice_deils').DataTable().button('.buttons-print').trigger();
+    window.stockReportPrintTables(['#t_invoice_deils']);
 }
 </script>
 

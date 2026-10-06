@@ -67,6 +67,12 @@
             body { background: #fff; }
             .rp-sheet { margin: 0; border: none; border-radius: 0; max-width: 100%; }
             @page { size: A4 {{ $landscape ? 'landscape' : '' }}; margin: {{ $landscape ? '10mm' : '12mm' }}; }
+
+            table { page-break-inside: auto; }
+            thead { display: table-header-group; }
+            tfoot { display: table-row-group; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            .rp-letterhead { page-break-after: avoid; }
         }
     </style>
 </head>

@@ -78,45 +78,47 @@
                             <h6 class="mb-3">ALL CUSTOMERS BALANCE REPORT</h6>
                         @endif
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="t_item_movements">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Customer Code</th>
-                                        <th>Customer</th>
-                                        <th>Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $totalAmount = 0;
-                                    @endphp
-                                    @forelse ($customerData as $key=>$data)
-                                    <tr>
-                                        <td>{{$data->Code}}</td>
-                                        <td>{{$data->First_name}}</td>
-                                        <td class="text-end">
-                                            {{number_format($data->total_cr_amount - $data->total_dr_amount, 2)}}
-                                        </td>
-                                    </tr>
-                                    @php
-                                        $totalAmount += $data->total_cr_amount - $data->total_dr_amount;
-                                    @endphp
-                                    @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted">No customer balances found for the selected filters.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                                <tfoot>
-                                    <tr class="table-light fw-bold">
-                                        <td colspan="2" class="text-center">Total Balance :</td>
-                                        <td class="text-end">{{number_format($totalAmount, 2)}}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <div id="balanceTableCustomPager"></div>
+                        <div class="modern-table-card">
+                            <div class="table-responsive">
+                                <table class="table" id="t_item_movements">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Code</th>
+                                            <th>Customer</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $totalAmount = 0;
+                                        @endphp
+                                        @forelse ($customerData as $key=>$data)
+                                        <tr>
+                                            <td>{{$data->Code}}</td>
+                                            <td>{{$data->First_name}}</td>
+                                            <td class="text-end">
+                                                {{number_format($data->total_cr_amount - $data->total_dr_amount, 2)}}
+                                            </td>
+                                        </tr>
+                                        @php
+                                            $totalAmount += $data->total_cr_amount - $data->total_dr_amount;
+                                        @endphp
+                                        @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">No customer balances found for the selected filters.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2" class="text-center">Total Balance :</td>
+                                            <td class="text-end">{{number_format($totalAmount, 2)}}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
+                        <div id="balanceTableCustomPager"></div>
                     </div>
                 </div>
             </div>

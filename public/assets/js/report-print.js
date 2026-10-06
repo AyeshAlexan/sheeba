@@ -116,7 +116,7 @@
             .rp-customer-wish td:nth-child(4) * { white-space: normal !important; overflow-wrap: anywhere; }
             .rp-wide-report table { table-layout: fixed !important; font-size: 8px !important; }
             .rp-wide-report th, .rp-wide-report td { padding: 4px 5px !important; white-space: normal !important; overflow-wrap: anywhere; word-break: normal; }
-            .rp-wide-report .text-end, .rp-wide-report .rp-numeric { white-space: nowrap !important; }
+            .rp-wide-report tbody .text-end, .rp-wide-report tbody .rp-numeric { white-space: nowrap !important; }
             .rp-salesman-invoice table { table-layout: fixed !important; }
             .rp-salesman-invoice th:first-child, .rp-salesman-invoice td:first-child { width: 4% !important; white-space: nowrap !important; overflow-wrap: normal !important; word-break: keep-all !important; }
             .rp-salesman-invoice th:nth-child(2), .rp-salesman-invoice td:nth-child(2) { width: 10% !important; }
@@ -124,7 +124,14 @@
             .rp-salesman-invoice th:nth-child(n+4), .rp-salesman-invoice td:nth-child(n+4) { width: 8.5% !important; }
             .rp-no-print { display: none !important; }
             @page { size: A4 ${body.classList.contains('rp-wide-report') ? 'landscape' : 'portrait'}; margin: 10mm; }
-            @media print { .rp-sheet { margin: 0; padding: 0; } }
+            @media print {
+                .rp-sheet { margin: 0; padding: 0; }
+                table { page-break-inside: auto; }
+                thead { display: table-header-group; }
+                tfoot { display: table-row-group; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+                .rp-letterhead { page-break-after: avoid; }
+            }
         `;
         printWindow.document.head.appendChild(style);
     };

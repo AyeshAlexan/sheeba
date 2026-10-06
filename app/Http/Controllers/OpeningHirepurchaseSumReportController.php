@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\TOpeningHirePurchaseSum;
+use App\Models\Company;
+use App\Models\branchDel;
 
 class OpeningHirepurchaseSumReportController extends Controller
 {
@@ -64,5 +66,34 @@ class OpeningHirepurchaseSumReportController extends Controller
         -> with("net_amount", $totalnet_amount)
         -> with("cash_payment", $totalcash_payment);
 
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $branch_code = auth()->user()->BC;
+
+        $invoice = TOpeningHirePurchaseSum::when($fromDate && $toDate, fn ($q) => $q->whereBetween('invoice_date', [$fromDate, $toDate]))
+                    ->where('bc', $branch_code)
+                    ->get();
+
+        return view('reports.print.opening-hirepurchase-summary', [
+            'invoice' => $invoice,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'document_charge' => number_format($invoice->sum('document_charge'), 2),
+            'down_payment' => number_format($invoice->sum('down_payment'), 2),
+            'transport' => number_format($invoice->sum('transport'), 2),
+            'instalment_amount' => number_format($invoice->sum('instalment_amount'), 2),
+            'no_of_instalment' => number_format($invoice->sum('no_of_instalment'), 2),
+            'instalment' => number_format($invoice->sum('instalment'), 2),
+            'gross_amount' => number_format($invoice->sum('gross_amount'), 2),
+            'discount' => number_format($invoice->sum('discount'), 2),
+            'net_amount' => number_format($invoice->sum('net_amount'), 2),
+            'cash_payment' => number_format($invoice->sum('cash_payment'), 2),
+            'companyData' => Company::latest()->first(),
+            'branchDel' => branchDel::where('bccode', $branch_code)->first(),
+        ]);
     }
 }

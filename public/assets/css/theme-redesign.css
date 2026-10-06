@@ -1166,9 +1166,17 @@ button[name="reset"].btn-outline-secondary:hover {
    button language used everywhere else. */
 .dt-buttons {
   display: flex !important;
+  float: left;
   flex-wrap: wrap;
   gap: 8px !important;
   margin-bottom: 16px !important;
+}
+/* .dataTables_filter (the native Search box) already floats right via
+   DataTables' own base CSS — floating .dt-buttons left too lets both sit
+   on the same row instead of the buttons taking a full-width block line
+   and pushing the search box down onto its own line below them. */
+.dataTables_wrapper .dataTables_filter {
+  float: right;
 }
 .dt-buttons .dt-button,
 button.dt-button,
@@ -1801,7 +1809,18 @@ table.dataTable thead th.sorting_desc:after {
 }
 .modern-table-card .dt-buttons {
   padding: 14px 14px 0;
-  margin-bottom: 10px !important;
+  margin-bottom: 16px !important;
+}
+.modern-table-card .dataTables_filter {
+  margin: 14px 14px 16px 0 !important;
+}
+/* .dt-buttons and .dataTables_filter both float (see the base .dt-buttons
+   rule above) so they can share one row — the table itself must explicitly
+   clear them, otherwise a block-level `<table>` can end up flowing beside
+   a float instead of below it, collapsing the gap this margin is meant to
+   create. */
+.modern-table-card .table-responsive {
+  clear: both;
 }
 /* These report pages already have a dedicated "Print" button in the page
    header (wired via JS to trigger this same DataTables print button) —

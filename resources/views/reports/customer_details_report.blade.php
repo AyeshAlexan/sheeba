@@ -13,14 +13,6 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <style>
-        #customerDetailsTable thead th {
-            color: var(--tr-text-secondary);
-            background: var(--tr-bg);
-            font-size: 11.5px;
-            letter-spacing: .04em;
-            text-transform: uppercase;
-        }
-        #customerDetailsTable tbody tr:hover { background: var(--tr-blue-light); }
         #customerDetailsTable td:nth-child(5) { min-width: 220px; white-space: normal; }
         #customerDetailsTable_wrapper .dataTables_filter { display: none; }
         #customerDetailsTable_wrapper .dataTables_length,
@@ -74,41 +66,43 @@
                             </div>
                         </form>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="customerDetailsTable" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Code</th>
-                                        <th>NIC</th>
-                                        <th>Name</th>
-                                        <th>Gender</th>
-                                        <th>Address</th>
-                                        <th>Contact</th>
-                                        <th>Email</th>
-                                        <th>Driving License</th>
-                                        <th>Passport</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($customers as $customer)
-                                    <tr>
-                                        <td>{{ $customer->Code }}</td>
-                                        <td>{{ $customer->NIC }}</td>
-                                        <td>{{ trim($customer->Title . ' ' . $customer->First_name . ' ' . $customer->Middle_name . ' ' . $customer->Last_name) }}</td>
-                                        <td>{{ $customer->Gender }}</td>
-                                        <td>{{ $customer->Address_1 }}</td>
-                                        <td>{{ $customer->Contact_1 }}</td>
-                                        <td>{{ $customer->Email }}</td>
-                                        <td>{{ $customer->Driving_license }}</td>
-                                        <td>{{ $customer->Passport }}</td>
-                                    </tr>
-                                    @empty
-                                    <tr><td colspan="9" class="text-center text-muted">No customers found.</td></tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                            <div id="customerDetailsCustomPager"></div>
+                        <div class="modern-table-card">
+                            <div class="table-responsive">
+                                <table class="table" id="customerDetailsTable" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>NIC</th>
+                                            <th>Name</th>
+                                            <th>Gender</th>
+                                            <th>Address</th>
+                                            <th>Contact</th>
+                                            <th>Email</th>
+                                            <th>Driving License</th>
+                                            <th>Passport</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($customers as $customer)
+                                        <tr>
+                                            <td>{{ $customer->Code }}</td>
+                                            <td>{{ $customer->NIC }}</td>
+                                            <td>{{ trim($customer->Title . ' ' . $customer->First_name . ' ' . $customer->Middle_name . ' ' . $customer->Last_name) }}</td>
+                                            <td>{{ $customer->Gender }}</td>
+                                            <td>{{ $customer->Address_1 }}</td>
+                                            <td>{{ $customer->Contact_1 }}</td>
+                                            <td>{{ $customer->Email }}</td>
+                                            <td>{{ $customer->Driving_license }}</td>
+                                            <td>{{ $customer->Passport }}</td>
+                                        </tr>
+                                        @empty
+                                        <tr><td colspan="9" class="text-center text-muted">No customers found.</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                        <div id="customerDetailsCustomPager"></div>
                     </div>
                 </div>
             </div>
