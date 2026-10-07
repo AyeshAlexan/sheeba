@@ -75,6 +75,7 @@
                                                 <th>Address</th>
                                                 <th>Route</th>
                                                 <th>Cash Balance</th>
+                                                <th>Credit Limit</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -95,6 +96,7 @@
                                                 <td>{{$data->Address_1}}</td>
                                                 <td>{{$data->Address_2}}</td>
                                                 <td>{{ number_format((float) $data->Other_identifications, 2, '.', ',') }}</td>
+                                                <td>{{ $data->credit_limit !== null ? number_format((float) $data->credit_limit, 2, '.', ',') : 'Unlimited' }}</td>
                                                 <td>
                                                     <div class="dt-actions">
                                                         <a href="javascript:void(0)"
@@ -118,6 +120,7 @@
                                                             data-driving_license="{{$data->Driving_license}}"
                                                             data-passport="{{$data->Passport}}"
                                                             data-other_identifications="{{$data->Other_identifications}}"
+                                                            data-credit_limit="{{$data->credit_limit}}"
                                                             data-status="{{$data->Status}}" title="Edit">
                                                             <i class="far fa-edit"></i>
                                                         </a>
@@ -223,6 +226,13 @@
                                             <input type="text" name="other_identifications" id="other_identifications" class="form-control" placeholder="Cash Balance ..">
                                         </div>
                                         <div class="col-md-6">
+                                            <label>Credit Limit:</label>
+                                            <input type="number" step="0.01" min="0" name="credit_limit" id="credit_limit" class="form-control" placeholder="Leave blank for unlimited">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
                                             <label>Mark as Active or Blacklisted <span style="color:#FF0000; font-weight: bold;">*</span>:</label>
                                             <select class="select form-control" name="status" id="status" aria-hidden="true" required>
                                                 <option value="">Please Select</option>
@@ -317,6 +327,13 @@
                                             <input type="text" name="up_other_identifications" id="up_other_identifications" class="form-control" placeholder="Other Identifications">
                                         </div>
                                         <div class="col-md-6">
+                                            <label>Credit Limit:</label>
+                                            <input type="number" step="0.01" min="0" name="up_credit_limit" id="up_credit_limit" class="form-control" placeholder="Leave blank for unlimited">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
                                             <label>Mark as Active or Blacklisted <span style="color:#FF0000; font-weight: bold;">*</span></label>
                                             <select class="select form-control" name="up_status" id="up_status" aria-hidden="true" required>
                                                 <option value="1">Active</option>
@@ -378,6 +395,7 @@
                 let driving_license = $('#driving_license').val();
                 let passport = $('#passport').val();
                 let other_identifications = $('#other_identifications').val();
+                let credit_limit = $('#credit_limit').val();
                 let status = $('#status').val();
 
                 $.ajax({
@@ -390,7 +408,7 @@
                         address1: address1, city1: city1, address2: address2, city2: city2,
                         contact1: contact1, contact2: contact2, email: email, nic: nic,
                         driving_license: driving_license, passport: passport,
-                        other_identifications: other_identifications, status: status
+                        other_identifications: other_identifications, credit_limit: credit_limit, status: status
                     },
                     success: function (res) {
                         if (res.status == 'success') {
@@ -476,6 +494,7 @@
                 let driving_license = $(this).data('driving_license');
                 let passport = $(this).data('passport');
                 let other_identifications = $(this).data('other_identifications');
+                let credit_limit = $(this).data('credit_limit');
                 let status = $(this).data('status');
 
                 $('#up_id').val(id);
@@ -496,6 +515,7 @@
                 $('#up_driving_license').val(driving_license);
                 $('#up_passport').val(passport);
                 $('#up_other_identifications').val(other_identifications);
+                $('#up_credit_limit').val(credit_limit);
                 $('#up_status').val(status);
             });
 
@@ -519,6 +539,7 @@
                 let up_driving_license = $('#up_driving_license').val();
                 let up_passport = $('#up_passport').val();
                 let up_other_identifications = $('#up_other_identifications').val();
+                let up_credit_limit = $('#up_credit_limit').val();
                 let up_status = $('#up_status').val();
 
                 $.ajax({
@@ -530,7 +551,7 @@
                     up_address1:up_address1, up_city1:up_city1, up_address2:up_address2, up_city2:up_city2,
                     up_contact1:up_contact1, up_contact2:up_contact2, up_email:up_email, up_nic:up_nic,
                     up_driving_license:up_driving_license, up_passport:up_passport,
-                    up_other_identifications:up_other_identifications, up_status:up_status},
+                    up_other_identifications:up_other_identifications, up_credit_limit:up_credit_limit, up_status:up_status},
 
                     success:function(res){
                         if(res.status=='success'){

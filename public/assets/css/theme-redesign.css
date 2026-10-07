@@ -197,17 +197,17 @@ body::-webkit-scrollbar-corner,
 
 .header.header-one .branch-pill {
   border-radius: 999px !important;
-  padding: 6px 12px !important;
-  font-size: 12.5px !important;
+  padding: 4px 9px !important;
+  font-size: 11px !important;
 }
 
 .header.header-one .branch-pill span {
-  font-size: 12.5px !important;
+  font-size: 11px !important;
 }
 
 .header.header-one .branch-pill svg {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   color: var(--tr-success);
   flex-shrink: 0;
 }

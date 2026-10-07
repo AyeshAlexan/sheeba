@@ -76,7 +76,7 @@
                     <a href="#" class=" {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') || Request::is('role-permissions') ? 'subdrop' : '' }} ">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span> User Management</span>
                         <span class="menu-arrow"></span></a>
-                    <ul style=" {{ Request::is('users') || Request::is('add_user') ? 'display:block;' : '' }} ">
+                    <ul style=" {{ Request::is('users') || Request::is('Userrole') || Request::is('add_user') || Request::is('role-permissions') ? 'display:block;' : '' }} ">
                         <li class="{{ Request::is('users') || Request::is('add_user') ? 'active ' : '' }}">
                             <a href="{{route("users")}}">
                                 <i class="fa fa-angle-right"></i>
@@ -342,30 +342,30 @@
 
 
 @if(\App\Support\Permissions::can('vouchers'))
-                <li
-                 {{-- class="{{ Request::is('PaymentVoucher*') ? 'active' : '' }}||
-                {{ Request::is('PaymentVoucher*') ? 'active' : '' }} " --}}
-                >
-                <a href="#">
+                @php
+                    $vouchersOpen = Request::is('PaymentVoucher*') || Request::is('gentralreceipt*') || Request::is('PettyCash*');
+                @endphp
+                <li class="{{ $vouchersOpen ? 'active' : '' }}">
+                <a href="#" class="{{ $vouchersOpen ? 'subdrop' : '' }}">
                     <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 9a3 3 0 1 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 1 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg> <span> Vouchers</span> <span class="menu-arrow"></span></a>
                 <ul
-                style=" {{ Request::is('PaymentVoucher*') ? 'display:block;' : '' }}"
+                style=" {{ $vouchersOpen ? 'display:block;' : '' }}"
                 >
                     <li
-                    class="{{ Request::is('PaymentVoucher') ? 'active' : '' }}"
+                    class="{{ Request::is('PaymentVoucher*') ? 'active' : '' }}"
                     >
                         <a href="{{route("PaymentVoucher")}}">
                             <i class="fa fa-angle-right"></i>
                             Payment Vouchers</a>
                     </li>
-                    
-                                             <li>
+
+                    <li class="{{ Request::is('gentralreceipt*') ? 'active' : '' }}">
             <a href="{{ route('gentralreceipt') }}" >
                 <i class="fa fa-receipt"></i> Gentral Receipt
             </a>
         </li>
-        
-                    <li class="{{ Request::is('PettyCash') ? 'active' : '' }}">
+
+                    <li class="{{ Request::is('PettyCash*') ? 'active' : '' }}">
                         <a href="{{route("PettyCash")}}">
                             <i class="fa fa-angle-right"></i>
                             Petty Cash</a>
@@ -428,22 +428,25 @@
 
                 {{-- Accounting --}}
 @if(\App\Support\Permissions::can('accounting'))
-                <li class="">
-                    <a href="#">
+                @php
+                    $accountingOpen = request()->routeIs('account_category', 'account_type', 'chartofaccount');
+                @endphp
+                <li class="{{ $accountingOpen ? 'active' : '' }}">
+                    <a href="#" class="{{ $accountingOpen ? 'subdrop' : '' }}">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/></svg> <span> Accounting</span> <span
                             class="menu-arrow"></span></a>
-                            <ul style="">
-                                <li class="">
+                            <ul style="{{ $accountingOpen ? 'display:block;' : '' }}">
+                                <li class="{{ request()->routeIs('account_category') ? 'active' : '' }}">
                                     <a href="{{route("account_category")}}">
                                     <i class="fa fa-angle-right"></i>
                                    Category</a>
                                 </li>
-                                <li class="">
+                                <li class="{{ request()->routeIs('account_type') ? 'active' : '' }}">
                                     <a href="{{route("account_type")}}">
                                     <i class="fa fa-angle-right"></i>
                                    Type</a>
                                 </li>
-                                <li class="">
+                                <li class="{{ request()->routeIs('chartofaccount') ? 'active' : '' }}">
                                     <a href="{{route("chartofaccount")}}">
                                     <i class="fa fa-angle-right"></i>
                                    Chart Of Accounts</a>
@@ -454,50 +457,64 @@
 @endif
 
 @if(\App\Support\Permissions::can('reports'))
-            <li class="">
-                <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> <span>Reports</span> <span
+                @php
+                    $stockReportOpen = request()->routeIs('Item_detail_report', 'stock_report', 'Stock_valuation_report', 'bin_card', 'ZerostockReport', 'reports.stockTranferReport', 'reports.stockDetailsSummeryReport');
+                    $salesReportOpen = request()->routeIs('Item_wish_sales_report', 'sales_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport', 'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report');
+                    $purchaseOrderReportOpen = request()->routeIs('Purchase_order_report', 'Purchase_order_details_report');
+                    $customerReportOpen = request()->routeIs('get_customer_details_report', 'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport', 'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport') || $purchaseOrderReportOpen;
+                    $supplierReportOpen = request()->routeIs('get_supplier_details_report', 'supplyer_payment_report', 'supplyer_cheque_payment_report', 'supplier_account_report', 'supplyer_balance_report');
+                    $openingHpReportOpen = request()->routeIs('OpeningHirepurchaseReport', 'OpeningHirepurchaseSumReport');
+                    $salesReturnReportOpen = request()->routeIs('sales.return.report');
+                    $journalOpen = request()->routeIs('daily.transactions', 'cash.book');
+                    $reportsOpen = $stockReportOpen || $salesReportOpen || $customerReportOpen || $supplierReportOpen
+                        || request()->routeIs('purchasing.report') || $openingHpReportOpen || $salesReturnReportOpen
+                        || request()->routeIs('cashInHandReport') || request()->routeIs('cashandChequeTransaction') || $journalOpen;
+                @endphp
+            <li class="{{ $reportsOpen ? 'active' : '' }}">
+                <a href="#" class="{{ $reportsOpen ? 'subdrop' : '' }}"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> <span>Reports</span> <span
                     class="menu-arrow"></span></a>
-                <ul class="menu-sub">
+                <ul class="menu-sub" style="{{ $reportsOpen ? 'display:block;' : '' }}">
                   <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                    <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $stockReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Products">Stock Report<span
                         class="menu-arrow"></span> </div>
                     </a>
-                    <ul class="menu-sub">
+                    <ul class="menu-sub" style="{{ $stockReportOpen ? 'display:block;' : '' }}">
 
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('Item_detail_report') ? 'active' : '' }}">
                             <a href="{{route("Item_detail_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="All Customers">Item Details</div>
                             </a>
                           </li>
-                          <li class="menu-item">
-                            <a href="{{route("stock_report")}}" target ="_ blank" class="menu-link menu-toggle">
+                          <li class="menu-item {{ request()->routeIs('stock_report') ? 'active' : '' }}">
+                            <a href="{{route("stock_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="Customer Details">Stock In Hand</div>
                             </a>
-                              <li class="menu-item">
+                          </li>
+                              <li class="menu-item {{ request()->routeIs('Stock_valuation_report') ? 'active' : '' }}">
                                 <a href="{{route("Stock_valuation_report")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Overview">Stock Valuation</div>
                                 </a>
                               </li>
-                              <li class="menu-item">
+                              <li class="menu-item {{ request()->routeIs('bin_card') ? 'active' : '' }}">
                                 <a href="{{route("bin_card")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Bin Card</div>
                                 </a>
                               </li>
-                              <li class="menu-item">
+                              <li class="menu-item {{ request()->routeIs('ZerostockReport') ? 'active' : '' }}">
                                 <a href="{{route("ZerostockReport")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Stock Zero </div>
                                 </a>
                               </li>
 
-                                  <li class="menu-item">
+                                  <li class="menu-item {{ request()->routeIs('reports.stockTranferReport') ? 'active' : '' }}">
                                 <a href="{{route("reports.stockTranferReport")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Stock Tranfer Report </div>
                                 </a>
                               </li>
 
 
-                                   <li class="menu-item">
+                                   <li class="menu-item {{ request()->routeIs('reports.stockDetailsSummeryReport') ? 'active' : '' }}">
                                 <a href="{{route("reports.stockDetailsSummeryReport")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Stock Details Report </div>
                                 </a>
@@ -506,48 +523,48 @@
                   </li>
 
                   <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                    <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $salesReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Sales Report<span
                         class="menu-arrow"></span></div>
                     </a>
-                    <ul class="menu-sub">
-                       <li class="menu-item">
+                    <ul class="menu-sub" style="{{ $salesReportOpen ? 'display:block;' : '' }}">
+                       <li class="menu-item {{ request()->routeIs('Item_wish_sales_report') ? 'active' : '' }}">
                         <a href="{{route("Item_wish_sales_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Item Wise Sales</div>
                         </a>
                       </li>
-                      <li class="menu-item">
+                      <li class="menu-item {{ request()->routeIs('sales_report') ? 'active' : '' }}">
                         <a href="{{route("sales_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Sales Summery</div>
                         </a>
                       </li>
-                      <li class="menu-item">
+                      <li class="menu-item {{ request()->routeIs('Invoice_detail_report') ? 'active' : '' }}">
                         <a href="{{route("Invoice_detail_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Sales Details</div>
                         </a>
                       </li>
-                      
-                      
-                      
-                       <li class="menu-item">
+
+
+
+                       <li class="menu-item {{ request()->routeIs('customer_wish_report') ? 'active' : '' }}">
                         <a href="{{route("customer_wish_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Wish Item Sales</div>
                         </a>
                       </li>
-                      
-                    <li class="menu-item">
+
+                    <li class="menu-item {{ request()->routeIs('reports.salesmanInvoiceReport') ? 'active' : '' }}">
                         <a href="{{route("reports.salesmanInvoiceReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Salesman Invoice Report</div>
                         </a>
                       </li>
-                      
-                                          <li class="menu-item">
+
+                                          <li class="menu-item {{ request()->routeIs('reports.SalesmanInvoiceSumReport') ? 'active' : '' }}">
                         <a href="{{route("reports.SalesmanInvoiceSumReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Salesman Total Invoice Report</div>
                         </a>
                       </li>
 
-                      <li class="menu-item">
+                      <li class="menu-item {{ request()->routeIs('Cash_in_out_report') ? 'active' : '' }}">
                         <a href="{{route("Cash_in_out_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Cash In Out Report</div>
                         </a>
@@ -557,61 +574,61 @@
 
 
                 <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                    <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $customerReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Customer Report<span
                         class="menu-arrow"></span></div>
                     </a>
-                    <ul class="menu-sub">
-                        <li class="menu-item">
+                    <ul class="menu-sub" style="{{ $customerReportOpen ? 'display:block;' : '' }}">
+                        <li class="menu-item {{ request()->routeIs('get_customer_details_report') ? 'active' : '' }}">
                         <a href="{{route("get_customer_details_report")}}" target ="_ blank"  class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Customer Details</div>
                         </a>
                       </li>
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('customer_payment_report') ? 'active' : '' }}">
                         <a href="{{route("customer_payment_report")}}" target ="_ blank" class="menu-link">
                            <div class="text-truncate" data-i18n="Order Details">Customer Payment Report</div>
                         </a>
                        </li>
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('customer_cheque_payment_report') ? 'active' : '' }}">
                         <a href="{{route("customer_cheque_payment_report")}}" target ="_ blank" class="menu-link">
                            <div class="text-truncate" data-i18n="Order Details">Customer Cheque Payment Report</div>
                         </a>
                        </li>
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('Cust_Transferreport') ? 'active' : '' }}">
                         <a href="{{route("Cust_Transferreport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Acccount</div>
                         </a>
                       </li>
 
-                     <li class="menu-item">
+                     <li class="menu-item {{ request()->routeIs('customersalesWishReport') ? 'active' : '' }}">
                         <a href="{{route("customersalesWishReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Wish Sale</div>
                         </a>
                       </li>
 
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('customer_balance_report') ? 'active' : '' }}">
                         <a href="{{route("customer_balance_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Balance</div>
                         </a>
                       </li>
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('AdvancePaymentReport') ? 'active' : '' }}">
                         <a href="{{route("AdvancePaymentReport")}}" target ="_ blank"  class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Advance Payment Report</div>
                         </a>
                       </li>
                         <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                    <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $purchaseOrderReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Customer">Purchase order Report<span
                         class="menu-arrow"></span></div>
                     </a>
-                        <ul class="menu-sub">
-                          <li class="menu-item">
+                        <ul class="menu-sub" style="{{ $purchaseOrderReportOpen ? 'display:block;' : '' }}">
+                          <li class="menu-item {{ request()->routeIs('Purchase_order_report') ? 'active' : '' }}">
                             <a href="{{route("Purchase_order_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="All Customers">Summery</div>
                             </a>
                           </li>
-                          <li class="menu-item">
-                            <a href="{{route("Purchase_order_details_report")}}" target ="_ blank" class="menu-link menu-toggle">
+                          <li class="menu-item {{ request()->routeIs('Purchase_order_details_report') ? 'active' : '' }}">
+                            <a href="{{route("Purchase_order_details_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="Customer Details">Details</div>
                             </a>
                           </li>
@@ -619,35 +636,35 @@
                   </li>
                     </ul>
                 </li>
-                
-                
+
+
                                 <li class="menu-item">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle {{ $supplierReportOpen ? 'subdrop' : '' }}">
                                 <div class="text-truncate" data-i18n="Order">Supplier Report<span class="menu-arrow"></span></div>
                             </a>
-                            <ul class="menu-sub">
-                                <li class="menu-item">
+                            <ul class="menu-sub" style="{{ $supplierReportOpen ? 'display:block;' : '' }}">
+                                <li class="menu-item {{ request()->routeIs('get_supplier_details_report') ? 'active' : '' }}">
                                     <a href="{{route("get_supplier_details_report")}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Order List">Supplier Details</div>
                                     </a>
                                 </li>
-                                <li class="menu-item">
-                                    <a href="{{route('supplyer_payment_report')}}" target="_ blank" class="menu-link menu-toggle">
+                                <li class="menu-item {{ request()->routeIs('supplyer_payment_report') ? 'active' : '' }}">
+                                    <a href="{{route('supplyer_payment_report')}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Customer Details">Supplyer Payment Report</div>
                                     </a>
                                 </li>
-                                <li class="menu-item">
+                                <li class="menu-item {{ request()->routeIs('supplyer_cheque_payment_report') ? 'active' : '' }}">
                                     <a href="{{route('supplyer_cheque_payment_report')}}" target="_ blank"
-                                        class="menu-link menu-toggle">
+                                        class="menu-link">
                                         <div class="text-truncate" data-i18n="Customer Details">Supplyer Cheque Payment Report</div>
                                     </a>
                                 </li>
-                                <li class="menu-item">
+                                <li class="menu-item {{ request()->routeIs('supplier_account_report') ? 'active' : '' }}">
                                     <a href="{{route('supplier_account_report')}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Order Details">Supplier Acccount</div>
                                     </a>
                                 </li>
-                                <li class="menu-item">
+                                <li class="menu-item {{ request()->routeIs('supplyer_balance_report') ? 'active' : '' }}">
                                     <a href="{{route("supplyer_balance_report")}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Order Details">Supplier Balance</div>
                                     </a>
@@ -670,48 +687,43 @@
 
 
                   <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                    <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $openingHpReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Opening Hire Purchase Report<span
                         class="menu-arrow"></span></div>
                     </a>
-                    <ul class="menu-sub">
-                      <li class="menu-item">
+                    <ul class="menu-sub" style="{{ $openingHpReportOpen ? 'display:block;' : '' }}">
+                      <li class="menu-item {{ request()->routeIs('OpeningHirepurchaseReport') ? 'active' : '' }}">
                         <a href="{{route("OpeningHirepurchaseReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Opening Hire Purchase details</div>
                         </a>
                       </li>
-                      <li class="menu-item">
+                      <li class="menu-item {{ request()->routeIs('OpeningHirepurchaseSumReport') ? 'active' : '' }}">
                         <a href="{{route("OpeningHirepurchaseSumReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Opening Hire Purchase Sum</div>
                         </a>
                       </li>
-                      <!--<li class="menu-item">-->
-                      <!--  <a href="{{route("Invoice_detail_report")}}" class="menu-link">-->
-                      <!--    <div class="text-truncate" data-i18n="Order Details">Sales Details</div>-->
-                      <!--  </a>-->
-                      <!--</li>-->
                     </ul>
                   </li>
-                  
-                  
-                  
+
+
+
                   <li class="menu-item">
-                       <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                       <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $salesReturnReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Sales Return Report<span
                         class="menu-arrow"></span></div>
                     </a>
 
-                    <ul style="">
-                        <li class="">
+                    <ul style="{{ $salesReturnReportOpen ? 'display:block;' : '' }}">
+                        <li class="{{ $salesReturnReportOpen ? 'active' : '' }}">
                             <a href="{{route("sales.return.report")}}">
                                 <i class="fa fa-angle-right"></i>
                                 Sales Return</a>
                         </li>
                     </ul>
                 </li>
-                  
-                  
-                <li class="menu-item">
+
+
+                <li class="menu-item {{ request()->routeIs('cashInHandReport') ? 'active' : '' }}">
                         <a href="{{route("cashInHandReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Cash In Hand</div>
                         </a>
@@ -719,108 +731,31 @@
 
 
 
-                <li class="menu-item">
+                <li class="menu-item {{ request()->routeIs('cashandChequeTransaction') ? 'active' : '' }}">
                         <a href="{{route("cashandChequeTransaction")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Cash & Cheque Transaction</div>
                         </a>
                   </li>
 
                   <li class="menu-item">
-                       <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                       <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $journalOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Journal<span
                         class="menu-arrow"></span></div>
                     </a>
 
-                    <ul class="menu-sub">
-                        <li class="menu-item">
+                    <ul class="menu-sub" style="{{ $journalOpen ? 'display:block;' : '' }}">
+                        <li class="menu-item {{ request()->routeIs('daily.transactions') ? 'active' : '' }}">
                             <a href="{{route('daily.transactions')}}" target ="_ blank" class="menu-link">
                                 <div class="text-truncate" data-i18n="Order Details">Daily Transactions</div>
                             </a>
                         </li>
-                        <li class="menu-item">
+                        <li class="menu-item {{ request()->routeIs('cash.book') ? 'active' : '' }}">
                             <a href="{{route('cash.book')}}" target ="_ blank" class="menu-link">
                                 <div class="text-truncate" data-i18n="Order Details">Cash Book</div>
                             </a>
                         </li>
                     </ul>
                 </li>
-                  <!--<li class="menu-item">-->
-                  <!--      <a href="{{route("CashTransferreport")}}" target ="_ blank" class="menu-link">-->
-                  <!--        <div class="text-truncate" data-i18n="Order Details">Cash In Hand</div>-->
-                  <!--      </a>-->
-                  <!--</li>-->
-
-                  <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
-                      <div class="text-truncate" data-i18n="Order">Customer Report<span
-                        class="menu-arrow"></span></div>
-                    </a>
-                    <ul class="menu-sub">
-                      <li class="menu-item">
-                        <a href="{{route("OpeningHirepurchaseReport")}}" target ="_ blank"  class="menu-link">
-                          <div class="text-truncate" data-i18n="Order List">Customer Details</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route("OpeningHirepurchaseSumReport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order Details">Customer Balance</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route("Cust_Transferreport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order Details">Customer Acccount</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route("OpeningHirepurchaseSumReport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order Details">Customer Sale</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route("OpeningHirepurchaseSumReport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order Details">Customer Payment</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route("AdvancePaymentReport")}}" target ="_ blank"  class="menu-link">
-                          <div class="text-truncate" data-i18n="Order List">Advance Payment Report</div>
-                        </a>
-                      </li>
-
-
-
-                  <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle">
-                      <div class="text-truncate" data-i18n="Customer">Purchase order Report<span
-                        class="menu-arrow"></span></div>
-                    </a>
-                    <ul class="menu-sub">
-                      <li class="menu-item">
-                        <a href="{{route("Purchase_order_report")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="All Customers">Summery</div>
-                        </a>
-                      </li>
-                      <li class="menu-item">
-                        <a href="{{route("Purchase_order_details_report")}}" target ="_ blank" class="menu-link menu-toggle">
-                          <div class="text-truncate" data-i18n="Customer Details">Details</div>
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Register Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Sell Payment Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Purchase Payment Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Product Sell Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Items Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Purchase & Sale</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Trending Products</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Stock Adjustment Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Lot Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Stock Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Customer Groups Report</a></li>-->
-                  <!--<li><a href="#"><i class="fa fa-angle-right"></i> Supplier & Customer Report</a></li>-->
-                  <!--<li><a href=""><i class="fa fa-angle-right"></i> Tax Report</a></li>-->
-                  <!--<li><a href=""><i class="fa fa-angle-right"></i> Activity Log</a></li>-->
 
                 </ul>
 
@@ -830,4 +765,14 @@
         </div>
     </div>
 </div>
+<script>
+$(function() {
+    var $scroll = $('#sidebar .scroll');
+    var $active = $('#sidebar-menu li.active > a, #sidebar-menu li a.active').last();
+    if ($scroll.length && $active.length) {
+        var target = $active.offset().top - $scroll.offset().top + $scroll.scrollTop() - 150;
+        $scroll.scrollTop(Math.max(target, 0));
+    }
+});
+</script>
 @yield('content')

@@ -21,9 +21,13 @@ use App\Models\MRoute;
 use App\Models\MSalesman;
 use App\Models\branchDel;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Concerns\EnforcesCreditLimit;
 
 class SalesInvoicewithoutVatController extends Controller
 {
+    use EnforcesCreditLimit;
+
+
     // ════════════════════════════════════════════════════════════
     // INDEX — Show the create invoice page
     // ════════════════════════════════════════════════════════════
@@ -134,6 +138,10 @@ public function add_salesInvoice(Request $request)
     $creditPayment = round($netAmount - $cashPayment - $halfPayment - $chequePayment, 2);
     if ($creditPayment < 0) {
         return back()->withInput()->with('error', 'Payment amounts cannot be greater than the net amount.');
+    }
+
+    if ($guard = $this->guardCreditLimit($request->customer_nic, $creditPayment)) {
+        return $guard;
     }
 
     $branch_code = auth()->user()->BC;

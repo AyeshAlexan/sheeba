@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/icon.png') }}">
     <meta charset="utf-8">
     <title>Print Jobsheet</title>
 

@@ -9,16 +9,6 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('role_module_actions', function (Blueprint $table) {
-            $table->id();
-            $table->string('role_name');
-            $table->string('module_key');
-            $table->string('action_key');
-            $table->boolean('is_enabled')->default(false);
-            $table->timestamps();
-            $table->unique(['role_name', 'module_key', 'action_key']);
-        });
-
         // Same seed philosophy as role_permissions: Admin starts fully
         // enabled (matching its existing "full access out of the box"
         // seed there), every other role starts opt-in/denied until an
@@ -52,6 +42,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('role_module_actions');
+        DB::table('role_module_actions')->delete();
     }
 };

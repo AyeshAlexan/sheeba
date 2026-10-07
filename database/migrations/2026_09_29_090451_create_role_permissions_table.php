@@ -9,15 +9,6 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('role_permissions', function (Blueprint $table) {
-            $table->id();
-            $table->string('role_name');
-            $table->string('module_key');
-            $table->boolean('is_enabled')->default(false);
-            $table->timestamps();
-            $table->unique(['role_name', 'module_key']);
-        });
-
         // "Sales User" doesn't exist as a role yet — the client's spec
         // names it explicitly, but the app only has Admin/Manager/Operator.
         if (!DB::table('userroles')->where('role_name', 'Sales User')->exists()) {
@@ -65,7 +56,7 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('role_permissions');
+        DB::table('role_permissions')->delete();
         DB::table('userroles')->where('role_name', 'Sales User')->delete();
     }
 };

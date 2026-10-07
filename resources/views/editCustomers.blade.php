@@ -178,6 +178,14 @@
                                                                                                     </div>
                                                                                                    </div>
 
+                                                                                                {{-- row for Credit Limit --}}
+                                                                                                <div class="row mt-4">
+                                                                                                    <div class="col-md-6">
+                                                                                                        <label>Credit Limit :</label>
+                                                                                                        <input type="number" step="0.01" min="0" name="credit_limit" class="form-control" placeholder="Leave blank for unlimited">
+                                                                                                    </div>
+                                                                                                   </div>
+
                                                                                             {{-- row for Blacklisted --}}
                                                                                             <div class="row mt-4">
                                                                                                 <div class="col-md-6">

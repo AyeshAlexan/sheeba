@@ -68,6 +68,7 @@ class CustomerController extends Controller
             'driving_license'=>'max:15 ',
             'passport'=>'max:15 ',
             'other_identifications'=>'max:100 ',
+            'credit_limit'=>'nullable | numeric | min:0',
         ], [
             'code.unique' => 'This customer code is already in use — each customer must have a unique code.',
         ]);
@@ -86,6 +87,7 @@ class CustomerController extends Controller
         $customer->Passport=$request->passport;
         $customer->Other_identifications=$request->other_identifications;
         $customer->Status=$request->blacklisted;
+        $customer->credit_limit=$request->credit_limit;
         $customer->BC = auth()->user()->BC;
         $customer->OC = auth()->user()->username;
         $customer->save();
@@ -106,6 +108,7 @@ class CustomerController extends Controller
             'driving_license'=>'max:15 ',
             'passport'=>'max:15 ',
             'other_identifications'=>'max:15 ',
+            'credit_limit'=>'nullable | numeric | min:0',
         ], [
             'code.unique' => 'This customer code is already in use — each customer must have a unique code.',
         ]);
@@ -129,6 +132,7 @@ class CustomerController extends Controller
         $customer->Passport=$request->passport;
         $customer->Other_identifications=$request->other_identifications;
         $customer->Status=$request->status;
+        $customer->credit_limit=$request->credit_limit;
         $customer->BC = auth()->user()->BC;
         $customer->OC = auth()->user()->username;
         $customer->save();
@@ -166,6 +170,7 @@ class CustomerController extends Controller
             'up_driving_license'=>'max:15 ',
             'up_passport'=>'max:15 ',
             'up_other_identifications'=>'max:15 ',
+            'up_credit_limit'=>'nullable | numeric | min:0',
         ]);
 
         Customer::where('id',$request->up_id)->update([
@@ -187,6 +192,7 @@ class CustomerController extends Controller
             'Passport'=>$request->up_passport,
             'Other_identifications'=>$request->up_other_identifications,
             'Status'=>$request->up_status,
+            'credit_limit'=>$request->up_credit_limit,
         ]);
 
         return response()->json([
