@@ -108,6 +108,16 @@ public function SalesReturnprintInvoice(Request $request)
         $cr_amount = $custData->sum('cr_amount');
         $balance   = $cr_amount - $dr_amount;
 
+        $returnRow = TSalesReturnSum::where('Invoice_no', $invoiceNo)
+            ->where('bc', $branchCode)
+            ->first();
+        $isReprint = false;
+        if ($returnRow) {
+            $returnRow->increment('print_count');
+            $returnRow->forceFill(['last_printed_at' => now()])->save();
+            $isReprint = $returnRow->print_count > 1;
+        }
+
         $view = $printType === 'pos'
             ? 'repairInvoiceWithoutPosPrint'
             : 'repairReturnInvoicePrint';
@@ -119,6 +129,7 @@ public function SalesReturnprintInvoice(Request $request)
             'customerData'    => $T_customerdata,
             'pawnDetailsData' => $T_detailsdata,
             'companyData'     => $companyData,
+            'isReprint'       => $isReprint,
         ]);
     }
     public function show($id)                 { }

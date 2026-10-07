@@ -853,6 +853,13 @@ Route::get('find_sales_invoice_customer_data_sum', [App\Http\Controllers\RecallE
 Route::post('update_sales_invoice_data', [App\Http\Controllers\RecallEditSalesInvoiceController::class, 'UpdateSaleData'])->name('update_sales_invoice_data');
 Route::delete('/Sales-invoice/delete/{invoiceNo}', [App\Http\Controllers\RecallEditSalesInvoiceController::class, 'DeleteSalesInvoice']);
 
+// VAT-table-correct recall/edit/delete for the VAT Sales Invoice screen
+// (salesInvoice.blade.php) — see RecallEditInvoiceController docblock.
+Route::get('find_vat_invoice_details', [App\Http\Controllers\RecallEditInvoiceController::class, 'findInvoiceDetails'])->name('find_vat_invoice_details');
+Route::get('find_vat_invoice_customer_data_sum', [App\Http\Controllers\RecallEditInvoiceController::class, 'findInvoiceDataSum'])->name('find_vat_invoice_customer_data_sum');
+Route::post('update_vat_invoice_data', [App\Http\Controllers\RecallEditInvoiceController::class, 'updateInvoiceData'])->name('update_vat_invoice_data');
+Route::delete('/vat-invoice/delete/{invoiceNo}', [App\Http\Controllers\RecallEditInvoiceController::class, 'deleteInvoiceData'])->name('delete_vat_invoice');
+
 
 //get_customer_details_report
 Route::get('/get_customer_details_report', [App\Http\Controllers\CustomerController::class, 'customerDetailsReportIndex'])->name('get_customer_details_report');

@@ -183,10 +183,21 @@ public function createSalesReturn(Request $request)
                         ->where('BC', $branch_code)
                         ->get();
 
+        $returnRow = TSalesReturnSum::where('Invoice_no', $invoice_no)
+            ->where('BC', $branch_code)
+            ->first();
+        $isReprint = false;
+        if ($returnRow) {
+            $returnRow->increment('print_count');
+            $returnRow->forceFill(['last_printed_at' => now()])->save();
+            $isReprint = $returnRow->print_count > 1;
+        }
+
         return view('repairReturnInvoicePrint', [
             'pawnSumData' => $T_sumdata,
             'pawnDetailsData' => $T_detailsdata,
-            'companyData' => $companyData
+            'companyData' => $companyData,
+            'isReprint' => $isReprint,
         ]);
     }
 

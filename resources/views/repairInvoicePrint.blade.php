@@ -72,6 +72,11 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
     </style>
 </head>
 <body>
+    @if($isReprint ?? false)
+    <div style="text-align:center; margin:0 0 10px; padding:6px; border:2px solid #c0392b; border-radius:4px; background:#fdecea; color:#c0392b; font-weight:bold; font-size:16px; letter-spacing:2px;">
+        ⚠ REPRINT COPY
+    </div>
+    @endif
     <header>
         <address style="font-family: Georgia, serif;" >
             @foreach ($companyData as $comData)

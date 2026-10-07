@@ -15,6 +15,7 @@ return [
     // ── Sales ──────────────────────────────────────────────────────────
     'sales.save' => [
         'add_invoice', 'add_invoice_ajax', 'update_sales_invoice_data',
+        'update_vat_invoice_data',
         'add_salesInvoice_withoutVat',
         'add_salesReturn',
         'add_sales_quatation',
@@ -34,12 +35,14 @@ return [
     ],
     'sales.edit' => [
         'update_sales_invoice_data',
+        'update_vat_invoice_data',
         'UpdatecustomerPayment',
         'UpdateCustomerOpeningBalance',
         'invoices.apply-discount', 'invoices.apply-transport',
     ],
     'sales.delete' => [
         'delete_invoice_ajax',
+        'delete_vat_invoice',
         'DeletecustomerPayment',
         'DeleteCustomerOpeningBalance',
     ],

@@ -1856,7 +1856,7 @@ $(document).ready(function () {
                 if (search_receipt_no > 0) {
                     // Fetch t_pawn_details table data
                     $.ajax({
-                        url: "{{ route('find_sales_details_invoice') }}",
+                        url: "{{ route('find_vat_invoice_details') }}",
                         method: 'GET',
                         data: { search_receipt_no },
                         success: function (res) {
@@ -1871,11 +1871,12 @@ $(document).ready(function () {
                                         <td style="width:12%;"><input type="text" name="Discount" class="form-control Discount" value="${data.Discount}"></td>
                                         <td style="width:12%;"><input type="text" name="Net_value" class="form-control Net_value" value="${data.Net_value}" readonly></td>
                                         <td style="width:13%;">
-                                            <button type="button" class="btn btn-outline-success text-center edit-row"><i class="far fa-edit me-1"></i> Edit</button>
+                                            ${canEditSales ? '<button type="button" class="btn btn-outline-success text-center edit-row"><i class="far fa-edit me-1"></i> Edit</button>' : ''}
                                             <button type="button" class="btn btn-outline-danger text-center remove-row"><i class="far fa-trash-alt me-1"></i> Delete</button>
                                         </td>
                                     </tr>
                                 `).join(''));
+                                lockRecalledForm();
                             } else {
                                 $('#dynamicAdded').html(`<div class="text-danger text-center">Receipt Not Found ...!!</div>`);
                             }
@@ -1884,7 +1885,7 @@ $(document).ready(function () {
 
                     // Fetch customer data
                     $.ajax({
-                        url: "{{ route('find_sales_invoice_customer_data_sum') }}",
+                        url: "{{ route('find_vat_invoice_customer_data_sum') }}",
                         method: 'GET',
                         data: { search_receipt_no },
                         success: function (response) {
@@ -1903,9 +1904,9 @@ $(document).ready(function () {
                                     $('#green-total-unit-price').val(record.Gross_Amount);
                                     $('#green-total-discount').val(record.Discount);
                                     $('#green-total-value').val(record.Net_Amount);
-                                    $('#cash_payment').val(record.cash_payment);
-                                    $('#credit_payment').val(record.credit_payment);
-                                    $('#cheque_payment').val(record.cheque_payment);
+                                    $('#cash_payment').val(record.Cash_Pay);
+                                    $('#credit_payment').val(record.Credite);
+                                    $('#cheque_payment').val(record.Cheque);
 
                                 });
 
@@ -1925,6 +1926,7 @@ $(document).ready(function () {
                                         </div>
                                     </div>
                                 `);
+                                lockRecalledForm();
                             } else {
                                 $('.showCustomer').html(`<div class="text-danger text-center">Invoice Not Found ...!!</div>`);
                             }
@@ -1936,6 +1938,26 @@ $(document).ready(function () {
                 }
             }, 500);
         });
+
+        // ── Recall lock ──────────────────────────────────────────────────
+        // Once an existing invoice is recalled, its fields are locked
+        // against editing unless this role has the "sales edit" permission
+        // (Permissions::canDo('sales', 'edit')) — matching the same
+        // permission that already gates the Update button's visibility.
+        const canEditSales = @json(\App\Support\Permissions::canDo('sales', 'edit'));
+
+        function lockRecalledForm() {
+            if (canEditSales) {
+                return;
+            }
+            ['#invoice_date', '#searchCustomer', '#customer_name', '#customer_contact_1',
+             '#total_amount', '#paid_discount', '#paid_amount', '#cash_payment',
+             '#credit_payment', '#cheque_payment'].forEach(function (sel) {
+                $(sel).prop('readonly', true).prop('disabled', true);
+            });
+            $('#dynamicAdded input').prop('readonly', true);
+            $('#dynamicAdded .edit-row').remove();
+        }
 
         // Handle dynamic quantity and discount calculations
         $('#dynamicAdded').on('keyup', '.QTY, .Discount, .DiscountPercentage', function () {
@@ -2026,7 +2048,7 @@ $(document).ready(function () {
         });
 
         $.ajax({
-            url: "{{ route('update_sales_invoice_data') }}",
+            url: "{{ route('update_vat_invoice_data') }}",
             type: "POST",
             data: {
                 _token: '{{ csrf_token() }}',
@@ -2064,7 +2086,7 @@ $(document).ready(function () {
     }
 
     $.ajax({
-        url: '/Sales-invoice/delete/' + invoiceNo,
+        url: '/vat-invoice/delete/' + invoiceNo,
         type: 'DELETE',
         data: {
             _token: '{{ csrf_token() }}'

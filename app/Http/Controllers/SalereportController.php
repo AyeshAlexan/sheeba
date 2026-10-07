@@ -81,6 +81,16 @@ class SalereportController extends Controller
         $cr_amount = $custData->sum('cr_amount');
         $balance   = $cr_amount - $dr_amount;
 
+        $invoiceRow = TwithoutVatSalesSum::where('Invoice_no', $invoiceNo)
+            ->where('bc', $branchCode)
+            ->first();
+        $isReprint = false;
+        if ($invoiceRow) {
+            $invoiceRow->increment('print_count');
+            $invoiceRow->forceFill(['last_printed_at' => now()])->save();
+            $isReprint = $invoiceRow->print_count > 1;
+        }
+
         $view = $printType === 'pos'
             ? 'repairInvoiceWithoutPosPrint'
             : 'repairInvoiceWithoutPrint';
@@ -92,6 +102,7 @@ class SalereportController extends Controller
             'customerData'    => $T_customerdata,
             'pawnDetailsData' => $T_detailsdata,
             'companyData'     => $companyData,
+            'isReprint'       => $isReprint,
         ]);
     }
     

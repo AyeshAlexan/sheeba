@@ -759,7 +759,7 @@
         @csrf
 
         <div class="sales-form-panel">
-            <div class="sales-field-grid {{ auth()->user()->role == 'Admin' || auth()->user()->username == 'developer' ? 'sales-field-grid-with-recall' : 'sales-field-grid-no-recall' }}">
+            <div class="sales-field-grid sales-field-grid-with-recall">
                 <div class="sales-field">
                     <label><i class="fas fa-user-tag"></i>Customer Code <span>*</span></label>
                     <div class="sales-input-action">
@@ -777,7 +777,6 @@
                     </div>
                 </div>
 
-                @if(auth()->user()->role == 'Admin' || auth()->user()->username == 'developer')
                 <div class="sales-field">
                     <label><i class="fas fa-history"></i>Recall In No</label>
                     <div class="sales-icon-wrap">
@@ -787,7 +786,6 @@
                             value="{{ $maxInvoiceNo+1 }}">
                     </div>
                 </div>
-                @endif
 
                 <div class="sales-field">
                     <label><i class="fas fa-file-invoice"></i>Invoice No</label>
@@ -2098,9 +2096,7 @@ $(document).ready(function () {
                 <input type="hidden" name="Discount" value="${d.Discount || 0}">
             </td>
             <td>
-                <button type="button" class="btn btn-outline-success btn-sm edit-row mb-1">
-                    <i class="far fa-edit me-1"></i> Edit
-                </button>
+                ${canEditSales ? '<button type="button" class="btn btn-outline-success btn-sm edit-row mb-1"><i class="far fa-edit me-1"></i> Edit</button>' : ''}
                 <button type="button" class="btn sales-row-delete remove-row" title="Delete item" aria-label="Delete item">
                     <i class="far fa-trash-alt"></i>
                 </button>
@@ -2155,15 +2151,18 @@ $(document).ready(function () {
             .done(function (res) {
                 if (res.status === 'success') {
                     var html = res.data.map(d => buildExistingRow(d)).join('');
-                    html += `<tr id="addItemBtnRow">
-                        <td colspan="6" class="text-center py-2">
-                            <button type="button" id="addNewItemRow">
-                                <i class="fas fa-plus-circle me-2"></i> Add New Item to This Invoice
-                            </button>
-                        </td>
-                    </tr>`;
+                    if (canEditSales) {
+                        html += `<tr id="addItemBtnRow">
+                            <td colspan="6" class="text-center py-2">
+                                <button type="button" id="addNewItemRow">
+                                    <i class="fas fa-plus-circle me-2"></i> Add New Item to This Invoice
+                                </button>
+                            </td>
+                        </tr>`;
+                    }
                     $('#dynamicAdded').html(html);
                     recalcTotals();
+                    lockRecalledForm();
                 } else {
                     $('#dynamicAdded').html(
                         `<tr><td colspan="6" class="text-danger text-center fw-bold py-3">Invoice Items Not Found</td></tr>`
@@ -2213,6 +2212,7 @@ $(document).ready(function () {
                                 value="${r.Customer_Address || ''}">
                         </div>
                     </div>`);
+                    lockRecalledForm();
                 } else {
                     $('.showCustomer').html(
                         `<div class="text-danger text-center fw-bold py-2">Invoice Header Not Found</div>`
@@ -2221,6 +2221,26 @@ $(document).ready(function () {
             });
         }, 500);
     });
+
+    // ── Recall lock ──────────────────────────────────────────────────
+    // Once an existing invoice is recalled, its fields are locked against
+    // editing unless this role has the "sales edit" permission
+    // (Permissions::canDo('sales', 'edit')) — matching the same permission
+    // that already gates the Update button's visibility.
+    const canEditSales = @json(\App\Support\Permissions::canDo('sales', 'edit'));
+
+    function lockRecalledForm() {
+        if (canEditSales) {
+            return;
+        }
+        ['#invoice_date', '#searchCustomer', '#Route', '#Salesmen', '#total_amount',
+         '#paid_discount', '#paid_amount', '#cash_payment', '#half_payment',
+         '#credite_payment', '#cheque_payment'].forEach(function (sel) {
+            $(sel).prop('readonly', true).prop('disabled', true);
+        });
+        $('#dynamicAdded input').prop('readonly', true);
+        $('#dynamicAdded .edit-row, #addItemBtnRow').remove();
+    }
 
     // ── Add new item row in recalled table ──
     $(document).on('click', '#addNewItemRow', function () {

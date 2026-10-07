@@ -129,6 +129,12 @@
 </head>
 <body>
 
+    @if($isReprint ?? false)
+    <div style="text-align:center; margin:0 0 10px; padding:6px; border:2px solid #c0392b; border-radius:4px; background:#fdecea; color:#c0392b; font-weight:bold; font-size:14px; letter-spacing:2px;">
+        ⚠ REPRINT COPY
+    </div>
+    @endif
+
     <!-- Toolbar -->
     <div class="no-print">
         <button class="btn btn-print"  onclick="window.print()">🖨 Print</button>

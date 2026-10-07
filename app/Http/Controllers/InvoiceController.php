@@ -479,13 +479,24 @@ class InvoiceController extends Controller
 
         if($T_sumdata->count() != null){
 
+            $invoiceRow = TInvoiceSum::where('Invoice_no', $invoiceInput_no)
+                ->where('bc', $branch_code)
+                ->first();
+            $isReprint = false;
+            if ($invoiceRow) {
+                $invoiceRow->increment('print_count');
+                $invoiceRow->forceFill(['last_printed_at' => now()])->save();
+                $isReprint = $invoiceRow->print_count > 1;
+            }
+
            // Generate the PDF content using a view
             $pdf = PDF::loadView('repairInvoicePrint', [
                 'pawnSumData' => $T_sumdata,
                 'customerData' => $T_customerdata,
                 'pawnDetailsData' => $T_detailsdata,
                 'companyData' => $companyData,
-                'branchDel' => $branchDel]);
+                'branchDel' => $branchDel,
+                'isReprint' => $isReprint]);
 
             // Save the PDF to a temporary file
             $pdfPath = storage_path('../public/assets/pdf/Sales_Reprint_Invoice.pdf');
