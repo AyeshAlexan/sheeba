@@ -18,6 +18,15 @@
 
 <style>
 .item-description-wrapper { display: inline-block; max-width: 400px; white-space: normal; }
+
+/* "Batch" tag — shown next to the item name wherever a batch-tracked item appears */
+.batch-tag {
+    display:inline-flex; align-items:center; gap:4px;
+    background:#e8f0fe; color:#2d6ce9;
+    border-radius:20px; padding:1px 9px; margin-left:6px;
+    font-size:10.5px; font-weight:700; white-space:nowrap; vertical-align:middle;
+}
+.batch-tag i { font-size:9px; }
 #dynamicAdded thead th { background: #458ada; color: #fff; text-align: center; }
 #dynamicAdded {
     table-layout: fixed;
@@ -827,6 +836,7 @@
                     <tr>
                         <th style="width:18%;">Item Code</th>
                         <th style="width:22%;">Description</th>
+                        <th style="width:12%;">Batch</th>
                         <th style="width:12%;">GRN Price</th>
                         <th style="width:12%;">QTY</th>
                         <th style="width:18%;">Net Value</th>
@@ -854,9 +864,14 @@
                                 <option value="">Select an item</option>
                                 @foreach($itemCode as $itemData)
                                     <option value="{{ $itemData->Item_description }}">
-                                        {{ $itemData->Item_description }}
+                                        {{ $itemData->Item_description }}{{ $itemData->Batchwise ? ' 📦 Batch' : '' }}
                                     </option>
                                 @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control sales-select" id="item_batch" name="item_batch">
+                                <option value="">(no batch)</option>
                             </select>
                         </td>
                         <td><input class="form-control sales-item-input" type="text" placeholder="0" id="unit_price" name="unit_price" value="0"></td>
@@ -1137,7 +1152,11 @@ SEARCH ITEM MODAL
                             @foreach($itemDetails as $ItemData)
                             <tr>
                                 <td>{{ $ItemData->Item_code }}</td>
-                                <td><div class="item-description-wrapper">{{ $ItemData->Item_description }}</div></td>
+                                <td><div class="item-description-wrapper">{{ $ItemData->Item_description }}
+                                    @if($ItemData->Batchwise)
+                                        <span class="batch-tag" title="This item is batch tracked"><i class="fas fa-cubes"></i> Batch</span>
+                                    @endif
+                                </div></td>
                                 <td>{{ $ItemData->saleprice }}</td>
                                 <td>{{ $ItemData->Credit }}</td>
                                 <td>
@@ -1661,9 +1680,38 @@ function setItemDetails() {
                 $('#item_purchase_price').val(item.purchasePrice || 0);
             });
             updateCostBadge();
+            loadItemBatches(code);
         }
     });
 }
+
+// Load sellable batches (remaining qty > 0) for the selected item into #item_batch.
+// Non-batch-tracked items simply come back empty, leaving "(no batch)" selected.
+function loadItemBatches(itemCode) {
+    var batchSelect = $('#item_batch');
+    batchSelect.html('<option value="">(no batch)</option>');
+
+    $.get("{{ url('get_item_batches_ajax') }}", { item_code: itemCode, only_available: 1 })
+        .done(function (res) {
+            if (res.data && res.data.length) {
+                res.data.forEach(function (b) {
+                    batchSelect.append($('<option>', {
+                        value: b.batch_no,
+                        'data-sale-price': b.sale_price,
+                        text: b.batch_no + ' (Qty ' + b.qty_remaining + ', Rs.' + b.sale_price + ')'
+                    }));
+                });
+            }
+        });
+}
+
+$(document).on('change', '#item_batch', function () {
+    var price = $(this).find(':selected').data('sale-price');
+    if (price !== undefined && price !== '') {
+        $('#unit_price').val(price);
+        updateCostBadge();
+    }
+});
 
 $('#item_code').on('keyup', function () { setItemDetails(); });
 
@@ -1893,6 +1941,7 @@ $('.add-item').click(function () {
     var discount         = $('#discount').val();
     var discount_val     = parseFloat($('#discount_val').val()) || 0;
     var net_value        = parseFloat($('#net_value').val())    || 0;
+    var batch_no         = $('#item_batch').val();
 
     if (!customer_nic || !invoice_no || !item_code || !qty || !unit_price || !net_value) {
         alert('Please fill in all required fields.');
@@ -1908,7 +1957,7 @@ $('.add-item').click(function () {
         customer_nic, invoice_no, invoice_date,
         item_code, item_s_code, Per, item_description,
         qty, unit_price, Free_Issues, discount,
-        discount_val, net_value
+        discount_val, net_value, batch_no
     };
 
     if (purchasePrice > 0 && net_value < totalCost) {
@@ -1950,6 +1999,10 @@ function commitAddItem() {
                         @endforeach
                     </datalist>
                 </td>
+        <td style="width:10%;">
+            <input class="form-control" type="text" style="text-align:center;"
+                name="inputs[${rowIndex}][batch_no]" value="${d.batch_no || ''}" readonly>
+        </td>
         <td style="width:12%;">
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][unit_price]" value="${d.unit_price}" readonly>
@@ -2006,6 +2059,7 @@ function resetTopRow() {
     $('#discount').val('0');
     $('#discount_val').val('0');
     $('#net_value').val('0');
+    $('#item_batch').html('<option value="">(no batch)</option>');
     $('#cg_net_badge').hide();
 }
 

@@ -20,6 +20,15 @@
             max-width: 400px;
             white-space: normal;
         }
+
+        /* "Batch" tag — shown next to the item name wherever a batch-tracked item appears */
+        .batch-tag {
+            display:inline-flex; align-items:center; gap:4px;
+            background:#e8f0fe; color:#2d6ce9;
+            border-radius:20px; padding:1px 9px; margin-left:6px;
+            font-size:10.5px; font-weight:700; white-space:nowrap; vertical-align:middle;
+        }
+        .batch-tag i { font-size:9px; }
     </style>
 </head>
 
@@ -288,6 +297,7 @@ $(document).ready(function () {
                                         {{-- <th style="width:15%; text-align: center;">Category</th> --}}
                                         <th style="width:15%; text-align: center;">Item Code</th>
                                         <th style="width:20%; text-align: center;">Description</th>
+                                        <th style="width:12%; text-align: center;">Batch</th>
                                         <th style="width:12%; text-align: center;">Unit Price</th>
                                         <th style="width:12%; text-align: center;">QTY</th>
                                         <th style="width:12%; text-align: center;">Discount (%)</th>
@@ -313,8 +323,13 @@ $(document).ready(function () {
                                             <select class="select form-control" id="item_description" name="item_description">
                                                 <option value="">Select an item</option>
                                                 @foreach( $itemCode as $itemData)
-                                                    <option value="{{ $itemData->Item_description }}">{{ $itemData->Item_description }}</option>
+                                                    <option value="{{ $itemData->Item_description }}">{{ $itemData->Item_description }}{{ $itemData->Batchwise ? ' 📦 Batch' : '' }}</option>
                                                 @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="select form-control" id="item_batch" name="item_batch">
+                                                <option value="">(no batch)</option>
                                             </select>
                                         </td>
                                         <td>
@@ -392,6 +407,9 @@ $(document).ready(function () {
                                                                                     <td>
                                                                                         <div class="item-description-wrapper">
                                                                                             {{$ItemData->Item_description}}
+                                                                                            @if($ItemData->Batchwise)
+                                                                                                <span class="batch-tag" title="This item is batch tracked"><i class="fas fa-cubes"></i> Batch</span>
+                                                                                            @endif
                                                                                         </div>
                                                                                     </td>
                                                                                     <td style="text-align: right">{{$ItemData->saleprice}}</td>
@@ -1168,6 +1186,8 @@ $(document).ready(function () {
                                 item_s_code.val(item.Bar_code);
                                 last_price.val(item.Credit);
                             });
+
+                            loadItemBatches(Item_code);
                         }
                     },
                     error: function (err) {
@@ -1181,6 +1201,36 @@ $(document).ready(function () {
                     }
                 });
     }
+
+    // Load sellable batches (remaining qty > 0) for the selected item into #item_batch.
+    // Items that aren't batch-tracked simply come back with an empty list, leaving
+    // the "(no batch)" option as the only choice — no behavior change for them.
+    function loadItemBatches(itemCode) {
+        var batchSelect = $('#item_batch');
+        batchSelect.html('<option value="">(no batch)</option>');
+
+        $.get("{{ url('get_item_batches_ajax') }}", {
+            item_code: itemCode,
+            only_available: 1
+        }, function (res) {
+            if (res.data && res.data.length) {
+                res.data.forEach(function (b) {
+                    batchSelect.append($('<option>', {
+                        value: b.batch_no,
+                        'data-sale-price': b.sale_price,
+                        text: b.batch_no + ' (Qty ' + b.qty_remaining + ', Rs.' + b.sale_price + ')'
+                    }));
+                });
+            }
+        });
+    }
+
+    $(document).on('change', '#item_batch', function () {
+        var price = $(this).find(':selected').data('sale-price');
+        if (price !== undefined && price !== '') {
+            $('#unit_price').val(price);
+        }
+    });
 </script>
 
 {{--  add item details to form when click Add button --}}
@@ -1403,6 +1453,7 @@ $(document).ready(function () {
             let discount = $('#discount').val();
             let discount_val = $('#discount_val').val();
             let net_value = $('#net_value').val();
+            let item_batch = $('#item_batch').val();
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
@@ -1423,6 +1474,7 @@ $(document).ready(function () {
                     discount: discount,
                     discount_val: discount_val,
                     net_value: net_value,
+                    batch_no: item_batch,
                 };
 
                 // Add data to the array
@@ -1451,11 +1503,16 @@ $(document).ready(function () {
 
                        
 
+                        <td style="width:10%;">
+                            <input class="form-control" type="text" style="text-align: center;" placeholder="Batch"
+                            name="inputs[` + i + `][batch_no]" value="` + item_batch + `" readonly>
+                        </td>
+
                         <td style="width:12%;">
                             <input class="form-control" type="text" style="text-align: center;" placeholder="Unit Price"
                             id="dy_unit_price" name="inputs[` + i + `][unit_price]" value="` + unit_price + `" readonly>
                         </td>
-                        
+
                          <td style="width:10%;">
                             <input class="form-control" type="text" style="text-align: center;" placeholder="QTY"
                             id="dy_qty" name="inputs[` + i + `][qty]" value="` + qty + `" readonly>
@@ -1508,6 +1565,7 @@ $(document).ready(function () {
             document.getElementById("discount").value = "0";
             document.getElementById("discount_val").value = "0";
             document.getElementById("net_value").value = "0";
+            $('#item_batch').html('<option value="">(no batch)</option>');
         }
 
         // get total function

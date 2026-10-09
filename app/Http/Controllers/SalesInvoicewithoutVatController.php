@@ -67,6 +67,7 @@ class SalesInvoicewithoutVatController extends Controller
             'items.purchasePrice',
             'items.saleprice',
             'items.Credit',
+            'items.Batchwise',
             DB::raw('COALESCE(SUM(t_item_movements.qun_in), 0) AS total_qun_in'),
             DB::raw('COALESCE(SUM(t_item_movements.qun_out), 0) AS total_qun_out'),
             DB::raw('COALESCE(SUM(t_item_movements.qun_in), 0) - COALESCE(SUM(t_item_movements.qun_out), 0) AS QTY'),
@@ -82,7 +83,8 @@ class SalesInvoicewithoutVatController extends Controller
             'items.Item_description',
             'items.purchasePrice',
             'items.saleprice',
-            'items.Credit'
+            'items.Credit',
+            'items.Batchwise'
         )
         ->get();
 
@@ -226,12 +228,27 @@ public function add_salesInvoice(Request $request)
                 ->where('Item_code', $value['item_code'])
                 ->first();
 
+            // Batch tracking: if a batch was picked for this line, re-check its remaining
+            // qty server-side (SUM(qun_in)-SUM(qun_out) for that item_code+batch_no) before
+            // letting the sale go through, then tag the stock-out movement with it.
+            $batchNo = $value['batch_no'] ?? null;
+            if (!empty($batchNo)) {
+                $qtyRemaining = TItemMovement::where('item_code', $value['item_code'])
+                    ->where('batch_no', $batchNo)
+                    ->selectRaw('COALESCE(SUM(qun_in),0) - COALESCE(SUM(qun_out),0) as remaining')
+                    ->value('remaining');
+                if ($value['qty'] > $qtyRemaining) {
+                    abort(422, "Not enough stock in batch \"{$batchNo}\" for item {$value['item_code']}. Remaining: {$qtyRemaining}");
+                }
+            }
+
             // 3a. Movement for the main/sold item itself — always goes out
             $movement              = new TItemMovement;
             $movement->trans_no    = $value['invoice_no'];
             $movement->dDate       = $value['invoice_date'];
             $movement->trans_code  = 'SALES_OUT_VAT';
             $movement->item_code   = $value['item_code'];
+            $movement->batch_no    = $batchNo;
             $movement->qun_out     = $value['qty'];
             $movement->Free_Issues = $value['Free_Issues'] ?? 0;
             $movement->bc          = $branch_code;

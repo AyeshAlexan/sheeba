@@ -11,6 +11,9 @@ use App\Models\MColor;
 use App\Models\M_Make;
 use App\Models\Package;
 use App\Models\PackageItem;
+use App\Models\TItemBatch;
+use App\Models\TItemMovement;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Validation\Rule;
@@ -23,7 +26,14 @@ class ItemController extends Controller
         if (request()->ajax()) {
             return DataTables::of(Item::select('*'))
                 ->addColumn('action', 'Action_button')
-                ->rawColumns(['action'])
+                ->editColumn('Item_description', function ($row) {
+                    $name = e($row->Item_description);
+                    if ($row->Batchwise) {
+                        $name .= ' <span class="batch-tag" title="This item is batch tracked"><i class="fas fa-cubes"></i> Batch</span>';
+                    }
+                    return $name;
+                })
+                ->rawColumns(['action', 'Item_description'])
                 ->addIndexColumn()
                 ->make(true);
         }
@@ -52,7 +62,7 @@ class ItemController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        Item::updateOrCreate(
+        $item = Item::updateOrCreate(
             ['id' => $request->id],
             [
                 'category'          => $request->category,
@@ -71,13 +81,89 @@ class ItemController extends Controller
                 'RecorderQuantitiy' => $request->RecorderQuantitiy,
                 'SaleDecimal'       => $request->SaleDecimal,
                 'Serialnumber'      => $request->Serialnumber,
+                'Batchwise'         => $request->Batchwise,
                 'Per'      => $request->Per,
                 'Branch'            => $request->Branch,
                 'BranchCode'        => $request->BranchCode,
             ]
         );
 
+        // If batch tracking was just enabled on an item that already has real stock
+        // (movements recorded before it was batch-tracked), create a LEGACY batch so
+        // that existing stock isn't stranded. Brand-new items with no stock history
+        // get no placeholder batch — their first real batch is created at the first GRN.
+        if ($request->Batchwise) {
+            $hasBatches = TItemBatch::where('item_code', $item->Item_code)->exists();
+            $hasExistingStock = TItemMovement::where('item_code', $item->Item_code)->exists();
+            if (!$hasBatches && $hasExistingStock) {
+                TItemBatch::create([
+                    'item_code'         => $item->Item_code,
+                    'batch_no'          => $item->Item_code . '-LEGACY',
+                    'purchase_price'    => $item->purchasePrice,
+                    'sale_price'        => $item->saleprice,
+                    'is_auto_generated' => 1,
+                    'source_trans_code' => 'LEGACY',
+                    'bc'                => $item->BranchCode,
+                ]);
+            }
+        }
+
         return response()->json(['message' => 'Item saved successfully']);
+    }
+
+    // ── Batches for an item (view + sale-time dropdown) ─────────────
+    //
+    //  Remaining qty per batch is derived the same way overall item stock
+    //  is derived elsewhere: SUM(qun_in) - SUM(qun_out) from t_item_movements,
+    //  filtered to this item_code + batch_no. Movement rows written before
+    //  batch tracking existed have batch_no = NULL — those are attributed to
+    //  the item's "{Item_code}-LEGACY" batch so old stock isn't stranded.
+    public function getBatches(Request $request)
+    {
+        $itemCode = $request->item_code;
+        $onlyAvailable = $request->boolean('only_available');
+
+        $legacyBatchNo = $itemCode . '-LEGACY';
+
+        $batches = TItemBatch::where('t_item_batches.item_code', $itemCode)
+            ->leftJoin('t_item_movements', function ($join) use ($itemCode, $legacyBatchNo) {
+                $join->on('t_item_movements.item_code', '=', 't_item_batches.item_code')
+                    ->where(function ($q) use ($legacyBatchNo) {
+                        $q->whereColumn('t_item_movements.batch_no', 't_item_batches.batch_no')
+                          ->orWhere(function ($q2) use ($legacyBatchNo) {
+                              $q2->whereNull('t_item_movements.batch_no')
+                                 ->where('t_item_batches.batch_no', $legacyBatchNo);
+                          });
+                    });
+            })
+            ->select(
+                't_item_batches.id',
+                't_item_batches.item_code',
+                't_item_batches.batch_no',
+                't_item_batches.purchase_price',
+                't_item_batches.sale_price',
+                't_item_batches.created_at',
+                DB::raw('COALESCE(SUM(t_item_movements.qun_in),0) - COALESCE(SUM(t_item_movements.qun_out),0) AS qty_remaining')
+            )
+            ->groupBy(
+                't_item_batches.id',
+                't_item_batches.item_code',
+                't_item_batches.batch_no',
+                't_item_batches.purchase_price',
+                't_item_batches.sale_price',
+                't_item_batches.created_at'
+            )
+            ->orderBy('t_item_batches.created_at')
+            ->get();
+
+        if ($onlyAvailable) {
+            $batches = $batches->filter(fn ($b) => (float) $b->qty_remaining > 0)->values();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $batches,
+        ]);
     }
 
     // ── Bulk store ─────────────────────────────────────────────────

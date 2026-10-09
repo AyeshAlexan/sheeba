@@ -45,18 +45,35 @@
     }
     .quick-create-link:hover { opacity: .75; }
 
-    /* ── Category Preview ── */
+    /* ── Category Preview (collapsed by default — click header to expand) ── */
     #category-items-preview {
-        display:none; margin-top:12px; border:1px solid var(--tr-border);
-        border-radius:12px; background:var(--tr-bg); overflow:hidden;
+        display:none; border:1px solid var(--tr-border);
+        border-radius:12px; background:var(--tr-white); overflow:hidden;
     }
     #category-items-preview .preview-header {
-        background:var(--tr-blue); color:#fff; padding:8px 14px;
-        font-weight:600; font-size:12.5px; display:flex;
-        justify-content:space-between; align-items:center;
+        width:100% !important; box-sizing:border-box !important; border:none !important;
+        background:var(--tr-blue) !important; color:#fff; padding:8px 14px !important;
+        margin:0 !important; border-radius:0 !important; height:auto !important;
+        font-weight:600; font-size:12.5px; display:flex !important; cursor:pointer;
+        justify-content:space-between; align-items:center; text-align:left;
     }
     #category-items-preview table thead th { background:var(--tr-blue-light); font-size:12px; }
     #cat-item-count { background:#fff; color:var(--tr-blue); border-radius:10px; padding:1px 8px; font-size:12px; font-weight:700; }
+    .preview-toggle-icon { font-size:11px; transition:transform .15s; }
+    #category-items-preview.expanded .preview-toggle-icon { transform:rotate(180deg); }
+    #category-items-preview .preview-body { padding:8px; }
+
+    /* ── Small helper text under a field ── */
+    .item-field-hint { display:block; font-size:10.5px; color:var(--tr-text-secondary); margin-top:4px; }
+
+    /* ── "Batch" tag — shown next to the item name wherever a batch-tracked item appears ── */
+    .batch-tag {
+        display:inline-flex; align-items:center; gap:4px;
+        background:var(--tr-blue-light); color:var(--tr-blue);
+        border-radius:20px; padding:1px 9px; margin-left:6px;
+        font-size:10.5px; font-weight:700; white-space:nowrap; vertical-align:middle;
+    }
+    .batch-tag i { font-size:9px; }
 
     /* ── Tabs (pill style) ── */
     .item-mode-tabs {
@@ -201,6 +218,106 @@
         display:none;
     }
     .bulk-preview span { color:var(--tr-navy); font-weight:700; }
+
+    /* ── Feature toggle cards (Sales by Decimals / Serial Number / Batch Tracked / Inactive) ── */
+    .feature-toggle-grid {
+        display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+        grid-auto-rows:1fr; gap:10px; margin-top:4px;
+    }
+    .feature-toggle-card {
+        display:flex; align-items:flex-start; gap:12px;
+        border:1px solid var(--tr-border); border-radius:12px;
+        padding:12px 14px; cursor:pointer; background:var(--tr-white);
+        transition:border-color .15s, background .15s, box-shadow .15s;
+        user-select:none; height:100%;
+    }
+    .feature-toggle-card:hover { border-color:var(--tr-blue); }
+    .feature-toggle-card .ftc-icon {
+        flex:0 0 auto; width:38px; height:38px; border-radius:10px;
+        background:var(--tr-bg); color:var(--tr-text-secondary);
+        display:flex; align-items:center; justify-content:center;
+        font-size:16px; transition:background .15s, color .15s;
+    }
+    .feature-toggle-card .ftc-title {
+        font-size:13.5px; font-weight:700; color:var(--tr-navy);
+        display:flex; align-items:center; gap:6px;
+    }
+    .feature-toggle-card .ftc-desc {
+        font-size:11.5px; color:var(--tr-text-secondary); margin-top:2px; line-height:1.4;
+    }
+    .feature-toggle-card.active {
+        border-color:var(--tr-blue); background:var(--tr-blue-light);
+        box-shadow:0 0 0 1px var(--tr-blue) inset;
+    }
+    .feature-toggle-card.active .ftc-icon { background:var(--tr-blue); color:#fff; }
+    .feature-toggle-card .ftc-check {
+        margin-left:auto; flex:0 0 auto; font-size:16px; color:var(--tr-border); margin-top:2px;
+    }
+    .feature-toggle-card.active .ftc-check { color:var(--tr-blue); }
+
+    /* ── Item modal chrome: header / body / footer ── */
+    .item-modal-content { border-radius:16px; border:none; overflow:hidden; box-shadow:0 20px 50px rgba(20,33,61,.18); }
+    .item-modal-header {
+        background:var(--tr-navy); border-bottom:none; padding:18px 24px;
+    }
+    .item-modal-header-left { display:flex; align-items:center; gap:14px; }
+    .item-modal-header-icon {
+        width:42px; height:42px; border-radius:11px; flex:0 0 auto;
+        background:rgba(255,255,255,.12); color:#fff;
+        display:flex; align-items:center; justify-content:center; font-size:18px;
+    }
+    .item-modal-header h5.modal-title { color:#ffffff !important; font-weight:700; }
+    .item-modal-header-subtitle { color:rgba(255,255,255,.65); font-size:12px; }
+    .item-modal-header .btn-close {
+        filter:invert(1) grayscale(100%) brightness(200%); opacity:.75;
+        width:34px; height:34px; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        background-color:rgba(255,255,255,.1); transition:background-color .15s, opacity .15s;
+    }
+    .item-modal-header .btn-close:hover { opacity:1; background-color:rgba(255,255,255,.18); }
+    .item-modal-body { background:var(--tr-bg); padding:22px 24px 0; max-height:72vh; overflow-y:auto; }
+
+    .item-section-hint { font-size:11.5px; color:var(--tr-text-secondary); margin:-8px 0 12px; }
+
+    /* Custom caret so <select class="form-control"> is visually distinguishable from a text input */
+    select.form-control {
+        appearance:none; -webkit-appearance:none; -moz-appearance:none;
+        background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%2362748A' d='M4 6l4 4 4-4H4z'/%3E%3C/svg%3E");
+        background-repeat:no-repeat; background-position:right 12px center; background-size:14px;
+        padding-right:34px !important;
+    }
+
+    .item-modal-footer-actions {
+        display:flex; justify-content:flex-end; gap:10px;
+        position:sticky; bottom:0; margin:20px -24px 0; padding:16px 24px;
+        background:var(--tr-bg); border-top:1px solid var(--tr-border);
+    }
+    .item-modal-footer-actions .btn { border-radius:9px; padding:9px 22px; font-weight:600; font-size:13.5px; }
+
+    /* ── Image upload dropzone ── */
+    .item-image-upload { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .item-image-dropzone {
+        position:relative; width:100%; max-width:220px; height:140px;
+        border:1.5px dashed var(--tr-border); border-radius:12px;
+        background:var(--tr-white); cursor:pointer; overflow:hidden;
+        display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+        transition:border-color .15s, background .15s;
+    }
+    .item-image-dropzone:hover { border-color:var(--tr-blue); background:var(--tr-blue-light); }
+    .item-image-dropzone #preview-image {
+        display:none; width:100%; height:100%; object-fit:cover;
+    }
+    .item-image-upload-hint {
+        flex:1 1 220px; font-size:12px; color:var(--tr-text-secondary); line-height:1.6;
+    }
+    .item-image-upload-hint strong { color:var(--tr-navy); display:block; font-size:13px; margin-bottom:3px; }
+    .item-image-placeholder {
+        display:flex; flex-direction:column; align-items:center; gap:4px;
+        color:var(--tr-text-secondary); text-align:center; padding:0 12px;
+    }
+    .item-image-placeholder i { font-size:22px; color:var(--tr-blue); margin-bottom:2px; }
+    .item-image-placeholder span { font-size:12.5px; font-weight:600; color:var(--tr-navy); }
+    .item-image-placeholder small { font-size:10.5px; }
 </style>
 
 <body>
@@ -256,15 +373,21 @@
      MAIN ADD / EDIT ITEM MODAL
 ============================================================ --}}
 <div class="modal fade" id="Item-modal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ItemModal">Add Item</h5>
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content item-modal-content">
+            <div class="modal-header item-modal-header">
+                <div class="item-modal-header-left">
+                    <div class="item-modal-header-icon"><i class="fas fa-box"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="ItemModal">Add Item</h5>
+                        <p class="item-modal-header-subtitle mb-0">Fill in the product details below</p>
+                    </div>
+                </div>
                 <button type="button" class="btn-close"
                         data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body item-modal-body">
 
                 {{-- ── Mode Tabs ── --}}
                 <ul class="nav nav-tabs item-mode-tabs mb-3">
@@ -292,125 +415,146 @@
                     <form action="javascript:void(0)" id="ItemForm" name="ItemForm" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="id" id="id">
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-sm-6">
-                                <label class="form-label">Category
-                                    <a href="{{ ('Category') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Category</a>
-                                </label>
-                                <select class="form-control" name="category" id="category">
-                                    <option value="">Please Select</option>
-                                    @foreach($Category as $categoryData)
-                                        <option value="{{ $categoryData->description }}"
-                                                data-code="{{ $categoryData->Cate_code }}">
-                                            {{ $categoryData->description }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        <div class="item-section-card">
+                            <h6><i class="fas fa-info-circle"></i> Basic Information</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label">Category
+                                        <a href="{{ ('Category') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Category <i class="fas fa-external-link-alt" style="font-size:9px;"></i></a>
+                                    </label>
+                                    <select class="form-control" name="category" id="category">
+                                        <option value="">Please Select</option>
+                                        @foreach($Category as $categoryData)
+                                            <option value="{{ $categoryData->description }}"
+                                                    data-code="{{ $categoryData->Cate_code }}">
+                                                {{ $categoryData->description }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                <div id="category-items-preview">
-                                    <div class="preview-header">
-                                        <span id="preview-category-name">Items in Category</span>
+                                <div class="col-sm-6">
+                                    <label class="form-label">Department
+                                        <a href="{{ ('Department') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Department <i class="fas fa-external-link-alt" style="font-size:9px;"></i></a>
+                                    </label>
+                                    <select class="select form-control" name="Department" id="Department">
+                                        <option value="">Please Select</option>
+                                        @foreach($Department as $DepartmentData)
+                                            <option value="{{ $DepartmentData->description }}">
+                                                {{ $DepartmentData->description }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="category-items-preview" class="mb-3">
+                                <button type="button" class="preview-header" id="category-preview-toggle">
+                                    <span id="preview-category-name">Items in Category</span>
+                                    <span class="d-flex align-items-center gap-2">
                                         <span id="cat-item-count">0 items</span>
-                                    </div>
-                                    <div class="p-2">
-                                        <div class="table-responsive" style="max-height:200px;overflow-y:auto;">
-                                            <table class="table table-sm table-bordered mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th><th>Item Code</th>
-                                                        <th>Description</th><th>Purchase Price</th><th>Sale Price</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="cat-items-body">
-                                                    <tr><td colspan="5" class="text-center text-muted">No items found</td></tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        <i class="fas fa-chevron-down preview-toggle-icon"></i>
+                                    </span>
+                                </button>
+                                <div class="preview-body" id="category-preview-body" style="display:none;">
+                                    <div class="table-responsive" style="max-height:200px;overflow-y:auto;">
+                                        <table class="table table-sm table-bordered mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th><th>Item Code</th>
+                                                    <th>Description</th><th>Purchase Price</th><th>Sale Price</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="cat-items-body">
+                                                <tr><td colspan="5" class="text-center text-muted">No items found</td></tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-sm-6">
-                                <label class="form-label">Department
-                                    <a href="{{ ('Department') }}" target="_blank" class="quick-create-link"><i class="fas fa-plus"></i> New Department</a>
-                                </label>
-                                <select class="select form-control" name="Department" id="Department">
-                                    <option value="">Please Select</option>
-                                    @foreach($Department as $DepartmentData)
-                                        <option value="{{ $DepartmentData->description }}">
-                                            {{ $DepartmentData->description }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-sm-6">
-                                <label class="form-label">Item Code</label>
-                                <div class="input-group">
-                                    <input type="text" id="single_cate_code" class="form-control"
-                                           placeholder="Category Code" readonly>
-                                    <input type="text" id="single_item_number" class="form-control"
-                                           placeholder="Item Number">
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label">Item Code <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="text" id="single_cate_code" class="form-control"
+                                               placeholder="Category Code" readonly>
+                                        <input type="text" id="single_item_number" class="form-control"
+                                               placeholder="Item Number">
+                                    </div>
+                                    <small class="item-field-hint">Auto-filled category prefix + the number you type, e.g. SS-IC001</small>
+                                    <input type="hidden" name="Item_code" id="Item_code">
                                 </div>
-                                <input type="hidden" name="Item_code" id="Item_code">
+                                <div class="col-sm-6">
+                                    <label class="form-label">Model No</label>
+                                    <input type="text" class="form-control" id="Bar_code"
+                                           name="Bar_code" placeholder="Bar Code" maxlength="50">
+                                </div>
                             </div>
-                            <div class="col-sm-6">
-                                <label class="form-label">Model No</label>
-                                <input type="text" class="form-control" id="Bar_code"
-                                       name="Bar_code" placeholder="Bar Code" maxlength="50">
+
+                            <div class="mb-0">
+                                <label class="form-label">Description <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="Item_description"
+                                       name="Item_description" placeholder="Description" maxlength="150" required>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Description <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="Item_description"
-                                   name="Item_description" placeholder="Description" maxlength="150" required>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-sm-4">
-                                <label class="form-label">Brand</label>
-                                <select class="form-control" name="Brand" id="Brand">
-                                    <option value="">Please Select</option>
-                                    @foreach($Brand as $b)
-                                        <option value="{{ $b->Brand_name }}">{{ $b->Brand_name }}</option>
-                                    @endforeach
-                                </select>
+                        <div class="item-section-card">
+                            <h6><i class="fas fa-layer-group"></i> Classification</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label">Brand</label>
+                                    <select class="form-control" name="Brand" id="Brand">
+                                        <option value="">Please Select</option>
+                                        @foreach($Brand as $b)
+                                            <option value="{{ $b->Brand_name }}">{{ $b->Brand_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">Color</label>
+                                    <select class="form-control" name="Color" id="Color">
+                                        <option value="">Please Select</option>
+                                        @foreach($Color as $c)
+                                            <option value="{{ $c->Color_name }}">{{ $c->Color_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">Make</label>
+                                    <select class="form-control" name="Make" id="Make">
+                                        <option value="">Please Select</option>
+                                        @foreach($Make as $m)
+                                            <option value="{{ $m->Make_name }}">{{ $m->Make_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-sm-4">
-                                <label class="form-label">Color</label>
-                                <select class="form-control" name="Color" id="Color">
-                                    <option value="">Please Select</option>
-                                    @foreach($Color as $c)
-                                        <option value="{{ $c->Color_name }}">{{ $c->Color_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-sm-4">
-                                <label class="form-label">Make</label>
-                                <select class="form-control" name="Make" id="Make">
-                                    <option value="">Please Select</option>
-                                    @foreach($Make as $m)
-                                        <option value="{{ $m->Make_name }}">{{ $m->Make_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-sm-6">
-                                <label class="form-label">Per</label>
+                            <div class="mb-0">
+                                <label class="form-label">Per (Unit of Measure)</label>
                                 <input type="text" class="form-control" id="Per"
-                                       name="Per" placeholder="Per" maxlength="150">
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label">Image:</label>
-                                <input type="file" name="image" id="inputImage" class="form-control">
+                                       name="Per" placeholder="e.g. PCS, KG, BOX" maxlength="150">
                             </div>
                         </div>
-                        <img id="preview-image" width="300px">
+
+                        <div class="item-section-card">
+                            <h6><i class="fas fa-image"></i> Product Image</h6>
+                            <div class="item-image-upload">
+                                <label for="inputImage" class="item-image-dropzone">
+                                    <img id="preview-image" src="" alt="">
+                                    <div id="image-dropzone-placeholder" class="item-image-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Click to upload an image</span>
+                                        <small>PNG, JPG up to a few MB</small>
+                                    </div>
+                                </label>
+                                <input type="file" name="image" id="inputImage" class="d-none" accept="image/*">
+                                <div class="item-image-upload-hint">
+                                    <strong>Product photo</strong>
+                                    Used on item lists and printed documents where enabled. Square images work best — they'll be cropped to fit the thumbnail.
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="row g-3">
                             <div class="col-sm-6">
@@ -446,30 +590,81 @@
                                         <input type="text" class="form-control" id="RecorderQuantitiy"
                                                name="RecorderQuantitiy" placeholder="Recorder Quantity" maxlength="25">
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="1"
-                                               id="SaleDecimal" name="SaleDecimal">
-                                        <label class="form-check-label">Sales by Decimals</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="1"
-                                               id="Serialnumber" name="Serialnumber">
-                                        <label class="form-check-label">Serial Number</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="1"
-                                               id="Inactive" name="Inactive">
-                                        <label class="form-check-label">Inactive</label>
+                                    <input type="checkbox" class="d-none" value="1" id="SaleDecimal" name="SaleDecimal">
+                                    <input type="checkbox" class="d-none" value="1" id="Serialnumber" name="Serialnumber">
+                                    <input type="checkbox" class="d-none" value="1" id="Batchwise" name="Batchwise">
+                                    <input type="checkbox" class="d-none" value="1" id="Inactive" name="Inactive">
+
+                                    <div class="feature-toggle-grid">
+                                        <div class="feature-toggle-card" data-target="SaleDecimal">
+                                            <div class="ftc-icon"><i class="fas fa-calculator"></i></div>
+                                            <div>
+                                                <div class="ftc-title">Sales by Decimals</div>
+                                                <div class="ftc-desc">Allow fractional quantities (e.g. 1.5) when selling this item.</div>
+                                            </div>
+                                            <i class="fas fa-check-circle ftc-check"></i>
+                                        </div>
+
+                                        <div class="feature-toggle-card" data-target="Serialnumber">
+                                            <div class="ftc-icon"><i class="fas fa-barcode"></i></div>
+                                            <div>
+                                                <div class="ftc-title">Serial Number</div>
+                                                <div class="ftc-desc">Track each unit individually by its own serial number.</div>
+                                            </div>
+                                            <i class="fas fa-check-circle ftc-check"></i>
+                                        </div>
+
+                                        <div class="feature-toggle-card" data-target="Batchwise">
+                                            <div class="ftc-icon"><i class="fas fa-cubes"></i></div>
+                                            <div>
+                                                <div class="ftc-title">Batch Tracked</div>
+                                                <div class="ftc-desc">Batch items use GRN pricing instead of fixed master prices.</div>
+                                            </div>
+                                            <i class="fas fa-check-circle ftc-check"></i>
+                                        </div>
+
+                                        <div class="feature-toggle-card" data-target="Inactive">
+                                            <div class="ftc-icon"><i class="fas fa-ban"></i></div>
+                                            <div>
+                                                <div class="ftc-title">Inactive</div>
+                                                <div class="ftc-desc">Hide this item from sales and purchase screens.</div>
+                                            </div>
+                                            <i class="fas fa-check-circle ftc-check"></i>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
+
+                        </div>
+
+                        <div class="item-section-card" id="itemBatchesRow" style="display:none;">
+                            <h6><i class="fas fa-cubes"></i> Batches</h6>
+                            <p class="item-section-hint">Created automatically when stock is received via Purchases / GRN.</p>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-0" id="itemBatchesTable">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Batch No</th>
+                                            <th>Purchase Price</th>
+                                            <th>Sale Price</th>
+                                            <th>Qty Remaining</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td colspan="4" class="text-muted">No batches yet.</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
                         <input type="hidden" name="Branch"     id="Branch"     value="{{ Auth::user()->Branch }}">
                         <input type="hidden" name="BranchCode" id="BranchCode" value="{{ Auth::user()->BC }}">
 
-                        <div class="text-center mt-3">
-                            <button type="submit" class="btn btn-primary" id="btn-save">Save Changes</button>
+                        <div class="item-modal-footer-actions">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="btn-save">
+                                <i class="fas fa-check me-1"></i> Save Changes
+                            </button>
                         </div>
                     </form>
                 </div>{{-- end #single-item-section --}}
@@ -1001,15 +1196,68 @@ function add() {
     $('#ItemForm').trigger('reset');
     $('#ItemModal').html('Add Item');
     $('#id').val('');
-    $('#category-items-preview').hide();
+    $('#category-items-preview').hide().removeClass('expanded');
+    $('#category-preview-body').hide();
     $('#single_cate_code').val('');
     $('#single_item_number').val('');
     $('#Item_code').val('');
     $('#error-messages').hide();
     resetPackageSection();
     switchMode('single');
+    resetImagePreview();
+    syncFeatureToggleCards();
+    $('#itemBatchesRow').hide();
     $('#Item-modal').modal('show');
 }
+
+// ════════════════════════════════════════════════════════
+// FEATURE TOGGLE CARDS (Sales by Decimals / Serial Number / Batch Tracked / Inactive)
+// ════════════════════════════════════════════════════════
+function syncFeatureToggleCards() {
+    $('.feature-toggle-card').each(function () {
+        let checkbox = $('#' + $(this).data('target'));
+        $(this).toggleClass('active', checkbox.is(':checked'));
+    });
+}
+
+// ════════════════════════════════════════════════════════
+// IMAGE UPLOAD PREVIEW
+// ════════════════════════════════════════════════════════
+function resetImagePreview() {
+    $('#preview-image').attr('src', '').hide();
+    $('#image-dropzone-placeholder').show();
+}
+
+$(document).on('change', '#inputImage', function () {
+    let file = this.files && this.files[0];
+    if (!file) { resetImagePreview(); return; }
+
+    let reader = new FileReader();
+    reader.onload = function (e) {
+        $('#preview-image').attr('src', e.target.result).show();
+        $('#image-dropzone-placeholder').hide();
+    };
+    reader.readAsDataURL(file);
+});
+
+$(document).on('click', '#category-preview-toggle', function () {
+    $('#category-items-preview').toggleClass('expanded');
+    $('#category-preview-body').slideToggle(150);
+});
+
+$(document).on('click', '.feature-toggle-card', function () {
+    let checkbox = $('#' + $(this).data('target'));
+    checkbox.prop('checked', !checkbox.is(':checked'));
+    syncFeatureToggleCards();
+
+    if ($(this).data('target') === 'Batchwise' && !checkbox.is(':checked')) {
+        $('#itemBatchesRow').hide();
+    }
+});
+
+$(document).ready(function () {
+    syncFeatureToggleCards();
+});
 
 
 // ════════════════════════════════════════════════════════
@@ -1024,6 +1272,7 @@ function editFunc(id) {
         success: function (res) {
             switchMode('single');
             $('#ItemModal').html('Edit Item');
+            resetImagePreview();
             $('#Item-modal').modal('show');
             $('#id').val(res.id);
             $('#category').val(res.category);
@@ -1043,14 +1292,36 @@ function editFunc(id) {
             $('#Serialnumber').prop('checked', res.Serialnumber == 1);
             $('#SaleDecimal').prop('checked',  res.SaleDecimal  == 1);
             $('#Inactive').prop('checked',     res.Inactive     == 1);
+            $('#Batchwise').prop('checked',    res.Batchwise    == 1);
+            syncFeatureToggleCards();
 
             let parts = res.Item_code ? res.Item_code.split('-') : [];
             if (parts.length >= 2) {
                 $('#single_cate_code').val(parts[0]);
                 $('#single_item_number').val(parts.slice(1).join('-'));
             }
+            $('#category-items-preview').removeClass('expanded');
+            $('#category-preview-body').hide();
             loadCategoryItems(res.category, '#cat-items-body',
                 '#category-items-preview', '#preview-category-name', '#cat-item-count');
+
+            if (res.Batchwise == 1) {
+                $('#itemBatchesRow').show();
+                $.get("{{ url('get_item_batches_ajax') }}", { item_code: res.Item_code }, function (batchRes) {
+                    let rows = '';
+                    if (batchRes.data && batchRes.data.length) {
+                        batchRes.data.forEach(function (b) {
+                            rows += '<tr><td>' + b.batch_no + '</td><td>' + b.purchase_price +
+                                '</td><td>' + b.sale_price + '</td><td>' + b.qty_remaining + '</td></tr>';
+                        });
+                    } else {
+                        rows = '<tr><td colspan="4" class="text-muted">No batches yet.</td></tr>';
+                    }
+                    $('#itemBatchesTable tbody').html(rows);
+                });
+            } else {
+                $('#itemBatchesRow').hide();
+            }
         }
     });
 }
@@ -1111,6 +1382,8 @@ $('#category').change(function () {
     let code = $(this).find(':selected').data('code');
     $('#single_cate_code').val(code || '');
     generateSingleItemCode();
+    $('#category-items-preview').removeClass('expanded');
+    $('#category-preview-body').hide();
     if (this.value) {
         loadCategoryItems(this.value, '#cat-items-body',
             '#category-items-preview', '#preview-category-name', '#cat-item-count');

@@ -269,10 +269,25 @@ class InvoiceController extends Controller
         $InvoiceDetails->BC= auth()->user()->BC;
         $InvoiceDetails->save();
 
+        // Batch tracking: if a batch was picked for this line, make sure it still has
+        // enough remaining qty (same SUM(qun_in)-SUM(qun_out) derivation used everywhere
+        // else for stock), then tag the stock-out movement with that batch_no.
+        $batchNo = $value['batch_no'] ?? null;
+        if (!empty($batchNo)) {
+            $qtyRemaining = TItemMovement::where('item_code', $value['item_code'])
+                ->where('batch_no', $batchNo)
+                ->selectRaw('COALESCE(SUM(qun_in),0) - COALESCE(SUM(qun_out),0) as remaining')
+                ->value('remaining');
+            if ($value['qty'] > $qtyRemaining) {
+                abort(422, "Not enough stock in batch \"{$batchNo}\" for item {$value['item_code']}. Remaining: {$qtyRemaining}");
+            }
+        }
+
         $ItemMovementDetails->trans_no=$value['invoice_no'];
         $ItemMovementDetails->dDate=$value['invoice_date'];
         $ItemMovementDetails->trans_code="SALES";
         $ItemMovementDetails->item_code=$value['item_code'];
+        $ItemMovementDetails->batch_no=$batchNo;
         $ItemMovementDetails->qun_out=$value['qty'];
         $ItemMovementDetails->Free_Issues=$value['Free_Issues'];
         $ItemMovementDetails->bc= auth()->user()->BC;

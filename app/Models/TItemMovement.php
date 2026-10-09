@@ -15,6 +15,7 @@ protected $fillable = [
     'dDate',
     'trans_code',
     'item_code',
+    'batch_no',
     'qun_in',
     'qun_out',
     'Free_Issues',

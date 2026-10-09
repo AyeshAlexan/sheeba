@@ -282,6 +282,8 @@ Route::get('/show_select_Branch_ajax', [App\Http\Controllers\ItemController::cla
 Route::get('/search_items_ajax', [App\Http\Controllers\ItemController::class, 'search'])->name('search_items_ajax');
 // search_items_purchase_price_ajax
 Route::get('/search_items_purchase_price_ajax', [App\Http\Controllers\ItemController::class, 'searchPurchasePrice'])->name('search_items_purchase_price_ajax');
+// get_item_batches_ajax - batch breakdown for an item (used by Item master view and sale/GRN screens)
+Route::get('/get_item_batches_ajax', [App\Http\Controllers\ItemController::class, 'getBatches'])->name('get_item_batches_ajax');
 
 
 // Usercontroller
@@ -327,6 +329,8 @@ Route::get('/purchases', [App\Http\Controllers\PurchasesController::class, 'inde
 Route::post('/add_Purchases', [App\Http\Controllers\PurchasesController::class, 'createPurchases'])->name('add_Purchases');
 //create_recall_purchase
 Route::post('/create_recall_purchase', [App\Http\Controllers\PurchasesController::class, 'createRecallPurchases'])->name('create_recall_purchase');
+//suggest_batch_no_ajax - auto-suggested (editable) batch number when receiving a batch-tracked item
+Route::get('/suggest_batch_no_ajax', [App\Http\Controllers\PurchasesController::class, 'suggestBatchNo'])->name('suggest_batch_no_ajax');
 
 //search and find_purchase_invoice
 Route::get('/find_purchase_invoice', [App\Http\Controllers\PurchasesController::class, 'findInvoice'])->name('find_purchase_invoice');
