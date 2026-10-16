@@ -469,11 +469,31 @@
                     $reportsOpen = $stockReportOpen || $salesReportOpen || $customerReportOpen || $supplierReportOpen
                         || request()->routeIs('purchasing.report') || $openingHpReportOpen || $salesReturnReportOpen
                         || request()->routeIs('cashInHandReport') || request()->routeIs('cashandChequeTransaction') || $journalOpen;
+
+                    // A report group's own menu-toggle <li> (e.g. "Sales Report") used
+                    // to render unconditionally even when every report inside it was
+                    // hidden by canViewReport() — leaving an empty, clickable heading
+                    // in the sidebar with nothing under it. Each group is now only
+                    // shown at all if at least one of its reports is visible.
+                    $canSee = fn (...$keys) => collect($keys)->contains(fn ($k) => \App\Support\Permissions::canViewReport($k));
+                    $canSeeStockGroup = $canSee('Item_detail_report', 'stock_report', 'Stock_valuation_report', 'bin_card', 'ZerostockReport', 'reports.stockTranferReport', 'reports.stockDetailsSummeryReport');
+                    $canSeeSalesGroup = $canSee('Item_wish_sales_report', 'sales_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport', 'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report');
+                    $canSeePurchaseOrderGroup = $canSee('Purchase_order_report', 'Purchase_order_details_report');
+                    $canSeeCustomerGroup = $canSee('get_customer_details_report', 'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport', 'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport') || $canSeePurchaseOrderGroup;
+                    $canSeeSupplierGroup = $canSee('get_supplier_details_report', 'supplyer_payment_report', 'supplyer_cheque_payment_report', 'supplier_account_report', 'supplyer_balance_report');
+                    $canSeeOpeningHpGroup = $canSee('OpeningHirepurchaseReport', 'OpeningHirepurchaseSumReport');
+                    $canSeeSalesReturnGroup = \App\Support\Permissions::canViewReport('sales.return.report');
+                    $canSeeJournalGroup = $canSee('daily.transactions', 'cash.book');
+                    $canSeeAnyReport = $canSeeStockGroup || $canSeeSalesGroup || $canSeeCustomerGroup || $canSeeSupplierGroup
+                        || \App\Support\Permissions::canViewReport('purchasing.report') || $canSeeOpeningHpGroup || $canSeeSalesReturnGroup
+                        || \App\Support\Permissions::canViewReport('cashInHandReport') || \App\Support\Permissions::canViewReport('cashandChequeTransaction') || $canSeeJournalGroup;
                 @endphp
+            @if($canSeeAnyReport)
             <li class="{{ $reportsOpen ? 'active' : '' }}">
                 <a href="#" class="{{ $reportsOpen ? 'subdrop' : '' }}"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> <span>Reports</span> <span
                     class="menu-arrow"></span></a>
                 <ul class="menu-sub" style="{{ $reportsOpen ? 'display:block;' : '' }}">
+                  @if($canSeeStockGroup)
                   <li class="menu-item">
                     <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $stockReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Products">Stock Report<span
@@ -481,232 +501,306 @@
                     </a>
                     <ul class="menu-sub" style="{{ $stockReportOpen ? 'display:block;' : '' }}">
 
+                        @if(\App\Support\Permissions::canViewReport('Item_detail_report'))
                         <li class="menu-item {{ request()->routeIs('Item_detail_report') ? 'active' : '' }}">
                             <a href="{{route("Item_detail_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="All Customers">Item Details</div>
                             </a>
                           </li>
+                        @endif
+                          @if(\App\Support\Permissions::canViewReport('stock_report'))
                           <li class="menu-item {{ request()->routeIs('stock_report') ? 'active' : '' }}">
                             <a href="{{route("stock_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="Customer Details">Stock In Hand</div>
                             </a>
                           </li>
+                          @endif
+                              @if(\App\Support\Permissions::canViewReport('Stock_valuation_report'))
                               <li class="menu-item {{ request()->routeIs('Stock_valuation_report') ? 'active' : '' }}">
                                 <a href="{{route("Stock_valuation_report")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Overview">Stock Valuation</div>
                                 </a>
                               </li>
+                              @endif
+                              @if(\App\Support\Permissions::canViewReport('bin_card'))
                               <li class="menu-item {{ request()->routeIs('bin_card') ? 'active' : '' }}">
                                 <a href="{{route("bin_card")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Bin Card</div>
                                 </a>
                               </li>
+                              @endif
+                              @if(\App\Support\Permissions::canViewReport('ZerostockReport'))
                               <li class="menu-item {{ request()->routeIs('ZerostockReport') ? 'active' : '' }}">
                                 <a href="{{route("ZerostockReport")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Stock Zero </div>
                                 </a>
                               </li>
+                              @endif
 
+                                  @if(\App\Support\Permissions::canViewReport('reports.stockTranferReport'))
                                   <li class="menu-item {{ request()->routeIs('reports.stockTranferReport') ? 'active' : '' }}">
                                 <a href="{{route("reports.stockTranferReport")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Stock Tranfer Report </div>
                                 </a>
                               </li>
+                                  @endif
 
 
+                                   @if(\App\Support\Permissions::canViewReport('reports.stockDetailsSummeryReport'))
                                    <li class="menu-item {{ request()->routeIs('reports.stockDetailsSummeryReport') ? 'active' : '' }}">
                                 <a href="{{route("reports.stockDetailsSummeryReport")}}" target ="_ blank" class="menu-link">
                                   <div class="text-truncate" data-i18n="Security">Stock Details Report </div>
                                 </a>
                               </li>
+                                   @endif
                     </ul>
                   </li>
+                  @endif
 
+                  @if($canSeeSalesGroup)
                   <li class="menu-item">
                     <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $salesReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Sales Report<span
                         class="menu-arrow"></span></div>
                     </a>
                     <ul class="menu-sub" style="{{ $salesReportOpen ? 'display:block;' : '' }}">
+                       @if(\App\Support\Permissions::canViewReport('Item_wish_sales_report'))
                        <li class="menu-item {{ request()->routeIs('Item_wish_sales_report') ? 'active' : '' }}">
                         <a href="{{route("Item_wish_sales_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Item Wise Sales</div>
                         </a>
                       </li>
+                      @endif
+                      @if(\App\Support\Permissions::canViewReport('sales_report'))
                       <li class="menu-item {{ request()->routeIs('sales_report') ? 'active' : '' }}">
                         <a href="{{route("sales_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Sales Summery</div>
                         </a>
                       </li>
+                      @endif
+                      @if(\App\Support\Permissions::canViewReport('Invoice_detail_report'))
                       <li class="menu-item {{ request()->routeIs('Invoice_detail_report') ? 'active' : '' }}">
                         <a href="{{route("Invoice_detail_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Sales Details</div>
                         </a>
                       </li>
+                      @endif
 
 
 
+                       @if(\App\Support\Permissions::canViewReport('customer_wish_report'))
                        <li class="menu-item {{ request()->routeIs('customer_wish_report') ? 'active' : '' }}">
                         <a href="{{route("customer_wish_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Wish Item Sales</div>
                         </a>
                       </li>
+                      @endif
 
+                    @if(\App\Support\Permissions::canViewReport('reports.salesmanInvoiceReport'))
                     <li class="menu-item {{ request()->routeIs('reports.salesmanInvoiceReport') ? 'active' : '' }}">
                         <a href="{{route("reports.salesmanInvoiceReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Salesman Invoice Report</div>
                         </a>
                       </li>
+                      @endif
 
+                                          @if(\App\Support\Permissions::canViewReport('reports.SalesmanInvoiceSumReport'))
                                           <li class="menu-item {{ request()->routeIs('reports.SalesmanInvoiceSumReport') ? 'active' : '' }}">
                         <a href="{{route("reports.SalesmanInvoiceSumReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Salesman Total Invoice Report</div>
                         </a>
                       </li>
+                                          @endif
 
+                      @if(\App\Support\Permissions::canViewReport('Cash_in_out_report'))
                       <li class="menu-item {{ request()->routeIs('Cash_in_out_report') ? 'active' : '' }}">
                         <a href="{{route("Cash_in_out_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Cash In Out Report</div>
                         </a>
                       </li>
+                      @endif
                     </ul>
                   </li>
+                  @endif
 
 
+                @if($canSeeCustomerGroup)
                 <li class="menu-item">
                     <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $customerReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Customer Report<span
                         class="menu-arrow"></span></div>
                     </a>
                     <ul class="menu-sub" style="{{ $customerReportOpen ? 'display:block;' : '' }}">
+                        @if(\App\Support\Permissions::canViewReport('get_customer_details_report'))
                         <li class="menu-item {{ request()->routeIs('get_customer_details_report') ? 'active' : '' }}">
                         <a href="{{route("get_customer_details_report")}}" target ="_ blank"  class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Customer Details</div>
                         </a>
                       </li>
+                        @endif
+                        @if(\App\Support\Permissions::canViewReport('customer_payment_report'))
                         <li class="menu-item {{ request()->routeIs('customer_payment_report') ? 'active' : '' }}">
                         <a href="{{route("customer_payment_report")}}" target ="_ blank" class="menu-link">
                            <div class="text-truncate" data-i18n="Order Details">Customer Payment Report</div>
                         </a>
                        </li>
+                       @endif
+                        @if(\App\Support\Permissions::canViewReport('customer_cheque_payment_report'))
                         <li class="menu-item {{ request()->routeIs('customer_cheque_payment_report') ? 'active' : '' }}">
                         <a href="{{route("customer_cheque_payment_report")}}" target ="_ blank" class="menu-link">
                            <div class="text-truncate" data-i18n="Order Details">Customer Cheque Payment Report</div>
                         </a>
                        </li>
+                       @endif
+                        @if(\App\Support\Permissions::canViewReport('Cust_Transferreport'))
                         <li class="menu-item {{ request()->routeIs('Cust_Transferreport') ? 'active' : '' }}">
                         <a href="{{route("Cust_Transferreport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Acccount</div>
                         </a>
                       </li>
+                      @endif
 
+                     @if(\App\Support\Permissions::canViewReport('customersalesWishReport'))
                      <li class="menu-item {{ request()->routeIs('customersalesWishReport') ? 'active' : '' }}">
                         <a href="{{route("customersalesWishReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Wish Sale</div>
                         </a>
                       </li>
+                      @endif
 
+                        @if(\App\Support\Permissions::canViewReport('customer_balance_report'))
                         <li class="menu-item {{ request()->routeIs('customer_balance_report') ? 'active' : '' }}">
                         <a href="{{route("customer_balance_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Customer Balance</div>
                         </a>
                       </li>
+                      @endif
+                        @if(\App\Support\Permissions::canViewReport('AdvancePaymentReport'))
                         <li class="menu-item {{ request()->routeIs('AdvancePaymentReport') ? 'active' : '' }}">
                         <a href="{{route("AdvancePaymentReport")}}" target ="_ blank"  class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Advance Payment Report</div>
                         </a>
                       </li>
+                      @endif
+                        @if(\App\Support\Permissions::canViewReport('Purchase_order_report') || \App\Support\Permissions::canViewReport('Purchase_order_details_report'))
                         <li class="menu-item">
                     <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $purchaseOrderReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Customer">Purchase order Report<span
                         class="menu-arrow"></span></div>
                     </a>
                         <ul class="menu-sub" style="{{ $purchaseOrderReportOpen ? 'display:block;' : '' }}">
+                          @if(\App\Support\Permissions::canViewReport('Purchase_order_report'))
                           <li class="menu-item {{ request()->routeIs('Purchase_order_report') ? 'active' : '' }}">
                             <a href="{{route("Purchase_order_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="All Customers">Summery</div>
                             </a>
                           </li>
+                          @endif
+                          @if(\App\Support\Permissions::canViewReport('Purchase_order_details_report'))
                           <li class="menu-item {{ request()->routeIs('Purchase_order_details_report') ? 'active' : '' }}">
                             <a href="{{route("Purchase_order_details_report")}}" target ="_ blank" class="menu-link">
                               <div class="text-truncate" data-i18n="Customer Details">Details</div>
                             </a>
                           </li>
+                          @endif
                         </ul>
                   </li>
+                  @endif
                     </ul>
                 </li>
+                @endif
 
 
+                                @if($canSeeSupplierGroup)
                                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle {{ $supplierReportOpen ? 'subdrop' : '' }}">
                                 <div class="text-truncate" data-i18n="Order">Supplier Report<span class="menu-arrow"></span></div>
                             </a>
                             <ul class="menu-sub" style="{{ $supplierReportOpen ? 'display:block;' : '' }}">
+                                @if(\App\Support\Permissions::canViewReport('get_supplier_details_report'))
                                 <li class="menu-item {{ request()->routeIs('get_supplier_details_report') ? 'active' : '' }}">
                                     <a href="{{route("get_supplier_details_report")}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Order List">Supplier Details</div>
                                     </a>
                                 </li>
+                                @endif
+                                @if(\App\Support\Permissions::canViewReport('supplyer_payment_report'))
                                 <li class="menu-item {{ request()->routeIs('supplyer_payment_report') ? 'active' : '' }}">
                                     <a href="{{route('supplyer_payment_report')}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Customer Details">Supplyer Payment Report</div>
                                     </a>
                                 </li>
+                                @endif
+                                @if(\App\Support\Permissions::canViewReport('supplyer_cheque_payment_report'))
                                 <li class="menu-item {{ request()->routeIs('supplyer_cheque_payment_report') ? 'active' : '' }}">
                                     <a href="{{route('supplyer_cheque_payment_report')}}" target="_ blank"
                                         class="menu-link">
                                         <div class="text-truncate" data-i18n="Customer Details">Supplyer Cheque Payment Report</div>
                                     </a>
                                 </li>
+                                @endif
+                                @if(\App\Support\Permissions::canViewReport('supplier_account_report'))
                                 <li class="menu-item {{ request()->routeIs('supplier_account_report') ? 'active' : '' }}">
                                     <a href="{{route('supplier_account_report')}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Order Details">Supplier Acccount</div>
                                     </a>
                                 </li>
+                                @endif
+                                @if(\App\Support\Permissions::canViewReport('supplyer_balance_report'))
                                 <li class="menu-item {{ request()->routeIs('supplyer_balance_report') ? 'active' : '' }}">
                                     <a href="{{route("supplyer_balance_report")}}" target="_ blank" class="menu-link">
                                         <div class="text-truncate" data-i18n="Order Details">Supplier Balance</div>
                                     </a>
                                 </li>
+                                @endif
 
 
 
 
                             </ul>
                 </li>
+                @endif
 
 
 
+                  @if(\App\Support\Permissions::canViewReport('purchasing.report'))
                   <li class="menu-item {{ Request::is('purchasing-report') ? 'active' : '' }}">
                     <a href="{{ route('purchasing.report') }}" class="menu-link">
                       <div class="text-truncate" data-i18n="Customer">Purchasing Report</div>
                     </a>
                   </li>
+                  @endif
 
 
 
+                  @if($canSeeOpeningHpGroup)
                   <li class="menu-item">
                     <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $openingHpReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Opening Hire Purchase Report<span
                         class="menu-arrow"></span></div>
                     </a>
                     <ul class="menu-sub" style="{{ $openingHpReportOpen ? 'display:block;' : '' }}">
+                      @if(\App\Support\Permissions::canViewReport('OpeningHirepurchaseReport'))
                       <li class="menu-item {{ request()->routeIs('OpeningHirepurchaseReport') ? 'active' : '' }}">
                         <a href="{{route("OpeningHirepurchaseReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order List">Opening Hire Purchase details</div>
                         </a>
                       </li>
+                      @endif
+                      @if(\App\Support\Permissions::canViewReport('OpeningHirepurchaseSumReport'))
                       <li class="menu-item {{ request()->routeIs('OpeningHirepurchaseSumReport') ? 'active' : '' }}">
                         <a href="{{route("OpeningHirepurchaseSumReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Opening Hire Purchase Sum</div>
                         </a>
                       </li>
+                      @endif
                     </ul>
                   </li>
+                  @endif
 
 
 
+                  @if($canSeeSalesReturnGroup)
                   <li class="menu-item">
                        <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $salesReturnReportOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Sales Return Report<span
@@ -714,29 +808,37 @@
                     </a>
 
                     <ul style="{{ $salesReturnReportOpen ? 'display:block;' : '' }}">
+                        @if(\App\Support\Permissions::canViewReport('sales.return.report'))
                         <li class="{{ $salesReturnReportOpen ? 'active' : '' }}">
                             <a href="{{route("sales.return.report")}}">
                                 <i class="fa fa-angle-right"></i>
                                 Sales Return</a>
                         </li>
+                        @endif
                     </ul>
                 </li>
+                @endif
 
 
+                @if(\App\Support\Permissions::canViewReport('cashInHandReport'))
                 <li class="menu-item {{ request()->routeIs('cashInHandReport') ? 'active' : '' }}">
                         <a href="{{route("cashInHandReport")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Cash In Hand</div>
                         </a>
                   </li>
+                  @endif
 
 
 
+                @if(\App\Support\Permissions::canViewReport('cashandChequeTransaction'))
                 <li class="menu-item {{ request()->routeIs('cashandChequeTransaction') ? 'active' : '' }}">
                         <a href="{{route("cashandChequeTransaction")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Cash & Cheque Transaction</div>
                         </a>
                   </li>
+                  @endif
 
+                  @if($canSeeJournalGroup)
                   <li class="menu-item">
                        <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $journalOpen ? 'subdrop' : '' }}">
                       <div class="text-truncate" data-i18n="Order">Journal<span
@@ -744,22 +846,28 @@
                     </a>
 
                     <ul class="menu-sub" style="{{ $journalOpen ? 'display:block;' : '' }}">
+                        @if(\App\Support\Permissions::canViewReport('daily.transactions'))
                         <li class="menu-item {{ request()->routeIs('daily.transactions') ? 'active' : '' }}">
                             <a href="{{route('daily.transactions')}}" target ="_ blank" class="menu-link">
                                 <div class="text-truncate" data-i18n="Order Details">Daily Transactions</div>
                             </a>
                         </li>
+                        @endif
+                        @if(\App\Support\Permissions::canViewReport('cash.book'))
                         <li class="menu-item {{ request()->routeIs('cash.book') ? 'active' : '' }}">
                             <a href="{{route('cash.book')}}" target ="_ blank" class="menu-link">
                                 <div class="text-truncate" data-i18n="Order Details">Cash Book</div>
                             </a>
                         </li>
+                        @endif
                     </ul>
                 </li>
+                @endif
 
                 </ul>
 
               </li>
+            @endif
 @endif
             </ul>
         </div>

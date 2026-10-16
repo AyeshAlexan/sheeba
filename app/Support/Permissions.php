@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\RolePermission;
 use App\Models\RoleModuleAction;
+use App\Models\RoleReportPermission;
 
 class Permissions
 {
@@ -52,6 +53,41 @@ class Permissions
         return RoleModuleAction::whereRaw('TRIM(role_name) = ?', [$role])
             ->where('module_key', $moduleKey)
             ->where('action_key', $action)
+            ->where('is_enabled', true)
+            ->exists();
+    }
+
+    /**
+     * Whether the logged-in user's role can see a specific report. The
+     * Reports module switch (can('reports')) still acts as the master
+     * on/off — a role with Reports disabled never sees any report
+     * regardless of individual report ticks. Within a role that has
+     * Reports enabled, role_report_permissions narrows access down to
+     * specific reports; a role with no rows saved there at all falls
+     * back to full access (matches pre-existing behaviour, so this never
+     * silently locks out roles that haven't had the new per-report
+     * toggles on the Role Permissions page touched yet).
+     */
+    public static function canViewReport(string $reportKey): bool
+    {
+        if (!self::can('reports')) {
+            return false;
+        }
+
+        $role = trim((string) optional(auth()->user())->role);
+
+        if ($role === '') {
+            return false;
+        }
+
+        $hasAnyOverride = RoleReportPermission::whereRaw('TRIM(role_name) = ?', [$role])->exists();
+
+        if (!$hasAnyOverride) {
+            return true;
+        }
+
+        return RoleReportPermission::whereRaw('TRIM(role_name) = ?', [$role])
+            ->where('report_key', $reportKey)
             ->where('is_enabled', true)
             ->exists();
     }

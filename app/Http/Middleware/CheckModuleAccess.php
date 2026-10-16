@@ -27,6 +27,14 @@ class CheckModuleAccess
                 if (!Permissions::can($moduleKey)) {
                     return $this->deny($request, config('modules')[$moduleKey] ?? $moduleKey);
                 }
+
+                // Reports get an extra, per-report narrowing on top of the
+                // whole-module check above — a role can have Reports
+                // enabled while still being blocked from an individual
+                // report via role_report_permissions.
+                if ($moduleKey === 'reports' && !Permissions::canViewReport($routeName)) {
+                    return $this->deny($request, config('modules')[$moduleKey] ?? $moduleKey);
+                }
                 break;
             }
         }

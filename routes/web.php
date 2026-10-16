@@ -946,6 +946,9 @@ Route::get('/show_select_up_user',  [UserController::class, 'getUser'])->name('s
 // ── Role AJAX ──
 Route::post('/add_role_ajax',       [UserController::class, 'addRole'])->name('add_role_ajax');
 
+// ── Per-role Report Selection ──
+Route::post('/role-permissions/reports/save', [App\Http\Controllers\RolePermissionController::class, 'saveReports'])->name('role_permissions.reports.save');
+
 
 
 // Show Category Page
