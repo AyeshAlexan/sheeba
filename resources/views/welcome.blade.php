@@ -66,7 +66,7 @@
                 </button>
             </form>
 
-            <p class="auth-footer">© {{ date('Y') }} Smart Omega (PVT) Ltd.<br>Enterprise Management System v2.0</p>
+            <p class="auth-footer">© {{ date('Y') }} Kreethya</p>
         </div>
     </div>
 </body>
