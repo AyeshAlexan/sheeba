@@ -18,6 +18,7 @@ return [
     'stock'           => ['add', 'edit', 'delete', 'save', 'print'],
     'purchases'       => ['add', 'edit', 'delete', 'save', 'print'],
     'sales'           => ['add', 'edit', 'delete', 'save', 'print'],
+    'delivery_orders' => ['add', 'edit', 'delete', 'print'],
     'vouchers'        => ['add', 'edit', 'delete', 'save', 'print'],
     'expense'         => ['add', 'edit', 'delete'],
     'banking'         => ['add', 'edit', 'delete'],

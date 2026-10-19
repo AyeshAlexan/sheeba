@@ -25,6 +25,7 @@ return [
         'sales_create_invoice', 'salesInvoice_withoutVat', 'sales_advance_payment', 'sales_return', 'sales_quatation',
         'sales_customer_payment', 'customer_opening_balance', 'invoiceDiscountEnter',
     ],
+    'delivery_orders' => ['delivery_orders', 'delivery_orders_list'],
     'vouchers' => ['PaymentVoucher', 'gentralreceipt', 'PettyCash'],
     'expense' => ['AddExpense', 'CashOut'],
     'banking' => ['cheque.deposit', 'issued.cheques', 'cheque.return'],

@@ -11,6 +11,7 @@ return [
     'stock'            => 'Stock',
     'purchases'        => 'Purchases',
     'sales'            => 'Sales',
+    'delivery_orders'  => 'Delivery Orders',
     'vouchers'         => 'Vouchers',
     'expense'          => 'Expense',
     'banking'          => 'Banking',

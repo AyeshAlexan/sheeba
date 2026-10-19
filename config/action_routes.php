@@ -50,4 +50,9 @@ return [
         'print_sales_invoice_ajax',
         'sales.return.print',
     ],
+
+    // ── Delivery Orders ───────────────────────────────────────────────
+    'delivery_orders.add' => ['add_delivery_order'],
+    'delivery_orders.delete' => ['delete_delivery_order_ajax'],
+    'delivery_orders.print' => ['print_delivery_order'],
 ];

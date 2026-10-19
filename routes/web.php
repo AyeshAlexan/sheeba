@@ -312,6 +312,15 @@ Route::post('/delete_stock_transfer_ajax', [App\Http\Controllers\StockTransferCo
 // index for sales_create_invoice
 Route::get('/sales_create_stock_transfer', [App\Http\Controllers\StockTransferController::class, 'indexPurchases'])->name('sales_create_stock_transfer');
 
+// Delivery Orders
+Route::get('delivery_orders', [App\Http\Controllers\DeliveryOrderController::class, 'index'])->name('delivery_orders');
+Route::get('/find_invoice_for_do_items', [App\Http\Controllers\DeliveryOrderController::class, 'findInvoice'])->name('find_invoice_for_do_items');
+Route::get('/find_invoice_for_do_customer', [App\Http\Controllers\DeliveryOrderController::class, 'findInvoiceCustomerData'])->name('find_invoice_for_do_customer');
+Route::post('/add_delivery_order', [App\Http\Controllers\DeliveryOrderController::class, 'createDeliveryOrder'])->name('add_delivery_order');
+Route::get('/print_delivery_order/{do_no}', [App\Http\Controllers\DeliveryOrderController::class, 'print'])->name('print_delivery_order');
+Route::post('/delete_delivery_order_ajax', [App\Http\Controllers\DeliveryOrderController::class, 'deleteDeliveryOrder'])->name('delete_delivery_order_ajax');
+Route::get('delivery_orders_list', [App\Http\Controllers\DeliveryOrderController::class, 'listDeliveryOrders'])->name('delivery_orders_list');
+
 // show_select_category_item_ajax
 Route::get('/show_select_category_item_ajax', [App\Http\Controllers\StockTransferController::class, 'setItemsCode'])->name('show_select_category_item_ajax');
 // show_select_item_description_ajax

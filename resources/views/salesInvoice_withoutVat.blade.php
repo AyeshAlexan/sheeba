@@ -37,12 +37,13 @@
     border-color: #d9e3ee;
     vertical-align: middle;
 }
-#dynamicAdded td:nth-child(1) { width: 22%; }
+#dynamicAdded td:nth-child(1) { width: 16%; }
 #dynamicAdded td:nth-child(2) { width: 20%; }
-#dynamicAdded td:nth-child(3) { width: 12%; }
-#dynamicAdded td:nth-child(4) { width: 12%; }
-#dynamicAdded td:nth-child(5) { width: 18%; }
-#dynamicAdded td:nth-child(6) { width: 18%; }
+#dynamicAdded td:nth-child(3) { width: 11%; }
+#dynamicAdded td:nth-child(4) { width: 11%; }
+#dynamicAdded td:nth-child(5) { width: 10%; }
+#dynamicAdded td:nth-child(6) { width: 17%; }
+#dynamicAdded td:nth-child(7) { width: 15%; }
 #dynamicAdded input.form-control {
     min-height: 42px;
     border: 1px solid #d7e3f1;
@@ -67,24 +68,27 @@
     color: #234b7d;
     border-color: #d9e3ee !important;
 }
-/* Keep the entry row, added rows, and totals on one shared six-column grid. */
+/* Keep the entry row, added rows, and totals on one shared seven-column grid:
+   Item Code / Description / Batch / GRN Price / QTY / Net Value / Action. */
 #salesItemTable,
 #dynamicAdded,
 .sales-totals-table {
     table-layout: fixed;
 }
 #salesItemTable th:nth-child(1), #salesItemTable td:nth-child(1),
-#dynamicAdded td:nth-child(1), .sales-totals-table td:nth-child(1) { width: 22% !important; }
+#dynamicAdded td:nth-child(1), .sales-totals-table td:nth-child(1) { width: 16% !important; }
 #salesItemTable th:nth-child(2), #salesItemTable td:nth-child(2),
 #dynamicAdded td:nth-child(2), .sales-totals-table td:nth-child(2) { width: 20% !important; }
 #salesItemTable th:nth-child(3), #salesItemTable td:nth-child(3),
-#dynamicAdded td:nth-child(3), .sales-totals-table td:nth-child(3) { width: 12% !important; }
+#dynamicAdded td:nth-child(3), .sales-totals-table td:nth-child(3) { width: 11% !important; }
 #salesItemTable th:nth-child(4), #salesItemTable td:nth-child(4),
-#dynamicAdded td:nth-child(4), .sales-totals-table td:nth-child(4) { width: 12% !important; }
+#dynamicAdded td:nth-child(4), .sales-totals-table td:nth-child(4) { width: 11% !important; }
 #salesItemTable th:nth-child(5), #salesItemTable td:nth-child(5),
-#dynamicAdded td:nth-child(5), .sales-totals-table td:nth-child(5) { width: 18% !important; }
+#dynamicAdded td:nth-child(5), .sales-totals-table td:nth-child(5) { width: 10% !important; }
 #salesItemTable th:nth-child(6), #salesItemTable td:nth-child(6),
-#dynamicAdded td:nth-child(6), .sales-totals-table td:nth-child(6) { width: 18% !important; }
+#dynamicAdded td:nth-child(6), .sales-totals-table td:nth-child(6) { width: 17% !important; }
+#salesItemTable th:nth-child(7), #salesItemTable td:nth-child(7),
+#dynamicAdded td:nth-child(7), .sales-totals-table td:nth-child(7) { width: 15% !important; }
 .sales-dynamic-table td:last-child,
 .sales-totals-table td:last-child { text-align: center; }
 .sales-dynamic-table .remove-new-row,
@@ -834,13 +838,13 @@
             <table id="salesItemTable">
                 <thead>
                     <tr>
-                        <th style="width:18%;">Item Code</th>
-                        <th style="width:22%;">Description</th>
-                        <th style="width:12%;">Batch</th>
-                        <th style="width:12%;">GRN Price</th>
-                        <th style="width:12%;">QTY</th>
-                        <th style="width:18%;">Net Value</th>
-                        <th style="width:18%;">Action</th>
+                        <th style="width:16%;">Item Code</th>
+                        <th style="width:20%;">Description</th>
+                        <th style="width:11%;">Batch</th>
+                        <th style="width:11%;">GRN Price</th>
+                        <th style="width:10%;">QTY</th>
+                        <th style="width:17%;">Net Value</th>
+                        <th style="width:15%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -892,12 +896,13 @@
         <table class="table table-bordered sales-totals-table">
             <tbody>
                 <tr class="table-success">
-                    <td style="width:22%;"><strong>TOTAL :</strong></td>
+                    <td style="width:16%;"><strong>TOTAL :</strong></td>
                     <td style="width:20%;"></td>
-                    <td class="total-unit-price text-center" style="width:12%;"><strong>0.00</strong></td>
-                    <td style="width:12%;"></td>
-                    <td class="total-value text-center" style="width:18%;"><strong>0.00</strong></td>
-                    <td class="text-center" style="width:18%;"></td>
+                    <td style="width:11%;"></td>
+                    <td class="total-unit-price text-center" style="width:11%;"><strong>0.00</strong></td>
+                    <td style="width:10%;"></td>
+                    <td class="total-value text-center" style="width:17%;"><strong>0.00</strong></td>
+                    <td class="text-center" style="width:15%;"></td>
                 </tr>
             </tbody>
         </table>
@@ -1978,7 +1983,7 @@ function commitAddItem() {
     rowIndex++;
     $('#dynamicAdded').prepend(`
     <tr>
-        <td style="width:15%;">
+        <td style="width:16%;">
             <input type="hidden" name="inputs[${rowIndex}][customer_nic]"  value="${d.customer_nic}">
             <input type="hidden" name="inputs[${rowIndex}][invoice_no]"    value="${d.invoice_no}">
             <input type="hidden" name="inputs[${rowIndex}][invoice_date]"  value="${d.invoice_date}">
@@ -1987,7 +1992,7 @@ function commitAddItem() {
             <input type="hidden" name="inputs[${rowIndex}][item_s_code]"   value="${d.item_s_code}">
             <input type="hidden" name="inputs[${rowIndex}][Per]"           value="${d.Per}">
         </td>
-                <td style="width:18%;">
+                <td style="width:20%;">
                     <input class="form-control" type="text"
                         name="inputs[${rowIndex}][item_description]"
                         value="${d.item_description || ''}"
@@ -1999,26 +2004,26 @@ function commitAddItem() {
                         @endforeach
                     </datalist>
                 </td>
-        <td style="width:10%;">
+        <td style="width:11%;">
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][batch_no]" value="${d.batch_no || ''}" readonly>
         </td>
-        <td style="width:12%;">
+        <td style="width:11%;">
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][unit_price]" value="${d.unit_price}" readonly>
         </td>
-        <td style="width:12%;">
+        <td style="width:10%;">
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][qty]" value="${d.qty}" readonly>
             <input type="hidden" name="inputs[${rowIndex}][Free_Issues]" value="${d.Free_Issues || 0}">
             <input type="hidden" name="inputs[${rowIndex}][discount]" value="${d.discount || 0}">
             <input type="hidden" name="inputs[${rowIndex}][discount_val]" value="${d.discount_val || 0}">
         </td>
-        <td style="width:18%;">
+        <td style="width:17%;">
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][net_value]" value="${d.net_value || 0}" readonly>
         </td>
-        <td style="width:8%;" class="text-center">
+        <td style="width:15%;" class="text-center">
             <button type="button" class="btn sales-row-delete shadow remove-new-row" title="Delete item" aria-label="Delete item">
                 <i class="far fa-trash-alt"></i>
             </button>
@@ -2141,6 +2146,7 @@ $(document).ready(function () {
         <tr data-id="${d.id}" data-isnew="0">
             <td><input type="text" name="Item_code"        class="form-control" value="${d.Item_code        || ''}" readonly></td>
             <td><input type="text" name="Item_description" class="form-control" value="${d.Item_description || ''}" readonly></td>
+            <td><input type="text" class="form-control" value="${d.batch_no || ''}" readonly placeholder="(no batch)"></td>
             <td><input type="text" name="Unit_price"       class="form-control" value="${d.Unit_price       || 0}"  readonly></td>
             <td><input type="text" name="QTY"              class="form-control QTY"              value="${d.QTY              || 0}"></td>
             <td>
@@ -2171,6 +2177,7 @@ $(document).ready(function () {
                 </div>
             </td>
             <td><input type="text" name="Item_description"   class="form-control"               placeholder="Description"></td>
+            <td><input type="text" class="form-control" placeholder="(no batch)" readonly></td>
             <td><input type="text" name="Unit_price"         class="form-control new-unit-price" placeholder="Unit Price" value="0"></td>
             <td><input type="text" name="QTY"                class="form-control QTY"            placeholder="QTY"        value="0"></td>
             <td>
@@ -2207,7 +2214,7 @@ $(document).ready(function () {
                     var html = res.data.map(d => buildExistingRow(d)).join('');
                     if (canEditSales) {
                         html += `<tr id="addItemBtnRow">
-                            <td colspan="6" class="text-center py-2">
+                            <td colspan="7" class="text-center py-2">
                                 <button type="button" id="addNewItemRow">
                                     <i class="fas fa-plus-circle me-2"></i> Add New Item to This Invoice
                                 </button>
@@ -2219,7 +2226,7 @@ $(document).ready(function () {
                     lockRecalledForm();
                 } else {
                     $('#dynamicAdded').html(
-                        `<tr><td colspan="6" class="text-danger text-center fw-bold py-3">Invoice Items Not Found</td></tr>`
+                        `<tr><td colspan="7" class="text-danger text-center fw-bold py-3">Invoice Items Not Found</td></tr>`
                     );
                 }
             });

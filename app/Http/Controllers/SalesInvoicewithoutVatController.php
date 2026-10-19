@@ -204,7 +204,10 @@ public function add_salesInvoice(Request $request)
             $this->insertCusTrance($request, $branch_code, $oc, 0, $cashReceived);
         }
 
-        // ── 3. Save Detail Rows + Stock Movements ────────────────
+        // ── 3. Save Detail Rows ───────────────────────────────────
+        // Stock is no longer deducted here: billing (this invoice) and physical
+        // dispatch are separate events now. Stock-out only happens when a
+        // Delivery Order is created against this invoice (DeliveryOrderController).
         foreach ($request->inputs as $value) {
             $detail                   = new TWithoutVatSalesDetails;
             $detail->Invoice_no       = $value['invoice_no'];
@@ -222,56 +225,6 @@ public function add_salesInvoice(Request $request)
             $detail->OC               = $oc;
             $detail->BC               = $branch_code;
             $detail->save();
-
-            // Look up the item master to check if this is a Set Item
-            $itemMaster = DB::table('items')
-                ->where('Item_code', $value['item_code'])
-                ->first();
-
-            // Batch tracking: if a batch was picked for this line, re-check its remaining
-            // qty server-side (SUM(qun_in)-SUM(qun_out) for that item_code+batch_no) before
-            // letting the sale go through, then tag the stock-out movement with it.
-            $batchNo = $value['batch_no'] ?? null;
-            if (!empty($batchNo)) {
-                $qtyRemaining = TItemMovement::where('item_code', $value['item_code'])
-                    ->where('batch_no', $batchNo)
-                    ->selectRaw('COALESCE(SUM(qun_in),0) - COALESCE(SUM(qun_out),0) as remaining')
-                    ->value('remaining');
-                if ($value['qty'] > $qtyRemaining) {
-                    abort(422, "Not enough stock in batch \"{$batchNo}\" for item {$value['item_code']}. Remaining: {$qtyRemaining}");
-                }
-            }
-
-            // 3a. Movement for the main/sold item itself — always goes out
-            $movement              = new TItemMovement;
-            $movement->trans_no    = $value['invoice_no'];
-            $movement->dDate       = $value['invoice_date'];
-            $movement->trans_code  = 'SALES_OUT_VAT';
-            $movement->item_code   = $value['item_code'];
-            $movement->batch_no    = $batchNo;
-            $movement->qun_out     = $value['qty'];
-            $movement->Free_Issues = $value['Free_Issues'] ?? 0;
-            $movement->bc          = $branch_code;
-            $movement->save();
-
-            // 3b. If it's a Set Item, also pass out every sub-item's stock
-            if ($itemMaster && $itemMaster->category === 'Set Item') {
-                $packageItems = DB::table('package_items')
-                    ->where('pkg_code', $value['item_code'])
-                    ->get();
-
-                foreach ($packageItems as $pkgItem) {
-                    $subMovement              = new TItemMovement;
-                    $subMovement->trans_no    = $value['invoice_no'];
-                    $subMovement->dDate       = $value['invoice_date'];
-                    $subMovement->trans_code  = 'SALES_OUT_VAT';
-                    $subMovement->item_code   = $pkgItem->item_code;
-                    $subMovement->qun_out     = $pkgItem->qty * $value['qty']; // scale by qty sold
-                    $subMovement->Free_Issues = 0;
-                    $subMovement->bc          = $branch_code;
-                    $subMovement->save();
-                }
-            }
         }
 
         // ── 4. Save Cheque Details ───────────────────────────────
@@ -446,7 +399,7 @@ public function printInvoice(Request $request)
 
             $pdfPath = storage_path('../public/assets/pdf/Sales_Reprint_Invoice.pdf');
             $pdf->save($pdfPath);
-            $pdfUrl = asset('/public/assets/pdf/Sales_Reprint_Invoice.pdf');
+            $pdfUrl = asset('/assets/pdf/Sales_Reprint_Invoice.pdf');
 
             return response()->json(['status' => 'success', 'pdfUrl' => $pdfUrl]);
         }
@@ -607,16 +560,8 @@ public function printInvoice(Request $request)
                 $detail->BC                   = $branch_code;
                 $detail->save();
 
-                // INSERT new stock movement
-                $movement              = new TItemMovement;
-                $movement->trans_no    = $invoiceNo;
-                $movement->dDate       = $invoiceDate;
-                $movement->trans_code  = 'SALES_OUT_VAT';
-                $movement->item_code   = $item['Item_code'];
-                $movement->qun_out     = $item['QTY'];
-                $movement->Free_Issues = $item['Free_Issues'];
-                $movement->bc          = $branch_code;
-                $movement->save();
+                // Stock is no longer deducted when adding a new line to an invoice —
+                // stock-out only happens at Delivery Order creation time now.
 
             } else {
                 // UPDATE existing detail row by id
