@@ -28,14 +28,14 @@
         .purchase-total-table { margin-top:10px; }
         .purchase-total-table td { background:#edf4ff !important; color:#234b7d; border-color:#d9e3ee !important; font-weight:700; }
         .purchase-total-table .stock-total-badge { background:transparent !important; color:inherit !important; padding:0 !important; border-radius:0 !important; }
-        .purchase-item-table th:nth-child(1), .purchase-item-table td:nth-child(1), .purchase-total-table td:nth-child(1) { width:15% !important; }
-        .purchase-item-table th:nth-child(2), .purchase-item-table td:nth-child(2), .purchase-total-table td:nth-child(2) { width:20% !important; }
-        .purchase-item-table th:nth-child(3), .purchase-item-table td:nth-child(3), .purchase-total-table td:nth-child(3) { width:12% !important; }
-        .purchase-item-table th:nth-child(4), .purchase-item-table td:nth-child(4), .purchase-total-table td:nth-child(4) { width:12% !important; }
-        .purchase-item-table th:nth-child(5), .purchase-item-table td:nth-child(5), .purchase-total-table td:nth-child(5) { width:12% !important; }
-        .purchase-item-table th:nth-child(6), .purchase-item-table td:nth-child(6), .purchase-total-table td:nth-child(6) { width:12% !important; }
+        .purchase-item-table th:nth-child(1), .purchase-item-table td:nth-child(1), .purchase-total-table td:nth-child(1) { width:14% !important; }
+        .purchase-item-table th:nth-child(2), .purchase-item-table td:nth-child(2), .purchase-total-table td:nth-child(2) { width:18% !important; }
+        .purchase-item-table th:nth-child(3), .purchase-item-table td:nth-child(3), .purchase-total-table td:nth-child(3) { width:11% !important; }
+        .purchase-item-table th:nth-child(4), .purchase-item-table td:nth-child(4), .purchase-total-table td:nth-child(4) { width:9% !important; }
+        .purchase-item-table th:nth-child(5), .purchase-item-table td:nth-child(5), .purchase-total-table td:nth-child(5) { width:13% !important; }
+        .purchase-item-table th:nth-child(6), .purchase-item-table td:nth-child(6), .purchase-total-table td:nth-child(6) { width:13% !important; }
         .purchase-item-table th:nth-child(7), .purchase-item-table td:nth-child(7), .purchase-total-table td:nth-child(7) { width:13% !important; }
-        .purchase-item-table th:nth-child(8), .purchase-item-table td:nth-child(8), .purchase-total-table td:nth-child(8) { width:12% !important; }
+        .purchase-item-table th:nth-child(8), .purchase-item-table td:nth-child(8), .purchase-total-table td:nth-child(8) { width:9% !important; }
         .purchase-table-card .stock-search-wrap { max-width:360px; }
         .purchase-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
         #searchItemModel .modal-dialog { max-width:900px; }
@@ -1229,7 +1229,7 @@
                                     }));
 
                                 itemUnit_price.val(item.purchasePrice);
-                                item_s_code.val(item.Bar_code);
+                                item_s_code.val(item.Item_code);
 
                                 if (item.Batchwise == 1) {
                                     $('#batch_no, #batch_sale_price').prop('disabled', false)
@@ -1552,7 +1552,7 @@
                 $("#dynamicAdded").prepend(
                     `
                    <tr>
-    <td style="width:10%;">
+    <td>
         <input type="hidden" name="inputs[` + i + `][customer_nic]" value="` + customer_nic + `">
         <input type="hidden" name="inputs[` + i + `][invoice_no]" value="` + invoice_no + `">
         <input type="hidden" name="inputs[` + i + `][invoice_date]" value="` + invoice_date + `">
@@ -1571,17 +1571,17 @@
         </select>
     </td>
 
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <td>
         <input class="form-control" type="text" style="text-align: center;" placeholder="Unit Price"
                id="dy_unit_price" name="inputs[` + i + `][unit_price]" value="` + unit_price + `" readonly>
     </td>
 
-        <td>
+    <td>
         <input class="form-control" type="text" style="text-align: center;" placeholder="QTY"
                id="dy_qty" name="inputs[` + i + `][qty]" value="` + qty + `" readonly>
     </td>
 
-    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <td>
         <input class="form-control" type="text" style="text-align: center;" placeholder="Net Value"
                id="dy_net_value" name="inputs[` + i + `][net_value]" value="` + net_value + `" readonly>
     </td>
@@ -1593,7 +1593,7 @@
         <input class="form-control" type="text" style="text-align: center;" placeholder="Default"
                name="inputs[` + i + `][batch_sale_price]" value="` + batch_sale_price + `" readonly>
     </td>
-    <td
+    <td style="text-align: center;">
         <button type="button" class="btn btn-outline-danger text-center shadow remove-input-field m-2">
             <i class="far fa-trash-alt me-1"></i> Delete
         </button>
@@ -1649,8 +1649,21 @@
             document.getElementById("total_amount").value = totalGross;
             document.getElementById("paid_discount").value = totalDiscount;
             document.getElementById("paid_amount").value = totalValue;
-            document.getElementById("credite_payment").value = totalValue;
+            recalcCreditPayment();
         };
+
+        // Credit is whatever's left after Cash + Cheque, not the full total —
+        // recalculated whenever the grand total changes or the user types into
+        // Cash Pay / Cheque, instead of being force-set to the full amount.
+        function recalcCreditPayment() {
+            var net = parseFloat(document.getElementById('paid_amount').value) || 0;
+            var cash = parseFloat(document.getElementById('cash_payment').value) || 0;
+            var cheque = parseFloat(document.getElementById('cheque_payment').value) || 0;
+            var credit = net - cash - cheque;
+            document.getElementById('credite_payment').value = (credit > 0 ? credit : 0).toFixed(2);
+        }
+
+        $(document).on('input', '#cash_payment, #cheque_payment', recalcCreditPayment);
 
 </script>
 

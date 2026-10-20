@@ -3,13 +3,15 @@
 		<div class="customer-detail-grid">
 			<div class="customer-field">
 				<label><i class="fas fa-user"></i> Customer Name</label>
-				<div class="customer-value" id="customer_name">{{ $test['First_name'] }}</div>
+				<div class="customer-value">{{ $test['First_name'] }}</div>
 				<input type="hidden" value="{{ $test['Code'] }}" id="customer_nic" name="customer_nic">
+				<input type="hidden" value="{{ $test['First_name'] }}" id="customer_name" name="customer_name">
 			</div>
 
 			<div class="customer-field">
 				<label><i class="fas fa-phone-alt"></i> Customer Tel</label>
-				<div class="customer-value" id="customer_phone">{{ $test['Contact_1'] }}</div>
+				<div class="customer-value">{{ $test['Contact_1'] }}</div>
+				<input type="hidden" value="{{ $test['Contact_1'] }}" id="customer_phone" name="customer_phone">
 			</div>
 
 			<div class="customer-field">

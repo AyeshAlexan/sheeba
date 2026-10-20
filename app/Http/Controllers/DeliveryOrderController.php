@@ -12,6 +12,7 @@ use App\Models\TWithoutVatSalesDetails;
 use App\Models\TDeliveryOrderSum;
 use App\Models\TDeliveryOrderDetails;
 use App\Models\TItemMovement;
+use App\Models\Item;
 
 class DeliveryOrderController extends Controller
 {
@@ -103,7 +104,23 @@ class DeliveryOrderController extends Controller
             // Batch check up-front, same SUM(qun_in)-SUM(qun_out) derivation used by
             // Sales Invoice/GRN, so we fail before writing any rows if stock is short.
             foreach ($request->inputs as $value) {
+                // Normalize "(no batch)" selections to a real null rather than an empty
+                // string — an empty string doesn't match any batch's remaining-qty query
+                // (not the chosen batch, not the legacy/NULL bucket either), so the stock
+                // movement would silently go untracked against every batch.
                 $batchNo = $value['batch_no'] ?? null;
+                if ($batchNo === '') {
+                    $batchNo = null;
+                }
+
+                // Batch-tracked items must have a batch picked — saving one with
+                // "(no batch)" left selected would deduct stock without attributing it
+                // to any batch, which is exactly how this bug was first found.
+                $item = Item::where('Item_code', $value['item_code'])->first();
+                if ($item && $item->Batchwise && empty($batchNo)) {
+                    abort(422, "\"{$value['item_code']}\" is batch-tracked — pick a batch before saving (it defaults to \"(no batch)\" until you choose one).");
+                }
+
                 if (!empty($batchNo)) {
                     $qtyRemaining = TItemMovement::where('item_code', $value['item_code'])
                         ->where('batch_no', $batchNo)
@@ -133,6 +150,11 @@ class DeliveryOrderController extends Controller
             $doSum->save();
 
             foreach ($request->inputs as $value) {
+                $batchNo = $value['batch_no'] ?? null;
+                if ($batchNo === '') {
+                    $batchNo = null;
+                }
+
                 $doDetails = new TDeliveryOrderDetails;
                 $doDetails->DO_no = $request->do_no;
                 $doDetails->DO_date = $request->do_date;
@@ -143,7 +165,7 @@ class DeliveryOrderController extends Controller
                 $doDetails->Unit_price = $value['unit_price'];
                 $doDetails->Discount = $value['discount'] ?? 0;
                 $doDetails->Net_value = $value['net_value'];
-                $doDetails->batch_no = $value['batch_no'] ?? null;
+                $doDetails->batch_no = $batchNo;
                 $doDetails->BC = $branch_code;
                 $doDetails->OC = $user_name;
                 $doDetails->save();
@@ -153,7 +175,7 @@ class DeliveryOrderController extends Controller
                 $movement->dDate = $request->do_date;
                 $movement->trans_code = 'DO';
                 $movement->item_code = $value['item_code'];
-                $movement->batch_no = $value['batch_no'] ?? null;
+                $movement->batch_no = $batchNo;
                 $movement->qun_out = $value['qty'];
                 $movement->bc = $branch_code;
                 $movement->save();

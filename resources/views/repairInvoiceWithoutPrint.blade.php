@@ -90,13 +90,14 @@
             margin-bottom: 6px;
         }
         .invoice-type-banner {
-            font-size: 13px;
+            font-size: 11.5px;
             font-weight: 700;
             letter-spacing: .5px;
             color: #123e78;
         }
-        .meta-col-billto .customer-name { font-size: 14px; font-weight: 700; color: #1f2430; margin-bottom: 2px; }
+        .meta-col-billto .customer-name { font-size: 17px; font-weight: 800; color: #1f2430; margin-bottom: 3px; }
         .meta-col-billto div { font-size: 11px; color: #6b7280; line-height: 1.5; }
+        .meta-col-billto .cash-paid-note { font-size: 9.5px; color: #9aa3b0; margin-top: 4px; }
 
         /* ── Items Table ── */
         table.items-table { width: 100%; border-collapse: collapse; }
@@ -315,8 +316,8 @@
             </td>
 
             <td class="meta-col meta-col-billto">
+                <div class="meta-col-label">Bill To</div>
                 @if($customerData->isNotEmpty())
-                    <div class="meta-col-label">Bill To</div>
                     @foreach($customerData as $cust)
                         <div class="customer-name">{{ $cust->First_name }}</div>
                         @if(!empty($cust->Address_1))<div>{{ $cust->Address_1 }}</div>@endif
@@ -325,14 +326,13 @@
                     @endforeach
                 @elseif(!empty($sumData->Customer_Name))
                     {{-- No matching customer-master record, but a name was captured on the invoice itself --}}
-                    <div class="meta-col-label">Bill To</div>
                     <div class="customer-name">{{ $sumData->Customer_Name }}</div>
                     @if(!empty($sumData->Customer_Phone))<div>{{ $sumData->Customer_Phone }}</div>@endif
                 @else
-                    {{-- True walk-in sale: no customer captured at all — show the cash paid amount instead --}}
-                    <div class="meta-col-label">Cash Paid</div>
-                    <div class="customer-name">Rs. {{ number_format($cashPaid, 2) }}</div>
+                    {{-- True walk-in sale: no customer captured at all --}}
+                    <div class="customer-name">Walk-in Customer</div>
                 @endif
+                <div class="cash-paid-note">Cash Paid: Rs. {{ number_format($cashPaid, 2) }}</div>
             </td>
         </tr>
     </table>

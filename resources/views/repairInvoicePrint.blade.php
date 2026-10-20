@@ -102,7 +102,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
 		<article>
 			<address class="norm" style="line-height: 0.1;">
                 @foreach ($customerData as $sumData)
-                <p>Customer: {{ $sumData->First_name }}</p>
+                <p>Customer: {{ $sumData->First_name ?? $sumData->Name ?? '' }}</p>
                 <p>Tel: {{ $sumData->Contact_1 }}</p>
                 <p>Address: {{ $sumData->Address_1 }}</p>
                 <p>VAT Number: {{ $sumData->Passport }}</p>

@@ -1603,6 +1603,47 @@ FORM SUBMIT VALIDATION
 ══════════════════════════════════════════════════════════ --}}
 <script>
 document.getElementById('sales_form').addEventListener('submit', function (e) {
+    // Customer must be selected — without it, Customer Code/Name/Phone would
+    // save blank and the invoice would print as "Walk-in Customer" even when
+    // that wasn't intended.
+    if (!document.getElementById('searchCustomer').value.trim()) {
+        alert('Please select a Customer Code before saving.');
+        e.preventDefault();
+        return;
+    }
+
+    // At least one item must have been added to the invoice.
+    var itemRows = document.querySelectorAll('#dynamicAdded tr');
+    if (itemRows.length === 0) {
+        alert('Please add at least one item to the invoice before saving.');
+        e.preventDefault();
+        return;
+    }
+
+    // Every added row must have a valid item code, quantity, and unit price —
+    // catches a row that got added with a blank/zero field slipping through.
+    for (var i = 0; i < itemRows.length; i++) {
+        var row = itemRows[i];
+        var rowItemCode  = row.querySelector('[name*="[item_code]"]');
+        var rowQty       = row.querySelector('[name*="[qty]"]');
+        var rowUnitPrice = row.querySelector('[name*="[unit_price]"]');
+        if (!rowItemCode || !rowItemCode.value.trim()) {
+            alert('One of the item rows is missing an Item Code. Please remove it and re-add it properly.');
+            e.preventDefault();
+            return;
+        }
+        if (!rowQty || !(parseFloat(rowQty.value) > 0)) {
+            alert('Every item row needs a QTY greater than 0 (' + rowItemCode.value + ').');
+            e.preventDefault();
+            return;
+        }
+        if (!rowUnitPrice || !(parseFloat(rowUnitPrice.value) > 0)) {
+            alert('Every item row needs a Unit Price greater than 0 (' + rowItemCode.value + ').');
+            e.preventDefault();
+            return;
+        }
+    }
+
     syncChequeHiddenFields();
 
     var cash   = parseFloat(document.getElementById('cash_payment').value)    || 0;
@@ -1690,20 +1731,35 @@ function setItemDetails() {
     });
 }
 
-// Load sellable batches (remaining qty > 0) for the selected item into #item_batch.
-// Non-batch-tracked items simply come back empty, leaving "(no batch)" selected.
+// Load every batch (including depleted ones) for the selected item into #item_batch.
+// Depleted batches (qty_remaining <= 0) still show up, but greyed out and disabled —
+// so they stay visible for context without being pickable. Non-batch-tracked items
+// simply come back empty, leaving "(no batch)" selected.
+//
+// setItemDetails() can fire more than once in quick succession for the same item
+// (typing in the item code field and picking it from the search modal both trigger
+// it), so two overlapping calls here used to both append their own copy of the list
+// on top of each other. A simple request token makes sure only the response from the
+// most recent call is ever allowed to populate the dropdown.
+var batchLoadToken = 0;
 function loadItemBatches(itemCode) {
     var batchSelect = $('#item_batch');
     batchSelect.html('<option value="">(no batch)</option>');
 
-    $.get("{{ url('get_item_batches_ajax') }}", { item_code: itemCode, only_available: 1 })
+    var myToken = ++batchLoadToken;
+    $.get("{{ url('get_item_batches_ajax') }}", { item_code: itemCode })
         .done(function (res) {
+            if (myToken !== batchLoadToken) { return; } // a newer call superseded this one
+            batchSelect.html('<option value="">(no batch)</option>');
             if (res.data && res.data.length) {
                 res.data.forEach(function (b) {
+                    var isEmpty = parseFloat(b.qty_remaining) <= 0;
                     batchSelect.append($('<option>', {
                         value: b.batch_no,
                         'data-sale-price': b.sale_price,
-                        text: b.batch_no + ' (Qty ' + b.qty_remaining + ', Rs.' + b.sale_price + ')'
+                        disabled: isEmpty,
+                        style: isEmpty ? 'color:#aaa;' : '',
+                        text: b.batch_no + ' (Qty ' + b.qty_remaining + ', Rs.' + b.sale_price + ')' + (isEmpty ? ' — Out of stock' : '')
                     }));
                 });
             }

@@ -33,7 +33,7 @@
 
     <td style="width:15%;">
         <select class="form-control do-batch-select" name="inputs[{{ $loop->index }}][batch_no]"
-            data-item-code="{{ $data['Item_code'] }}">
+            data-item-code="{{ $data['Item_code'] }}" data-invoice-batch="{{ $data['batch_no'] ?? '' }}">
             <option value="">(no batch)</option>
         </select>
     </td>

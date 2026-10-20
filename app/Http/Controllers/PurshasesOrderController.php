@@ -15,6 +15,7 @@ use App\Models\TPurchasesOrderDetails;
 use App\Models\TItemMovement;
 use App\Models\TStockTransferDetails;
 use App\Models\TStockTransferSum;
+use App\Models\branchDel;
 
 
 
@@ -113,8 +114,11 @@ class PurshasesOrderController extends Controller
                    ->where('BC', $branch_code)
                    ->get();
 
+       $branchDelData = branchDel::where('bccode', $branch_code)->get();
+       $supplierData = Suppliers::where('Code', $request->supplier_code)->get();
+
        // Generate the PDF content using a view
-       $pdf = PDF::loadView('repairInvoicePrint', ['pawnSumData' => $T_sumdata , 'pawnDetailsData' => $T_detailsdata, 'companyData' => $companyData]);
+       $pdf = PDF::loadView('repairInvoicePrint', ['pawnSumData' => $T_sumdata , 'pawnDetailsData' => $T_detailsdata, 'companyData' => $companyData, 'branchDel' => $branchDelData, 'customerData' => $supplierData]);
 
        // Save the PDF to a temporary file
        $pdfPath = storage_path('../public/assets/pdf/Repair_Invoice.pdf');

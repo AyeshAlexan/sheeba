@@ -225,8 +225,16 @@
         });
 
         // Load sellable batches (remaining qty > 0) for a row's item into its select.
+        // Preference order for which one ends up selected:
+        //   1. The batch that was actually picked when the invoice itself was created
+        //      (carried over via data-invoice-batch) — this is what the user intended
+        //      to deliver, so it should win whenever it's still available.
+        //   2. Otherwise, the oldest available batch (first-in) — so the field is never
+        //      left on "(no batch)" by default, which was easy to miss and led to stock
+        //      being deducted without a batch attached.
         function loadItemBatches(selectEl) {
             var itemCode = selectEl.data('item-code');
+            var invoiceBatch = selectEl.data('invoice-batch');
             selectEl.html('<option value="">(no batch)</option>');
 
             $.get("{{ url('get_item_batches_ajax') }}", { item_code: itemCode, only_available: 1 }, function (res) {
@@ -237,6 +245,10 @@
                             text: b.batch_no + ' (Qty ' + b.qty_remaining + ')'
                         }));
                     });
+                    if (res.data.length > 0) {
+                        var matchesInvoiceBatch = invoiceBatch && res.data.some(function (b) { return b.batch_no === invoiceBatch; });
+                        selectEl.val(matchesInvoiceBatch ? invoiceBatch : res.data[0].batch_no);
+                    }
                 }
             });
         }

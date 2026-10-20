@@ -214,6 +214,7 @@ public function add_salesInvoice(Request $request)
             $detail->Invoice_date     = $value['invoice_date'];
             $detail->Item_code        = $value['item_code'];
             $detail->Item_s_code      = $value['item_code'];
+            $detail->batch_no         = $value['batch_no'] ?: null;
             $detail->Item_description = $value['item_description'];
             $detail->QTY              = $value['qty'];
             $detail->Per              = $value['Per'] ?? null;
