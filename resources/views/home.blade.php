@@ -231,67 +231,53 @@
         .sa-warning { background: linear-gradient(135deg, #D97706 0%, #92400E 100%); }
 
         /* ══════════════════════════════════════════════════
-           STAT CARDS
+           METRIC CARDS (uniform premium stat grid)
         ══════════════════════════════════════════════════ */
-        .stat-card {
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .metric-card {
             background: var(--clr-surface);
-            border: 1px solid var(--clr-border);
-            border-radius: var(--radius-lg);
-            padding: 22px 22px 18px;
-            box-shadow: var(--shadow-sm);
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(15,23,42,.05), 0 1px 2px rgba(15,23,42,.03);
+            padding: 20px 20px 18px;
+            display: flex;
+            flex-direction: column;
+            min-height: 148px;
             transition: box-shadow .25s, transform .25s;
-            height: 100%;
         }
-        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .stat-card-top {
-            display: flex; align-items: flex-start;
-            justify-content: space-between; gap: 12px;
-            margin-bottom: 16px;
-        }
-        .stat-icon {
-            width: 48px; height: 48px; border-radius: 14px;
+        .metric-card:hover { box-shadow: 0 8px 24px rgba(15,23,42,.09); transform: translateY(-2px); }
+        .metric-icon {
+            width: 32px; height: 32px; border-radius: 9px;
             display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; font-size: 20px;
+            flex-shrink: 0; font-size: 13px; margin-bottom: 14px;
         }
-        .stat-icon.sales     { background: var(--clr-indigo-lt); color: var(--clr-indigo); }
-        .stat-icon.purchases { background: var(--clr-sky-lt);    color: var(--clr-sky); }
-        .stat-icon.customers { background: var(--clr-emerald-lt);color: var(--clr-emerald); }
-        .stat-label { font-size: 12px; font-weight: 600; color: var(--clr-text-m); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-        .stat-value { font-size: 26px; font-weight: 800; color: var(--clr-text-h); line-height: 1; }
-        .stat-sub   { font-size: 12px; color: var(--clr-text-m); margin-top: 4px; }
-        .stat-badge {
-            display: inline-flex; align-items: center; gap: 3px;
-            font-size: 11px; font-weight: 700;
-            padding: 4px 10px; border-radius: 20px;
+        .metric-icon.indigo  { background: var(--clr-indigo-lt);  color: var(--clr-indigo); }
+        .metric-icon.sky     { background: var(--clr-sky-lt);     color: var(--clr-sky); }
+        .metric-icon.violet  { background: #ECEBFB; color: #6C4FD6; }
+        .metric-icon.amber   { background: var(--clr-amber-lt);   color: var(--clr-amber); }
+        .metric-icon.emerald { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
+        .metric-label { font-size: 12.5px; font-weight: 600; color: var(--clr-text-m); margin-bottom: 8px; }
+        .metric-value { font-size: 21px; font-weight: 800; color: var(--clr-text-h); line-height: 1.2; }
+        .metric-trend {
+            margin-top: auto; padding-top: 14px;
+            font-size: 12px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 5px;
         }
-        .stat-badge.up   { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
-        .stat-badge.neutral { background: var(--clr-indigo-lt); color: var(--clr-indigo); }
-        .stat-progress {
-            height: 5px; border-radius: 10px;
-            background: var(--clr-border); overflow: hidden; margin: 14px 0 16px;
-        }
-        .stat-progress-fill {
-            height: 100%; border-radius: 10px;
-            transition: width .6s ease;
-        }
-        .fill-indigo  { background: linear-gradient(90deg, var(--clr-indigo), var(--clr-violet)); }
-        .fill-sky     { background: linear-gradient(90deg, var(--clr-sky), #0EA5E9); }
-        .fill-emerald { background: linear-gradient(90deg, var(--clr-emerald), #10B981); }
-        .stat-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .metric-trend.up   { color: #0F9D73; }
+        .metric-trend.down { color: #E0665C; }
+        .metric-trend i { font-size: 10px; }
+
         .btn-stat {
             font-size: 11px; font-weight: 700;
             padding: 7px 14px; border-radius: 8px;
             text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
             transition: all .2s; border: none; cursor: pointer;
         }
-        .btn-stat.primary   { background: var(--clr-indigo); color: #fff; }
-        .btn-stat.primary:hover { background: #0F68E0; }
         .btn-stat.outline   { background: transparent; color: var(--clr-indigo); border: 1.5px solid var(--clr-indigo); }
         .btn-stat.outline:hover { background: var(--clr-indigo-lt); }
-        .btn-stat.sky-fill  { background: var(--clr-sky); color: #fff; }
-        .btn-stat.sky-fill:hover { background: #0369A1; }
-        .btn-stat.emerald-fill { background: var(--clr-emerald); color: #fff; }
-        .btn-stat.emerald-fill:hover { background: #128A3E; }
 
         /* ══════════════════════════════════════════════════
            CHART CARDS
@@ -346,57 +332,50 @@
         .chart-loading.hidden { opacity: 0; pointer-events: none; }
 
         /* ══════════════════════════════════════════════════
-           MULTI-LINE SUMMARY BAR
-        ══════════════════════════════════════════════════ */
-        .ml-summary-bar {
-            display: flex; gap: 28px; flex-wrap: wrap;
-            padding: 18px 22px 0;
-            border-bottom: 1px solid var(--clr-border);
-            margin-bottom: 0;
-            padding-bottom: 18px;
-        }
-        .ml-metric { display: flex; flex-direction: column; gap: 3px; }
-        .ml-metric-name {
-            font-size: 11px; font-weight: 700;
-            color: var(--clr-text-m); text-transform: uppercase; letter-spacing: .05em;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .ml-metric-name::before {
-            content: ''; display: inline-block;
-            width: 8px; height: 8px; border-radius: 50%;
-        }
-        .ml-metric-name.sales::before    { background: var(--chart-1); }
-        .ml-metric-name.purchases::before{ background: var(--chart-2); }
-        .ml-metric-name.stock::before    { background: var(--chart-3); }
-        .ml-metric-value { font-size: 22px; font-weight: 800; color: var(--clr-text-h); }
-        .ml-pct {
-            display: inline-flex; align-items: center; gap: 3px;
-            font-size: 11px; font-weight: 700;
-            padding: 2px 8px; border-radius: 20px;
-        }
-        .ml-pct.up   { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
-        .ml-pct.down { background: var(--clr-rose-lt);    color: var(--clr-rose); }
-
-        /* ══════════════════════════════════════════════════
            INVOICE LEGEND COUNTS
         ══════════════════════════════════════════════════ */
         .inv-legend {
-            display: flex; gap: 0;
-            border-top: 1px solid var(--clr-border);
-            margin-top: 12px;
+            display: flex; gap: 10px;
+            padding: 16px 0 2px;
         }
         .inv-legend-item {
             flex: 1; text-align: center;
-            padding: 12px 8px;
-            border-right: 1px solid var(--clr-border);
+            padding: 12px 6px;
+            border-radius: 12px;
+            background: var(--clr-bg);
         }
-        .inv-legend-item:last-child { border-right: none; }
+        .inv-legend-item.inv-indigo  { background: var(--clr-indigo-lt); }
+        .inv-legend-item.inv-emerald { background: var(--clr-emerald-lt); }
+        .inv-legend-item.inv-amber   { background: var(--clr-amber-lt); }
         .inv-legend-dot {
-            width: 8px; height: 8px; border-radius: 50%;
+            width: 7px; height: 7px; border-radius: 50%;
             display: inline-block; margin-right: 5px;
         }
+        .inv-legend-item.inv-indigo  .inv-legend-dot { background: var(--clr-indigo); }
+        .inv-legend-item.inv-emerald .inv-legend-dot { background: var(--clr-emerald); }
+        .inv-legend-item.inv-amber   .inv-legend-dot { background: var(--clr-amber); }
         .inv-legend-label { font-size: 11px; font-weight: 600; color: var(--clr-text-m); }
-        .inv-legend-val   { font-size: 20px; font-weight: 800; color: var(--clr-text-h); margin-top: 2px; }
+        .inv-legend-val   { font-size: 19px; font-weight: 800; color: var(--clr-text-h); margin-top: 3px; }
+
+        /* ══════════════════════════════════════════════════
+           KPI LIST (Stock History card)
+        ══════════════════════════════════════════════════ */
+        .kpi-list { display: flex; flex-direction: column; }
+        .kpi-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; padding: 11px 2px;
+            border-bottom: 1px solid var(--clr-border);
+        }
+        .kpi-row:last-child { border-bottom: none; }
+        .kpi-label { font-size: 13px; font-weight: 600; color: var(--clr-text-m); flex: 1; }
+        .kpi-value { font-size: 21px; font-weight: 800; color: var(--clr-text-h); }
+        .kpi-pct {
+            display: inline-flex; align-items: center; gap: 3px;
+            font-size: 11px; font-weight: 700;
+            padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+        }
+        .kpi-pct.up   { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
+        .kpi-pct.down { background: var(--clr-rose-lt);    color: var(--clr-rose); }
 
         /* ══════════════════════════════════════════════════
            PAYMENT TABLE CARDS
@@ -457,6 +436,7 @@
         .chip-danger  { background: var(--clr-rose-lt);    color: var(--clr-rose); }
         .chip-warning { background: var(--clr-amber-lt);   color: var(--clr-amber); }
         .chip-ok      { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
+        .chip-info    { background: var(--clr-sky-lt);     color: var(--clr-sky); }
 
         /* Stock needed badge */
         .stock-chip {
@@ -525,15 +505,17 @@
                 from { opacity: 0; transform: translateY(14px); }
                 to   { opacity: 1; transform: translateY(0); }
             }
-            .dash-greeting, .sa-card, .stat-card, .chart-card, .pay-card, .inv-table-card {
+            .dash-greeting, .sa-card, .metric-card, .chart-card, .pay-card, .inv-table-card {
                 animation: dashFadeUp .5s cubic-bezier(.16,1,.3,1) both;
             }
             .dash-greeting { animation-delay: 0s; }
             .sa-card:nth-of-type(1) { animation-delay: .03s; }
             .sa-card:nth-of-type(2) { animation-delay: .07s; }
-            .row.mb-24 > *:nth-child(1) .stat-card { animation-delay: .06s; }
-            .row.mb-24 > *:nth-child(2) .stat-card { animation-delay: .12s; }
-            .row.mb-24 > *:nth-child(3) .stat-card { animation-delay: .18s; }
+            .stat-grid .metric-card:nth-child(1) { animation-delay: .04s; }
+            .stat-grid .metric-card:nth-child(2) { animation-delay: .08s; }
+            .stat-grid .metric-card:nth-child(3) { animation-delay: .12s; }
+            .stat-grid .metric-card:nth-child(4) { animation-delay: .16s; }
+            .stat-grid .metric-card:nth-child(5) { animation-delay: .20s; }
             .row-gap > *:nth-child(1) .chart-card,
             .row-gap > *:nth-child(1) .pay-card { animation-delay: .1s; }
             .row-gap > *:nth-child(2) .chart-card,
@@ -541,16 +523,16 @@
             .inv-table-card { animation-delay: .2s; }
 
             /* Count-up numbers land instantly under the fade, then tick up */
-            .stat-value[data-countup] { font-variant-numeric: tabular-nums; }
+            .metric-value[data-countup] { font-variant-numeric: tabular-nums; }
         }
         @media (prefers-reduced-motion: reduce) {
-            .chart-loading, .sa-panel, .sa-card, .stat-card { transition: none !important; animation: none !important; }
+            .chart-loading, .sa-panel, .sa-card, .metric-card { transition: none !important; animation: none !important; }
         }
 
         /* Snappier, consistent hover feedback across interactive surfaces */
         .pro-table tbody td { transition: background .15s ease; }
-        .chip, .stat-badge, .stock-chip { transition: transform .15s ease; }
-        .chip:hover, .stat-badge:hover { transform: translateY(-1px); }
+        .chip, .stock-chip { transition: transform .15s ease; }
+        .chip:hover { transform: translateY(-1px); }
         .btn-stat { transition: background .15s ease, color .15s ease, transform .1s ease, border-color .15s ease; }
         .btn-stat:active { transform: scale(.97); }
         .sa-toggle-btn, .sa-dismiss-btn { transition: background .15s ease, transform .1s ease; }
@@ -786,85 +768,19 @@
             </div>
             @endif
 
-            {{-- ─── STAT CARDS ─── --}}
-            <div class="row mb-24" style="margin-bottom:20px;">
-                {{-- Sales --}}
-                <div class="col-xl-4 col-sm-6 col-12 mb-3">
-                    <div class="stat-card">
-                        <div class="stat-card-top">
-                            <div>
-                                <div class="stat-label">Total Sales</div>
-                                <div class="stat-value" data-countup data-value="{{ $salessum }}" data-decimals="2">0.00</div>
-                                <div class="stat-sub">Sales Invoices: <strong>{{ $Invoice }}</strong></div>
-                            </div>
-                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-                                <div class="stat-icon sales"><i class="fas fa-chart-line"></i></div>
-                                <span class="stat-badge up"><i class="fas fa-arrow-up" style="font-size:9px;"></i>Active</span>
-                            </div>
-                        </div>
-                        <div class="stat-progress">
-                            <div class="stat-progress-fill fill-indigo" style="width:{{ min($Invoice,100) }}%"></div>
-                        </div>
-                        <div class="stat-actions">
-                            <a class="btn-stat primary" target="_blank" href="{{ route('salesInvoice_withoutVat') }}">
-                                <i class="fas fa-plus-circle"></i> Create Invoice
-                            </a>
-                            <a class="btn-stat outline" target="_blank" href="{{ route('sales_report') }}">
-                                <i class="fas fa-chart-bar"></i> Report
-                            </a>
-                        </div>
+            {{-- ─── METRIC CARDS ─── --}}
+            <div class="stat-grid mb-24">
+                @foreach($statCards as $card)
+                <div class="metric-card">
+                    <div class="metric-icon {{ $card['color'] }}"><i class="fas {{ $card['icon'] }}"></i></div>
+                    <div class="metric-label">{{ $card['label'] }}</div>
+                    <div class="metric-value" data-countup data-value="{{ $card['value'] }}" data-decimals="{{ $card['decimals'] }}">0</div>
+                    <div class="metric-trend {{ $card['pct'] >= 0 ? 'up' : 'down' }}">
+                        <i class="fas fa-{{ $card['pct'] >= 0 ? 'arrow-up' : 'arrow-down' }}"></i>
+                        {{ $card['pct'] >= 0 ? '+' : '' }}{{ $card['pct'] }}% Than Last Month
                     </div>
                 </div>
-
-                {{-- Purchases --}}
-                <div class="col-xl-4 col-sm-6 col-12 mb-3">
-                    <div class="stat-card">
-                        <div class="stat-card-top">
-                            <div>
-                                <div class="stat-label">Total Purchases</div>
-                                <div class="stat-value" data-countup data-value="{{ $PurchasesSum }}" data-decimals="2">0.00</div>
-                                <div class="stat-sub">Purchase Orders: <strong>{{ $Purchases }}</strong></div>
-                            </div>
-                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-                                <div class="stat-icon purchases"><i class="fas fa-shopping-cart"></i></div>
-                                <span class="stat-badge neutral"><i class="fas fa-minus" style="font-size:9px;"></i>Stable</span>
-                            </div>
-                        </div>
-                        <div class="stat-progress">
-                            <div class="stat-progress-fill fill-sky" style="width:{{ min($Purchases,100) }}%"></div>
-                        </div>
-                        <div class="stat-actions">
-                            <a class="btn-stat sky-fill" target="_blank" href="{{ route('purchases') }}">
-                                <i class="fas fa-plus-circle"></i> Create Purchases
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Customers --}}
-                <div class="col-xl-4 col-sm-6 col-12 mb-3">
-                    <div class="stat-card">
-                        <div class="stat-card-top">
-                            <div>
-                                <div class="stat-label">Customers</div>
-                                <div class="stat-value" data-countup data-value="{{ $customerdetails }}" data-decimals="0">0</div>
-                                <div class="stat-sub">Qty Movement: <strong>{{ $QtyOut - $QtyIn }}</strong></div>
-                            </div>
-                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-                                <div class="stat-icon customers"><i class="fas fa-users"></i></div>
-                                <span class="stat-badge up"><i class="fas fa-arrow-up" style="font-size:9px;"></i>Growing</span>
-                            </div>
-                        </div>
-                        <div class="stat-progress">
-                            <div class="stat-progress-fill fill-emerald" style="width:{{ min(abs($QtyOut-$QtyIn),100) }}%"></div>
-                        </div>
-                        <div class="stat-actions">
-                            <a class="btn-stat emerald-fill" target="_blank" href="{{ route('master_customers') }}">
-                                <i class="fas fa-user-plus"></i> Create Customers
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             {{-- ─── CHARTS ROW ─── --}}
@@ -894,7 +810,10 @@
                 <div class="col-xl-5 d-flex mb-3">
                     <div class="chart-card" style="width:100%;">
                         <div class="chart-card-header">
-                            <h5 class="chart-card-title">Invoice Analytics</h5>
+                            <h5 class="chart-card-title">
+                                <i class="fas fa-chart-pie me-2" style="color:var(--clr-indigo);"></i>
+                                Invoice Analytics
+                            </h5>
                             <div class="period-tabs" id="invoiceTabs">
                                 <button class="period-tab" onclick="changePeriod('invoice','daily',this)">Daily</button>
                                 <button class="period-tab" onclick="changePeriod('invoice','weekly',this)">Weekly</button>
@@ -909,89 +828,159 @@
                             <div id="invoice_chart"></div>
                         </div>
                         <div class="inv-legend" id="invoice-totals">
-                            <div class="inv-legend-item">
-                                <span class="inv-legend-dot" style="background:#4F46E5;"></span>
+                            <div class="inv-legend-item inv-indigo">
+                                <span class="inv-legend-dot"></span>
                                 <span class="inv-legend-label">Sales</span>
-                                <div class="inv-legend-val" id="inv-sales-count">{{ $Invoice }}</div>
+                                <div class="inv-legend-val" id="inv-sales-count">{{ $invoiceChartData['totals']['sales'] }}</div>
                             </div>
-                            <div class="inv-legend-item">
-                                <span class="inv-legend-dot" style="background:#059669;"></span>
+                            <div class="inv-legend-item inv-emerald">
+                                <span class="inv-legend-dot"></span>
                                 <span class="inv-legend-label">Purchases</span>
-                                <div class="inv-legend-val" id="inv-purch-count">{{ $Purchases }}</div>
+                                <div class="inv-legend-val" id="inv-purch-count">{{ $invoiceChartData['totals']['purchases'] }}</div>
                             </div>
-                            <div class="inv-legend-item">
-                                <span class="inv-legend-dot" style="background:#D97706;"></span>
-                                <span class="inv-legend-label">Stock</span>
-                                <div class="inv-legend-val" id="inv-stock-count">{{ $QtyIn }}</div>
+                            <div class="inv-legend-item inv-amber">
+                                <span class="inv-legend-dot"></span>
+                                <span class="inv-legend-label">Returns</span>
+                                <div class="inv-legend-val" id="inv-returns-count">{{ $invoiceChartData['totals']['returns'] }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- ─── MULTI-LINE ANALYTICS ─── --}}
-            <div class="mb-24" style="margin-bottom:20px;">
-                <div class="chart-card">
-                    <div class="chart-card-header">
-                        <h5 class="chart-card-title">
-                            <i class="fas fa-chart-area me-2" style="color:var(--clr-indigo);"></i>
-                            Multi-Channel Analytics
-                        </h5>
-                        <div class="period-tabs" id="mlTabs">
-                            <button class="period-tab" onclick="changePeriod('ml','daily',this)">Daily</button>
-                            <button class="period-tab active" onclick="changePeriod('ml','weekly',this)">Weekly</button>
-                            <button class="period-tab" onclick="changePeriod('ml','monthly',this)">Monthly</button>
-                            <button class="period-tab" onclick="changePeriod('ml','yearly',this)">Yearly</button>
+            {{-- ─── TOP SELLING ITEMS + PAYMENT TREND + STOCK HISTORY ─── --}}
+            <div class="row mb-24" style="margin-bottom:20px; align-items:flex-start;">
+                {{-- Top Selling Items --}}
+                <div class="col-xl-5 d-flex mb-3">
+                    <div class="chart-card" style="width:100%;">
+                        <div class="chart-card-header">
+                            <h5 class="chart-card-title">
+                                <i class="fas fa-ranking-star me-2" style="color:var(--clr-indigo);"></i>
+                                Top Selling Items
+                            </h5>
+                            <div class="period-tabs" id="topItemsTabs">
+                                <button class="period-tab" onclick="changePeriod('topItems','daily',this)">Daily</button>
+                                <button class="period-tab" onclick="changePeriod('topItems','weekly',this)">Weekly</button>
+                                <button class="period-tab active" onclick="changePeriod('topItems','monthly',this)">Monthly</button>
+                                <button class="period-tab" onclick="changePeriod('topItems','yearly',this)">Yearly</button>
+                            </div>
+                        </div>
+                        <div class="chart-card-body chart-wrap pt-2">
+                            <div class="chart-loading hidden" id="topItems-loading">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                            <div id="top_items_chart"></div>
                         </div>
                     </div>
-                    <div class="ml-summary-bar" id="ml-summary">
-                        @foreach($multiLineData['summary'] as $idx => $s)
-                        @php $classes = ['sales','purchases','stock']; $cls = $classes[$idx] ?? 'sales'; @endphp
-                        <div class="ml-metric">
-                            <span class="ml-metric-name {{ $cls }}">{{ $s['label'] }}</span>
-                            <span class="ml-metric-value">{{ number_format($s['value']) }}</span>
-                            <span class="ml-pct {{ $s['pct'] >= 0 ? 'up' : 'down' }}">
-                                {{ $s['pct'] >= 0 ? '↑' : '↓' }} {{ abs($s['pct']) }}%
-                            </span>
+                </div>
+
+                {{-- Right column: Payment trend (top) + Stock History (bottom), stacked --}}
+                <div class="col-xl-7 mb-3" style="display:flex; flex-direction:column; gap:20px;">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h5 class="chart-card-title">
+                                <i class="fas fa-arrow-right-arrow-left me-2" style="color:var(--clr-indigo);"></i>
+                                Payment Sent vs Received
+                            </h5>
+                            <div class="period-tabs" id="paymentTrendTabs">
+                                <button class="period-tab" onclick="changePeriod('paymentTrend','daily',this)">Daily</button>
+                                <button class="period-tab active" onclick="changePeriod('paymentTrend','weekly',this)">Weekly</button>
+                                <button class="period-tab" onclick="changePeriod('paymentTrend','monthly',this)">Monthly</button>
+                                <button class="period-tab" onclick="changePeriod('paymentTrend','yearly',this)">Yearly</button>
+                            </div>
                         </div>
-                        @endforeach
+                        <div class="chart-card-body chart-wrap">
+                            <div class="chart-loading hidden" id="paymentTrend-loading">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                            <div id="payment_trend_chart"></div>
+                        </div>
                     </div>
-                    <div class="chart-card-body chart-wrap pt-2">
-                        <div class="chart-loading hidden" id="ml-loading">
-                            <div class="spinner-border text-primary" role="status"></div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h5 class="chart-card-title">
+                                <i class="fas fa-boxes-stacked me-2" style="color:var(--clr-text-m);"></i>
+                                Stock History
+                            </h5>
+                            <span style="font-size:11px;color:var(--clr-text-l);font-weight:600;">This month</span>
                         </div>
-                        <div id="ml_chart"></div>
+                        <div class="chart-card-body" style="padding-top:4px;">
+                            <div class="kpi-list">
+                                @foreach($stockHistory as $row)
+                                <div class="kpi-row">
+                                    <span class="kpi-label">{{ $row['label'] }}</span>
+                                    <span class="kpi-value">{{ number_format($row['value']) }}</span>
+                                    <span class="kpi-pct {{ $row['pct'] >= 0 ? 'up' : 'down' }}">
+                                        {{ $row['pct'] >= 0 ? '↑' : '↓' }} {{ abs($row['pct']) }}%
+                                    </span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {{-- ─── PAYMENT TABLES ─── --}}
+            @php
+                $invStatusTotal = max(array_sum($invoiceStatusCounts), 1);
+                $invPaidPct     = round($invoiceStatusCounts['Paid']     / $invStatusTotal * 100);
+                $invUnpaidPct   = round($invoiceStatusCounts['Unpaid']   / $invStatusTotal * 100);
+                $invReturnedPct = round($invoiceStatusCounts['Returned'] / $invStatusTotal * 100);
+                $invOverduePct  = max(100 - $invPaidPct - $invUnpaidPct - $invReturnedPct, 0);
+
+                $methodTotal = max(array_sum($paymentMethodTotals), 1);
+                $methodPct = collect($paymentMethodTotals)->map(fn($v) => round($v / $methodTotal * 100));
+            @endphp
             <div class="row mb-24" style="margin-bottom:20px;">
                 <div class="col-md-6 col-sm-6 mb-3">
                     <div class="pay-card">
                         <div class="pay-card-header">
-                            <h5 class="pay-card-title"><i class="fas fa-money-bill-wave me-2" style="color:var(--clr-emerald);"></i>Cash Payment</h5>
-                            <a href="#" class="btn-stat outline" style="font-size:11px;padding:5px 12px;">View All</a>
+                            <h5 class="pay-card-title"><i class="fas fa-receipt me-2" style="color:var(--clr-indigo);"></i>Recent Sales Invoices</h5>
+                            <a href="{{ route('sales_report') }}" target="_blank" class="btn-stat outline" style="font-size:11px;padding:5px 12px;">View All</a>
                         </div>
                         <div class="pay-progress-bar">
-                            <div style="width:56%;background:var(--clr-emerald);border-radius:10px 0 0 10px;"></div>
-                            <div style="width:10%;background:var(--clr-amber);"></div>
-                            <div style="width:14%;background:var(--clr-rose);"></div>
-                            <div style="width:20%;background:var(--clr-sky);border-radius:0 10px 10px 0;"></div>
+                            <div style="width:{{ $invPaidPct }}%;background:var(--clr-emerald);border-radius:10px 0 0 10px;"></div>
+                            <div style="width:{{ $invUnpaidPct }}%;background:var(--clr-amber);"></div>
+                            <div style="width:{{ $invOverduePct }}%;background:var(--clr-rose);"></div>
+                            <div style="width:{{ $invReturnedPct }}%;background:var(--clr-sky);border-radius:0 10px 10px 0;"></div>
                         </div>
                         <div class="pay-legend">
                             <span><i class="fas fa-circle" style="color:var(--clr-emerald);font-size:8px;"></i>Paid</span>
                             <span><i class="fas fa-circle" style="color:var(--clr-amber);font-size:8px;"></i>Unpaid</span>
                             <span><i class="fas fa-circle" style="color:var(--clr-rose);font-size:8px;"></i>Overdue</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-sky);font-size:8px;"></i>Draft</span>
+                            <span><i class="fas fa-circle" style="color:var(--clr-sky);font-size:8px;"></i>Returned</span>
                         </div>
                         <div class="table-responsive">
                             <table class="pro-table">
                                 <thead><tr>
-                                    <th>Receipt No</th><th>Customer</th><th>Date</th>
-                                    <th>Amount</th><th>Action</th>
+                                    <th>Invoice No</th><th>Customer</th><th>Date</th>
+                                    <th>Amount</th><th>Status</th>
                                 </tr></thead>
-                                <tbody></tbody>
+                                <tbody>
+                                    @forelse($recentInvoices as $inv)
+                                    <tr>
+                                        <td><code class="item-code">{{ $inv->Invoice_no }}</code></td>
+                                        <td>{{ $inv->Customer_Name ?: '—' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($inv->Invoice_date)->format('d M Y') }}</td>
+                                        <td>{{ number_format($inv->Net_Amount, 2) }}</td>
+                                        <td>
+                                            @if($inv->computed_status === 'Returned')
+                                                <span class="chip chip-info">Returned</span>
+                                            @elseif($inv->computed_status === 'Paid')
+                                                <span class="chip chip-ok">Paid</span>
+                                            @elseif($inv->computed_status === 'Overdue')
+                                                <span class="chip chip-danger">Overdue</span>
+                                            @else
+                                                <span class="chip chip-warning">Unpaid</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr><td colspan="5" style="text-align:center;color:var(--clr-text-l);">No invoices yet</td></tr>
+                                    @endforelse
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -1000,26 +989,40 @@
                 <div class="col-md-6 col-sm-6 mb-3">
                     <div class="pay-card">
                         <div class="pay-card-header">
-                            <h5 class="pay-card-title"><i class="fas fa-receipt me-2" style="color:var(--clr-indigo);"></i>Sales Payment</h5>
-                            <a href="#" class="btn-stat outline" style="font-size:11px;padding:5px 12px;">View All</a>
+                            <h5 class="pay-card-title"><i class="fas fa-money-bill-wave me-2" style="color:var(--clr-emerald);"></i>Recent Customer Payments</h5>
+                            <a href="{{ route('customer_payment_report') }}" target="_blank" class="btn-stat outline" style="font-size:11px;padding:5px 12px;">View All</a>
                         </div>
                         <div class="pay-progress-bar">
-                            <div style="width:39%;background:var(--clr-emerald);border-radius:10px 0 0 10px;"></div>
-                            <div style="width:35%;background:var(--clr-rose);"></div>
-                            <div style="width:26%;background:var(--clr-amber);border-radius:0 10px 10px 0;"></div>
+                            <div style="width:{{ $methodPct['Cash'] }}%;background:var(--clr-emerald);border-radius:10px 0 0 10px;"></div>
+                            <div style="width:{{ $methodPct['Card'] }}%;background:var(--clr-indigo);"></div>
+                            <div style="width:{{ $methodPct['Cheque'] }}%;background:var(--clr-amber);"></div>
+                            <div style="width:{{ $methodPct['Bank'] }}%;background:var(--clr-sky);border-radius:0 10px 10px 0;"></div>
                         </div>
                         <div class="pay-legend">
-                            <span><i class="fas fa-circle" style="color:var(--clr-emerald);font-size:8px;"></i>Sent</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-amber);font-size:8px;"></i>Draft</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-rose);font-size:8px;"></i>Expired</span>
+                            <span><i class="fas fa-circle" style="color:var(--clr-emerald);font-size:8px;"></i>Cash</span>
+                            <span><i class="fas fa-circle" style="color:var(--clr-indigo);font-size:8px;"></i>Card</span>
+                            <span><i class="fas fa-circle" style="color:var(--clr-amber);font-size:8px;"></i>Cheque</span>
+                            <span><i class="fas fa-circle" style="color:var(--clr-sky);font-size:8px;"></i>Bank</span>
                         </div>
                         <div class="table-responsive">
                             <table class="pro-table">
                                 <thead><tr>
-                                    <th>Receipt No</th><th>Date</th><th>Pawn Amt</th>
-                                    <th>Payable Total</th><th>Action</th>
+                                    <th>Payment No</th><th>Customer</th><th>Date</th>
+                                    <th>Amount</th><th>Method</th>
                                 </tr></thead>
-                                <tbody></tbody>
+                                <tbody>
+                                    @forelse($recentPayments as $p)
+                                    <tr>
+                                        <td><code class="item-code">{{ $p->Payment_no }}</code></td>
+                                        <td>{{ $p->Customer_Name ?: '—' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($p->Payment_date)->format('d M Y') }}</td>
+                                        <td>{{ number_format($p->Payment_Amount, 2) }}</td>
+                                        <td><span class="chip chip-ok">{{ $p->primary_method }}</span></td>
+                                    </tr>
+                                    @empty
+                                    <tr><td colspan="5" style="text-align:center;color:var(--clr-text-l);">No payments yet</td></tr>
+                                    @endforelse
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -1109,25 +1112,30 @@
 {{-- ════ Scripts ════ --}}
 <script src="assets/js/jquery-3.6.0.min.js"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="assets/plugins/apexchart/apexcharts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js"></script>
 
 <script>
 // ─── Server-rendered initial data ───
-const SALES_INIT   = @json($salesChartData);
-const INVOICE_INIT = @json($invoiceChartData);
-const ML_INIT      = @json($multiLineData);
+const SALES_INIT         = @json($salesChartData);
+const INVOICE_INIT       = @json($invoiceChartData);
+const TOP_ITEMS_INIT     = @json($topItemsData);
+const PAYMENT_TREND_INIT = @json($paymentTrendData);
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
 // ─── Chart palette ───
 const PALETTE = ['#1677FF','#16A34A','#F59E0B','#EF4444','#0284C7'];
 
-let salesChart, invoiceChart, mlChart;
+let salesChart, invoiceChart, topItemsChart, paymentTrendChart;
 
 // ─── 1. Sales & Repair BAR chart ───
 function buildSalesChart(data) {
+    const allValues = [...data.received, ...data.pending].map(Number);
+    const dataMax = Math.max(...allValues, 0);
+    const yMax = dataMax > 0 ? Math.ceil(dataMax * 1.25 / 10) * 10 : 10;
+
     const opts = {
         chart: {
-            type: 'bar', height: 290, toolbar: { show: false },
+            type: 'bar', height: 300, toolbar: { show: false },
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             animations: { enabled: true, speed: 500 },
             background: 'transparent',
@@ -1142,17 +1150,25 @@ function buildSalesChart(data) {
             axisBorder: { show: false }, axisTicks: { show: false },
         },
         yaxis: {
+            max: yMax,
+            forceNiceScale: false,
             labels: {
                 formatter: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v,
                 style: { fontSize: '11px', colors: '#94A3B8' }
             }
         },
-        colors: [PALETTE[0], PALETTE[2]],
+        colors: [PALETTE[3], PALETTE[2]],
         plotOptions: {
             bar: {
-                borderRadius: 8,
-                columnWidth: '50%',
-                dataLabels: { position: 'top' }
+                borderRadius: 11,
+                borderRadiusApplication: 'around',
+                columnWidth: '26%',
+                dataLabels: { position: 'top' },
+                colors: {
+                    backgroundBarColors: ['#EEF1F7'],
+                    backgroundBarOpacity: 1,
+                    backgroundBarRadius: 11,
+                }
             }
         },
         dataLabels: { enabled: false },
@@ -1161,13 +1177,13 @@ function buildSalesChart(data) {
             markers: { radius: 6 },
             labels: { colors: '#64748B' }
         },
-        grid: { borderColor: '#E5EAF2', strokeDashArray: 4, xaxis: { lines: { show: false } } },
+        grid: { show: false, padding: { top: -10 } },
         tooltip: {
             theme: 'light',
             y: { formatter: v => Number(v).toLocaleString() },
             style: { fontSize: '12px', fontFamily: "'Plus Jakarta Sans', sans-serif" }
         },
-        fill: { type: 'gradient', gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.15, opacityFrom: 1, opacityTo: 0.85 } },
+        fill: { type: 'gradient', gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.4, opacityFrom: 1, opacityTo: 0.9 } },
     };
 
     if (salesChart) { salesChart.updateOptions(opts); return; }
@@ -1179,33 +1195,49 @@ function buildSalesChart(data) {
 function buildInvoiceChart(data) {
     const opts = {
         chart: {
-            type: 'donut', height: 230,
+            type: 'donut', height: 270, offsetY: 6,
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             animations: { enabled: true, speed: 500 },
         },
         series: data.series,
         labels: data.labels,
-        colors: [PALETTE[0], PALETTE[1], PALETTE[2], PALETTE[3]],
+        colors: [PALETTE[0], PALETTE[1], PALETTE[2]],
         plotOptions: {
             pie: {
+                offsetY: 4,
                 donut: {
-                    size: '65%',
+                    size: '70%',
                     labels: {
                         show: true,
+                        name: { fontSize: '12px', fontWeight: 600, color: '#64748B', offsetY: -4 },
+                        value: {
+                            fontSize: '24px', fontWeight: 800, color: '#14213D', offsetY: 4,
+                            formatter: v => v + '%'
+                        },
                         total: {
                             show: true, label: 'Total',
                             fontSize: '12px', fontWeight: 700, color: '#64748B',
-                            formatter: w => w.globals.seriesTotals.reduce((a,b) => a+b, 0)
+                            formatter: () => '100%'
                         }
                     }
                 }
             }
         },
-        dataLabels: { enabled: false },
+        dataLabels: {
+            enabled: true,
+            offset: -22,
+            formatter: v => Math.round(v) + '%',
+            style: { fontSize: '11px', fontWeight: 700, colors: ['#fff'] },
+            dropShadow: { enabled: false },
+        },
         legend: { show: false },
-        stroke: { width: 2, colors: ['#fff'] },
+        stroke: { width: 3, colors: ['#fff'] },
+        fill: { type: 'solid' },
+        states: { hover: { filter: { type: 'darken', value: 0.95 } } },
         tooltip: {
             theme: 'light',
+            fillSeriesColor: false,
+            marker: { show: true },
             y: { formatter: v => v + '%' },
             style: { fontSize: '12px', fontFamily: "'Plus Jakarta Sans', sans-serif" }
         },
@@ -1217,19 +1249,92 @@ function buildInvoiceChart(data) {
 
     document.getElementById('inv-sales-count').textContent = data.totals.sales;
     document.getElementById('inv-purch-count').textContent = data.totals.purchases;
-    document.getElementById('inv-stock-count').textContent = data.totals.stock;
+    document.getElementById('inv-returns-count').textContent = data.totals.returns;
 }
 
-// ─── 3. Multi-line chart ───
-function buildMlChart(data) {
+// ─── 3. Top Selling Items (horizontal bar) ───
+function buildTopItemsChart(data) {
+    const RANKS = ['🥇','🥈','🥉'];
+    const count = data.categories.length || 1;
+    const rankedLabels = data.categories.map((c, i) => `${RANKS[i] ?? '#' + (i + 1)}  ${c}`);
+    const rowHeight = 46;
+    const chartHeight = Math.max(count * rowHeight + 70, 180);
+
     const opts = {
         chart: {
-            type: 'area', height: 310, toolbar: { show: false },
+            type: 'bar', height: chartHeight, toolbar: { show: false },
             fontFamily: "'Plus Jakarta Sans', sans-serif",
-            animations: { enabled: true, speed: 600 },
+            animations: { enabled: true, speed: 500, animateGradually: { enabled: true, delay: 60 } },
             background: 'transparent',
         },
-        series: data.series.map(s => ({ name: s.name, data: s.data })),
+        series: [{ name: 'Revenue', data: data.revenue }],
+        xaxis: {
+            categories: rankedLabels,
+            labels: {
+                formatter: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v,
+                style: { fontSize: '11px', colors: '#94A3B8' }
+            },
+            axisBorder: { show: false }, axisTicks: { show: false },
+        },
+        yaxis: {
+            labels: { style: { fontSize: '12.5px', fontWeight: 600, colors: '#334155' }, maxWidth: 220 }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                borderRadius: 8,
+                borderRadiusApplication: 'end',
+                barHeight: '58%',
+                dataLabels: { position: 'top' }
+            }
+        },
+        colors: [PALETTE[0]],
+        dataLabels: {
+            enabled: true,
+            offsetX: 10,
+            style: { fontSize: '11px', fontWeight: 700, colors: ['#334155'] },
+            formatter: v => Number(v).toLocaleString(),
+            background: { enabled: false },
+        },
+        legend: { show: false },
+        grid: {
+            borderColor: '#F0F3F9', strokeDashArray: 4,
+            yaxis: { lines: { show: false } },
+            padding: { top: -10, right: 24, bottom: 0, left: 0 },
+        },
+        tooltip: {
+            theme: 'light',
+            y: { formatter: v => Number(v).toLocaleString() },
+            style: { fontSize: '12px', fontFamily: "'Plus Jakarta Sans', sans-serif" }
+        },
+        states: {
+            hover: { filter: { type: 'darken', value: 0.92 } }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: { shade: 'light', type: 'horizontal', shadeIntensity: 0.3, gradientToColors: [PALETTE[4]], opacityFrom: 1, opacityTo: 0.9, stops: [0, 100] }
+        },
+    };
+
+    if (topItemsChart) { topItemsChart.updateOptions(opts, false, false); return; }
+    topItemsChart = new ApexCharts(document.querySelector('#top_items_chart'), opts);
+    topItemsChart.render();
+}
+
+// ─── 4. Payment Sent vs Received (line) ───
+function buildPaymentTrendChart(data) {
+    const opts = {
+        chart: {
+            type: 'area', height: 230, toolbar: { show: false },
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            animations: { enabled: true, speed: 600, easing: 'easeinout' },
+            background: 'transparent',
+            dropShadow: { enabled: true, top: 6, left: 0, blur: 6, color: '#1677FF', opacity: 0.08 },
+        },
+        series: [
+            { name: 'Payment Sent',     data: data.sent },
+            { name: 'Payment Received', data: data.received },
+        ],
         xaxis: {
             categories: data.categories,
             labels: { style: { fontSize: '11px', fontWeight: 600, colors: '#94A3B8' } },
@@ -1237,53 +1342,58 @@ function buildMlChart(data) {
         },
         yaxis: {
             labels: {
-                formatter: v => Number(v).toLocaleString(),
+                formatter: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v,
                 style: { fontSize: '11px', colors: '#94A3B8' }
             }
         },
-        colors: data.series.map((s, i) => s.color ?? PALETTE[i] ?? PALETTE[0]),
-        stroke: { curve: 'smooth', width: 3 },
-        markers: { size: 4, hover: { size: 6 }, strokeWidth: 2, strokeColors: '#fff' },
+        colors: [PALETTE[2], PALETTE[1]],
+        stroke: { curve: 'smooth', width: 3, lineCap: 'round' },
+        markers: {
+            size: 0, hover: { size: 6, sizeOffset: 2 },
+            strokeWidth: 2, strokeColors: '#fff',
+        },
         legend: {
-            position: 'bottom', fontSize: '12px', fontWeight: 600,
-            markers: { radius: 6 }, labels: { colors: '#64748B' }
+            position: 'top', horizontalAlign: 'right',
+            fontSize: '12px', fontWeight: 600,
+            markers: { radius: 6 }, labels: { colors: '#64748B' },
+            itemMargin: { horizontal: 10 },
         },
-        grid: { borderColor: '#E5EAF2', strokeDashArray: 4, xaxis: { lines: { show: false } } },
-        fill: {
-            type: 'gradient',
-            gradient: { shadeIntensity: 1, opacityFrom: 0.18, opacityTo: 0.01, stops: [0, 90] },
-        },
+        grid: { borderColor: '#F0F3F9', strokeDashArray: 4, xaxis: { lines: { show: false } }, padding: { top: -16 } },
         tooltip: {
             shared: true, intersect: false, theme: 'light',
             y: { formatter: v => Number(v).toLocaleString() },
             style: { fontSize: '12px', fontFamily: "'Plus Jakarta Sans', sans-serif" }
         },
+        fill: {
+            type: 'gradient',
+            gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.02, stops: [0, 95] },
+        },
     };
 
-    if (mlChart) {
-        mlChart.updateOptions({ series: opts.series, xaxis: opts.xaxis, colors: opts.colors });
+    if (paymentTrendChart) {
+        paymentTrendChart.updateOptions({ series: opts.series, xaxis: opts.xaxis });
         return;
     }
-    mlChart = new ApexCharts(document.querySelector('#ml_chart'), opts);
-    mlChart.render();
+    paymentTrendChart = new ApexCharts(document.querySelector('#payment_trend_chart'), opts);
+    paymentTrendChart.render();
 }
 
 // ─── Period switcher ───
-const tabGroups = { sales: 'salesTabs', invoice: 'invoiceTabs', ml: 'mlTabs' };
+const tabGroups = { sales: 'salesTabs', invoice: 'invoiceTabs', topItems: 'topItemsTabs', paymentTrend: 'paymentTrendTabs' };
 
 function changePeriod(chart, period, btn) {
     document.querySelectorAll(`#${tabGroups[chart]} .period-tab`)
         .forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    const loaderId = chart === 'ml' ? 'ml-loading' : chart + '-loading';
-    const loader = document.getElementById(loaderId);
+    const loader = document.getElementById(chart + '-loading');
     if (loader) loader.classList.remove('hidden');
 
     const urls = {
-        sales:   '{{ route("dashboard.salesChartData") }}',
-        invoice: '{{ route("dashboard.invoiceChartData") }}',
-        ml:      '{{ route("dashboard.multiLineData") }}',
+        sales:        '{{ route("dashboard.salesChartData") }}',
+        invoice:      '{{ route("dashboard.invoiceChartData") }}',
+        topItems:     '{{ route("dashboard.topItemsData") }}',
+        paymentTrend: '{{ route("dashboard.paymentTrendData") }}',
     };
 
     fetch(`${urls[chart]}?period=${period}`, {
@@ -1291,30 +1401,13 @@ function changePeriod(chart, period, btn) {
     })
     .then(r => r.json())
     .then(data => {
-        if (chart === 'sales')   buildSalesChart(data);
-        if (chart === 'invoice') {
-            buildInvoiceChart(data);
-            document.getElementById('inv-sales-count').textContent = data.totals.sales;
-            document.getElementById('inv-purch-count').textContent = data.totals.purchases;
-            document.getElementById('inv-stock-count').textContent = data.totals.stock;
-        }
-        if (chart === 'ml') { buildMlChart(data); renderMlSummary(data.summary); }
+        if (chart === 'sales')       buildSalesChart(data);
+        if (chart === 'invoice')     buildInvoiceChart(data);
+        if (chart === 'topItems')     buildTopItemsChart(data);
+        if (chart === 'paymentTrend') buildPaymentTrendChart(data);
     })
     .catch(console.error)
     .finally(() => { if (loader) loader.classList.add('hidden'); });
-}
-
-function renderMlSummary(summary) {
-    const names = ['sales','purchases','stock'];
-    document.getElementById('ml-summary').innerHTML = summary.map((s, i) => `
-        <div class="ml-metric">
-            <span class="ml-metric-name ${names[i]}">${s.label}</span>
-            <span class="ml-metric-value">${Number(s.value).toLocaleString()}</span>
-            <span class="ml-pct ${s.pct >= 0 ? 'up' : 'down'}">
-                ${s.pct >= 0 ? '↑' : '↓'} ${Math.abs(s.pct)}%
-            </span>
-        </div>
-    `).join('');
 }
 
 // ─── Alert toggle & dismiss ───
@@ -1371,9 +1464,9 @@ function animateCountUp(el) {
 document.addEventListener('DOMContentLoaded', () => {
     buildSalesChart(SALES_INIT);
     buildInvoiceChart(INVOICE_INIT);
-    buildMlChart(ML_INIT);
-    renderMlSummary(ML_INIT.summary);
-    document.querySelectorAll('.stat-value[data-countup]').forEach(animateCountUp);
+    buildTopItemsChart(TOP_ITEMS_INIT);
+    buildPaymentTrendChart(PAYMENT_TREND_INIT);
+    document.querySelectorAll('.metric-value[data-countup]').forEach(animateCountUp);
 });
 </script>
 <script src="assets/js/feather.min.js"></script>

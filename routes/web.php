@@ -999,7 +999,8 @@ Route::get('/print-invoice', [App\Http\Controllers\SalereportController::class, 
 
         Route::get('/dashboard/sales-chart-data',   [App\Http\Controllers\HomeController::class, 'getSalesChartData'])  ->name('dashboard.salesChartData');
     Route::get('/dashboard/invoice-chart-data', [App\Http\Controllers\HomeController::class, 'getInvoiceChartData'])->name('dashboard.invoiceChartData');
-    Route::get('/dashboard/multiline-data',     [App\Http\Controllers\HomeController::class, 'getMultiLineData'])   ->name('dashboard.multiLineData');
+    Route::get('/dashboard/top-items-data',     [App\Http\Controllers\HomeController::class, 'getTopItemsData'])   ->name('dashboard.topItemsData');
+    Route::get('/dashboard/payment-trend-data', [App\Http\Controllers\HomeController::class, 'getPaymentTrendData'])->name('dashboard.paymentTrendData');
 
         // AJAX – chart period switching (called by JS tab buttons)
     Route::get('/dashboard/sales-chart-data',
@@ -1008,8 +1009,11 @@ Route::get('/print-invoice', [App\Http\Controllers\SalereportController::class, 
     Route::get('/dashboard/invoice-chart-data',
         [App\Http\Controllers\HomeController::class, 'getInvoiceChartData'])->name('dashboard.invoiceChartData');
 
-    Route::get('/dashboard/multiline-data',
-        [App\Http\Controllers\HomeController::class, 'getMultiLineData'])->name('dashboard.multiLineData');
+    Route::get('/dashboard/top-items-data',
+        [App\Http\Controllers\HomeController::class, 'getTopItemsData'])->name('dashboard.topItemsData');
+
+    Route::get('/dashboard/payment-trend-data',
+        [App\Http\Controllers\HomeController::class, 'getPaymentTrendData'])->name('dashboard.paymentTrendData');
         
         
  Route::get('/reports/customer-cheque', [CustomerChequePaymentReportController::class, 'index'])

@@ -7,6 +7,15 @@ use App\Models\TwithoutVatSalesSum;
 use App\Models\TPurchasesSum;
 use App\Models\TOpeningSum;
 use App\Models\TItemMovement;
+use App\Models\TWithoutVatSalesDetails;
+use App\Models\TCustomerPayment;
+use App\Models\TSupplierPayment;
+use App\Models\TSalesReturnSum;
+use App\Models\TSalesReturnDetails;
+use App\Models\TPurchasesDetails;
+use App\Models\TPurchasesReturnSum;
+use App\Models\TPurchasesReturnDetails;
+use App\Models\Customer;
 use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -36,6 +45,46 @@ class HomeController extends Controller
         $qtyInTotal  = TItemMovement::sum('qun_in');
         $qtyOutTotal = TItemMovement::sum('qun_out');
 
+        // ── Customers ────────────────────────────────────────────────
+        $totalCustomerCount = Customer::count();
+        $newCustomersThisMonth = Customer::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        // ── Payments (sent vs received) ───────────────────────────────
+        [$paymentSentSum, $paymentSentPct] = $this->monthOverMonth(
+            TSupplierPayment::class, 'Payment_Amount', 'Payment_date'
+        );
+        [$paymentReceivedSum, $paymentReceivedPct] = $this->monthOverMonth(
+            TCustomerPayment::class, 'Payment_Amount', 'Payment_date'
+        );
+
+        // ── Month-over-month % for the top metric cards ───────────────
+        [, $salesMoMPct]     = $this->monthOverMonth(TwithoutVatSalesSum::class, 'Net_Amount', 'Invoice_date');
+        [, $purchasesMoMPct] = $this->monthOverMonth(TPurchasesSum::class, 'Net_Amount', 'Invoice_date');
+        [, $customersMoMPct] = $this->monthOverMonthCount(Customer::class, 'created_at');
+
+        $statCards = [
+            ['label' => 'Total Sales',      'value' => $invoiceSumTotal,     'decimals' => 2, 'pct' => $salesMoMPct,     'icon' => 'fa-chart-line',            'color' => 'indigo'],
+            ['label' => 'Total Purchases',  'value' => $purchasesPaymentSum, 'decimals' => 2, 'pct' => $purchasesMoMPct, 'icon' => 'fa-shopping-cart',         'color' => 'sky'],
+            ['label' => 'Customers',        'value' => $totalCustomerCount,  'decimals' => 0, 'pct' => $customersMoMPct, 'icon' => 'fa-users',                 'color' => 'violet'],
+            ['label' => 'Payment Sent',     'value' => $paymentSentSum,      'decimals' => 2, 'pct' => $paymentSentPct,     'icon' => 'fa-arrow-up-from-bracket', 'color' => 'amber'],
+            ['label' => 'Payment Received', 'value' => $paymentReceivedSum,  'decimals' => 2, 'pct' => $paymentReceivedPct, 'icon' => 'fa-arrow-down-to-bracket', 'color' => 'emerald'],
+        ];
+
+        // ── Stock history (qty moved this month vs last month) ────────
+        [$salesItemsQty, $salesItemsPct]         = $this->monthOverMonth(TWithoutVatSalesDetails::class, 'QTY', 'Invoice_date');
+        [$salesReturnQty, $salesReturnPct]       = $this->monthOverMonth(TSalesReturnDetails::class, 'QTY', 'Invoice_date');
+        [$purchaseItemsQty, $purchaseItemsPct]   = $this->monthOverMonth(TPurchasesDetails::class, 'QTY', 'Invoice_date');
+        [$purchaseReturnQty, $purchaseReturnPct] = $this->monthOverMonth(TPurchasesReturnDetails::class, 'QTY', 'Invoice_date');
+
+        $stockHistory = [
+            ['label' => 'Total Sales Items',     'value' => $salesItemsQty,     'pct' => $salesItemsPct],
+            ['label' => 'Sales Return Items',    'value' => $salesReturnQty,    'pct' => $salesReturnPct],
+            ['label' => 'Total Purchase Items',  'value' => $purchaseItemsQty,  'pct' => $purchaseItemsPct],
+            ['label' => 'Purchase Return Items', 'value' => $purchaseReturnQty, 'pct' => $purchaseReturnPct],
+        ];
+
         // ── Stock details (QTY = qun_in − qun_out per item) ─────────
         $stockDetails = Item::select(
             'items.Item_code',
@@ -61,23 +110,88 @@ class HomeController extends Controller
         ->get();
 
         // ── Default chart payloads (rendered server-side on first load) ─
-        $salesChartData   = $this->buildSalesChartData('monthly');
-        $invoiceChartData = $this->buildInvoiceChartData('monthly');
-        $multiLineData    = $this->buildMultiLineData('weekly');
+        $salesChartData    = $this->buildSalesChartData('monthly');
+        $invoiceChartData  = $this->buildInvoiceChartData('monthly');
+        $topItemsData      = $this->buildTopItemsData('monthly');
+        $paymentTrendData  = $this->buildPaymentTrendData('weekly');
+
+        // ── Recent Sales Invoices (with derived payment/return status) ─
+        $recentInvoicesRaw = TwithoutVatSalesSum::orderByDesc('Invoice_date')->limit(6)->get();
+
+        $returnedInvoiceNos = TSalesReturnSum::whereIn('Invoice_no', $recentInvoicesRaw->pluck('Invoice_no'))
+            ->pluck('Invoice_no')
+            ->all();
+
+        $recentInvoices = $recentInvoicesRaw->map(function ($inv) use ($returnedInvoiceNos) {
+            $balance = (float) $inv->Balance;
+            if (in_array($inv->Invoice_no, $returnedInvoiceNos)) {
+                $status = 'Returned';
+            } elseif ($balance <= 0) {
+                $status = 'Paid';
+            } elseif (Carbon::parse($inv->Invoice_date)->lt(now()->subDays(30))) {
+                $status = 'Overdue';
+            } else {
+                $status = 'Unpaid';
+            }
+            $inv->computed_status = $status;
+            return $inv;
+        });
+
+        $invoiceStatusCounts = [
+            'Paid'     => $recentInvoices->where('computed_status', 'Paid')->count(),
+            'Unpaid'   => $recentInvoices->where('computed_status', 'Unpaid')->count(),
+            'Overdue'  => $recentInvoices->where('computed_status', 'Overdue')->count(),
+            'Returned' => $recentInvoices->where('computed_status', 'Returned')->count(),
+        ];
+
+        // ── Recent Customer Payments (with payment-method breakdown) ──
+        $recentPayments = TCustomerPayment::orderByDesc('Payment_date')
+            ->limit(6)
+            ->get()
+            ->map(function ($p) {
+                $methods = [
+                    'Cash'  => (float) ($p->cash_payment ?? 0),
+                    'Card'  => (float) ($p->card_payment ?? 0),
+                    'Cheque'=> (float) ($p->cheque_payment ?? 0),
+                    'Bank'  => (float) ($p->bank_transfer ?? 0),
+                ];
+                arsort($methods);
+                $p->primary_method = array_key_first($methods) ?: 'Cash';
+                return $p;
+            });
+
+        $paymentMethodTotals = [
+            'Cash'   => (float) $recentPayments->sum('cash_payment'),
+            'Card'   => (float) $recentPayments->sum('card_payment'),
+            'Cheque' => (float) $recentPayments->sum('cheque_payment'),
+            'Bank'   => (float) $recentPayments->sum('bank_transfer'),
+        ];
 
         return view('home', [
-            'opening'          => $totalPawnCount,
-            'Purchases'        => $totalPurchasesCount,
-            'Invoice'          => $totalInvoiceCount,
-            'customerdetails'  => $pawningPaymentSum,
-            'QtyIn'            => $qtyInTotal,
-            'QtyOut'           => $qtyOutTotal,
-            'PurchasesSum'     => $purchasesPaymentSum,
-            'itemDetails'      => $stockDetails,
-            'salessum'         => $invoiceSumTotal,
-            'salesChartData'   => $salesChartData,
-            'invoiceChartData' => $invoiceChartData,
-            'multiLineData'    => $multiLineData,
+            'opening'               => $totalPawnCount,
+            'Purchases'             => $totalPurchasesCount,
+            'Invoice'               => $totalInvoiceCount,
+            'customerCount'         => $totalCustomerCount,
+            'newCustomersThisMonth' => $newCustomersThisMonth,
+            'QtyIn'                 => $qtyInTotal,
+            'QtyOut'                => $qtyOutTotal,
+            'PurchasesSum'          => $purchasesPaymentSum,
+            'itemDetails'           => $stockDetails,
+            'salessum'              => $invoiceSumTotal,
+            'salesChartData'        => $salesChartData,
+            'invoiceChartData'      => $invoiceChartData,
+            'topItemsData'          => $topItemsData,
+            'recentInvoices'        => $recentInvoices,
+            'invoiceStatusCounts'   => $invoiceStatusCounts,
+            'recentPayments'        => $recentPayments,
+            'paymentMethodTotals'   => $paymentMethodTotals,
+            'paymentSentSum'        => $paymentSentSum,
+            'paymentSentPct'        => $paymentSentPct,
+            'paymentReceivedSum'    => $paymentReceivedSum,
+            'paymentReceivedPct'    => $paymentReceivedPct,
+            'stockHistory'          => $stockHistory,
+            'paymentTrendData'      => $paymentTrendData,
+            'statCards'             => $statCards,
         ]);
     }
 
@@ -99,10 +213,17 @@ class HomeController extends Controller
         );
     }
 
-    public function getMultiLineData(Request $request)
+    public function getTopItemsData(Request $request)
     {
         return response()->json(
-            $this->buildMultiLineData($request->get('period', 'weekly'))
+            $this->buildTopItemsData($request->get('period', 'monthly'))
+        );
+    }
+
+    public function getPaymentTrendData(Request $request)
+    {
+        return response()->json(
+            $this->buildPaymentTrendData($request->get('period', 'weekly'))
         );
     }
 
@@ -141,97 +262,137 @@ class HomeController extends Controller
 
     private function buildInvoiceChartData(string $period): array
     {
-        [, , $invoiceRange]  = $this->periodConfig($period, 'Invoice_date');
-        [, , $movementRange] = $this->periodConfig($period, 'dDate');
+        [, , $invoiceRange] = $this->periodConfig($period, 'Invoice_date');
 
+        // Document-count mix for the period — all three are comparable "how many
+        // transactions" counts, unlike a raw stock quantity which would dwarf them.
         $sales     = TwithoutVatSalesSum::where('Invoice_date', '>=', $invoiceRange)->count();
         $purchases = TPurchasesSum::where('Invoice_date',       '>=', $invoiceRange)->count();
-        $stock     = (int) TItemMovement::where('dDate',        '>=', $movementRange)->sum('qun_in');
+        $returns   = TSalesReturnSum::where('Invoice_date',     '>=', $invoiceRange)->count()
+                   + TPurchasesReturnSum::where('Invoice_date', '>=', $invoiceRange)->count();
 
-        $total = max($sales + $purchases + $stock, 1);
+        $total = max($sales + $purchases + $returns, 1);
 
         $salesPct     = round($sales     / $total * 100, 1);
         $purchasesPct = round($purchases / $total * 100, 1);
-        $stockPct     = round($stock     / $total * 100, 1);
-        $otherPct     = round(max(100 - $salesPct - $purchasesPct - $stockPct, 0), 1);
+        $returnsPct   = round(max(100 - $salesPct - $purchasesPct, 0), 1);
 
         return [
-            'labels'  => ['Sales', 'Purchases', 'Stock', 'Other'],
-            'series'  => [$salesPct, $purchasesPct, $stockPct, $otherPct],
+            'labels'  => ['Sales', 'Purchases', 'Returns'],
+            'series'  => [$salesPct, $purchasesPct, $returnsPct],
             'totals'  => [
                 'sales'     => $sales,
                 'purchases' => $purchases,
-                'stock'     => $stock,
+                'returns'   => $returns,
             ],
         ];
     }
 
-    private function buildMultiLineData(string $period): array
+    private function buildTopItemsData(string $period): array
     {
-        [$groupInv, $labelInv, $rangeInv] = $this->periodConfig($period, 'Invoice_date');
-        [$groupMov, $labelMov, $rangeMov] = $this->periodConfig($period, 'dDate');
+        [, , $range] = $this->periodConfig($period, 'Invoice_date');
 
-        $salesMap = TwithoutVatSalesSum::select(
-            DB::raw("$labelInv AS label"),
-            DB::raw('SUM(Net_Amount) AS value')
+        $rows = TWithoutVatSalesDetails::select(
+            'Item_code',
+            'Item_description',
+            DB::raw('SUM(QTY) AS qty'),
+            DB::raw('SUM(Net_value) AS revenue')
         )
-        ->where('Invoice_date', '>=', $rangeInv)
-        ->groupBy(DB::raw($groupInv))
-        ->orderBy(DB::raw($groupInv))
+        ->where('Invoice_date', '>=', $range)
+        ->groupBy('Item_code', 'Item_description')
+        ->orderByDesc(DB::raw('SUM(Net_value)'))
+        ->limit(5)
+        ->get();
+
+        return [
+            'categories' => $rows->map(fn($r) => $r->Item_description ?: $r->Item_code)->values(),
+            'revenue'    => $rows->map(fn($r) => round($r->revenue, 2))->values(),
+            'qty'        => $rows->map(fn($r) => (int) $r->qty)->values(),
+        ];
+    }
+
+    private function buildPaymentTrendData(string $period): array
+    {
+        [$groupExpr, $labelExpr, $range] = $this->periodConfig($period, 'Payment_date');
+
+        $sentMap = TSupplierPayment::select(
+            DB::raw("$labelExpr AS label"),
+            DB::raw('SUM(Payment_Amount) AS value')
+        )
+        ->where('Payment_date', '>=', $range)
+        ->groupBy(DB::raw($groupExpr))
+        ->orderBy(DB::raw($groupExpr))
         ->pluck('value', 'label');
 
-        $purchasesMap = TPurchasesSum::select(
-            DB::raw("$labelInv AS label"),
-            DB::raw('SUM(Net_Amount) AS value')
+        $receivedMap = TCustomerPayment::select(
+            DB::raw("$labelExpr AS label"),
+            DB::raw('SUM(Payment_Amount) AS value')
         )
-        ->where('Invoice_date', '>=', $rangeInv)
-        ->groupBy(DB::raw($groupInv))
-        ->orderBy(DB::raw($groupInv))
-        ->pluck('value', 'label');
-
-        $stockMap = TItemMovement::select(
-            DB::raw("$labelMov AS label"),
-            DB::raw('SUM(qun_in) AS value')
-        )
-        ->where('dDate', '>=', $rangeMov)
-        ->groupBy(DB::raw($groupMov))
-        ->orderBy(DB::raw($groupMov))
+        ->where('Payment_date', '>=', $range)
+        ->groupBy(DB::raw($groupExpr))
+        ->orderBy(DB::raw($groupExpr))
         ->pluck('value', 'label');
 
         $categories = collect(array_unique(array_merge(
-            $salesMap->keys()->toArray(),
-            $purchasesMap->keys()->toArray(),
-            $stockMap->keys()->toArray()
+            $sentMap->keys()->toArray(),
+            $receivedMap->keys()->toArray()
         )))->sort()->values();
 
-        $toSeries = fn($map) => $categories
-            ->map(fn($lbl) => round($map[$lbl] ?? 0))
-            ->values();
-
-        $salesArr     = $toSeries($salesMap);
-        $purchasesArr = $toSeries($purchasesMap);
-        $stockArr     = $toSeries($stockMap);
-
-        $pct = function ($arr) {
-            if ($arr->count() < 2) return 0;
-            $prev = $arr->slice(-2, 1)->first();
-            $last = $arr->last();
-            return round(($last - $prev) / max(abs($prev), 1) * 100, 1);
-        };
+        $toSeries = fn($map) => $categories->map(fn($lbl) => round($map[$lbl] ?? 0, 2))->values();
 
         return [
             'categories' => $categories,
-            'series'     => [
-                ['name' => 'Sales',     'data' => $salesArr,     'color' => '#1677FF'],
-                ['name' => 'Purchases', 'data' => $purchasesArr, 'color' => '#16A34A'],
-                ['name' => 'Stock In',  'data' => $stockArr,     'color' => '#F59E0B'],
-            ],
-            'summary' => [
-                ['label' => 'Sales',     'value' => $salesArr->sum(),     'pct' => $pct($salesArr)],
-                ['label' => 'Purchases', 'value' => $purchasesArr->sum(), 'pct' => $pct($purchasesArr)],
-                ['label' => 'Stock In',  'value' => $stockArr->sum(),     'pct' => $pct($stockArr)],
-            ],
+            'sent'       => $toSeries($sentMap),
+            'received'   => $toSeries($receivedMap),
         ];
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  MONTH-OVER-MONTH HELPER
+    // ══════════════════════════════════════════════════════════════
+
+    /**
+     * Sums $amountCol for the current calendar month and returns
+     * [currentMonthSum, pctChangeVsPreviousMonth].
+     */
+    private function monthOverMonth(string $modelClass, string $amountCol, string $dateCol): array
+    {
+        $thisMonthStart = now()->startOfMonth();
+        $lastMonthStart = now()->subMonthNoOverflow()->startOfMonth();
+        $lastMonthEnd   = now()->startOfMonth();
+
+        $current = (float) $modelClass::where($dateCol, '>=', $thisMonthStart)->sum($amountCol);
+        $previous = (float) $modelClass::where($dateCol, '>=', $lastMonthStart)
+            ->where($dateCol, '<', $lastMonthEnd)
+            ->sum($amountCol);
+
+        $pct = $previous > 0
+            ? round(($current - $previous) / $previous * 100, 1)
+            : ($current > 0 ? 100.0 : 0.0);
+
+        return [$current, $pct];
+    }
+
+    /**
+     * Counts rows for the current calendar month and returns
+     * [currentMonthCount, pctChangeVsPreviousMonth].
+     */
+    private function monthOverMonthCount(string $modelClass, string $dateCol): array
+    {
+        $thisMonthStart = now()->startOfMonth();
+        $lastMonthStart = now()->subMonthNoOverflow()->startOfMonth();
+        $lastMonthEnd   = now()->startOfMonth();
+
+        $current  = $modelClass::where($dateCol, '>=', $thisMonthStart)->count();
+        $previous = $modelClass::where($dateCol, '>=', $lastMonthStart)
+            ->where($dateCol, '<', $lastMonthEnd)
+            ->count();
+
+        $pct = $previous > 0
+            ? round(($current - $previous) / $previous * 100, 1)
+            : ($current > 0 ? 100.0 : 0.0);
+
+        return [$current, $pct];
     }
 
     // ══════════════════════════════════════════════════════════════
