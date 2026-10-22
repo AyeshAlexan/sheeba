@@ -10,9 +10,17 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/theme-redesign.css') }}?v={{ filemtime(public_path('assets/css/theme-redesign.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/login-bg.css') }}?v={{ filemtime(public_path('css/login-bg.css')) }}">
 </head>
 <body class="auth-body">
     <x-loading-screen label="Loading..." />
+
+    <div class="login-bg" id="login-bg">
+        <div class="grid"></div>
+        <div class="glow g1"></div>
+        <div class="glow g2"></div>
+    </div>
+
     <div class="auth-wrap">
         <div class="auth-card">
             <div class="auth-logo">
@@ -69,5 +77,7 @@
             <p class="auth-footer">© {{ date('Y') }} Kreethya</p>
         </div>
     </div>
+
+    <script src="{{ asset('js/login-bg.js') }}"></script>
 </body>
 </html>

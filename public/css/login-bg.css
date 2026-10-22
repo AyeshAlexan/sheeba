@@ -1,0 +1,63 @@
+/* =========================================
+   Inventory login – animated background only
+   ========================================= */
+
+/* Page background colour */
+body {
+  background: linear-gradient(135deg, #f7faff 0%, #eef4fd 55%, #e6effc 100%);
+  overflow: hidden;
+}
+
+/* Background layer sits behind everything */
+.login-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+
+/* 1. Soft warehouse grid, slowly sliding */
+.login-bg .grid {
+  position: absolute; inset: -60px;
+  background-image:
+    linear-gradient(rgba(120,165,230,.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,165,230,.10) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: lbGrid 18s linear infinite;
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 18%, #000 55%, transparent 90%);
+          mask-image: radial-gradient(ellipse at center, transparent 18%, #000 55%, transparent 90%);
+}
+@keyframes lbGrid { to { transform: translate(60px, 60px); } }
+
+/* 2. Floating package boxes (added by login-bg.js) */
+.login-bg .box {
+  position: absolute; bottom: -80px;
+  color: #7fadee;
+  filter: blur(0.6px);
+  opacity: 0;
+  animation: lbRise linear infinite;
+}
+.login-bg .box svg { width: 100%; height: 100%; display: block; }
+@keyframes lbRise {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  15%  { opacity: var(--o); }
+  85%  { opacity: var(--o); }
+  100% { transform: translateY(-115vh) rotate(var(--r)); opacity: 0; }
+}
+
+/* 3. Faint barcode strips (added by login-bg.js) */
+.login-bg .barcode {
+  position: absolute; height: 70px;
+  display: flex; gap: 3px; align-items: stretch;
+  opacity: 0; filter: blur(0.8px);
+  animation: lbBlink 10s ease-in-out infinite;
+}
+.login-bg .barcode i { display: block; background: #8db6f0; border-radius: 1px; }
+@keyframes lbBlink { 0%,100% { opacity: 0; } 40%,60% { opacity: .22; } }
+
+/* 4. Soft blurred glows */
+.login-bg .glow { position: absolute; border-radius: 50%; filter: blur(100px); opacity: .5; }
+.login-bg .g1 { width: 500px; height: 500px; background: #d3e5ff; top: -150px; right: -120px; animation: lbF1 24s ease-in-out infinite alternate; }
+.login-bg .g2 { width: 440px; height: 440px; background: #dfeaff; bottom: -160px; left: -100px; animation: lbF2 28s ease-in-out infinite alternate; }
+@keyframes lbF1 { to { transform: translate(-100px, 80px); } }
+@keyframes lbF2 { to { transform: translate(120px, -60px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .login-bg * { animation: none !important; }
+  .login-bg .box { opacity: .15; }
+}

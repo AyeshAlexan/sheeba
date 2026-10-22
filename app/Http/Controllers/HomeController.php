@@ -68,8 +68,8 @@ class HomeController extends Controller
             ['label' => 'Total Sales',      'value' => $invoiceSumTotal,     'decimals' => 2, 'pct' => $salesMoMPct,     'icon' => 'fa-chart-line',            'color' => 'indigo'],
             ['label' => 'Total Purchases',  'value' => $purchasesPaymentSum, 'decimals' => 2, 'pct' => $purchasesMoMPct, 'icon' => 'fa-shopping-cart',         'color' => 'sky'],
             ['label' => 'Customers',        'value' => $totalCustomerCount,  'decimals' => 0, 'pct' => $customersMoMPct, 'icon' => 'fa-users',                 'color' => 'violet'],
-            ['label' => 'Payment Sent',     'value' => $paymentSentSum,      'decimals' => 2, 'pct' => $paymentSentPct,     'icon' => 'fa-arrow-up-from-bracket', 'color' => 'amber'],
-            ['label' => 'Payment Received', 'value' => $paymentReceivedSum,  'decimals' => 2, 'pct' => $paymentReceivedPct, 'icon' => 'fa-arrow-down-to-bracket', 'color' => 'emerald'],
+            ['label' => 'Payment Sent',     'value' => $paymentSentSum,      'decimals' => 2, 'pct' => $paymentSentPct,     'icon' => 'fa-upload',   'color' => 'amber'],
+            ['label' => 'Payment Received', 'value' => $paymentReceivedSum,  'decimals' => 2, 'pct' => $paymentReceivedPct, 'icon' => 'fa-download', 'color' => 'emerald'],
         ];
 
         // ── Stock history (qty moved this month vs last month) ────────
@@ -253,11 +253,30 @@ class HomeController extends Controller
         ->orderBy(DB::raw($groupExpr))
         ->pluck('pending', 'label');
 
+        $salesReturns = TSalesReturnSum::select(
+            DB::raw("$labelExpr AS label"),
+            DB::raw('SUM(Net_Amount) AS amt')
+        )
+        ->where('Invoice_date', '>=', $range)
+        ->groupBy(DB::raw($groupExpr))
+        ->orderBy(DB::raw($groupExpr))
+        ->pluck('amt', 'label');
+
+        $purchaseReturns = TPurchasesReturnSum::select(
+            DB::raw("$labelExpr AS label"),
+            DB::raw('SUM(Net_Amount) AS amt')
+        )
+        ->where('Invoice_date', '>=', $range)
+        ->groupBy(DB::raw($groupExpr))
+        ->orderBy(DB::raw($groupExpr))
+        ->pluck('amt', 'label');
+
         $categories = $rows->pluck('label');
         $received   = $rows->pluck('received')->map(fn($v) => round($v / 1000, 2));
         $pending    = $categories->map(fn($lbl) => round(($purchases[$lbl] ?? 0) / 1000, 2));
+        $returns    = $categories->map(fn($lbl) => round((($salesReturns[$lbl] ?? 0) + ($purchaseReturns[$lbl] ?? 0)) / 1000, 2));
 
-        return compact('categories', 'received', 'pending');
+        return compact('categories', 'received', 'pending', 'returns');
     }
 
     private function buildInvoiceChartData(string $period): array
@@ -301,7 +320,7 @@ class HomeController extends Controller
         ->where('Invoice_date', '>=', $range)
         ->groupBy('Item_code', 'Item_description')
         ->orderByDesc(DB::raw('SUM(Net_value)'))
-        ->limit(5)
+        ->limit(10)
         ->get();
 
         return [

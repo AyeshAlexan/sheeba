@@ -97,31 +97,65 @@
         }
 
         /* ══════════════════════════════════════════════════
-           PAGE HEADER + PROFILE PILL
+           PAGE FOOTER
         ══════════════════════════════════════════════════ */
-        .dash-topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
+        .dash-footer {
+            text-align: center;
+            font-size: 12px; color: var(--clr-text-l);
+            margin: 8px 0 0;
+            padding-bottom: 28px;
         }
-        /* Left group: toggle + greeting */
-        .dash-topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex: 1;
-            min-width: 0;
+
+        /* ══════════════════════════════════════════════════
+           DYNAMIC GREETING HERO
+        ══════════════════════════════════════════════════ */
+        .hero-greeting {
+            position: relative;
+            display: flex; align-items: center; gap: 16px;
+            border-radius: 18px;
+            padding: 20px 28px;
+            min-height: 96px;
+            overflow: hidden;
+            background: linear-gradient(120deg, #EFF5FF 0%, #E3EEFC 55%, #EAF2FE 100%);
+            border: 1px solid #E3EDFC;
+            box-shadow: var(--shadow-sm);
+            transition: background .6s ease;
         }
-        .dash-greeting h2 {
-            font-size: 22px; font-weight: 800;
-            color: var(--clr-text-h); margin: 0;
+        .hero-icon-badge {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: rgba(255,255,255,.75);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(15,23,42,.06);
+            position: relative; z-index: 2;
+            transition: color .6s ease;
         }
-        .dash-greeting p {
-            font-size: 13px; color: var(--clr-text-m);
-            margin: 4px 0 0;
+        .hero-text { position: relative; z-index: 2; flex: 1; min-width: 0; }
+        .hero-text h2 {
+            font-size: 21px; font-weight: 800; margin: 0;
+            color: var(--hero-text, var(--clr-text-h));
+            display: flex; align-items: center; gap: 8px;
+            transition: color .6s ease;
+        }
+        .hero-text p {
+            font-size: 13px; margin: 5px 0 0;
+            color: var(--hero-sub, var(--clr-text-m));
+            transition: color .6s ease;
+        }
+        .hero-illustration {
+            position: absolute; right: 0; top: 0; bottom: 0;
+            width: 320px; height: 100%; pointer-events: none;
+            object-fit: cover; object-position: right center;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+            mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+        }
+        @media (max-width: 900px) { .hero-illustration { width: 220px; opacity: .9; } }
+        @media (max-width: 640px) {
+            .hero-illustration { display: none; }
+            .hero-greeting { padding: 18px 20px; min-height: auto; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-greeting, .hero-icon-badge, .hero-text h2, .hero-text p { transition: none !important; }
         }
 
         /* Profile card */
@@ -239,35 +273,45 @@
             gap: 20px;
         }
         .metric-card {
+            position: relative;
             background: var(--clr-surface);
             border-radius: 16px;
             box-shadow: 0 2px 10px rgba(15,23,42,.05), 0 1px 2px rgba(15,23,42,.03);
-            padding: 20px 20px 18px;
+            padding: 18px 18px 16px;
             display: flex;
             flex-direction: column;
-            min-height: 148px;
+            min-height: 140px;
             transition: box-shadow .25s, transform .25s;
         }
         .metric-card:hover { box-shadow: 0 8px 24px rgba(15,23,42,.09); transform: translateY(-2px); }
         .metric-icon {
-            width: 32px; height: 32px; border-radius: 9px;
+            width: 40px; height: 40px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; font-size: 13px; margin-bottom: 14px;
+            flex-shrink: 0; font-size: 17px; margin-bottom: 16px;
         }
         .metric-icon.indigo  { background: var(--clr-indigo-lt);  color: var(--clr-indigo); }
         .metric-icon.sky     { background: var(--clr-sky-lt);     color: var(--clr-sky); }
         .metric-icon.violet  { background: #ECEBFB; color: #6C4FD6; }
         .metric-icon.amber   { background: var(--clr-amber-lt);   color: var(--clr-amber); }
         .metric-icon.emerald { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
-        .metric-label { font-size: 12.5px; font-weight: 600; color: var(--clr-text-m); margin-bottom: 8px; }
+        .metric-menu-btn {
+            position: absolute; top: 16px; right: 16px;
+            width: 24px; height: 24px; border: none; background: transparent;
+            color: var(--clr-text-l); font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; cursor: pointer;
+            transition: background .15s ease, color .15s ease;
+        }
+        .metric-menu-btn:hover { background: var(--clr-bg); color: var(--clr-text-m); }
+        .metric-label { font-size: 13px; font-weight: 500; color: var(--clr-text-m); margin-bottom: 7px; }
         .metric-value { font-size: 21px; font-weight: 800; color: var(--clr-text-h); line-height: 1.2; }
         .metric-trend {
-            margin-top: auto; padding-top: 14px;
-            font-size: 12px; font-weight: 700;
+            margin-top: auto; padding-top: 12px;
+            font-size: 12.5px; font-weight: 600;
             display: inline-flex; align-items: center; gap: 5px;
         }
-        .metric-trend.up   { color: #0F9D73; }
-        .metric-trend.down { color: #E0665C; }
+        .metric-trend.up   { color: var(--clr-emerald); }
+        .metric-trend.down { color: var(--clr-rose); }
         .metric-trend i { font-size: 10px; }
 
         .btn-stat {
@@ -317,8 +361,8 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .period-tab.active {
-            background: var(--clr-surface); color: var(--clr-text-h);
-            box-shadow: 0 1px 4px rgba(15,23,42,.10);
+            background: var(--clr-indigo); color: #fff;
+            box-shadow: 0 2px 8px rgba(22,119,255,.3);
         }
 
         /* chart spinner overlay */
@@ -332,30 +376,50 @@
         .chart-loading.hidden { opacity: 0; pointer-events: none; }
 
         /* ══════════════════════════════════════════════════
-           INVOICE LEGEND COUNTS
+           INVOICE LEGEND (side column, next to donut)
         ══════════════════════════════════════════════════ */
-        .inv-legend {
-            display: flex; gap: 10px;
-            padding: 16px 0 2px;
-        }
-        .inv-legend-item {
-            flex: 1; text-align: center;
-            padding: 12px 6px;
-            border-radius: 12px;
-            background: var(--clr-bg);
-        }
-        .inv-legend-item.inv-indigo  { background: var(--clr-indigo-lt); }
-        .inv-legend-item.inv-emerald { background: var(--clr-emerald-lt); }
-        .inv-legend-item.inv-amber   { background: var(--clr-amber-lt); }
+        .inv-chart-row { display: flex; align-items: center; gap: 18px; }
+        .inv-chart-row .chart-wrap { flex: 1 1 55%; min-width: 0; }
+        .inv-legend-v { flex: 1 1 42%; display: flex; flex-direction: column; gap: 14px; }
+        .inv-legend-row { display: flex; align-items: center; gap: 8px; }
         .inv-legend-dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            display: inline-block; margin-right: 5px;
+            width: 9px; height: 9px; border-radius: 50%;
+            display: inline-block; flex-shrink: 0;
         }
-        .inv-legend-item.inv-indigo  .inv-legend-dot { background: var(--clr-indigo); }
-        .inv-legend-item.inv-emerald .inv-legend-dot { background: var(--clr-emerald); }
-        .inv-legend-item.inv-amber   .inv-legend-dot { background: var(--clr-amber); }
-        .inv-legend-label { font-size: 11px; font-weight: 600; color: var(--clr-text-m); }
-        .inv-legend-val   { font-size: 19px; font-weight: 800; color: var(--clr-text-h); margin-top: 3px; }
+        .inv-legend-row.inv-indigo  .inv-legend-dot { background: var(--clr-indigo); }
+        .inv-legend-row.inv-emerald .inv-legend-dot { background: var(--clr-emerald); }
+        .inv-legend-row.inv-amber   .inv-legend-dot { background: var(--clr-amber); }
+        .inv-legend-label { font-size: 13.5px; font-weight: 600; color: var(--clr-text-h); flex: 1; }
+        .inv-legend-pct   { font-size: 14px; font-weight: 800; color: var(--clr-text-h); }
+        @media (max-width: 480px) { .inv-chart-row { flex-direction: column; } }
+
+        /* ══════════════════════════════════════════════════
+           TOP SELLING ITEMS (leaderboard list)
+        ══════════════════════════════════════════════════ */
+        .top-items-list { display: flex; flex-direction: column; gap: 16px; }
+        .ti-row { display: flex; align-items: center; gap: 12px; }
+        .ti-rank {
+            width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; color: #fff;
+        }
+        .ti-rank.gold   { background: linear-gradient(135deg, #F7C65B, #E6A535); }
+        .ti-rank.silver { background: linear-gradient(135deg, #D4DCE6, #A9B6C5); }
+        .ti-rank.bronze { background: linear-gradient(135deg, #DBA06E, #BD7E4C); }
+        .ti-rank.plain  { background: var(--clr-bg); color: var(--clr-text-m); font-weight: 700; font-size: 11.5px; }
+        .ti-main { flex: 1; min-width: 0; }
+        .ti-name {
+            font-size: 13px; font-weight: 600; color: var(--clr-text-h);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: 6px;
+        }
+        .ti-bar-track { height: 20px; border-radius: 8px; background: var(--clr-bg); overflow: hidden; }
+        .ti-bar-fill {
+            height: 100%; border-radius: 8px;
+            background: linear-gradient(90deg, var(--clr-indigo), #5AA2FF);
+            transition: width .6s ease;
+        }
+        .ti-value { font-size: 12.5px; font-weight: 700; color: var(--clr-text-h); flex-shrink: 0; width: 82px; text-align: right; }
 
         /* ══════════════════════════════════════════════════
            KPI LIST (Stock History card)
@@ -376,6 +440,22 @@
         }
         .kpi-pct.up   { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
         .kpi-pct.down { background: var(--clr-rose-lt);    color: var(--clr-rose); }
+
+        /* Horizontal variant: used when the Stock History card spans full width */
+        .kpi-list-row { flex-direction: row; flex-wrap: wrap; }
+        .kpi-list-row .kpi-row {
+            flex: 1 1 200px;
+            flex-direction: column; align-items: flex-start;
+            gap: 6px; padding: 10px 20px;
+            border-bottom: none;
+            border-right: 1px solid var(--clr-border);
+        }
+        .kpi-list-row .kpi-row:last-child { border-right: none; }
+        .kpi-list-row .kpi-label { font-size: 12.5px; }
+        @media (max-width: 767px) {
+            .kpi-list-row .kpi-row { border-right: none; border-bottom: 1px solid var(--clr-border); flex-basis: 100%; }
+            .kpi-list-row .kpi-row:last-child { border-bottom: none; }
+        }
 
         /* ══════════════════════════════════════════════════
            PAYMENT TABLE CARDS
@@ -505,10 +585,10 @@
                 from { opacity: 0; transform: translateY(14px); }
                 to   { opacity: 1; transform: translateY(0); }
             }
-            .dash-greeting, .sa-card, .metric-card, .chart-card, .pay-card, .inv-table-card {
+            .hero-greeting, .sa-card, .metric-card, .chart-card, .pay-card, .inv-table-card {
                 animation: dashFadeUp .5s cubic-bezier(.16,1,.3,1) both;
             }
-            .dash-greeting { animation-delay: 0s; }
+            .hero-greeting { animation-delay: 0s; }
             .sa-card:nth-of-type(1) { animation-delay: .03s; }
             .sa-card:nth-of-type(2) { animation-delay: .07s; }
             .stat-grid .metric-card:nth-child(1) { animation-delay: .04s; }
@@ -659,25 +739,22 @@
     <div class="page-wrapper">
         <div class="content container-fluid">
 
-            {{-- ─── TOP BAR (Toggle + Greeting + Profile) ─── --}}
-            <div class="dash-topbar mb-24">
-
-                {{-- LEFT: greeting (sidebar toggle now lives once, in the shared navbar) --}}
-                <div class="dash-topbar-left">
-                    <div class="dash-greeting">
-                        @php
-                            $now  = \Carbon\Carbon::now('Asia/Colombo');
-                            $hour = $now->hour;
-                        @endphp
-                        <h2>
-                            Good {{ $hour < 12 ? 'Morning' : ($hour < 17 ? 'Afternoon' : 'Evening') }} 👋
-                        </h2>
-                        <p>
-                            Here's what's happening with your business today &nbsp;·&nbsp;
-                            <strong>{{ $now->format('D, d M Y') }}</strong>
-                        </p>
-                    </div>
+            {{-- ─── DYNAMIC GREETING HERO ─── --}}
+            @php
+                $now  = \Carbon\Carbon::now('Asia/Colombo');
+                $hour = $now->hour;
+                $serverGreeting = $hour < 12 ? 'Good Morning' : ($hour < 17 ? 'Good Afternoon' : ($hour < 21 ? 'Good Evening' : 'Good Night'));
+            @endphp
+            <div class="hero-greeting mb-24" id="heroGreeting">
+                <div class="hero-icon-badge" id="heroIconBadge"><svg id="heroIcon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"></svg></div>
+                <div class="hero-text">
+                    <h2 id="heroGreetingText">{{ $serverGreeting }}</h2>
+                    <p>
+                        Here's what's happening with your business today &nbsp;·&nbsp;
+                        <strong>{{ $now->format('D, d M Y') }}</strong>
+                    </p>
                 </div>
+                <img class="hero-illustration" src="{{ asset('images/home.png') }}" alt="" aria-hidden="true">
             </div>
 
             {{-- ─── STOCK ALERT BANNERS ─── --}}
@@ -772,6 +849,7 @@
             <div class="stat-grid mb-24">
                 @foreach($statCards as $card)
                 <div class="metric-card">
+                    <button type="button" class="metric-menu-btn" aria-label="More options"><i class="fas fa-ellipsis"></i></button>
                     <div class="metric-icon {{ $card['color'] }}"><i class="fas {{ $card['icon'] }}"></i></div>
                     <div class="metric-label">{{ $card['label'] }}</div>
                     <div class="metric-value" data-countup data-value="{{ $card['value'] }}" data-decimals="{{ $card['decimals'] }}">0</div>
@@ -789,7 +867,10 @@
                 <div class="col-xl-7 d-flex mb-3">
                     <div class="chart-card" style="width:100%;">
                         <div class="chart-card-header">
-                            <h5 class="chart-card-title">Sales &amp; Repair Analytics</h5>
+                            <h5 class="chart-card-title">
+                                <i class="fas fa-chart-column me-2" style="color:var(--clr-indigo);"></i>
+                                Sales &amp; Repair Analytics
+                            </h5>
                             <div class="period-tabs" id="salesTabs">
                                 <button class="period-tab" onclick="changePeriod('sales','daily',this)">Daily</button>
                                 <button class="period-tab" onclick="changePeriod('sales','weekly',this)">Weekly</button>
@@ -821,34 +902,36 @@
                                 <button class="period-tab" onclick="changePeriod('invoice','yearly',this)">Yearly</button>
                             </div>
                         </div>
-                        <div class="chart-card-body chart-wrap" style="padding-bottom:0;">
-                            <div class="chart-loading hidden" id="invoice-loading">
-                                <div class="spinner-border text-primary" role="status"></div>
+                        <div class="chart-card-body inv-chart-row">
+                            <div class="chart-wrap">
+                                <div class="chart-loading hidden" id="invoice-loading">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                </div>
+                                <div id="invoice_chart"></div>
                             </div>
-                            <div id="invoice_chart"></div>
-                        </div>
-                        <div class="inv-legend" id="invoice-totals">
-                            <div class="inv-legend-item inv-indigo">
-                                <span class="inv-legend-dot"></span>
-                                <span class="inv-legend-label">Sales</span>
-                                <div class="inv-legend-val" id="inv-sales-count">{{ $invoiceChartData['totals']['sales'] }}</div>
-                            </div>
-                            <div class="inv-legend-item inv-emerald">
-                                <span class="inv-legend-dot"></span>
-                                <span class="inv-legend-label">Purchases</span>
-                                <div class="inv-legend-val" id="inv-purch-count">{{ $invoiceChartData['totals']['purchases'] }}</div>
-                            </div>
-                            <div class="inv-legend-item inv-amber">
-                                <span class="inv-legend-dot"></span>
-                                <span class="inv-legend-label">Returns</span>
-                                <div class="inv-legend-val" id="inv-returns-count">{{ $invoiceChartData['totals']['returns'] }}</div>
+                            <div class="inv-legend-v" id="invoice-totals">
+                                <div class="inv-legend-row inv-indigo" title="{{ $invoiceChartData['totals']['sales'] }} invoices">
+                                    <span class="inv-legend-dot"></span>
+                                    <span class="inv-legend-label">Sales</span>
+                                    <span class="inv-legend-pct" id="inv-sales-pct">{{ $invoiceChartData['series'][0] }}%</span>
+                                </div>
+                                <div class="inv-legend-row inv-emerald" title="{{ $invoiceChartData['totals']['purchases'] }} orders">
+                                    <span class="inv-legend-dot"></span>
+                                    <span class="inv-legend-label">Purchases</span>
+                                    <span class="inv-legend-pct" id="inv-purch-pct">{{ $invoiceChartData['series'][1] }}%</span>
+                                </div>
+                                <div class="inv-legend-row inv-amber" title="{{ $invoiceChartData['totals']['returns'] }} returns">
+                                    <span class="inv-legend-dot"></span>
+                                    <span class="inv-legend-label">Returns</span>
+                                    <span class="inv-legend-pct" id="inv-returns-pct">{{ $invoiceChartData['series'][2] }}%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- ─── TOP SELLING ITEMS + PAYMENT TREND + STOCK HISTORY ─── --}}
+            {{-- ─── TOP SELLING ITEMS + PAYMENT SENT VS RECEIVED ─── --}}
             <div class="row mb-24" style="margin-bottom:20px; align-items:flex-start;">
                 {{-- Top Selling Items --}}
                 <div class="col-xl-5 d-flex mb-3">
@@ -869,7 +952,7 @@
                             <div class="chart-loading hidden" id="topItems-loading">
                                 <div class="spinner-border text-primary" role="status"></div>
                             </div>
-                            <div id="top_items_chart"></div>
+                            <div class="top-items-list" id="top_items_list"></div>
                         </div>
                     </div>
                 </div>
@@ -1105,6 +1188,8 @@
                 </div>
             </div>
 
+            <p class="dash-footer">© {{ date('Y') }} Kreethya . All Rights Reserved. Designed by Kreethya</p>
+
         </div>{{-- /content --}}
     </div>
 </div>
@@ -1125,11 +1210,11 @@ const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 // ─── Chart palette ───
 const PALETTE = ['#1677FF','#16A34A','#F59E0B','#EF4444','#0284C7'];
 
-let salesChart, invoiceChart, topItemsChart, paymentTrendChart;
+let salesChart, invoiceChart, paymentTrendChart;
 
 // ─── 1. Sales & Repair BAR chart ───
 function buildSalesChart(data) {
-    const allValues = [...data.received, ...data.pending].map(Number);
+    const allValues = [...data.received, ...data.pending, ...data.returns].map(Number);
     const dataMax = Math.max(...allValues, 0);
     const yMax = dataMax > 0 ? Math.ceil(dataMax * 1.25 / 10) * 10 : 10;
 
@@ -1141,8 +1226,9 @@ function buildSalesChart(data) {
             background: 'transparent',
         },
         series: [
-            { name: 'Received', data: data.received },
-            { name: 'Pending',  data: data.pending  },
+            { name: 'Sales',     data: data.received },
+            { name: 'Purchases', data: data.pending  },
+            { name: 'Returns',   data: data.returns  },
         ],
         xaxis: {
             categories: data.categories,
@@ -1157,18 +1243,13 @@ function buildSalesChart(data) {
                 style: { fontSize: '11px', colors: '#94A3B8' }
             }
         },
-        colors: [PALETTE[3], PALETTE[2]],
+        colors: [PALETTE[0], PALETTE[1], PALETTE[2]],
         plotOptions: {
             bar: {
-                borderRadius: 11,
-                borderRadiusApplication: 'around',
-                columnWidth: '26%',
+                borderRadius: 6,
+                borderRadiusApplication: 'end',
+                columnWidth: '55%',
                 dataLabels: { position: 'top' },
-                colors: {
-                    backgroundBarColors: ['#EEF1F7'],
-                    backgroundBarOpacity: 1,
-                    backgroundBarRadius: 11,
-                }
             }
         },
         dataLabels: { enabled: false },
@@ -1177,7 +1258,11 @@ function buildSalesChart(data) {
             markers: { radius: 6 },
             labels: { colors: '#64748B' }
         },
-        grid: { show: false, padding: { top: -10 } },
+        grid: {
+            borderColor: '#EEF1F7', strokeDashArray: 3,
+            xaxis: { lines: { show: false } },
+            padding: { top: -10 }
+        },
         tooltip: {
             theme: 'light',
             y: { formatter: v => Number(v).toLocaleString() },
@@ -1195,7 +1280,7 @@ function buildSalesChart(data) {
 function buildInvoiceChart(data) {
     const opts = {
         chart: {
-            type: 'donut', height: 270, offsetY: 6,
+            type: 'donut', height: 230, offsetY: 6,
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             animations: { enabled: true, speed: 500 },
         },
@@ -1247,78 +1332,38 @@ function buildInvoiceChart(data) {
     invoiceChart = new ApexCharts(document.querySelector('#invoice_chart'), opts);
     invoiceChart.render();
 
-    document.getElementById('inv-sales-count').textContent = data.totals.sales;
-    document.getElementById('inv-purch-count').textContent = data.totals.purchases;
-    document.getElementById('inv-returns-count').textContent = data.totals.returns;
+    document.getElementById('inv-sales-pct').textContent = data.series[0] + '%';
+    document.getElementById('inv-purch-pct').textContent = data.series[1] + '%';
+    document.getElementById('inv-returns-pct').textContent = data.series[2] + '%';
 }
 
-// ─── 3. Top Selling Items (horizontal bar) ───
-function buildTopItemsChart(data) {
-    const RANKS = ['🥇','🥈','🥉'];
-    const count = data.categories.length || 1;
-    const rankedLabels = data.categories.map((c, i) => `${RANKS[i] ?? '#' + (i + 1)}  ${c}`);
-    const rowHeight = 46;
-    const chartHeight = Math.max(count * rowHeight + 70, 180);
+// ─── 3. Top Selling Items (HTML leaderboard list) ───
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
 
-    const opts = {
-        chart: {
-            type: 'bar', height: chartHeight, toolbar: { show: false },
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            animations: { enabled: true, speed: 500, animateGradually: { enabled: true, delay: 60 } },
-            background: 'transparent',
-        },
-        series: [{ name: 'Revenue', data: data.revenue }],
-        xaxis: {
-            categories: rankedLabels,
-            labels: {
-                formatter: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v,
-                style: { fontSize: '11px', colors: '#94A3B8' }
-            },
-            axisBorder: { show: false }, axisTicks: { show: false },
-        },
-        yaxis: {
-            labels: { style: { fontSize: '12.5px', fontWeight: 600, colors: '#334155' }, maxWidth: 220 }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: true,
-                borderRadius: 8,
-                borderRadiusApplication: 'end',
-                barHeight: '58%',
-                dataLabels: { position: 'top' }
-            }
-        },
-        colors: [PALETTE[0]],
-        dataLabels: {
-            enabled: true,
-            offsetX: 10,
-            style: { fontSize: '11px', fontWeight: 700, colors: ['#334155'] },
-            formatter: v => Number(v).toLocaleString(),
-            background: { enabled: false },
-        },
-        legend: { show: false },
-        grid: {
-            borderColor: '#F0F3F9', strokeDashArray: 4,
-            yaxis: { lines: { show: false } },
-            padding: { top: -10, right: 24, bottom: 0, left: 0 },
-        },
-        tooltip: {
-            theme: 'light',
-            y: { formatter: v => Number(v).toLocaleString() },
-            style: { fontSize: '12px', fontFamily: "'Plus Jakarta Sans', sans-serif" }
-        },
-        states: {
-            hover: { filter: { type: 'darken', value: 0.92 } }
-        },
-        fill: {
-            type: 'gradient',
-            gradient: { shade: 'light', type: 'horizontal', shadeIntensity: 0.3, gradientToColors: [PALETTE[4]], opacityFrom: 1, opacityTo: 0.9, stops: [0, 100] }
-        },
-    };
+function buildTopItemsList(data) {
+    const container = document.getElementById('top_items_list');
+    if (!container) return;
 
-    if (topItemsChart) { topItemsChart.updateOptions(opts, false, false); return; }
-    topItemsChart = new ApexCharts(document.querySelector('#top_items_chart'), opts);
-    topItemsChart.render();
+    const revenues = data.revenue.map(Number);
+    const max = Math.max(...revenues, 1);
+
+    container.innerHTML = data.categories.map((name, i) => {
+        const pct = Math.max((revenues[i] / max) * 100, 4);
+        const safeName = escapeHtml(name);
+
+        return `<div class="ti-row">
+            <div class="ti-rank plain">#${i + 1}</div>
+            <div class="ti-main">
+                <div class="ti-name" title="${safeName}"><i class="fas fa-box" style="color:var(--clr-indigo); font-size:11px; margin-right:6px;"></i>${safeName}</div>
+                <div class="ti-bar-track"><div class="ti-bar-fill" style="width:${pct}%"></div></div>
+            </div>
+            <div class="ti-value">${revenues[i].toLocaleString()}</div>
+        </div>`;
+    }).join('');
 }
 
 // ─── 4. Payment Sent vs Received (line) ───
@@ -1403,7 +1448,7 @@ function changePeriod(chart, period, btn) {
     .then(data => {
         if (chart === 'sales')       buildSalesChart(data);
         if (chart === 'invoice')     buildInvoiceChart(data);
-        if (chart === 'topItems')     buildTopItemsChart(data);
+        if (chart === 'topItems')     buildTopItemsList(data);
         if (chart === 'paymentTrend') buildPaymentTrendChart(data);
     })
     .catch(console.error)
@@ -1460,11 +1505,97 @@ function animateCountUp(el) {
     requestAnimationFrame(tick);
 }
 
+// ─── Dynamic greeting hero (morning / afternoon / evening / night) ───
+const HERO_THEMES = {
+    morning: {
+        greeting: 'Good Morning', iconColor: '#F59E0B',
+        bg: 'linear-gradient(120deg, #EFF5FF 0%, #E3EEFC 55%, #EAF2FE 100%)',
+        textColor: '#14213D', subColor: '#4A5A78',
+        // Sun rising over a horizon
+        iconSvg: `
+            <line x1="3" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7,17 A5,5 0 0 1 17,17 Z" fill="currentColor"/>
+            <line x1="12" y1="5" x2="12" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="6.5" y1="7.5" x2="4.6" y2="5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="17.5" y1="7.5" x2="19.4" y2="5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        `,
+    },
+    afternoon: {
+        greeting: 'Good Afternoon', iconColor: '#F5A623',
+        bg: 'linear-gradient(120deg, #EAF4FF 0%, #D9EAFB 100%)',
+        textColor: '#14213D', subColor: '#4A5A78',
+        // Full sun, high in the sky
+        iconSvg: `
+            <circle cx="12" cy="12" r="4.2" fill="currentColor"/>
+            <line x1="18.5" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16.6" y1="16.6" x2="18.4" y2="18.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="12" y1="18.5" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="7.4" y1="16.6" x2="5.6" y2="18.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="5.5" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="7.4" y1="7.4" x2="5.6" y2="5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="12" y1="5.5" x2="12" y2="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16.6" y1="7.4" x2="18.4" y2="5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        `,
+    },
+    evening: {
+        greeting: 'Good Evening', iconColor: '#EF7A54',
+        bg: 'linear-gradient(120deg, #FDEFE8 0%, #F8E2E8 55%, #EFE6F7 100%)',
+        textColor: '#432A2A', subColor: '#7A4F52',
+        // Sun setting behind a horizon
+        iconSvg: `
+            <line x1="3" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7.42,17 A5,5 0 0 1 16.58,17 Z" fill="currentColor"/>
+            <line x1="12" y1="19.5" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="5" y1="18" x2="3" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="19" y1="18" x2="21" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        `,
+    },
+    night: {
+        greeting: 'Good Night', iconColor: '#AEB8D6',
+        bg: 'linear-gradient(120deg, #202B4A 0%, #171F3A 60%, #10162B 100%)',
+        textColor: '#F2F4FA', subColor: '#AEB8D6',
+        // Crescent moon with a star
+        iconSvg: `
+            <mask id="heroMoonMaskSm"><rect width="24" height="24" fill="#fff"/><circle cx="14.5" cy="9" r="5" fill="#000"/></mask>
+            <circle cx="12" cy="11" r="5" fill="currentColor" mask="url(#heroMoonMaskSm)"/>
+            <path d="M19 3.5 L19.8 5.6 L22 6.4 L19.8 7.2 L19 9.3 L18.2 7.2 L16 6.4 L18.2 5.6 Z" fill="currentColor"/>
+        `,
+    },
+};
+
+function heroPeriodFor(hour) {
+    if (hour >= 6 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 17) return 'afternoon';
+    if (hour >= 17 && hour < 21) return 'evening';
+    return 'night';
+}
+
+function updateHeroGreeting() {
+    const el = document.getElementById('heroGreeting');
+    if (!el) return;
+
+    const theme = HERO_THEMES[heroPeriodFor(new Date().getHours())];
+
+    el.style.background = theme.bg;
+    el.style.setProperty('--hero-text', theme.textColor);
+    el.style.setProperty('--hero-sub', theme.subColor);
+
+    document.getElementById('heroGreetingText').textContent = theme.greeting;
+
+    document.getElementById('heroIcon').innerHTML = theme.iconSvg;
+    document.getElementById('heroIconBadge').style.color = theme.iconColor;
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') updateHeroGreeting();
+});
+
 // ─── Init ───
 document.addEventListener('DOMContentLoaded', () => {
+    updateHeroGreeting();
     buildSalesChart(SALES_INIT);
     buildInvoiceChart(INVOICE_INIT);
-    buildTopItemsChart(TOP_ITEMS_INIT);
+    buildTopItemsList(TOP_ITEMS_INIT);
     buildPaymentTrendChart(PAYMENT_TREND_INIT);
     document.querySelectorAll('.metric-value[data-countup]').forEach(animateCountUp);
 });
