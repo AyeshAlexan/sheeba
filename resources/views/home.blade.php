@@ -579,33 +579,36 @@
 
         /* ══════════════════════════════════════════════════
            ANIMATION & TRANSITIONS
+
+           Cards start hidden (.reveal) and only animate in once JS
+           adds .is-visible — triggered either by the page-loader
+           finishing (for anything already on screen) or by scrolling
+           the card into view (for anything further down the page).
+           This keeps the reveal from "burning through" invisibly
+           behind the loading-screen overlay.
         ══════════════════════════════════════════════════ */
         @media (prefers-reduced-motion: no-preference) {
-            @keyframes dashFadeUp {
-                from { opacity: 0; transform: translateY(14px); }
-                to   { opacity: 1; transform: translateY(0); }
+            .reveal {
+                opacity: 0;
+                transform: translateY(18px);
+                transition: opacity .55s cubic-bezier(.16,1,.3,1), transform .55s cubic-bezier(.16,1,.3,1);
             }
-            .hero-greeting, .sa-card, .metric-card, .chart-card, .pay-card, .inv-table-card {
-                animation: dashFadeUp .5s cubic-bezier(.16,1,.3,1) both;
-            }
-            .hero-greeting { animation-delay: 0s; }
-            .sa-card:nth-of-type(1) { animation-delay: .03s; }
-            .sa-card:nth-of-type(2) { animation-delay: .07s; }
-            .stat-grid .metric-card:nth-child(1) { animation-delay: .04s; }
-            .stat-grid .metric-card:nth-child(2) { animation-delay: .08s; }
-            .stat-grid .metric-card:nth-child(3) { animation-delay: .12s; }
-            .stat-grid .metric-card:nth-child(4) { animation-delay: .16s; }
-            .stat-grid .metric-card:nth-child(5) { animation-delay: .20s; }
-            .row-gap > *:nth-child(1) .chart-card,
-            .row-gap > *:nth-child(1) .pay-card { animation-delay: .1s; }
-            .row-gap > *:nth-child(2) .chart-card,
-            .row-gap > *:nth-child(2) .pay-card { animation-delay: .16s; }
-            .inv-table-card { animation-delay: .2s; }
+            .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+            /* Stagger: elements that land together on first paint fan out slightly */
+            .sa-card.reveal:nth-of-type(1) { transition-delay: .03s; }
+            .sa-card.reveal:nth-of-type(2) { transition-delay: .07s; }
+            .stat-grid .metric-card.reveal:nth-child(1) { transition-delay: .04s; }
+            .stat-grid .metric-card.reveal:nth-child(2) { transition-delay: .08s; }
+            .stat-grid .metric-card.reveal:nth-child(3) { transition-delay: .12s; }
+            .stat-grid .metric-card.reveal:nth-child(4) { transition-delay: .16s; }
+            .stat-grid .metric-card.reveal:nth-child(5) { transition-delay: .20s; }
 
             /* Count-up numbers land instantly under the fade, then tick up */
             .metric-value[data-countup] { font-variant-numeric: tabular-nums; }
         }
         @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
             .chart-loading, .sa-panel, .sa-card, .metric-card { transition: none !important; animation: none !important; }
         }
 
@@ -745,7 +748,7 @@
                 $hour = $now->hour;
                 $serverGreeting = $hour < 12 ? 'Good Morning' : ($hour < 17 ? 'Good Afternoon' : ($hour < 21 ? 'Good Evening' : 'Good Night'));
             @endphp
-            <div class="hero-greeting mb-24" id="heroGreeting">
+            <div class="hero-greeting reveal mb-24" id="heroGreeting">
                 <div class="hero-icon-badge" id="heroIconBadge"><svg id="heroIcon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"></svg></div>
                 <div class="hero-text">
                     <h2 id="heroGreetingText">{{ $serverGreeting }}</h2>
@@ -764,7 +767,7 @@
             @endphp
 
             @if($oversoldItems->count())
-            <div class="sa-card mb-20" id="sa-oversold">
+            <div class="sa-card reveal mb-20" id="sa-oversold">
                 <div class="sa-header sa-danger" onclick="togglePanel('sp-oversold', this)">
                     <div class="sa-icon-wrap"><i class="fas fa-skull-crossbones"></i></div>
                     <div class="sa-texts">
@@ -804,7 +807,7 @@
             @endif
 
             @if($lowStockItems->count())
-            <div class="sa-card mb-20" id="sa-lowstock">
+            <div class="sa-card reveal mb-20" id="sa-lowstock">
                 <div class="sa-header sa-warning" onclick="togglePanel('sp-lowstock', this)">
                     <div class="sa-icon-wrap"><i class="fas fa-exclamation-triangle"></i></div>
                     <div class="sa-texts">
@@ -848,7 +851,7 @@
             {{-- ─── METRIC CARDS ─── --}}
             <div class="stat-grid mb-24">
                 @foreach($statCards as $card)
-                <div class="metric-card">
+                <div class="metric-card reveal">
                     <button type="button" class="metric-menu-btn" aria-label="More options"><i class="fas fa-ellipsis"></i></button>
                     <div class="metric-icon {{ $card['color'] }}"><i class="fas {{ $card['icon'] }}"></i></div>
                     <div class="metric-label">{{ $card['label'] }}</div>
@@ -865,7 +868,7 @@
             <div class="row mb-24" style="margin-bottom:20px;">
                 {{-- Sales & Repair Bar Chart --}}
                 <div class="col-xl-7 d-flex mb-3">
-                    <div class="chart-card" style="width:100%;">
+                    <div class="chart-card reveal" data-chart="sales" style="width:100%;">
                         <div class="chart-card-header">
                             <h5 class="chart-card-title">
                                 <i class="fas fa-chart-column me-2" style="color:var(--clr-indigo);"></i>
@@ -889,7 +892,7 @@
 
                 {{-- Invoice Donut --}}
                 <div class="col-xl-5 d-flex mb-3">
-                    <div class="chart-card" style="width:100%;">
+                    <div class="chart-card reveal" data-chart="invoice" style="width:100%;">
                         <div class="chart-card-header">
                             <h5 class="chart-card-title">
                                 <i class="fas fa-chart-pie me-2" style="color:var(--clr-indigo);"></i>
@@ -935,7 +938,7 @@
             <div class="row mb-24" style="margin-bottom:20px; align-items:flex-start;">
                 {{-- Top Selling Items --}}
                 <div class="col-xl-5 d-flex mb-3">
-                    <div class="chart-card" style="width:100%;">
+                    <div class="chart-card reveal" data-chart="topItems" style="width:100%;">
                         <div class="chart-card-header">
                             <h5 class="chart-card-title">
                                 <i class="fas fa-ranking-star me-2" style="color:var(--clr-indigo);"></i>
@@ -959,7 +962,7 @@
 
                 {{-- Right column: Payment trend (top) + Stock History (bottom), stacked --}}
                 <div class="col-xl-7 mb-3" style="display:flex; flex-direction:column; gap:20px;">
-                    <div class="chart-card">
+                    <div class="chart-card reveal" data-chart="paymentTrend">
                         <div class="chart-card-header">
                             <h5 class="chart-card-title">
                                 <i class="fas fa-arrow-right-arrow-left me-2" style="color:var(--clr-indigo);"></i>
@@ -980,7 +983,7 @@
                         </div>
                     </div>
 
-                    <div class="chart-card">
+                    <div class="chart-card reveal">
                         <div class="chart-card-header">
                             <h5 class="chart-card-title">
                                 <i class="fas fa-boxes-stacked me-2" style="color:var(--clr-text-m);"></i>
@@ -1018,7 +1021,7 @@
             @endphp
             <div class="row mb-24" style="margin-bottom:20px;">
                 <div class="col-md-6 col-sm-6 mb-3">
-                    <div class="pay-card">
+                    <div class="pay-card reveal">
                         <div class="pay-card-header">
                             <h5 class="pay-card-title"><i class="fas fa-receipt me-2" style="color:var(--clr-indigo);"></i>Recent Sales Invoices</h5>
                             <a href="{{ route('sales_report') }}" target="_blank" class="btn-stat outline" style="font-size:11px;padding:5px 12px;">View All</a>
@@ -1070,7 +1073,7 @@
                 </div>
 
                 <div class="col-md-6 col-sm-6 mb-3">
-                    <div class="pay-card">
+                    <div class="pay-card reveal">
                         <div class="pay-card-header">
                             <h5 class="pay-card-title"><i class="fas fa-money-bill-wave me-2" style="color:var(--clr-emerald);"></i>Recent Customer Payments</h5>
                             <a href="{{ route('customer_payment_report') }}" target="_blank" class="btn-stat outline" style="font-size:11px;padding:5px 12px;">View All</a>
@@ -1114,7 +1117,7 @@
 
             {{-- ─── INVENTORY TABLE ─── --}}
             <div class="mb-24">
-                <div class="inv-table-card">
+                <div class="inv-table-card reveal">
                     <div class="inv-table-header">
                         <h5 class="inv-table-title">
                             <i class="fas fa-boxes me-2" style="color:var(--clr-text-m);"></i>Inventory Details
@@ -1511,13 +1514,21 @@ const HERO_THEMES = {
         greeting: 'Good Morning', iconColor: '#F59E0B',
         bg: 'linear-gradient(120deg, #EFF5FF 0%, #E3EEFC 55%, #EAF2FE 100%)',
         textColor: '#14213D', subColor: '#4A5A78',
-        // Sun rising over a horizon
+        // Sunburst with yellow rays, blue stripes
         iconSvg: `
-            <line x1="3" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M7,17 A5,5 0 0 1 17,17 Z" fill="currentColor"/>
-            <line x1="12" y1="5" x2="12" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="6.5" y1="7.5" x2="4.6" y2="5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="17.5" y1="7.5" x2="19.4" y2="5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <g stroke="#F2C94C" stroke-width="2.1" stroke-linecap="round">
+                <line x1="4.75" y1="12.06" x2="1.86" y2="11.28"/>
+                <line x1="6.25" y1="9.18"  x2="3.96" y2="7.25"/>
+                <line x1="8.83" y1="7.21"  x2="7.56" y2="4.49"/>
+                <line x1="12"   y1="6.5"   x2="12"   y2="3.5"/>
+                <line x1="15.17" y1="7.21" x2="16.44" y2="4.49"/>
+                <line x1="17.75" y1="9.18" x2="20.04" y2="7.25"/>
+                <line x1="19.25" y1="12.06" x2="22.14" y2="11.28"/>
+            </g>
+            <path d="M6,14 A6,6 0 0 1 18,14 Z" fill="#F6D76B"/>
+            <rect x="5"   y="15.3" width="14" height="1.6" rx="0.8" fill="#9CC6F2"/>
+            <rect x="6.5" y="17.6" width="11" height="1.4" rx="0.7" fill="#5B9AE8"/>
+            <rect x="9"   y="19.6" width="6"  height="1.3" rx="0.65" fill="#2F63C9"/>
         `,
     },
     afternoon: {
@@ -1541,19 +1552,27 @@ const HERO_THEMES = {
         greeting: 'Good Evening', iconColor: '#EF7A54',
         bg: 'linear-gradient(120deg, #FDEFE8 0%, #F8E2E8 55%, #EFE6F7 100%)',
         textColor: '#432A2A', subColor: '#7A4F52',
-        // Sun setting behind a horizon
+        // Sunburst with warm orange/red rays and stripes
         iconSvg: `
-            <line x1="3" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M7.42,17 A5,5 0 0 1 16.58,17 Z" fill="currentColor"/>
-            <line x1="12" y1="19.5" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="5" y1="18" x2="3" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="19" y1="18" x2="21" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <g stroke="#F0A868" stroke-width="2.1" stroke-linecap="round">
+                <line x1="4.75" y1="12.06" x2="1.86" y2="11.28"/>
+                <line x1="6.25" y1="9.18"  x2="3.96" y2="7.25"/>
+                <line x1="8.83" y1="7.21"  x2="7.56" y2="4.49"/>
+                <line x1="12"   y1="6.5"   x2="12"   y2="3.5"/>
+                <line x1="15.17" y1="7.21" x2="16.44" y2="4.49"/>
+                <line x1="17.75" y1="9.18" x2="20.04" y2="7.25"/>
+                <line x1="19.25" y1="12.06" x2="22.14" y2="11.28"/>
+            </g>
+            <path d="M6,14 A6,6 0 0 1 18,14 Z" fill="#F6D76B"/>
+            <rect x="5"   y="15.3" width="14" height="1.6" rx="0.8" fill="#EDD86B"/>
+            <rect x="6.5" y="17.6" width="11" height="1.4" rx="0.7" fill="#F0995F"/>
+            <rect x="9"   y="19.6" width="6"  height="1.3" rx="0.65" fill="#E65C49"/>
         `,
     },
     night: {
-        greeting: 'Good Night', iconColor: '#AEB8D6',
-        bg: 'linear-gradient(120deg, #202B4A 0%, #171F3A 60%, #10162B 100%)',
-        textColor: '#F2F4FA', subColor: '#AEB8D6',
+        greeting: 'Good Night', iconColor: '#4C5A8C',
+        bg: 'linear-gradient(120deg, #EAF4FF 0%, #D9EAFB 100%)',
+        textColor: '#14213D', subColor: '#4A5A78',
         // Crescent moon with a star
         iconSvg: `
             <mask id="heroMoonMaskSm"><rect width="24" height="24" fill="#fff"/><circle cx="14.5" cy="9" r="5" fill="#000"/></mask>
@@ -1590,14 +1609,59 @@ document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') updateHeroGreeting();
 });
 
+// ─── Scroll/loader-triggered reveal ───
+// Each chart card lazily builds (and plays its own draw-in animation)
+// the first time it actually becomes visible — whether that's right
+// when the loader clears (above the fold) or later when the user
+// scrolls down to it.
+const CHART_INITIALIZERS = {
+    sales:        () => buildSalesChart(SALES_INIT),
+    invoice:      () => buildInvoiceChart(INVOICE_INIT),
+    topItems:     () => buildTopItemsList(TOP_ITEMS_INIT),
+    paymentTrend: () => buildPaymentTrendChart(PAYMENT_TREND_INIT),
+};
+
+function initDashboardReveals() {
+    const targets = document.querySelectorAll('.reveal');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const reveal = (el) => {
+        el.classList.add('is-visible');
+
+        const chartKey = el.dataset.chart;
+        if (chartKey && CHART_INITIALIZERS[chartKey]) {
+            CHART_INITIALIZERS[chartKey]();
+        }
+
+        const countupEl = el.querySelector('.metric-value[data-countup]');
+        if (countupEl) animateCountUp(countupEl);
+    };
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+        targets.forEach(reveal);
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            reveal(entry.target);
+            obs.unobserve(entry.target);
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    targets.forEach(el => observer.observe(el));
+}
+
 // ─── Init ───
 document.addEventListener('DOMContentLoaded', () => {
     updateHeroGreeting();
-    buildSalesChart(SALES_INIT);
-    buildInvoiceChart(INVOICE_INIT);
-    buildTopItemsList(TOP_ITEMS_INIT);
-    buildPaymentTrendChart(PAYMENT_TREND_INIT);
-    document.querySelectorAll('.metric-value[data-countup]').forEach(animateCountUp);
+
+    if (document.getElementById('pageLoader')) {
+        window.addEventListener('page-loader-hidden', initDashboardReveals, { once: true });
+    } else {
+        initDashboardReveals();
+    }
 });
 </script>
 <script src="assets/js/feather.min.js"></script>

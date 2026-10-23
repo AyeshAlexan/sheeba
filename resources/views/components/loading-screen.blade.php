@@ -70,6 +70,10 @@
             var wait = Math.max(0, minDelay - (Date.now() - start));
             setTimeout(function () {
                 loader.classList.add('page-loader-hide');
+                // Let the page underneath know it's safe to start its own
+                // entrance animations — otherwise they finish invisibly
+                // behind this overlay before the user ever sees them.
+                window.dispatchEvent(new CustomEvent('page-loader-hidden'));
                 setTimeout(function () {
                     loader.remove();
                 }, 500);

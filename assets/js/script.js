@@ -13,6 +13,12 @@
             if ($(this).parent().hasClass('submenu')) {
                 e.preventDefault();
             }
+            // Collapsed (icon-only) sidebar uses its own click-to-flyout
+            // toggle (bound further below) instead of this inline
+            // expand/collapse — leave it alone here.
+            if ($('body').hasClass('mini-sidebar')) {
+                return;
+            }
             if (!$(this).hasClass('subdrop')) {
                 $('ul', $(this).parents('ul:first')).slideUp(350);
                 $('a', $(this).parents('ul:first')).removeClass('subdrop');
@@ -150,6 +156,7 @@
         } else {
             $('body').addClass('mini-sidebar');
             $('.subdrop + ul').slideUp();
+            closeSidebarFlyout();
         }
         setTimeout(function() {
             mA.redraw();
@@ -157,20 +164,67 @@
         }, 300);
         return false;
     });
-    $(document).on('mouseover', function(e) {
+    // Collapsed (icon-only) sidebar: tapping/clicking a parent icon opens
+    // a flyout panel with its sub-pages next to it. This replaces the old
+    // mouseover-to-expand behaviour, which only ever worked with a mouse —
+    // on touch there is no hover event, so tapping a collapsed icon did
+    // nothing. Click works identically on mouse and touch.
+    //
+    // Deliberately keyed on DOM structure ("does this item have a nested
+    // <ul>?"), not on a class name — only one section in the sidebar
+    // markup actually carries class="submenu"; the rest (System, Stock,
+    // Purchases, Sales, …) have no consistent marker class at all, so a
+    // class-based selector here would only have fixed one menu item.
+    //
+    // The panel itself is portalled to <body> and positioned with fixed
+    // coordinates from getBoundingClientRect() — `.sidebar`/`.scroll` both
+    // have overflow rules that clip any absolutely-positioned child trying
+    // to render outside their own box, so a CSS-only flyout (position:
+    // absolute; left:100%) just gets cut off at the sidebar's edge instead
+    // of appearing next to it.
+    var $sidebarFlyout = $('<div id="sidebarFlyout" class="sidebar-flyout"><ul></ul></div>').appendTo('body');
+
+    function closeSidebarFlyout() {
+        $sidebarFlyout.removeClass('open');
+        $('#sidebar-menu > ul > li').removeClass('flyout-open');
+    }
+
+    $(document).on('click', '#sidebar-menu > ul > li > a', function(e) {
+        if (!$('body').hasClass('mini-sidebar')) return;
+        var $sub = $(this).next('ul');
+        if (!$sub.length) return; // plain link (e.g. Home) — navigate as normal
+        e.preventDefault();
         e.stopPropagation();
-        if ($('body').hasClass('mini-sidebar') && $('#toggle_btn').is(':visible')) {
-            var targ = $(e.target).closest('.sidebar').length;
-            if (targ) {
-                $('body').addClass('expand-menu');
-                $('.subdrop + ul').slideDown();
-            } else {
-                $('body').removeClass('expand-menu');
-                $('.subdrop + ul').slideUp();
-            }
-            return false;
+
+        var $li = $(this).closest('li');
+        var alreadyOpenForThis = $li.hasClass('flyout-open');
+
+        closeSidebarFlyout();
+
+        if (alreadyOpenForThis) return;
+
+        $li.addClass('flyout-open');
+        $sidebarFlyout.find('ul').html($sub.html());
+
+        var rect = this.getBoundingClientRect();
+        var top = rect.top;
+        $sidebarFlyout.css({ top: top + 'px', left: (rect.right + 10) + 'px' }).addClass('open');
+
+        // Clamp so a flyout opened near the bottom of a long sidebar list
+        // (e.g. Reports) doesn't run off the bottom of the screen with no
+        // way to reach the items below the fold.
+        var margin = 10;
+        var maxTop = window.innerHeight - $sidebarFlyout.outerHeight() - margin;
+        if (top > maxTop) {
+            $sidebarFlyout.css('top', Math.max(margin, maxTop) + 'px');
         }
     });
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#sidebar-menu > ul > li, #sidebarFlyout').length) {
+            closeSidebarFlyout();
+        }
+    });
+    $(window).on('resize scroll', closeSidebarFlyout);
     $(document).on('click', '#filter_search', function() {
         $('#filter_inputs').slideToggle("slow");
     });

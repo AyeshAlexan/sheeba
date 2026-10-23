@@ -415,6 +415,82 @@ body.mini-sidebar #sidebar-menu.sidebar-menu ul ul {
   display: none !important;
 }
 
+/* Click-triggered flyout panel for a collapsed item's sub-pages — works
+   identically on mouse click and touch tap, unlike the old hover-only
+   expand (which never worked on touch devices at all).
+
+   Highlighting the collapsed icon itself (.flyout-open on the <li>) is
+   just a background tint, unaffected by overflow clipping. The actual
+   submenu panel (#sidebarFlyout) is a different story: `.sidebar` and
+   its `.scroll` wrapper both have overflow rules that clip anything
+   positioned outside their own box, so it can't be a CSS-positioned
+   child of the sidebar — script.js portals it straight to <body> and
+   positions it in JS via getBoundingClientRect() instead. */
+body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+}
+
+body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a svg.nav-svg,
+body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a i {
+  color: var(--tr-blue) !important;
+}
+
+#sidebarFlyout {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  min-width: 220px;
+  max-width: 280px;
+  max-height: calc(100vh - 20px);
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--tr-surface, #fff);
+  border: 1px solid var(--tr-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, .16);
+  z-index: 2000;
+}
+
+#sidebarFlyout.open {
+  display: flex;
+}
+
+#sidebarFlyout ul {
+  list-style: none;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#sidebarFlyout ul li a {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  height: 40px !important;
+  padding: 0 12px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: var(--tr-text-secondary) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  transition: background .15s ease, color .15s ease;
+}
+
+#sidebarFlyout ul li a:hover {
+  background: var(--tr-bg) !important;
+  color: var(--tr-navy) !important;
+}
+
+#sidebarFlyout ul li a i {
+  display: none;
+}
+
+#sidebarFlyout ul li.active > a {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+  font-weight: 600 !important;
+}
+
 /* ==========================================================================
    Phase 2: Page content — cards, forms, tables, buttons, modals, alerts.
    These are the shared Bootstrap classes ("card", "form-control", "btn",
