@@ -1573,11 +1573,19 @@ const HERO_THEMES = {
         greeting: 'Good Night', iconColor: '#4C5A8C',
         bg: 'linear-gradient(120deg, #EAF4FF 0%, #D9EAFB 100%)',
         textColor: '#14213D', subColor: '#4A5A78',
-        // Crescent moon with a star
+        // Crescent moon with sparkle stars
         iconSvg: `
-            <mask id="heroMoonMaskSm"><rect width="24" height="24" fill="#fff"/><circle cx="14.5" cy="9" r="5" fill="#000"/></mask>
-            <circle cx="12" cy="11" r="5" fill="currentColor" mask="url(#heroMoonMaskSm)"/>
-            <path d="M19 3.5 L19.8 5.6 L22 6.4 L19.8 7.2 L19 9.3 L18.2 7.2 L16 6.4 L18.2 5.6 Z" fill="currentColor"/>
+            <defs>
+                <linearGradient id="heroMoonGrad" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#C9D4F5"/>
+                    <stop offset="100%" stop-color="#5B6AA0"/>
+                </linearGradient>
+                <mask id="heroMoonMaskSm"><rect width="24" height="24" fill="#fff"/><circle cx="15.6" cy="9" r="5.7" fill="#000"/></mask>
+            </defs>
+            <circle cx="12" cy="12" r="6.3" fill="url(#heroMoonGrad)" mask="url(#heroMoonMaskSm)"/>
+            <path d="M19,2.3 C19.3,4 19.9,4.6 21.6,4.9 C19.9,5.2 19.3,5.8 19,7.5 C18.7,5.8 18.1,5.2 16.4,4.9 C18.1,4.6 18.7,4 19,2.3 Z" fill="#F0C94C"/>
+            <circle cx="6.3" cy="6.2" r="0.9" fill="#F0C94C" opacity="0.85"/>
+            <circle cx="9" cy="3.8" r="0.6" fill="#F0C94C" opacity="0.6"/>
         `,
     },
 };
