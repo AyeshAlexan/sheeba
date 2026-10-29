@@ -152,6 +152,34 @@ public function add_salesInvoice(Request $request)
     DB::beginTransaction();
 
     try {
+        // Stock check up-front, same SUM(qun_in)-SUM(qun_out) derivation used by
+        // Delivery Order/GRN, so the invoice fails before writing any rows if
+        // stock is short — oversold qty should be caught here, not only at DO time.
+        foreach ($request->inputs as $value) {
+            $batchNo = $value['batch_no'] ?? null;
+            if ($batchNo === '') {
+                $batchNo = null;
+            }
+
+            $item = Item::where('Item_code', $value['item_code'])->first();
+            if ($item && $item->Batchwise && empty($batchNo)) {
+                abort(422, "\"{$value['item_code']}\" is batch-tracked — pick a batch before saving.");
+            }
+
+            $query = TItemMovement::where('item_code', $value['item_code']);
+            if (!empty($batchNo)) {
+                $query->where('batch_no', $batchNo);
+            } else {
+                $query->whereNull('batch_no');
+            }
+            $qtyRemaining = $query->selectRaw('COALESCE(SUM(qun_in),0) - COALESCE(SUM(qun_out),0) as remaining')->value('remaining');
+
+            if ($value['qty'] > $qtyRemaining) {
+                $batchLabel = $batchNo ? " in batch \"{$batchNo}\"" : '';
+                abort(422, "Not enough stock{$batchLabel} for item {$value['item_code']}. Remaining: {$qtyRemaining}");
+            }
+        }
+
         // ── 1. Save Summary ──────────────────────────────────────
         $InvoiceSum                   = new TwithoutVatSalesSum;
         $InvoiceSum->Invoice_no       = $request->invoice_no;

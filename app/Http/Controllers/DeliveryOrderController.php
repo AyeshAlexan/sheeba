@@ -121,14 +121,21 @@ class DeliveryOrderController extends Controller
                     abort(422, "\"{$value['item_code']}\" is batch-tracked — pick a batch before saving (it defaults to \"(no batch)\" until you choose one).");
                 }
 
+                // Non-batch items were previously skipped here entirely (this whole
+                // block only ran "if (!empty($batchNo))"), so any qty went through
+                // unblocked regardless of actual stock. Now checked the same way,
+                // just scoped to the item's unbatched (NULL batch_no) movements.
+                $query = TItemMovement::where('item_code', $value['item_code']);
                 if (!empty($batchNo)) {
-                    $qtyRemaining = TItemMovement::where('item_code', $value['item_code'])
-                        ->where('batch_no', $batchNo)
-                        ->selectRaw('COALESCE(SUM(qun_in),0) - COALESCE(SUM(qun_out),0) as remaining')
-                        ->value('remaining');
-                    if ($value['qty'] > $qtyRemaining) {
-                        abort(422, "Not enough stock in batch \"{$batchNo}\" for item {$value['item_code']}. Remaining: {$qtyRemaining}");
-                    }
+                    $query->where('batch_no', $batchNo);
+                } else {
+                    $query->whereNull('batch_no');
+                }
+                $qtyRemaining = $query->selectRaw('COALESCE(SUM(qun_in),0) - COALESCE(SUM(qun_out),0) as remaining')
+                    ->value('remaining');
+                if ($value['qty'] > $qtyRemaining) {
+                    $batchLabel = $batchNo ? " in batch \"{$batchNo}\"" : '';
+                    abort(422, "Not enough stock{$batchLabel} for item {$value['item_code']}. Remaining: {$qtyRemaining}");
                 }
             }
 
