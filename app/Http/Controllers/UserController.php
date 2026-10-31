@@ -128,11 +128,16 @@ class UserController extends Controller
         $updateData = [
             'name'     => $request->up_name,
             'username' => $request->up_user_name,
-            'email'    => $request->up_email,
             'role'     => $request->up_role,
             'Branch'   => $request->up_Branch,
             'BC'       => $request->up_BC,
         ];
+
+        // The Edit User form has no email field, so don't overwrite the
+        // existing email with null — only touch it if one was actually sent.
+        if ($request->filled('up_email')) {
+            $updateData['email'] = $request->up_email;
+        }
 
         // Only update password if provided
         if (!empty($request->up_password)) {

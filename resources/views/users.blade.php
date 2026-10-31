@@ -617,7 +617,7 @@
                         <select name="Branch" id="add_Branch">
                             <option value="">— Select Branch —</option>
                             @foreach($Branch as $b)
-                            <option value="{{ $b->name }}">{{ $b->name }}</option>
+                            <option value="{{ $b->name }}" data-bc="{{ $b->bccode }}">{{ $b->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -679,7 +679,7 @@
                         <select id="up_Branch">
                             <option value="">— Select Branch —</option>
                             @foreach($Branch as $b)
-                            <option value="{{ $b->name }}">{{ $b->name }}</option>
+                            <option value="{{ $b->name }}" data-bc="{{ $b->bccode }}">{{ $b->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -765,6 +765,15 @@ $(document).ready(function () {
         var $b = $('#' + id).addClass('show').html('');
         $.each(errors, function (i, v) { $b.append('<span>⚠ ' + v + '</span>'); });
     }
+
+    function showAjaxErr(id, err) {
+        var errors = err.responseJSON && err.responseJSON.errors;
+        if (errors) {
+            showErr(id, errors);
+        } else {
+            showErr(id, ['Something went wrong (' + err.status + '). Please try again.']);
+        }
+    }
     function clearErr(id) { $('#' + id).removeClass('show').html(''); }
 
     /* ── Add User ── */
@@ -790,19 +799,14 @@ $(document).ready(function () {
                     toastr.success("User created successfully!", "Success");
                 }
             },
-            error: function (err) { showErr('addErrBox', err.responseJSON.errors); }
+            error: function (err) { showAjaxErr('addErrBox', err); }
         });
     });
 
-    /* Branch → BC (Add) */
+    /* Branch → BC (Add) — read synchronously from the option's data-bc, no
+       AJAX round-trip to race against the Create button being clicked. */
     $('#add_Branch').on('change', function () {
-        $.ajax({
-            url: "{{ route('show_select_up_user_ajax') }}", method: 'GET',
-            data: { "_token": "{{ csrf_token() }}", category: $(this).val() },
-            success: function (res) {
-                if (res.status === 'success' && res.data.length) $('#add_BC').val(res.data[0].bccode);
-            }
-        });
+        $('#add_BC').val($(this).find(':selected').data('bc') || '');
     });
 
     /* ── Open Edit ── */
@@ -819,18 +823,9 @@ $(document).ready(function () {
         openModal('editUserBg');
     });
 
-    /* Branch → BC (Edit) */
+    /* Branch → BC (Edit) — same synchronous read, no AJAX race. */
     $('#up_Branch').on('change', function () {
-        $.ajax({
-            url: "{{ route('show_select_up_user_ajax') }}", method: 'GET',
-            data: { "_token": "{{ csrf_token() }}", category: $(this).val() },
-            success: function (res) {
-                if (res.status === 'success') {
-                    var $s = $('#up_BC').empty();
-                    $.each(res.data, function (i, item) { $s.append($('<option>', { value: item.bccode, text: item.bccode })); });
-                }
-            }
-        });
+        $('#up_BC').val($(this).find(':selected').data('bc') || '');
     });
 
     /* ── Update User ── */
@@ -856,7 +851,7 @@ $(document).ready(function () {
                     toastr.success("User updated successfully!", "Success");
                 }
             },
-            error: function (err) { showErr('editErrBox', err.responseJSON.errors); }
+            error: function (err) { showAjaxErr('editErrBox', err); }
         });
     });
 
@@ -899,7 +894,7 @@ $(document).ready(function () {
                     $('#add_role, #up_role').append($opt.clone());
                 }
             },
-            error: function (err) { showErr('roleErrBox', err.responseJSON.errors); }
+            error: function (err) { showAjaxErr('roleErrBox', err); }
         });
     });
 
