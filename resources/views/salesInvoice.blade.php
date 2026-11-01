@@ -301,7 +301,7 @@ $(document).ready(function () {
                                         <th style="width:12%; text-align: center;">Unit Price</th>
                                         <th style="width:12%; text-align: center;">QTY</th>
                                         <th style="width:12%; text-align: center;">Discount (%)</th>
-                                        <th style="width:12%; text-align: center;">Discount Val</th>
+                                        <th style="width:12%; text-align: center;">Discount Amount</th>
                                         <th style="width:13%; text-align: center;">Net Value</th>
                                         <th class="text-center" style="width:12%;">Action</th>
                                     </tr>
@@ -339,10 +339,10 @@ $(document).ready(function () {
                                             <input class="form-control" type="text" placeholder="QTY" id="qty" name="qty">
                                         </td>
                                         <td>
-                                            <input class="form-control" type="number" placeholder="Discount" id="discount" name="discount" min="0" max="100" maxlength="6" value="0">
+                                            <input class="form-control" type="number" placeholder="Discount (%)" id="discount" name="discount" min="0" max="100" step="0.01" value="0">
                                         </td>
                                         <td>
-                                            <input class="form-control" type="text" placeholder="Discount Val" id="discount_val" name="discount_val" value="0">
+                                            <input class="form-control" type="text" placeholder="Discount Amount" id="discount_val" name="discount_val" value="0" readonly>
                                         </td>
                                          <td>
                                             <input class="form-control" type="text" placeholder="Net Value" id="net_value" name="net_value" value="0">
@@ -1629,23 +1629,11 @@ $(document).ready(function () {
             let unit_price = parseFloat($('#unit_price').val()) || 0;
             let qty = parseFloat($('#qty').val()) || 0;
             let discountPercent = parseFloat($('#discount').val()) || 0;
-            let discountValue = parseFloat($('#discount_val').val()) || 0;
-            
-            // Calculate net value
-            let net_value = qty * unit_price;
-            let DiscountAfterValue = unit_price;
-
-            // Apply discount percentage if present
-            if (discountPercent > 0) {
-                discountValue = (net_value * discountPercent) / 100;
-                $('#discount_val').val(discountValue.toFixed(2));
-            }
-
-            // Apply discount value if provided
-            if (discountValue > 0) {
-                net_value -= discountValue;
-                DiscountAfterValue = net_value / qty;
-            }
+            let grossValue = qty * unit_price;
+            let discountValue = (grossValue * discountPercent) / 100;
+            let net_value = grossValue - discountValue;
+            $('#discount_val').val(discountValue.toFixed(2));
+            let DiscountAfterValue = qty > 0 ? net_value / qty : unit_price;
 
             // Update fields
             $('#net_value').val(net_value.toFixed(2));
@@ -1668,7 +1656,7 @@ $(document).ready(function () {
         }
 
         // Trigger calculations on input fields
-        $(document).on("input", "#qty, #unit_price, #discount, #discount_val, #last_price, #DiscountAfterValue", calculateValues);
+        $(document).on("input", "#qty, #unit_price, #discount, #last_price, #DiscountAfterValue", calculateValues);
 
         // Initial calculations
         calculateValues();
@@ -1925,8 +1913,8 @@ $(document).ready(function () {
                                         <td style="width:18%;"><input type="text" name="Item_description" class="form-control" value="${data.Item_description}" readonly></td>
                                         <td style="width:12%;"><input type="text" name="Unit_price" class="form-control" value="${data.Unit_price}" readonly></td>
                                         <td style="width:10%;"><input type="text" name="QTY" class="form-control QTY" value="${data.QTY}"></td>
-                                         <td style="width:12%;"><input type="text" name="DiscountPercentage" class="form-control DiscountPercentage" value="${data.DiscountPercentage || 0}"></td>
-                                        <td style="width:12%;"><input type="text" name="Discount" class="form-control Discount" value="${data.Discount}"></td>
+                                         <td style="width:12%;"><input type="number" min="0" max="100" step="0.01" name="DiscountPercentage" class="form-control DiscountPercentage" value="${data.DiscountPercentage || 0}"></td>
+                                        <td style="width:12%;"><input type="text" name="Discount" class="form-control Discount" value="${data.Discount}" readonly></td>
                                         <td style="width:12%;"><input type="text" name="Net_value" class="form-control Net_value" value="${data.Net_value}" readonly></td>
                                         <td style="width:13%;">
                                             ${canEditSales ? '<button type="button" class="btn btn-outline-success text-center edit-row"><i class="far fa-edit me-1"></i> Edit</button>' : ''}
@@ -2018,22 +2006,16 @@ $(document).ready(function () {
         }
 
         // Handle dynamic quantity and discount calculations
-        $('#dynamicAdded').on('keyup', '.QTY, .Discount, .DiscountPercentage', function () {
+        $('#dynamicAdded').on('input', '.QTY, .DiscountPercentage', function () {
             let row = $(this).closest('tr');
             let Unit_price = parseFloat(row.find('[name="Unit_price"]').val()) || 0;
             let QTY = parseFloat(row.find('[name="QTY"]').val()) || 0;
-            let Discount = parseFloat(row.find('[name="Discount"]').val()) || 0;
             let DiscountPercentage = parseFloat(row.find('[name="DiscountPercentage"]').val()) || 0;
 
-            // Calculate the total value
             let totalValue = Unit_price * QTY;
-            // Calculate the discount based on the percentage or discount value
-            let discountValue = (DiscountPercentage > 0) ? (totalValue * DiscountPercentage / 100) : Discount;
-            // Calculate the net value
+            let discountValue = totalValue * DiscountPercentage / 100;
             let net_value = totalValue - discountValue;
 
-
-            // Update the Net Value in the current row
             row.find('[name="Net_value"]').val(net_value.toFixed(2));
             row.find('[name="Discount"]').val(discountValue.toFixed(2));
 

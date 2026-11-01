@@ -144,6 +144,7 @@ class InvoiceController extends Controller
             // 'inputs.*.item_description' => ' required',
             'inputs.*.qty' => ' required',
             'inputs.*.unit_price' => ' required',
+            'inputs.*.discount' => 'nullable|numeric|min:0|max:100',
             'inputs.*.net_value' => ' required'
         ],[
 
@@ -253,6 +254,10 @@ class InvoiceController extends Controller
         // Delivery Order is created against this invoice (DeliveryOrderController).
         foreach ($request -> inputs as $key=>$value){
         $InvoiceDetails = new TInvoiceDeils;
+        $discountPercentage = (float) ($value['discount'] ?? 0);
+        $grossValue = (float) $value['unit_price'] * (float) $value['qty'];
+        $discountValue = round($grossValue * $discountPercentage / 100, 2);
+        $netValue = round($grossValue - $discountValue, 2);
 
         $InvoiceDetails->Invoice_no=$value['invoice_no'];
         $InvoiceDetails->Invoice_date=$value['invoice_date'];
@@ -262,8 +267,9 @@ class InvoiceController extends Controller
         $InvoiceDetails->Item_description=$value['item_description'];
         $InvoiceDetails->QTY=$value['qty'];
         $InvoiceDetails->Unit_price=$value['unit_price'];
-        $InvoiceDetails->Discount=$value['discount_val'];
-        $InvoiceDetails->Net_value=$value['net_value'];
+        $InvoiceDetails->DiscountPercentage=$discountPercentage;
+        $InvoiceDetails->Discount=$discountValue;
+        $InvoiceDetails->Net_value=$netValue;
         $InvoiceDetails->Free_Issues=$value['Free_Issues'];
         $InvoiceDetails->Salesmen = $request->Salesmen;
         $InvoiceDetails->OC= auth()->user()->username;

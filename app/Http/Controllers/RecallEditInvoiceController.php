@@ -85,6 +85,7 @@ class RecallEditInvoiceController extends Controller
             'invoice.items.*.Unit_price' => 'required|numeric',
             'invoice.items.*.QTY' => 'required|numeric',
             'invoice.items.*.Net_value' => 'numeric',
+            'invoice.items.*.DiscountPercentage' => 'nullable|numeric|min:0|max:100',
             'invoice.items.*.Discount' => 'nullable|numeric',
         ]);
 
@@ -190,6 +191,11 @@ class RecallEditInvoiceController extends Controller
                 ->delete();
 
             foreach ($data['items'] as $item) {
+                $discountPercentage = (float) ($item['DiscountPercentage'] ?? 0);
+                $grossValue = (float) $item['Unit_price'] * (float) $item['QTY'];
+                $discountValue = round($grossValue * $discountPercentage / 100, 2);
+                $netValue = round($grossValue - $discountValue, 2);
+
                 TInvoiceDeils::create([
                     'Invoice_no' => $data['invoice_no'],
                     'Invoice_date' => $data['invoice_date'],
@@ -197,8 +203,9 @@ class RecallEditInvoiceController extends Controller
                     'Item_description' => $item['Item_description'],
                     'Unit_price' => $item['Unit_price'],
                     'QTY' => $item['QTY'],
-                    'Discount' => $item['Discount'] ?? 0,
-                    'Net_value' => $item['Net_value'],
+                    'DiscountPercentage' => $discountPercentage,
+                    'Discount' => $discountValue,
+                    'Net_value' => $netValue,
                     'OC' => $userName,
                     'BC' => $branchCode,
                 ]);

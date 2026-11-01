@@ -15,6 +15,29 @@ use Illuminate\Support\Facades\DB;
 
 class SalereportController extends Controller
 {
+    public function indexVat(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $branchCode = auth()->user()->BC;
+
+        $invoice = TwithoutVatSalesSum::where('BC', $branchCode)
+            ->when($fromDate && $toDate, fn ($query) => $query->whereBetween('Invoice_date', [$fromDate, $toDate]))
+            ->get();
+
+        return view('sales_report_withoutVat', [
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'invoice' => $invoice,
+            'totalGrossAmount' => number_format($invoice->sum('Gross_Amount'), 2),
+            'totalDiscount' => number_format($invoice->sum('Discount'), 2),
+            'totalNetAmount' => number_format($invoice->sum('Net_Amount'), 2),
+            'totalCashPay' => number_format($invoice->sum('Cash_Pay'), 2),
+            'totalCredite' => number_format($invoice->sum('Credite'), 2),
+            'totalCheque' => number_format($invoice->sum('Cheque'), 2),
+        ]);
+    }
+
     public function index(Request $request)
     {
         $fromDate    = $request->input('from_date');

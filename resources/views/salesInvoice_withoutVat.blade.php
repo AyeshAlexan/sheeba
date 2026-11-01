@@ -37,13 +37,6 @@
     border-color: #d9e3ee;
     vertical-align: middle;
 }
-#dynamicAdded td:nth-child(1) { width: 16%; }
-#dynamicAdded td:nth-child(2) { width: 20%; }
-#dynamicAdded td:nth-child(3) { width: 11%; }
-#dynamicAdded td:nth-child(4) { width: 11%; }
-#dynamicAdded td:nth-child(5) { width: 10%; }
-#dynamicAdded td:nth-child(6) { width: 17%; }
-#dynamicAdded td:nth-child(7) { width: 15%; }
 #dynamicAdded input.form-control {
     min-height: 42px;
     border: 1px solid #d7e3f1;
@@ -68,27 +61,31 @@
     color: #234b7d;
     border-color: #d9e3ee !important;
 }
-/* Keep the entry row, added rows, and totals on one shared seven-column grid:
-   Item Code / Description / Batch / GRN Price / QTY / Net Value / Action. */
+/* Keep the entry row, added rows, and totals on one shared eight-column grid. */
 #salesItemTable,
 #dynamicAdded,
 .sales-totals-table {
     table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    box-sizing: border-box;
 }
 #salesItemTable th:nth-child(1), #salesItemTable td:nth-child(1),
-#dynamicAdded td:nth-child(1), .sales-totals-table td:nth-child(1) { width: 16% !important; }
+#dynamicAdded td:nth-child(1), .sales-totals-table td:nth-child(1) { width: 15% !important; }
 #salesItemTable th:nth-child(2), #salesItemTable td:nth-child(2),
-#dynamicAdded td:nth-child(2), .sales-totals-table td:nth-child(2) { width: 20% !important; }
+#dynamicAdded td:nth-child(2), .sales-totals-table td:nth-child(2) { width: 19% !important; }
 #salesItemTable th:nth-child(3), #salesItemTable td:nth-child(3),
-#dynamicAdded td:nth-child(3), .sales-totals-table td:nth-child(3) { width: 11% !important; }
+#dynamicAdded td:nth-child(3), .sales-totals-table td:nth-child(3) { width: 10% !important; }
 #salesItemTable th:nth-child(4), #salesItemTable td:nth-child(4),
-#dynamicAdded td:nth-child(4), .sales-totals-table td:nth-child(4) { width: 11% !important; }
+#dynamicAdded td:nth-child(4), .sales-totals-table td:nth-child(4) { width: 10% !important; }
 #salesItemTable th:nth-child(5), #salesItemTable td:nth-child(5),
-#dynamicAdded td:nth-child(5), .sales-totals-table td:nth-child(5) { width: 10% !important; }
+#dynamicAdded td:nth-child(5), .sales-totals-table td:nth-child(5) { width: 8% !important; }
 #salesItemTable th:nth-child(6), #salesItemTable td:nth-child(6),
-#dynamicAdded td:nth-child(6), .sales-totals-table td:nth-child(6) { width: 17% !important; }
+#dynamicAdded td:nth-child(6), .sales-totals-table td:nth-child(6) { width: 10% !important; }
 #salesItemTable th:nth-child(7), #salesItemTable td:nth-child(7),
-#dynamicAdded td:nth-child(7), .sales-totals-table td:nth-child(7) { width: 15% !important; }
+#dynamicAdded td:nth-child(7), .sales-totals-table td:nth-child(7) { width: 14% !important; }
+#salesItemTable th:nth-child(8), #salesItemTable td:nth-child(8),
+#dynamicAdded td:nth-child(8), .sales-totals-table td:nth-child(8) { width: 14% !important; }
 .sales-dynamic-table td:last-child,
 .sales-totals-table td:last-child { text-align: center; }
 .sales-dynamic-table .remove-new-row,
@@ -463,10 +460,6 @@
     vertical-align: middle;
 }
 #salesItemTable tbody tr:last-child td { border-bottom: none; }
-#salesItemTable th:first-child,
-#salesItemTable td:first-child { width: 22% !important; }
-#salesItemTable th:nth-child(2),
-#salesItemTable td:nth-child(2) { width: 20% !important; }
 .sales-item-input {
     background: #fff;
     border: 1px solid #d7e3f1;
@@ -838,13 +831,14 @@
             <table id="salesItemTable">
                 <thead>
                     <tr>
-                        <th style="width:16%;">Item Code</th>
-                        <th style="width:20%;">Description</th>
-                        <th style="width:11%;">Batch</th>
-                        <th style="width:11%;">GRN Price</th>
-                        <th style="width:10%;">QTY</th>
-                        <th style="width:17%;">Net Value</th>
-                        <th style="width:15%;">Action</th>
+                        <th>Item Code</th>
+                        <th>Description</th>
+                        <th>Batch</th>
+                        <th>GRN Price</th>
+                        <th>QTY</th>
+                        <th>Discount (%)</th>
+                        <th>Net Value</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -880,6 +874,10 @@
                         </td>
                         <td><input class="form-control sales-item-input" type="text" placeholder="0" id="unit_price" name="unit_price" value="0"></td>
                         <td><input class="form-control sales-item-input" type="text" placeholder="QTY" id="qty" name="qty"></td>
+                        <td>
+                            <input class="form-control sales-item-input" type="number" placeholder="0%" id="discount" name="discount" min="0" max="100" step="0.01" value="0" aria-label="Item discount percentage">
+                            <input type="hidden" id="discount_val" name="discount_val" value="0">
+                        </td>
                         <td><input class="form-control sales-item-input" type="text" placeholder="0" id="net_value" name="net_value" value="0"></td>
                         <td class="text-center">
                             <button type="button" class="btn add-item sales-add-btn" style="min-width: 110px; border-radius: 10px; font-weight: 700;">
@@ -896,13 +894,14 @@
         <table class="table table-bordered sales-totals-table">
             <tbody>
                 <tr class="table-success">
-                    <td style="width:16%;"><strong>TOTAL :</strong></td>
-                    <td style="width:20%;"></td>
-                    <td style="width:11%;"></td>
-                    <td class="total-unit-price text-center" style="width:11%;"><strong>0.00</strong></td>
-                    <td style="width:10%;"></td>
-                    <td class="total-value text-center" style="width:17%;"><strong>0.00</strong></td>
-                    <td class="text-center" style="width:15%;"></td>
+                    <td><strong>TOTAL :</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td class="total-unit-price text-center"><strong>0.00</strong></td>
+                    <td></td>
+                    <td class="total-discount text-center"><strong>0.00</strong></td>
+                    <td class="total-value text-center"><strong>0.00</strong></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
@@ -957,11 +956,11 @@
             </div>
         </div>
         <div class="si-field">
-            <label>Discount <span class="text-danger">*</span></label>
+            <label>Item Discount Total</label>
             <div class="si-icon-wrap">
                 <i class="fas fa-percent"></i>
                 <input type="text" class="form-control" id="paid_discount"
-                    name="discount" placeholder="0.00" required>
+                    name="discount" placeholder="0.00" value="0.00" readonly>
             </div>
         </div>
         <div class="si-field">
@@ -1725,6 +1724,7 @@ function setItemDetails() {
                 $('#Per').val(item.Per);
                 $('#item_purchase_price').val(item.purchasePrice || 0);
             });
+            calculateEntryRow();
             updateCostBadge();
             loadItemBatches(code);
         }
@@ -1780,10 +1780,19 @@ $('#customer_toggle').on('change', function () {
     if ($('#item_code').val()) setItemDetails();
 });
 
-// Update badge whenever qty, discount, or net value changes
-$(document).on('keyup', '#qty, #unit_price, #discount, #discount_val', function () {
+function calculateEntryRow() {
+    var price = parseFloat($('#unit_price').val()) || 0;
+    var qty = parseFloat($('#qty').val()) || 0;
+    var discountPercentage = parseFloat($('#discount').val()) || 0;
+    var gross = price * qty;
+    var discountValue = gross * discountPercentage / 100;
+
+    $('#discount_val').val(discountValue.toFixed(2));
+    $('#net_value').val((gross - discountValue).toFixed(2));
     updateCostBadge();
-});
+}
+
+$(document).on('input', '#qty, #unit_price, #discount', calculateEntryRow);
 </script>
 
 {{-- ══════════════════════════════════════════════════════════
@@ -1905,32 +1914,6 @@ $(document).on('click', '.add_customer', function (e) {
 QTY / DISCOUNT CALCULATIONS (top entry row)
 ══════════════════════════════════════════════════════════ --}}
 <script>
-$(document).on('keyup', '#qty', function () {
-    var price = parseFloat($('#unit_price').val()) || 0;
-    var qty   = parseFloat($(this).val())          || 0;
-    $('#net_value').val((qty * price).toFixed(2));
-    updateCostBadge();
-});
-
-$(document).on('keyup', '#discount', function () {
-    var price   = parseFloat($('#unit_price').val()) || 0;
-    var qty     = parseFloat($('#qty').val())         || 0;
-    var gross   = price * qty;
-    var discPct = parseFloat($(this).val())           || 0;
-    var discVal = gross * (discPct / 100);
-    $('#discount_val').val(discVal.toFixed(2));
-    $('#net_value').val((gross - discVal).toFixed(2));
-    updateCostBadge();
-});
-
-$(document).on('keyup', '#discount_val', function () {
-    var price   = parseFloat($('#unit_price').val()) || 0;
-    var qty     = parseFloat($('#qty').val())         || 0;
-    var gross   = price * qty;
-    var discVal = parseFloat($(this).val())           || 0;
-    $('#net_value').val((gross - discVal).toFixed(2));
-    updateCostBadge();
-});
 </script>
 
 {{-- ══════════════════════════════════════════════════════════
@@ -1999,10 +1982,15 @@ $('.add-item').click(function () {
     var qty              = parseFloat($('#qty').val())          || 0;
     var unit_price       = parseFloat($('#unit_price').val())   || 0;
     var Free_Issues      = $('#Free_Issues').val();
-    var discount         = $('#discount').val();
+    var discount         = parseFloat($('#discount').val()) || 0;
     var discount_val     = parseFloat($('#discount_val').val()) || 0;
     var net_value        = parseFloat($('#net_value').val())    || 0;
     var batch_no         = $('#item_batch').val();
+
+    if (discount < 0 || discount > 100) {
+        alert('Discount percentage must be between 0 and 100.');
+        return;
+    }
 
     if (!customer_nic || !invoice_no || !item_code || !qty || !unit_price || !net_value) {
         alert('Please fill in all required fields.');
@@ -2039,7 +2027,7 @@ function commitAddItem() {
     rowIndex++;
     $('#dynamicAdded').prepend(`
     <tr>
-        <td style="width:16%;">
+        <td>
             <input type="hidden" name="inputs[${rowIndex}][customer_nic]"  value="${d.customer_nic}">
             <input type="hidden" name="inputs[${rowIndex}][invoice_no]"    value="${d.invoice_no}">
             <input type="hidden" name="inputs[${rowIndex}][invoice_date]"  value="${d.invoice_date}">
@@ -2048,7 +2036,7 @@ function commitAddItem() {
             <input type="hidden" name="inputs[${rowIndex}][item_s_code]"   value="${d.item_s_code}">
             <input type="hidden" name="inputs[${rowIndex}][Per]"           value="${d.Per}">
         </td>
-                <td style="width:20%;">
+                <td>
                     <input class="form-control" type="text"
                         name="inputs[${rowIndex}][item_description]"
                         value="${d.item_description || ''}"
@@ -2060,26 +2048,29 @@ function commitAddItem() {
                         @endforeach
                     </datalist>
                 </td>
-        <td style="width:11%;">
+        <td>
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][batch_no]" value="${d.batch_no || ''}" readonly>
         </td>
-        <td style="width:11%;">
+        <td>
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][unit_price]" value="${d.unit_price}" readonly>
         </td>
-        <td style="width:10%;">
+        <td>
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][qty]" value="${d.qty}" readonly>
             <input type="hidden" name="inputs[${rowIndex}][Free_Issues]" value="${d.Free_Issues || 0}">
             <input type="hidden" name="inputs[${rowIndex}][discount]" value="${d.discount || 0}">
             <input type="hidden" name="inputs[${rowIndex}][discount_val]" value="${d.discount_val || 0}">
         </td>
-        <td style="width:17%;">
+        <td>
+            <input class="form-control" type="text" value="${d.discount || 0}%" readonly aria-label="Discount percentage">
+        </td>
+        <td>
             <input class="form-control" type="text" style="text-align:center;"
                 name="inputs[${rowIndex}][net_value]" value="${d.net_value || 0}" readonly>
         </td>
-        <td style="width:15%;" class="text-center">
+        <td class="text-center">
             <button type="button" class="btn sales-row-delete shadow remove-new-row" title="Delete item" aria-label="Delete item">
                 <i class="far fa-trash-alt"></i>
             </button>
@@ -2205,10 +2196,10 @@ $(document).ready(function () {
             <td><input type="text" class="form-control" value="${d.batch_no || ''}" readonly placeholder="(no batch)"></td>
             <td><input type="text" name="Unit_price"       class="form-control" value="${d.Unit_price       || 0}"  readonly></td>
             <td><input type="text" name="QTY"              class="form-control QTY"              value="${d.QTY              || 0}"></td>
+            <td><input type="number" name="DiscountPercentage" class="form-control DiscountPercentage" min="0" max="100" step="0.01" value="${d.DiscountPercentage || 0}" readonly></td>
             <td>
                 <input type="text" name="Net_value" class="form-control Net_value" value="${d.Net_value || 0}" readonly>
                 <input type="hidden" name="Free_Issues" value="${d.Free_Issues || 0}">
-                <input type="hidden" name="DiscountPercentage" value="${d.DiscountPercentage || 0}">
                 <input type="hidden" name="Discount" value="${d.Discount || 0}">
             </td>
             <td>
@@ -2236,10 +2227,10 @@ $(document).ready(function () {
             <td><input type="text" class="form-control" placeholder="(no batch)" readonly></td>
             <td><input type="text" name="Unit_price"         class="form-control new-unit-price" placeholder="Unit Price" value="0"></td>
             <td><input type="text" name="QTY"                class="form-control QTY"            placeholder="QTY"        value="0"></td>
+            <td><input type="number" name="DiscountPercentage" class="form-control DiscountPercentage" min="0" max="100" step="0.01" value="0"></td>
             <td>
                 <input type="text" name="Net_value" class="form-control Net_value" placeholder="Net Val" value="0" readonly>
                 <input type="hidden" name="Free_Issues" value="0">
-                <input type="hidden" name="DiscountPercentage" value="0">
                 <input type="hidden" name="Discount" value="0">
             </td>
             <td>
@@ -2270,7 +2261,7 @@ $(document).ready(function () {
                     var html = res.data.map(d => buildExistingRow(d)).join('');
                     if (canEditSales) {
                         html += `<tr id="addItemBtnRow">
-                            <td colspan="7" class="text-center py-2">
+                            <td colspan="8" class="text-center py-2">
                                 <button type="button" id="addNewItemRow">
                                     <i class="fas fa-plus-circle me-2"></i> Add New Item to This Invoice
                                 </button>
@@ -2282,7 +2273,7 @@ $(document).ready(function () {
                     lockRecalledForm();
                 } else {
                     $('#dynamicAdded').html(
-                        `<tr><td colspan="7" class="text-danger text-center fw-bold py-3">Invoice Items Not Found</td></tr>`
+                        `<tr><td colspan="8" class="text-danger text-center fw-bold py-3">Invoice Items Not Found</td></tr>`
                     );
                 }
             });
@@ -2383,18 +2374,16 @@ $(document).ready(function () {
     });
 
     // ── Live recalc in recalled rows ──
-    $(document).on('keyup',
-        '#dynamicAdded .QTY, #dynamicAdded .Free_Issues, ' +
-        '#dynamicAdded .DiscountPercentage, #dynamicAdded .Discount, ' +
+    $(document).on('input',
+        '#dynamicAdded .QTY, #dynamicAdded .DiscountPercentage, ' +
         '#dynamicAdded .new-unit-price',
         function () {
             var row   = $(this).closest('tr');
             var up    = parseFloat(row.find('[name="Unit_price"]').val())         || 0;
             var qty   = parseFloat(row.find('[name="QTY"]').val())                || 0;
             var discP = parseFloat(row.find('[name="DiscountPercentage"]').val()) || 0;
-            var discV = parseFloat(row.find('[name="Discount"]').val())           || 0;
             var gross    = up * qty;
-            var discount = (discP > 0) ? (gross * discP / 100) : discV;
+            var discount = gross * discP / 100;
             var net      = gross - discount;
             row.find('[name="Discount"]').val(discount.toFixed(2));
             row.find('[name="Net_value"]').val(net.toFixed(2));

@@ -119,8 +119,9 @@ public function add_salesInvoice(Request $request)
         'inputs.*.invoice_no'   => 'required',
         'inputs.*.invoice_date' => 'required',
         'inputs.*.item_code'    => 'required',
-        'inputs.*.qty'          => 'required',
-        'inputs.*.unit_price'   => 'required',
+        'inputs.*.qty'          => 'required|numeric|min:0.001',
+        'inputs.*.unit_price'   => 'required|numeric|min:0',
+        'inputs.*.discount'     => 'nullable|numeric|min:0|max:100',
         'inputs.*.net_value'    => 'required',
         'cash_payment'          => 'nullable|numeric|min:0',
         'half_payment'          => 'nullable|numeric|min:0',
@@ -128,7 +129,36 @@ public function add_salesInvoice(Request $request)
         'cheque_payment'        => 'nullable|numeric|min:0',
     ]);
 
-    $netAmount = (float) $request->net_amount;
+    $items = $request->input('inputs', []);
+    $grossAmount = 0;
+    $discountAmount = 0;
+    $netAmount = 0;
+    foreach ($items as &$value) {
+        $discountPercentage = (float) ($value['discount'] ?? 0);
+        $grossValue = (float) $value['unit_price'] * (float) $value['qty'];
+        $itemDiscount = round($grossValue * $discountPercentage / 100, 2);
+        $itemNet = round($grossValue - $itemDiscount, 2);
+
+        $value['discount'] = $discountPercentage;
+        $value['discount_val'] = $itemDiscount;
+        $value['net_value'] = $itemNet;
+
+        $grossAmount += $grossValue;
+        $discountAmount += $itemDiscount;
+        $netAmount += $itemNet;
+    }
+    unset($value);
+
+    $grossAmount = round($grossAmount, 2);
+    $discountAmount = round($discountAmount, 2);
+    $netAmount = round($netAmount, 2);
+    $request->merge([
+        'gross_amount' => $grossAmount,
+        'discount' => $discountAmount,
+        'net_amount' => $netAmount,
+        'inputs' => $items,
+    ]);
+
     $cashPayment = (float) ($request->cash_payment ?? 0);
     $halfPayment = (float) ($request->half_payment ?? 0);
     $chequePayment = (float) ($request->cheque_payment ?? 0);
@@ -247,6 +277,7 @@ public function add_salesInvoice(Request $request)
             $detail->QTY              = $value['qty'];
             $detail->Per              = $value['Per'] ?? null;
             $detail->Unit_price       = $value['unit_price'];
+            $detail->DiscountPercentage = $value['discount'];
             $detail->Discount         = $value['discount_val'];
             $detail->Net_value        = $value['net_value'];
             $detail->Free_Issues      = $value['Free_Issues'] ?? 0;
