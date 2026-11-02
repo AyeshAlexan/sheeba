@@ -11,6 +11,7 @@
             <th>NIC</th>
             <th>Status</th>
             <th>Address</th>
+            <th>Cash Balance</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -33,6 +34,7 @@
                 @endif
             </td>
             <td>{{$data->Address_1}}</td>
+            <td>{{ number_format((float) $data->LiveBalance, 2, '.', ',') }}</td>
             <td>
                 {{-- ..............Edit button................................. --}}
                 {{-- <button type="button" class="btn btn-sm btn-success bg-success-light text-success me-2" data-bs-toggle="modal"

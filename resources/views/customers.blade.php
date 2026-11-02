@@ -597,6 +597,9 @@
                     url:"/customer_pagination?page="+page,
                     success:function(res){
                         $('.table-data').html(res);
+                    },
+                    error:function(err){
+                        $('.table-data').html('<span class="text-danger">Failed to load page ('+err.status+'). Please try again.</span>');
                     }
                 })
             }
@@ -613,6 +616,9 @@
                         if(res.status=='not_found'){
                             $('.table-data').html('<span class="text-danger">'+'Nothing found...'+'</span>');
                         }
+                    },
+                    error: function(err) {
+                        $('.table-data').html('<span class="text-danger">Search failed ('+err.status+'). Please try again.</span>');
                     }
                 });
             })

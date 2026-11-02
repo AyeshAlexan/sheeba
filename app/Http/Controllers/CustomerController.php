@@ -18,18 +18,7 @@ class CustomerController extends Controller
         $user_name = auth()->user()->username;
 
         $data = Customer::where('BC', $branch_code)->get();
-
-        // Live running balance per customer, same cr-dr derivation used by the
-        // Sales Invoice lookup and Customer Balance Report — Other_identifications
-        // is a stale, manually-set field that doesn't move with sales/payments.
-        $balances = TCusSaleTrance::select('customer')
-            ->selectRaw('SUM(cr_amount) - SUM(dr_amount) as balance')
-            ->groupBy('customer')
-            ->pluck('balance', 'customer');
-
-        $data->each(function ($customer) use ($balances) {
-            $customer->LiveBalance = $balances[$customer->Code] ?? 0;
-        });
+        $this->attachLiveBalances($data);
 
         // 1. Plain/default sequence (e.g., 001, 002)
         $maxCustomerNo = Customer::where('BC', $branch_code)
@@ -212,34 +201,58 @@ class CustomerController extends Controller
         ]);
     }
 
+    // Live running balance per customer, same cr-dr derivation used by the
+    // Sales Invoice lookup and Customer Balance Report — Other_identifications
+    // is a stale, manually-set field that doesn't move with sales/payments.
+    private function attachLiveBalances($customers)
+    {
+        $balances = TCusSaleTrance::select('customer')
+            ->selectRaw('SUM(cr_amount) - SUM(dr_amount) as balance')
+            ->groupBy('customer')
+            ->pluck('balance', 'customer');
+
+        $customers->each(function ($customer) use ($balances) {
+            $customer->LiveBalance = $balances[$customer->Code] ?? 0;
+        });
+    }
+
     // ............ customer pagination using ajax.................
     public function pagination(Request $request){
-        $data = Customer::latest()->paginate(5);
-        return view('customer_pagination')->with("customers",$data)->render();
+        $branch_code = auth()->user()->BC;
+        $data = Customer::where('BC', $branch_code)->latest()->paginate(5);
+        $this->attachLiveBalances($data);
+        return view('customer_457pagination')->with("customers",$data)->render();
     }
 
     // ............search using ajax.................
     public function search(Request $request){
-        $data = Customer::where('Code', 'like', '%'.$request->search_string.'%')
-        ->orWhere('First_name','like','%'.$request->search_string.'%')
-        ->orWhere('Middle_name','like','%'.$request->search_string.'%')
-        ->orWhere('Last_name','like','%'.$request->search_string.'%')
-        ->orWhere('Address_1','like','%'.$request->search_string.'%')
-        ->orWhere('City_1','like','%'.$request->search_string.'%')
-        ->orWhere('Address_2','like','%'.$request->search_string.'%')
-        ->orWhere('City_2','like','%'.$request->search_string.'%')
-        ->orWhere('Contact_1','like','%'.$request->search_string.'%')
-        ->orWhere('Contact_2','like','%'.$request->search_string.'%')
-        ->orWhere('Email','like','%'.$request->search_string.'%')
-        ->orWhere('NIC','like','%'.$request->search_string.'%')
-        ->orWhere('Driving_license','like','%'.$request->search_string.'%')
-        ->orWhere('Passport','like','%'.$request->search_string.'%')
-        ->orWhere('Other_identifications','like','%'.$request->search_string.'%')
+        $branch_code = auth()->user()->BC;
+        $term = $request->search_string;
+
+        $data = Customer::where('BC', $branch_code)
+        ->where(function ($q) use ($term) {
+            $q->where('Code', 'like', '%'.$term.'%')
+            ->orWhere('First_name','like','%'.$term.'%')
+            ->orWhere('Middle_name','like','%'.$term.'%')
+            ->orWhere('Last_name','like','%'.$term.'%')
+            ->orWhere('Address_1','like','%'.$term.'%')
+            ->orWhere('City_1','like','%'.$term.'%')
+            ->orWhere('Address_2','like','%'.$term.'%')
+            ->orWhere('City_2','like','%'.$term.'%')
+            ->orWhere('Contact_1','like','%'.$term.'%')
+            ->orWhere('Contact_2','like','%'.$term.'%')
+            ->orWhere('Email','like','%'.$term.'%')
+            ->orWhere('NIC','like','%'.$term.'%')
+            ->orWhere('Driving_license','like','%'.$term.'%')
+            ->orWhere('Passport','like','%'.$term.'%')
+            ->orWhere('Other_identifications','like','%'.$term.'%');
+        })
         ->orderBy('Code','desc')
         ->paginate(5);
 
         if($data->count() >= 1){
-            return view('customer_pagination')->with("customers",$data)->render();
+            $this->attachLiveBalances($data);
+            return view('customer_457pagination')->with("customers",$data)->render();
         }else{
             return response()->json([
                 'status'=>'not_found'
