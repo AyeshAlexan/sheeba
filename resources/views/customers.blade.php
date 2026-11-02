@@ -435,10 +435,14 @@
                     },
                     error: function (err) {
                         $('.errMsgContainer').html('');
-                        let error = err.responseJSON;
-                        $.each(error.errors, function (index, value) {
-                            $('.errMsgContainer').append('<span class="text-danger">' + value + '<span>' + '<br>');
-                        });
+                        let errors = err.responseJSON && err.responseJSON.errors;
+                        if (errors) {
+                            $.each(errors, function (index, value) {
+                                $('.errMsgContainer').append('<span class="text-danger">' + value + '<span>' + '<br>');
+                            });
+                        } else {
+                            $('.errMsgContainer').append('<span class="text-danger">Something went wrong (' + err.status + '). Please try again.<span><br>');
+                        }
                     }
                 })
             })
@@ -570,11 +574,15 @@
                             }
                         }
                     },error:function(err){
-                        $('.errMsgContaine2r').html('');
-                        let error = err.responseJSON;
-                        $.each(error.errors,function(index, value){
-                            $('.errMsgContainer2').append('<span class="text-danger">'+value+'<span>'+'<br>');
-                        });
+                        $('.errMsgContainer2').html('');
+                        let errors = err.responseJSON && err.responseJSON.errors;
+                        if (errors) {
+                            $.each(errors,function(index, value){
+                                $('.errMsgContainer2').append('<span class="text-danger">'+value+'<span>'+'<br>');
+                            });
+                        } else {
+                            $('.errMsgContainer2').append('<span class="text-danger">Something went wrong (' + err.status + '). Please try again.<span><br>');
+                        }
                     }
                 })
             })

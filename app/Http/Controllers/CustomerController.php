@@ -170,14 +170,14 @@ class CustomerController extends Controller
     // ............update using ajax.................
     public function update(Request $request){
         $request->validate([
-            'up_code'=>'required | max:40 | unique:customers,name,'.$request->up_id,
+            'up_code'=>'required | max:40 | unique:customers,Code,'.$request->up_id,
             'up_first_name'=>'required | max:200 ',
             'up_last_name'=>' max:200 ',
             'up_address1'=>'  max:200 ',
             'up_address2'=>'max:200 ',
             'up_contact1'=>['required','max:10', 'regex:/^0\d{9,}$/'],
             'up_contact2'=>['max:10'],
-            'up_email'=>' max:30 ',
+            'up_email'=>' max:255 ',
             'up_nic'=>'max:15',
             'up_driving_license'=>'max:15 ',
             'up_passport'=>'max:15 ',
