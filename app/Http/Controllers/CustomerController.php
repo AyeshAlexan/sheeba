@@ -19,6 +19,18 @@ class CustomerController extends Controller
 
         $data = Customer::where('BC', $branch_code)->get();
 
+        // Live running balance per customer, same cr-dr derivation used by the
+        // Sales Invoice lookup and Customer Balance Report — Other_identifications
+        // is a stale, manually-set field that doesn't move with sales/payments.
+        $balances = TCusSaleTrance::select('customer')
+            ->selectRaw('SUM(cr_amount) - SUM(dr_amount) as balance')
+            ->groupBy('customer')
+            ->pluck('balance', 'customer');
+
+        $data->each(function ($customer) use ($balances) {
+            $customer->LiveBalance = $balances[$customer->Code] ?? 0;
+        });
+
         // 1. Plain/default sequence (e.g., 001, 002)
         $maxCustomerNo = Customer::where('BC', $branch_code)
             ->where('Code', 'REGEXP', '^[0-9]+$')

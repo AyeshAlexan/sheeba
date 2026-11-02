@@ -95,7 +95,7 @@
                                                 </td>
                                                 <td>{{$data->Address_1}}</td>
                                                 <td>{{$data->Address_2}}</td>
-                                                <td>{{ number_format((float) $data->Other_identifications, 2, '.', ',') }}</td>
+                                                <td>{{ number_format((float) $data->LiveBalance, 2, '.', ',') }}</td>
                                                 <td>{{ $data->credit_limit !== null ? number_format((float) $data->credit_limit, 2, '.', ',') : 'Unlimited' }}</td>
                                                 <td>
                                                     <div class="dt-actions">
