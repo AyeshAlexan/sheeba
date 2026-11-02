@@ -138,6 +138,7 @@ class CustomerController extends Controller
         $customer->OC = auth()->user()->username;
         $customer->save();
 
+        $this->syncCashBalanceLedger($customer->Code, $request->other_identifications);
 
         $tel_no = $request->contact1;
         $CusData = Customer::where('Contact_1', $tel_no)->get();
@@ -196,9 +197,43 @@ class CustomerController extends Controller
             'credit_limit'=>$request->up_credit_limit,
         ]);
 
+        $this->syncCashBalanceLedger($request->up_code, $request->up_other_identifications);
+
         return response()->json([
             'status'=>'success',
         ]);
+    }
+
+    // The "Customer Cash Balance" field on Add/Edit Customer (Other_identifications)
+    // is a quick shortcut for setting an opening balance without going to the
+    // dedicated Customer Opening Balance screen. Keep it in sync with the ledger
+    // (t_cus_sale_trances) so it actually contributes to the live balance shown
+    // everywhere else, instead of being a disconnected static number.
+    private function syncCashBalanceLedger($customerCode, $amount)
+    {
+        $amount = (float) ($amount ?? 0);
+        $transNo = 'CUSBAL-' . $customerCode;
+
+        TCusSaleTrance::updateOrCreate(
+            [
+                'trance_no'   => $transNo,
+                'trance_type' => 'CUS_OPEN_BC',
+                'customer'    => $customerCode,
+            ],
+            [
+                'no'            => $transNo,
+                'dr_trnce_code' => 'CUS_OPEN_BC',
+                'dr_trnce_no'   => $transNo,
+                'cr_amount'     => $amount,
+                'cr_trnce_code' => 'CUS_OPEN_BC',
+                'cr_trnce_no'   => $transNo,
+                'dr_amount'     => 0,
+                'Display_Ref'   => $transNo,
+                'dDate'         => now()->toDateString(),
+                'bc'            => auth()->user()->BC,
+                'oc'            => auth()->user()->username,
+            ]
+        );
     }
 
     // Live running balance per customer, same cr-dr derivation used by the
