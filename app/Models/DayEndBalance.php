@@ -39,7 +39,7 @@ class DayEndBalance extends Model
             ->first();
 
         if (!$record) {
-            return 0.0;
+            return (float) (MChartofAccount::where('code', $accCode)->value('opening_balance') ?? 0);
         }
 
         return match ($accCode) {

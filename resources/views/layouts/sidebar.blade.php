@@ -419,11 +419,11 @@
 
 
 @if(\App\Support\Permissions::can('banking'))
-                <li class="dropdown {{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') ? 'active' : '' }}">
+                <li class="dropdown {{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') || Request::is('banking-recognition') ? 'active' : '' }}">
                     <a href="#">
                         <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span> Banking </span> <span
                             class="menu-arrow"></span></a>
-                            <ul style="{{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') ? 'display:block;' : '' }}">
+                            <ul style="{{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') || Request::is('banking-recognition') ? 'display:block;' : '' }}">
                                 <li class="{{ Request::is('cheque-deposit') ? 'active' : '' }}">
                                     <a href="{{ route('cheque.deposit') }}">
                                     <i class="fa fa-angle-right"></i>
@@ -439,8 +439,8 @@
                                     <i class="fa fa-angle-right"></i>
                                     Cheque Return</a>
                                 </li>
-                                <li class="">
-                                    <a href="">
+                                <li class="{{ Request::is('banking-recognition') ? 'active' : '' }}">
+                                    <a href="{{ route('banking.recognition') }}">
                                     <i class="fa fa-angle-right"></i>
                                     Banking Recognition</a>
                                 </li>

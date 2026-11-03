@@ -48,7 +48,7 @@ class CashInHandReportController extends Controller
         $totalCrAmount = number_format($sumCrAmount, 2);
 
         // ── Opening Balance (closing balance of the previous closed day) ────
-        $openingBalance    = DayEndBalance::getOpeningBalance($branch_code, $fromDate);
+        $openingBalance    = DayEndBalance::getOpeningBalance($branch_code, $fromDate, '201-001');
 
         $totalDrAmountopeningBalance = $sumDrAmount + $openingBalance;
 
@@ -112,7 +112,7 @@ class CashInHandReportController extends Controller
 
         $totalCrAmount = number_format($sumCrAmount, 2);
 
-        $openingBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate);
+        $openingBalance = DayEndBalance::getOpeningBalance($branch_code, $fromDate, '201-001');
         $totalDrAmount  = number_format($sumDrAmount + $openingBalance, 2);
 
         $balance            = ($openingBalance + $sumDrAmount) - $sumCrAmount;
@@ -161,7 +161,7 @@ class CashInHandReportController extends Controller
             ->sum('cr_amount');
 
         // Opening balance of this day = closing balance of previous day
-        $openingBalance = DayEndBalance::getOpeningBalance($branch_code, $closeDate);
+        $openingBalance = DayEndBalance::getOpeningBalance($branch_code, $closeDate, '201-001');
 
         // ── Balance = CR - DR ───────────────────────────────────────────────
         $closingBalance = $openingBalance + $sumDr - $sumCr;

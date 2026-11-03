@@ -87,13 +87,22 @@
                                         <div class="form-group">
                                             <label for="bank_name" class="control-label">Bank Name</label>
                                                 <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="bank_name" name="bank_name" placeholder="e.g. Commercial Bank" required>
+                                                <select class="form-control" id="bank_name" name="bank_name" required>
+                                                    <option value="">Please Select</option>
+                                                    @foreach($banks as $bank)
+                                                    <option value="{{ $bank->description }}">{{ $bank->description }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <small class="text-muted">From the Bank master — <a href="{{ route('BankDeltails') }}" target="_blank">add a new bank there</a> if it's missing.</small>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="branch" class="control-label">Branch</label>
                                                 <div class="col-sm-12">
-                                                <input type="text" class="form-control" id="branch" name="branch" placeholder="e.g. Colombo 07">
+                                                <select class="form-control" id="branch" name="branch">
+                                                    <option value="">Select a bank first</option>
+                                                </select>
+                                                <small class="text-muted">From the Bank Branch master — <a href="{{ route('Bank_Branch') }}" target="_blank">add a new branch there</a> if it's missing.</small>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -172,12 +181,50 @@
 
                         $('#ChequeBanksTable_wrapper').addClass('dt-collapsed');
                         DTCustomPager.init(ChequeBanksTable, '#ChequeBanksCustomPager');
+
+                        // Delegated on document (not bound directly to #bank_name) so it
+                        // keeps working even though this page loads a second copy of
+                        // jQuery further down — same pattern as the Banking Recognition
+                        // page's checkbox handler.
+                        $(document).on('change', '#bank_name', function () {
+                            var bankName = $(this).val();
+                            var $branch = $('#branch');
+
+                            if (!bankName) {
+                                $branch.html('<option value="">Select a bank first</option>');
+                                return;
+                            }
+
+                            $branch.html('<option value="">Loading…</option>');
+
+                            $.ajax({
+                                type: 'GET',
+                                url: "{{ route('ChequeBanks.branchesFor') }}",
+                                data: { bank_name: bankName },
+                                dataType: 'json',
+                                success: function (branches) {
+                                    var options = '<option value="">Please Select</option>';
+                                    if (branches.length === 0) {
+                                        options = '<option value="">No branches found for this bank</option>';
+                                    } else {
+                                        branches.forEach(function (b) {
+                                            options += '<option value="' + b + '">' + b + '</option>';
+                                        });
+                                    }
+                                    $branch.html(options);
+                                },
+                                error: function () {
+                                    $branch.html('<option value="">Couldn\'t load branches — try again</option>');
+                                }
+                            });
+                        });
                     });
 
                     function add(){
                         $('#StoreForm').trigger("reset");
                         $('#StoreModal').html("Add Account");
                         $('#Store-modal').modal('show');
+                        $('#branch').html('<option value="">Select a bank first</option>');
                     }
 
                     function toggleActive(id){

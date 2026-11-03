@@ -422,8 +422,11 @@ Route::post('Bank_delete', [BankController::class, 'Bank_delete']);
 
 //Account (company bank accounts used to issue/deposit cheques)
 Route::get('ChequeBanks', [App\Http\Controllers\ChequeBankController::class, 'index'])->name('ChequeBanks');
+Route::get('ChequeBanks/branches-for', [App\Http\Controllers\ChequeBankController::class, 'branchesFor'])->name('ChequeBanks.branchesFor');
 Route::post('ChequeBank_store', [App\Http\Controllers\ChequeBankController::class, 'store'])->name('ChequeBank_store');
 Route::post('ChequeBank_toggle', [App\Http\Controllers\ChequeBankController::class, 'toggleActive'])->name('ChequeBank_toggle');
+Route::get('ChequeBanks/{id}/statement', [App\Http\Controllers\BankStatementController::class, 'show'])->name('bank.statement');
+Route::get('ChequeBanks/{id}/statement/print', [App\Http\Controllers\BankStatementController::class, 'print'])->name('bank.statement.print');
 
 //Banking > Issued Cheques (supplier cheques prepared but not yet handed over)
 Route::get('issued-cheques', [App\Http\Controllers\IssuedChequeController::class, 'index'])->name('issued.cheques');
@@ -436,6 +439,10 @@ Route::post('cheque-deposit/process', [App\Http\Controllers\ChequeDepositControl
 //Banking > Cheque Return (bounced supplier and customer cheques)
 Route::get('cheque-return', [App\Http\Controllers\ChequeReturnController::class, 'index'])->name('cheque.return');
 Route::post('cheque-return/process', [App\Http\Controllers\ChequeReturnController::class, 'returnCheque'])->name('cheque.return.process');
+
+//Banking > Banking Recognition (tick issued/deposited/returned cheques off against the real bank statement)
+Route::get('banking-recognition', [App\Http\Controllers\BankReconciliationController::class, 'index'])->name('banking.recognition');
+Route::post('banking-recognition/save', [App\Http\Controllers\BankReconciliationController::class, 'save'])->name('banking.recognition.save');
 
 
 Route::get('/SchemaType', [App\Http\Controllers\SchemaController::class, 'index'])->name('SchemaType');

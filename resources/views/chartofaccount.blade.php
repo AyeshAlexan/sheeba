@@ -179,6 +179,9 @@
                                 <div class="coa-row">
                                     <span class="coa-code">{{ str_replace('-', ' - ', $row->code) }}</span>
                                     <span class="coa-name">{{ $row->description }}</span>
+                                    @if($row->opening_balance)
+                                    <span class="text-muted" style="font-size:12.5px;">Opening: {{ number_format($row->opening_balance, 2) }}</span>
+                                    @endif
                                     <span class="coa-spacer"></span>
                                     @if($duplicateCodes->contains($row->code))
                                     <span class="coa-dupe" title="Another account uses this same code">
@@ -276,6 +279,16 @@
                                           </div>
                                       </div>
                                      </div>
+                                     <div class="col 6">
+                                        <div class="form-group">
+                                         <label for="opening_balance" class="col-sm-4 control-label">Opening Balance</label>
+                                          <div class="col-sm-12">
+                                          <input type="number" step="0.01" class="form-control" id="opening_balance"
+                                           name="opening_balance" placeholder="0.00">
+                                           <small class="text-muted" id="opening_balance_note">One-time starting balance used when no transaction history exists yet.</small>
+                                      </div>
+                                  </div>
+                                 </div>
                                    </div>
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -342,11 +355,27 @@
                             });
                         });
 
+                        // Cheques (201-123) gets its opening balance from each bank's
+                        // own Opening Amount instead (see the Account screen) — lock
+                        // this field for that one account so the two can't be added
+                        // together and overstate the balance.
+                        function syncOpeningBalanceLock() {
+                            var isCheques = $('#code').val() === '201-123';
+                            $('#opening_balance').prop('disabled', isCheques);
+                            if (isCheques) {
+                                $('#opening_balance').val(0);
+                                $('#opening_balance_note').text('Locked — Cheques gets its opening balance from each bank\'s own Opening Amount on the Account screen instead.');
+                            } else {
+                                $('#opening_balance_note').text('One-time starting balance used when no transaction history exists yet.');
+                            }
+                        }
+
                         function add() {
                             $('#ItemForm').trigger("reset");
                             $('#ItemModal').html("Add Chart of Account");
                             $('#Item-modal').modal('show');
                             $('#id').val('');
+                            syncOpeningBalanceLock();
                         }
 
                         function editFunc(id) {
@@ -367,11 +396,15 @@
                                     $('#description').val(res.description);
                                     $('#controlaccount').val(res.controlaccount);
                                     $('#bankaccount').val(res.bankaccount);
+                                    $('#opening_balance').val(res.opening_balance);
                                     $('#BC').val(res.BC);
                                     $('#OC').val(res.OC);
+                                    syncOpeningBalanceLock();
                                 }
                             });
                         }
+
+                        $(document).on('input', '#code', syncOpeningBalanceLock);
 
                         function deleteFunc(id) {
                             if (confirm("Delete Record?") == true) {

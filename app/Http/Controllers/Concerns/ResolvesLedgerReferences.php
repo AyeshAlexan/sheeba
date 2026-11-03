@@ -9,6 +9,7 @@ use App\Models\TInvoiceSum;
 use App\Models\Customer;
 use App\Models\Suppliers;
 use App\Models\DailyTransaction;
+use App\Models\ChequeBank;
 
 /**
  * Shared by any report that lists raw t_account_trans rows and needs to
@@ -80,6 +81,13 @@ trait ResolvesLedgerReferences
         if ($type === 'DAILY_TXN') {
             $label = $row->Description ?: ('Transaction ' . $ref);
             return [$label, route('daily.transactions', ['txn' => $ref])];
+        }
+
+        // Bank account opening amount — posted once when a bank is added.
+        if ($type === 'BANK_OPEN') {
+            $bankName = ChequeBank::find($ref)?->bank_name;
+            $label    = 'Bank Opening' . ($bankName ? " — {$bankName}" : '');
+            return [$label, route('ChequeBanks')];
         }
 
         // Purchases (goods received) — no->purchase invoice number.

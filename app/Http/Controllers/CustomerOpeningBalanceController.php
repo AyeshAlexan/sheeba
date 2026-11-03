@@ -80,45 +80,37 @@ class CustomerOpeningBalanceController extends Controller
             Customer::where('Code', $request->customerCode)
                 ->update(['Other_identifications' => $request->amount]);
 
-            /* 3. Upsert the matching transaction in TCusSaleTrance */
-            if ($isEdit) {
-                // On edit: update the existing transaction row that matches this invoice
-                TCusSaleTrance::where('trance_no', $request->invoice_no)
-                    ->where('trance_type', 'CUS_OPEN_BC')
-                    ->update([
-                        'no'            => $request->invoice_no,
-                        'customer'      => $request->customerCode,
-                        'dr_trnce_code' => 'CUS_OPEN_BC',
-                        'dr_trnce_no'   => $request->invoice_no,
-                        'cr_amount'     => $request->amount,
-                        'cr_trnce_code' => 'CUS_OPEN_BC',
-                        'cr_trnce_no'   => $request->invoice_no,
-                        'dr_amount'     => 0,
-                        'trance_type'   => 'CUS_OPEN_BC',
-                        'trance_no'     => $request->invoice_no,
-                        'Display_Ref'   => $request->invoice_no,
-                        'dDate'         => $request->date,
-                        'bc'            => auth()->user()->BC,
-                        'oc'            => auth()->user()->username,
-                    ]);
-            } else {
-                // On create: insert a new transaction row
-                TCusSaleTrance::create([
+            /* 3. Upsert the ONE opening-balance ledger row for this customer.
+             *
+             * Keyed by a canonical 'CUSBAL-<code>' reference (not the
+             * user-typed invoice_no) so this always updates the exact same
+             * row the Customer Add/Edit screen's Cash Balance field syncs to
+             * (CustomerController::syncCashBalanceLedger) — otherwise the two
+             * screens create separate rows for the same customer and the
+             * live balance (SUM of all rows) double-counts the amount.
+             */
+            $transNo = 'CUSBAL-' . $request->customerCode;
+
+            TCusSaleTrance::updateOrCreate(
+                [
+                    'trance_no'   => $transNo,
+                    'trance_type' => 'CUS_OPEN_BC',
+                    'customer'    => $request->customerCode,
+                ],
+                [
                     'no'            => $request->invoice_no,
-                    'customer'      => $request->customerCode,
                     'dr_trnce_code' => 'CUS_OPEN_BC',
-                    'dr_trnce_no'   => $request->invoice_no,
+                    'dr_trnce_no'   => $transNo,
                     'cr_amount'     => $request->amount,
                     'cr_trnce_code' => 'CUS_OPEN_BC',
-                    'cr_trnce_no'   => $request->invoice_no,
+                    'cr_trnce_no'   => $transNo,
                     'dr_amount'     => 0,
-                    'trance_type'   => 'CUS_OPEN_BC',
-                    'trance_no'     => $request->invoice_no,
+                    'Display_Ref'   => $request->invoice_no,
                     'dDate'         => $request->date,
                     'bc'            => auth()->user()->BC,
                     'oc'            => auth()->user()->username,
-                ]);
-            }
+                ]
+            );
 
             return response()->json([
                 'message' => $isEdit ? 'Balance updated successfully' : 'Balance added successfully',
@@ -145,7 +137,7 @@ class CustomerOpeningBalanceController extends Controller
             $balance = TCustomerBalace::where('id', $request->id)->firstOrFail();
 
             // Remove the matching transaction from TCusSaleTrance
-            TCusSaleTrance::where('trance_no',  $balance->invoice_no)
+            TCusSaleTrance::where('trance_no',  'CUSBAL-' . $balance->customerCode)
                            ->where('trance_type', 'CUS_OPEN_BC')
                            ->where('customer',    $balance->customerCode)
                            ->delete();
