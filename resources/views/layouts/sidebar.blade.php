@@ -126,10 +126,10 @@
                 {{-- Master --}}
 @if(\App\Support\Permissions::can('master'))
                 <li
-                    class="dropdown {{ Request::is('master*')  || Request::is('SalesMan') || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MGuarantor') || Request::is('SchemaType')  || Request::is('MColor')  || Request::is('M_Make')  || Request::is('MBrand')  || Request::is('Category') || Request::is('Store') || Request::is('Department') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category') ? 'active' : '' }} ">
+                    class="dropdown {{ Request::is('master*')  || Request::is('SalesMan') || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MColor')  || Request::is('M_Make')  || Request::is('MBrand')  || Request::is('Category') || Request::is('Store') || Request::is('Department') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category') ? 'active' : '' }} ">
                     <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M12 9v3M12 12H6v3M12 12h6v3"/></svg> <span> Master</span> <span class="menu-arrow"></span></a>
                     <ul
-                        style=" {{ Request::is('master*') || Request::is('SalesMan')  || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MGuarantor') || Request::is('SchemaType')  || Request::is('MColor')  || Request::is('Category') || Request::is('Store') || Request::is('Department') || Request::is('M_Make')  || Request::is('MBrand') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category')  ? 'display:block;' : '' }}">
+                        style=" {{ Request::is('master*') || Request::is('SalesMan')  || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MColor')  || Request::is('Category') || Request::is('Store') || Request::is('Department') || Request::is('M_Make')  || Request::is('MBrand') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category')  ? 'display:block;' : '' }}">
                         <li class="{{ Request::is('Department') ? 'active' : '' }}">
                             <a href="{{'Department'}}"><i class="fa fa-angle-right"></i>Department</a>
                         </li>
@@ -163,14 +163,6 @@
 						<li class="{{ Request::is('Suppliers') ? 'active' : '' }}">
                             <a href="{{('Suppliers')}}"><i class="fa fa-angle-right"></i>Suppliers</a>
                         </li>
-                       <li class="{{ Request::is('SchemaType') ? 'active' : '' }}">
-                            <a href="{{route("SchemaType")}}"><i class="fa fa-angle-right"></i>Schema Type</a>
-                        </li>
-
-                        <li class="{{ Request::is('MGuarantor') ? 'active' : '' }}">
-                            <a href="{{route("MGuarantor")}}"><i class="fa fa-angle-right"></i>Guarantor</a>
-                        </li>
-
                         <li class="{{ Request::is('BankDeltails') ? 'active' : '' }}">
                             <a href="{{route("BankDeltails")}}"><i class="fa fa-angle-right"></i>Bank</a>
                         </li>
@@ -486,11 +478,10 @@
                     $purchaseOrderReportOpen = request()->routeIs('Purchase_order_report', 'Purchase_order_details_report');
                     $customerReportOpen = request()->routeIs('get_customer_details_report', 'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport', 'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport') || $purchaseOrderReportOpen;
                     $supplierReportOpen = request()->routeIs('get_supplier_details_report', 'supplyer_payment_report', 'supplyer_cheque_payment_report', 'supplier_account_report', 'supplyer_balance_report');
-                    $openingHpReportOpen = request()->routeIs('OpeningHirepurchaseReport', 'OpeningHirepurchaseSumReport');
                     $salesReturnReportOpen = request()->routeIs('sales.return.report');
                     $journalOpen = request()->routeIs('daily.transactions', 'cash.book');
                     $reportsOpen = $stockReportOpen || $salesReportOpen || $customerReportOpen || $supplierReportOpen
-                        || request()->routeIs('purchasing.report') || $openingHpReportOpen || $salesReturnReportOpen
+                        || request()->routeIs('purchasing.report') || $salesReturnReportOpen
                         || request()->routeIs('cashInHandReport') || request()->routeIs('cashandChequeTransaction') || $journalOpen;
 
                     // A report group's own menu-toggle <li> (e.g. "Sales Report") used
@@ -504,11 +495,10 @@
                     $canSeePurchaseOrderGroup = $canSee('Purchase_order_report', 'Purchase_order_details_report');
                     $canSeeCustomerGroup = $canSee('get_customer_details_report', 'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport', 'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport') || $canSeePurchaseOrderGroup;
                     $canSeeSupplierGroup = $canSee('get_supplier_details_report', 'supplyer_payment_report', 'supplyer_cheque_payment_report', 'supplier_account_report', 'supplyer_balance_report');
-                    $canSeeOpeningHpGroup = $canSee('OpeningHirepurchaseReport', 'OpeningHirepurchaseSumReport');
                     $canSeeSalesReturnGroup = \App\Support\Permissions::canViewReport('sales.return.report');
                     $canSeeJournalGroup = $canSee('daily.transactions', 'cash.book');
                     $canSeeAnyReport = $canSeeStockGroup || $canSeeSalesGroup || $canSeeCustomerGroup || $canSeeSupplierGroup
-                        || \App\Support\Permissions::canViewReport('purchasing.report') || $canSeeOpeningHpGroup || $canSeeSalesReturnGroup
+                        || \App\Support\Permissions::canViewReport('purchasing.report') || $canSeeSalesReturnGroup
                         || \App\Support\Permissions::canViewReport('cashInHandReport') || \App\Support\Permissions::canViewReport('cashandChequeTransaction') || $canSeeJournalGroup;
                 @endphp
             @if($canSeeAnyReport)
@@ -793,34 +783,6 @@
                     </a>
                   </li>
                   @endif
-
-
-
-                  @if($canSeeOpeningHpGroup)
-                  <li class="menu-item">
-                    <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $openingHpReportOpen ? 'subdrop' : '' }}">
-                      <div class="text-truncate" data-i18n="Order">Opening Hire Purchase Report<span
-                        class="menu-arrow"></span></div>
-                    </a>
-                    <ul class="menu-sub" style="{{ $openingHpReportOpen ? 'display:block;' : '' }}">
-                      @if(\App\Support\Permissions::canViewReport('OpeningHirepurchaseReport'))
-                      <li class="menu-item {{ request()->routeIs('OpeningHirepurchaseReport') ? 'active' : '' }}">
-                        <a href="{{route("OpeningHirepurchaseReport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order List">Opening Hire Purchase details</div>
-                        </a>
-                      </li>
-                      @endif
-                      @if(\App\Support\Permissions::canViewReport('OpeningHirepurchaseSumReport'))
-                      <li class="menu-item {{ request()->routeIs('OpeningHirepurchaseSumReport') ? 'active' : '' }}">
-                        <a href="{{route("OpeningHirepurchaseSumReport")}}" target ="_ blank" class="menu-link">
-                          <div class="text-truncate" data-i18n="Order Details">Opening Hire Purchase Sum</div>
-                        </a>
-                      </li>
-                      @endif
-                    </ul>
-                  </li>
-                  @endif
-
 
 
                   @if($canSeeSalesReturnGroup)

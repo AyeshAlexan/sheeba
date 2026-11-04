@@ -220,6 +220,15 @@
             @page { size: A4; margin: 10mm 12mm; }
             body  { padding: 0; }
             .no-print { display: none !important; }
+            table.items-table thead tr th {
+                background: #fff !important;
+                color: #000 !important;
+                border-top: 1px solid #000 !important;
+                border-bottom: 2px solid #000 !important;
+                font-size: 11.5px !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
