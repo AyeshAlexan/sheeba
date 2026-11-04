@@ -67,6 +67,7 @@
                                         <th>Cheque No</th>
                                         <th>Supplier</th>
                                         <th>Bank</th>
+                                        <th>Supplier's Bank</th>
                                         <th>Cheque Date</th>
                                         <th>Amount</th>
                                         <th>Purchase No</th>
@@ -80,6 +81,7 @@
                                         <td>{{ $cheque->cheques_no }}</td>
                                         <td>{{ $cheque->supplier_name }} <br><small class="text-muted">{{ $cheque->supplier_code }}</small></td>
                                         <td>{{ $cheque->bank_name }} <br><small class="text-muted">{{ $cheque->bank_branch }}</small></td>
+                                        <td>{{ $cheque->other_bank_name }}</td>
                                         <td>{{ $cheque->release_date }}</td>
                                         <td>
                                             {{ number_format((float) $cheque->amount, 2) }}

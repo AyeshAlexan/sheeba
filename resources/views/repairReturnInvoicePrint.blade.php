@@ -181,8 +181,36 @@
 
         @media print {
             @page { size: A4; margin: 10mm 12mm; }
-            body  { padding: 0; }
+            body  {
+                padding: 0;
+                color: #000;
+                font-size: 13px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
             .no-print { display: none !important; }
+            .company-block p,
+            .logo-center .brand-name,
+            .meta-left td:first-child,
+            .meta-right,
+            .items-table th,
+            .items-table td,
+            .subtotal-row td,
+            .balance-right td,
+            .sig-line {
+                color: #000 !important;
+            }
+            .meta-left td,
+            .balance-right td,
+            .sig-line {
+                font-size: 12px !important;
+            }
+            .items-table thead th {
+                font-size: 12px !important;
+            }
+            .items-table tbody td {
+                font-size: 14px !important;
+            }
         }
     </style>
     <style>

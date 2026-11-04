@@ -333,7 +333,7 @@
                                                     <thead class="thead-light">
                                                         <tr>
                                                             <th>Bank Name</th><th>Cheque Date</th><th>Account No</th>
-                                                            <th>Cheque No</th><th>Amount</th><th>Action</th>
+                                                            <th>Cheque No</th><th>Other Bank</th><th>Amount</th><th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -349,13 +349,14 @@
                                                             <td><input type="date" id="cheque_date"    name="cheque_date"    class="form-control"></td>
                                                             <td><input type="text" id="account_no"     name="account_no"     class="form-control" placeholder="Select a bank first" readonly></td>
                                                             <td><input type="text" id="cheque_no"      name="cheque_no"      class="form-control" placeholder="Cheque No"></td>
+                                                            <td><input type="text" id="other_bank_name" name="other_bank_name" class="form-control" placeholder="Customer's bank"></td>
                                                             <td><input type="text" id="cheque_ammount" name="cheque_ammount" class="form-control" placeholder="Amount"></td>
                                                             <td><button type="button" id="add-item" class="btn btn-outline-info btn-sm">Add <i class="fas fa-plus"></i></button></td>
                                                         </tr>
                                                     </tbody>
                                                     <tfoot>
                                                         <tr>
-                                                            <td colspan="4" class="text-end"><strong>Total</strong></td>
+                                                            <td colspan="5" class="text-end"><strong>Total</strong></td>
                                                             <td class="invoice-total-value text-center"><strong>0.00</strong></td>
                                                             <td></td>
                                                         </tr>
@@ -443,7 +444,7 @@
                                                     <thead class="thead-light">
                                                         <tr>
                                                             <th>Bank Name</th><th>Cheque Date</th><th>Account No</th>
-                                                            <th>Cheque No</th><th>Amount</th><th>Action</th>
+                                                            <th>Cheque No</th><th>Other Bank</th><th>Amount</th><th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -459,13 +460,14 @@
                                                             <td><input type="date" id="tcp_cheque_date"   class="form-control"></td>
                                                             <td><input type="text" id="tcp_account_no"    class="form-control" placeholder="Select a bank first" readonly></td>
                                                             <td><input type="text" id="tcp_cheque_no"     class="form-control" placeholder="Cheque No"></td>
+                                                            <td><input type="text" id="tcp_other_bank_name" class="form-control" placeholder="Customer's bank"></td>
                                                             <td><input type="text" id="tcp_cheque_amount" class="form-control" placeholder="Amount"></td>
                                                             <td><button type="button" id="tcp_add_cheque" class="btn btn-outline-info btn-sm">Add <i class="fas fa-plus"></i></button></td>
                                                         </tr>
                                                     </tbody>
                                                     <tfoot>
                                                         <tr>
-                                                            <td colspan="4" class="text-end"><strong>Total</strong></td>
+                                                            <td colspan="5" class="text-end"><strong>Total</strong></td>
                                                             <td class="tcp-total-value text-center"><strong>0</strong></td>
                                                             <td></td>
                                                         </tr>
@@ -591,28 +593,31 @@ $(document).on('change', '#bank_name', function () {
 });
 
 $(document).on("click", "#add-item", function () {
-    let cheque_bank_id = $('#bank_name').val();
-    let bank_name      = $('#bank_name').find('option:selected').data('label') || '';
-    let cheque_date    = $('#cheque_date').val();
-    let account_no     = $('#account_no').val();
-    let cheque_no      = $('#cheque_no').val();
-    let cheque_ammount = $('#cheque_ammount').val();
+    let cheque_bank_id  = $('#bank_name').val();
+    let bank_name       = $('#bank_name').find('option:selected').data('label') || '';
+    let cheque_date     = $('#cheque_date').val();
+    let account_no      = $('#account_no').val();
+    let cheque_no       = $('#cheque_no').val();
+    let other_bank_name = $('#other_bank_name').val();
+    let cheque_ammount  = $('#cheque_ammount').val();
     if (isEmptyOrSpaces(cheque_bank_id)||isEmptyOrSpaces(cheque_date)||isEmptyOrSpaces(cheque_no)||isEmptyOrSpaces(cheque_ammount)) {
         alert("Please fill all cheque fields."); return;
     }
-    dataArray.push({ cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, cheque_ammount });
+    dataArray.push({ cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, other_bank_name, cheque_ammount });
     $("#multi_cheques_table_show tbody").append(`
         <tr>
             <td><input type="text" value="${bank_name}"      name="bank_name[]"      class="form-control" readonly></td>
             <td><input type="date" value="${cheque_date}"    name="cheque_date[]"    class="form-control" readonly></td>
             <td><input type="text" value="${account_no}"     name="account_no[]"     class="form-control" readonly></td>
             <td><input type="text" value="${cheque_no}"      name="cheque_no[]"      class="form-control" readonly></td>
+            <td><input type="text" value="${other_bank_name}" name="other_bank_name[]" class="form-control" readonly></td>
             <td><input type="text" value="${cheque_ammount}" name="cheque_ammount[]" class="form-control" readonly></td>
             <td><button type="button" class="btn btn-outline-danger btn-sm remove-input-field"><i class="far fa-trash-alt"></i></button></td>
         </tr>`);
     totalValue = parseFloat(totalValue) + parseFloat(cheque_ammount);
     setTotal();
-    $('#bank_name').val(''); $('#cheque_date').val(''); $('#account_no').val(''); $('#cheque_no').val(''); $('#cheque_ammount').val('');
+    $('#bank_name').val(''); $('#cheque_date').val(''); $('#account_no').val('');
+    $('#cheque_no').val(''); $('#other_bank_name').val(''); $('#cheque_ammount').val('');
 });
 $(document).on("click", ".remove-input-field", function () {
     let row = $(this).closest("tr");
@@ -634,26 +639,29 @@ $(document).on('change', '#tcp_bank_name', function () {
 });
 
 $(document).on("click", "#tcp_add_cheque", function () {
-    let cheque_bank_id = $('#tcp_bank_name').val();
-    let bank_name   = $('#tcp_bank_name').find('option:selected').data('label') || '';
-    let cheque_date = $('#tcp_cheque_date').val();
-    let account_no  = $('#tcp_account_no').val();
-    let cheque_no   = $('#tcp_cheque_no').val();
-    let cheque_amt  = $('#tcp_cheque_amount').val();
+    let cheque_bank_id  = $('#tcp_bank_name').val();
+    let bank_name       = $('#tcp_bank_name').find('option:selected').data('label') || '';
+    let cheque_date     = $('#tcp_cheque_date').val();
+    let account_no      = $('#tcp_account_no').val();
+    let cheque_no       = $('#tcp_cheque_no').val();
+    let other_bank_name = $('#tcp_other_bank_name').val();
+    let cheque_amt      = $('#tcp_cheque_amount').val();
     if (!cheque_bank_id||!cheque_date||!cheque_no||!cheque_amt) { alert("Please fill all cheque fields."); return; }
-    tcpDataArray.push({ cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, cheque_ammount: cheque_amt });
+    tcpDataArray.push({ cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, other_bank_name, cheque_ammount: cheque_amt });
     $("#tcp_cheques_table_show tbody").append(`
         <tr>
             <td><input type="text" value="${bank_name}"   name="tcp_bank_name[]"     class="form-control" readonly></td>
             <td><input type="date" value="${cheque_date}" name="tcp_cheque_date[]"   class="form-control" readonly></td>
             <td><input type="text" value="${account_no}"  name="tcp_account_no[]"    class="form-control" readonly></td>
             <td><input type="text" value="${cheque_no}"   name="tcp_cheque_no[]"     class="form-control" readonly></td>
+            <td><input type="text" value="${other_bank_name}" name="tcp_other_bank_name[]" class="form-control" readonly></td>
             <td><input type="text" value="${cheque_amt}"  name="tcp_cheque_amount[]" class="form-control" readonly></td>
             <td><button type="button" class="btn btn-outline-danger btn-sm tcp-remove-cheque"><i class="far fa-trash-alt"></i></button></td>
         </tr>`);
     tcpTotalValue = parseFloat(tcpTotalValue) + parseFloat(cheque_amt);
     setTcpTotal();
-    $('#tcp_bank_name').val(''); $('#tcp_cheque_date').val(''); $('#tcp_account_no').val(''); $('#tcp_cheque_no').val(''); $('#tcp_cheque_amount').val('');
+    $('#tcp_bank_name').val(''); $('#tcp_cheque_date').val(''); $('#tcp_account_no').val('');
+    $('#tcp_cheque_no').val(''); $('#tcp_other_bank_name').val(''); $('#tcp_cheque_amount').val('');
 });
 $(document).on("click", ".tcp-remove-cheque", function () {
     let row = $(this).closest("tr");

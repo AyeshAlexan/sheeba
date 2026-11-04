@@ -4,11 +4,41 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TCustomerPayment;
+use App\Models\TCusCheque;
 use App\Models\Company;
 use App\Models\branchDel;
 
 class CustomerPaymentReportController extends Controller
 {
+    // Row-click detail popup: full payment breakdown + any cheques tied to it.
+    // There's no direct FK from t_customer_payments to t_cus_cheques, but both
+    // save flows (create()/makeTotalCreditPayment() in CustomerPaymentController)
+    // write the same Sales_no to t_cus_cheques.trans_no, so matching on
+    // trans_no + release_date + branch is the best correlation available.
+    public function details(Request $request)
+    {
+        $branch_code = auth()->user()->BC;
+
+        $payment = TCustomerPayment::where('id', $request->id)
+            ->where('BC', $branch_code)
+            ->first();
+
+        if (!$payment) {
+            return response()->json(['status' => 'not_found']);
+        }
+
+        $cheques = TCusCheque::where('trans_no', $payment->Sales_no)
+            ->where('release_date', $payment->Payment_date)
+            ->where('bc', $branch_code)
+            ->get();
+
+        return response()->json([
+            'status'  => 'success',
+            'payment' => $payment,
+            'cheques' => $cheques,
+        ]);
+    }
+
 
     public function index(Request $request)
     {

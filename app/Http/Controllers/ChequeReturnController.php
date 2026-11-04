@@ -7,6 +7,7 @@ use App\Models\TSupCheque;
 use App\Models\TCusCheque;
 use App\Models\TCusSaleTrance;
 use App\Models\ChequeBank;
+use App\Models\TAccountTrans;
 use Illuminate\Support\Facades\DB;
 
 class ChequeReturnController extends Controller
@@ -132,6 +133,34 @@ class ChequeReturnController extends Controller
                     ChequeBank::where('id', $cheque->cheque_bank_id)
                         ->increment('current_amount', $cheque->amount);
                 }
+
+                // Reverse the DR supplier / CR 201-123 posted when this cheque
+                // was paid (SupplyerPaymentController) — the cheque never
+                // actually left, so neither side of that entry should stand.
+                TAccountTrans::create([
+                    'trance_type' => 'CHEQUE_RETURN',
+                    'Ddate'       => $now->toDateString(),
+                    'AccCode'     => $cheque->supplier_code,
+                    'Description' => 'Supplier Cheque Returned #' . $cheque->cheques_no,
+                    'dr_amount'   => 0,
+                    'cr_amount'   => $cheque->amount,
+                    'trance_no'   => $cheque->trans_no,
+                    'no'          => $cheque->cheques_no,
+                    'BC'          => $cheque->bc,
+                    'OC'          => $cheque->oc,
+                ]);
+                TAccountTrans::create([
+                    'trance_type' => 'CHEQUE_RETURN',
+                    'Ddate'       => $now->toDateString(),
+                    'AccCode'     => '201-123',
+                    'Description' => 'Supplier Cheque Returned #' . $cheque->cheques_no,
+                    'dr_amount'   => $cheque->amount,
+                    'cr_amount'   => 0,
+                    'trance_no'   => $cheque->trans_no,
+                    'no'          => $cheque->cheques_no,
+                    'BC'          => $cheque->bc,
+                    'OC'          => $cheque->oc,
+                ]);
                 $processed++;
             }
 
@@ -163,6 +192,34 @@ class ChequeReturnController extends Controller
                     'trance_no'     => $cheque->trans_no,
                     'Display_Ref'   => $cheque->cheques_no,
                     'dDate'         => $now->toDateString(),
+                ]);
+
+                // Reverse the DR 201-123 / CR customer posted when this cheque
+                // was received (SalesInvoicewithoutVatController /
+                // CustomerPaymentController) — it never actually cleared.
+                TAccountTrans::create([
+                    'trance_type' => 'CHEQUE_RETURN',
+                    'Ddate'       => $now->toDateString(),
+                    'AccCode'     => $cheque->trans_no,
+                    'Description' => 'Customer Cheque Returned #' . $cheque->cheques_no,
+                    'dr_amount'   => $cheque->amount,
+                    'cr_amount'   => 0,
+                    'trance_no'   => $cheque->trans_no,
+                    'no'          => $cheque->cheques_no,
+                    'BC'          => $cheque->bc,
+                    'OC'          => $cheque->oc,
+                ]);
+                TAccountTrans::create([
+                    'trance_type' => 'CHEQUE_RETURN',
+                    'Ddate'       => $now->toDateString(),
+                    'AccCode'     => '201-123',
+                    'Description' => 'Customer Cheque Returned #' . $cheque->cheques_no,
+                    'dr_amount'   => 0,
+                    'cr_amount'   => $cheque->amount,
+                    'trance_no'   => $cheque->trans_no,
+                    'no'          => $cheque->cheques_no,
+                    'BC'          => $cheque->bc,
+                    'OC'          => $cheque->oc,
                 ]);
 
                 // The bank balance was only increased if this cheque had

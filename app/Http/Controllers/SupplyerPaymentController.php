@@ -13,6 +13,7 @@ use App\Models\BankDetails;
 use App\Models\BankBranch;
 use App\Models\ChequeBank;
 use App\Models\Company;
+use App\Models\TAccountTrans;
 use Illuminate\Support\Facades\DB;
 
 class SupplyerPaymentController extends Controller
@@ -229,6 +230,41 @@ public function create(Request $request)
     $SupPurchaseTrance->oc            = $user_name;
     $SupPurchaseTrance->save();
 
+    // Scoped to cheques only for now — cash/card/bank-transfer supplier
+    // payments still don't reach t_account_trans (a separate, pre-existing
+    // gap). DR supplier (payable reduced) / CR 201-123 (cheques-in-hand
+    // committed), mirroring the customer-side cheque posting.
+    if ($chequePayment > 0) {
+        // 'no' must be the purchase invoice number (not the payment number)
+        // to match the existing SUP_PAY convention used by TSupPurchaseTrance
+        // above — ResolvesLedgerReferences routes SUP_PAY rows to the
+        // Purchasing Report using this exact field as purchase_no.
+        TAccountTrans::create([
+            'trance_type' => 'SUP_PAY',
+            'Ddate'       => $request->payment_date,
+            'AccCode'     => $request->supplier_code,
+            'Description' => 'Supplier Cheque Payment',
+            'dr_amount'   => $chequePayment,
+            'cr_amount'   => 0,
+            'trance_no'   => $request->payment_no,
+            'no'          => $request->purchse_no,
+            'BC'          => $branch_code,
+            'OC'          => $user_name,
+        ]);
+        TAccountTrans::create([
+            'trance_type' => 'SUP_PAY',
+            'Ddate'       => $request->payment_date,
+            'AccCode'     => '201-123',
+            'Description' => 'Supplier Cheque Payment',
+            'dr_amount'   => 0,
+            'cr_amount'   => $chequePayment,
+            'trance_no'   => $request->payment_no,
+            'no'          => $request->purchse_no,
+            'BC'          => $branch_code,
+            'OC'          => $user_name,
+        ]);
+    }
+
     // Save Cheques
     if (!empty($dataArray)) {
         foreach ($dataArray as $value) {
@@ -239,6 +275,7 @@ public function create(Request $request)
             $supplyerCheque->trans_type  = 'PURCHASE';
             $supplyerCheque->bank        = $value->bank_name;
             $supplyerCheque->cheque_bank_id = $value->cheque_bank_id ?? null;
+            $supplyerCheque->other_bank_name = $value->other_bank_name ?? null;
             $supplyerCheque->cheque_status = 'PENDING';
             $supplyerCheque->cheques_no  = $value->cheque_no;
             $supplyerCheque->acc_no      = $value->account_no;

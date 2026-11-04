@@ -809,6 +809,7 @@ Route::get('/customer_payment_report', [App\Http\Controllers\CustomerPaymentRepo
 //supplyer_payment_report_by_date
 Route::get('/customer_payment_report_by_date', [App\Http\Controllers\CustomerPaymentReportController::class, 'filter'])->name('customer_payment_report_by_date');
 Route::get('/customer_payment_report/print', [App\Http\Controllers\CustomerPaymentReportController::class, 'print'])->middleware('auth')->name('customer_payment_report.print');
+Route::get('/customer_payment_report/details', [App\Http\Controllers\CustomerPaymentReportController::class, 'details'])->name('customer_payment_report.details');
 //supplyer_cheque_payment_report
 Route::get('/customer_cheque_payment_report', [App\Http\Controllers\CustomerChequePaymentReportController::class, 'index'])->name('customer_cheque_payment_report');
 Route::get('/customer_cheque_payment_report/print', [App\Http\Controllers\CustomerChequePaymentReportController::class, 'print'])->middleware('auth')->name('customer_cheque_payment_report.print');
@@ -922,6 +923,7 @@ Route::get('/supplier_account_report/print', [App\Http\Controllers\SupplierAccou
 
 Route::get('/supplier_Report.supplyer_payment_report', [App\Http\Controllers\SupplierAccountReportController::class,'SupplierPaymentIndex'])->name('supplyer_payment_report');
 Route::get('/supplier_Report.supplyer_payment_report/print', [App\Http\Controllers\SupplierAccountReportController::class,'printPayment'])->middleware('auth')->name('supplyer_payment_report.print');
+Route::get('/supplier_Report.supplyer_payment_report/details', [App\Http\Controllers\SupplierAccountReportController::class,'paymentDetails'])->name('supplyer_payment_report.details');
 
 Route::get('/supplier_Report.supplyer_balance_report', [App\Http\Controllers\SupplierAccountReportController::class,'SupplierBalanceIndex'])->name('supplyer_balance_report');
 Route::get('/supplier_Report.supplyer_balance_report/print', [App\Http\Controllers\SupplierAccountReportController::class,'printBalance'])->middleware('auth')->name('supplyer_balance_report.print');

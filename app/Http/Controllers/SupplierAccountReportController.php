@@ -111,6 +111,34 @@ class SupplierAccountReportController extends Controller
     return view('supplier_Report.supplyer_payment_report', compact('payments'));
 }
 
+    // Row-click detail popup: full payment breakdown + any cheques tied to it.
+    // Same correlation approach as the customer-side equivalent — no direct
+    // FK, so match on trans_no (= Purchase_no) + release_date + branch,
+    // which is how SupplyerPaymentController writes both records.
+    public function paymentDetails(Request $request)
+    {
+        $branch_code = auth()->user()->BC;
+
+        $payment = TSupplierPayment::where('id', $request->id)
+            ->where('BC', $branch_code)
+            ->first();
+
+        if (!$payment) {
+            return response()->json(['status' => 'not_found']);
+        }
+
+        $cheques = TSupCheque::where('trans_no', $payment->Purchase_no)
+            ->where('release_date', $payment->Payment_date)
+            ->where('bc', $branch_code)
+            ->get();
+
+        return response()->json([
+            'status'  => 'success',
+            'payment' => $payment,
+            'cheques' => $cheques,
+        ]);
+    }
+
     public function printPayment(Request $request)
     {
         $branch_code = auth()->user()->BC;

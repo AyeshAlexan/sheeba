@@ -337,6 +337,7 @@
                                                                                     <th class="text-center">Cheque Date</th>
                                                                                     <th class="text-center">Account No</th>
                                                                                     <th class="text-center">Cheque No</th>
+                                                                                    <th class="text-center">Other Bank</th>
                                                                                     <th class="text-center">Amount</th>
                                                                                     <th class="text-center">Action</th>
                                                                                 </tr>
@@ -359,6 +360,9 @@
                                                                                     </td>
                                                                                     <td>
                                                                                         <input type="text" id="cheque_no" class="form-control" placeholder="Cheque No" required>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input type="text" id="other_bank_name" class="form-control" placeholder="Supplier's bank">
                                                                                     </td>
                                                                                     <td>
                                                                                         <input type="number" step="0.01" id="cheque_ammount" class="form-control" placeholder="Amount" required>
@@ -531,13 +535,13 @@
 
     // Add item
     $(".add-item").click(function () {
-        let cheque_bank_id = $('#bank_name').val();
-        let selectedOption = $('#bank_name').find('option:selected');
-        let bank_name = selectedOption.data('label') || '';
-        let cheque_date = $('#cheque_date').val();
-        let account_no = $('#account_no').val();
-        let cheque_no = $('#cheque_no').val();
-        let cheque_ammount = $('#cheque_ammount').val();
+        let cheque_bank_id  = $('#bank_name').val();
+        let bank_name       = $('#bank_name').find('option:selected').data('label') || '';
+        let cheque_date     = $('#cheque_date').val();
+        let account_no      = $('#account_no').val();
+        let cheque_no       = $('#cheque_no').val();
+        let other_bank_name = $('#other_bank_name').val();
+        let cheque_ammount  = $('#cheque_ammount').val();
 
         if (isEmptyOrSpaces(cheque_bank_id) || isEmptyOrSpaces(cheque_date) ||
             isEmptyOrSpaces(account_no) || isEmptyOrSpaces(cheque_no) ||
@@ -549,7 +553,7 @@
         // Save to array (rows are prepended to the DOM, so unshift here keeps
         // array order matching DOM/row.index() order)
         let newRowData = {
-            cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, cheque_ammount
+            cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, other_bank_name, cheque_ammount
         };
         dataArray.unshift(newRowData);
 
@@ -560,6 +564,7 @@
                 <td><input type="text" name="cheque_date[]" class="form-control" value="${cheque_date}" readonly></td>
                 <td><input type="text" name="account_no[]" class="form-control" value="${account_no}" readonly></td>
                 <td><input type="text" name="cheque_no[]" class="form-control" value="${cheque_no}" readonly></td>
+                <td><input type="text" name="other_bank_name[]" class="form-control" value="${other_bank_name}" readonly></td>
                 <td><input type="text" name="cheque_ammount[]" class="form-control row-amount" value="${cheque_ammount}" readonly></td>
                 <td>
                     <button type="button" class="btn btn-outline-danger btn-sm remove-input-field" title="Delete">
@@ -578,6 +583,7 @@
     // Reset input fields
     function resetTableRow() {
         document.getElementById("bank_name").value = "";
+        $('#other_bank_name').val('');
         document.getElementById("cheque_date").value = "";
         document.getElementById("account_no").value = "";
         document.getElementById("cheque_no").value = "";

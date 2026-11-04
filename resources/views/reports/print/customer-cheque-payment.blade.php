@@ -8,6 +8,7 @@
                 <th>Release Date</th>
                 <th>Type</th>
                 <th>Bank</th>
+                <th>Other Bank</th>
                 <th>Branch</th>
                 <th>Cheque No</th>
                 <th>Account No</th>
@@ -25,6 +26,7 @@
                 <td>{{ $invoice->release_date }}</td>
                 <td>{{ $invoice->trans_type }}</td>
                 <td>{{ $invoice->bank }}</td>
+                <td>{{ $invoice->other_bank_name }}</td>
                 <td>{{ $invoice->branch_code }}</td>
                 <td>{{ $invoice->cheques_no }}</td>
                 <td>{{ $invoice->acc_no }}</td>

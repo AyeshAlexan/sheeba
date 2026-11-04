@@ -238,8 +238,10 @@ public function add_salesInvoice(Request $request)
 
         // A. Handle CHEQUE PAYMENT (2 Rows: DR & CR)
         if ($chequePayment > 0) {
-            // Row 1: DR
-            // Row 2: CR
+            // Row 1: DR — Cheques in Hand (201-123)
+            $this->insertAccountTrans($request, $branch_code, $oc, $chequePayment, 0, "Cheque Received", '201-123');
+
+            // Row 2: CR — normal customer_nic
             $this->insertAccountTrans($request, $branch_code, $oc, 0, $chequePayment, "Cheque Payment Adjustment");
             $this->insertCusTrance($request, $branch_code, $oc, 0, $chequePayment);
         }

@@ -211,8 +211,16 @@ class CustomerPaymentController extends Controller
             $date = $request->payment_date;
             $cust = $request->customer_code;
 
-            // A. Cheque payment  — CR only (clearing entry)
+            // A. Cheque payment — DR cheques-in-hand control (201-123), CR customer
             if ($cheque_payment > 0) {
+                // DR: cheques-in-hand account
+                $this->insertAccountTrans(
+                    'TCP_CUS_PAY', $ref, '201-123',
+                    $date, $cheque_payment, 0,
+                    'Cheque Received',
+                    $branch_code, $user_name
+                );
+                // CR: customer account
                 $this->insertAccountTrans(
                     'TCP_CUS_PAY', $ref, $cust,
                     $date, 0, $cheque_payment,
@@ -293,6 +301,7 @@ class CustomerPaymentController extends Controller
                     $cheque->cheque_status  = 'P';
                     $cheque->bank           = $value->bank_name;
                     $cheque->cheque_bank_id = $value->cheque_bank_id ?? null;
+                    $cheque->other_bank_name = $value->other_bank_name ?? null;
                     $cheque->acc_no         = $value->account_no ?? null;
                     $cheque->cheques_no     = $value->cheque_no;
                     $cheque->release_date   = $value->cheque_date;
@@ -418,8 +427,16 @@ class CustomerPaymentController extends Controller
             $date = $request->payment_date;
             $cust = $request->customer_code;
 
-            // A. Cheque payment — CR only (clearing entry)
+            // A. Cheque payment — DR cheques-in-hand control (201-123), CR customer
             if ($cheque_payment > 0) {
+                // DR: cheques-in-hand account
+                $this->insertAccountTrans(
+                    'CR_CUS_PAY', $ref, '201-123',
+                    $date, $cheque_payment, 0,
+                    'Cheque Received',
+                    $branch_code, $user_name
+                );
+                // CR: customer account
                 $this->insertAccountTrans(
                     'CR_CUS_PAY', $ref, $cust,
                     $date, 0, $cheque_payment,
@@ -497,6 +514,7 @@ class CustomerPaymentController extends Controller
                     $supplyerCheque->cheque_status  = 'P';
                     $supplyerCheque->bank           = $value->bank_name;
                     $supplyerCheque->cheque_bank_id = $value->cheque_bank_id ?? null;
+                    $supplyerCheque->other_bank_name = $value->other_bank_name ?? null;
                     $supplyerCheque->acc_no         = $value->account_no ?? null;
                     $supplyerCheque->cheques_no     = $value->cheque_no;
                     $supplyerCheque->release_date   = $value->cheque_date;

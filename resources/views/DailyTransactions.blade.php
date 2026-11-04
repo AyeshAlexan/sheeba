@@ -15,6 +15,21 @@
                 <link rel="stylesheet" href="../assets/plugins/fontawesome/css/fontawesome.min.css">
                 <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
                 <link rel="stylesheet" href="../assets/css/style.css">
+                <style>
+                    .dt-section-head {
+                        display: flex; align-items: center; justify-content: space-between;
+                        padding: 14px 18px; border-bottom: 1px solid #E5EAF2;
+                    }
+                    .dt-section-title { font-size: 15px; font-weight: 700; color: #14213D; margin: 0; }
+                    .dt-section-sub { font-size: 12px; color: #667085; margin: 2px 0 0; }
+                    .dt-section-total { font-size: 13px; font-weight: 700; text-align: right; }
+                    .dt-section-total .ok   { color: #16A34A; }
+                    .dt-section-total .warn { color: #DC2626; }
+                    .dt-card { margin-bottom: 22px; }
+                    .dt-card.gl  { border-left: 4px solid #1D4ED8; }
+                    .dt-card.sub { border-left: 4px solid #6D28D9; }
+                    .dt-card.bank{ border-left: 4px solid #64748B; }
+                </style>
             </head>
 
             <body>
@@ -29,80 +44,161 @@
                             </div>
                             <div>
                                 <h3 class="page-title">Daily Transactions</h3>
-                                <p class="page-subtitle">Every financial transaction across all accounts — sales, payments, receipts, vouchers, purchases and supplier payments — shown automatically. For Cash/Cheque In Hand only, see the Cash Book report.</p>
+                                <p class="page-subtitle">Every financial transaction across all accounts, split into three separate lists below — each is its own self-contained record, not meant to total against the others. For Cash/Cheque In Hand only, see the Cash Book report.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="container-fluid px-0">
-                        <div class="card">
-                            <div class="card-body">
-                                <form method="GET" action="{{ route('daily.transactions') }}" class="row g-2 mb-3 align-items-end">
-                                    <div class="col-md-3">
-                                        <label class="form-label mb-0 small">From Date</label>
-                                        <input type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label mb-0 small">To Date</label>
-                                        <input type="date" name="to_date" class="form-control" value="{{ $toDate }}">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" class="btn btn-outline-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
-                                    </div>
-                                </form>
+                        <form method="GET" action="{{ route('daily.transactions') }}" class="row g-2 mb-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small">From Date</label>
+                                <input type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small">To Date</label>
+                                <input type="date" name="to_date" class="form-control" value="{{ $toDate }}">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
+                            </div>
+                        </form>
 
+                        {{-- ── 1. General Ledger ───────────────────────────────── --}}
+                        <div class="card dt-card gl">
+                            <div class="dt-section-head">
+                                <div>
+                                    <p class="dt-section-title">General Ledger</p>
+                                    <p class="dt-section-sub">Real double-entry transactions — sales, payments, vouchers, cheques. DR and CR below should always match.</p>
+                                </div>
+                                <div class="dt-section-total">
+                                    DR {{ number_format((float) $glTotalDr, 2) }} &nbsp; / &nbsp; CR {{ number_format((float) $glTotalCr, 2) }}
+                                    @if(abs($glTotalDr - $glTotalCr) < 0.01)
+                                        <span class="ok"><i class="fas fa-check-circle"></i> Balanced</span>
+                                    @else
+                                        <span class="warn"><i class="fas fa-triangle-exclamation"></i> Out of balance</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="card-body">
                                 <div class="table-responsive">
-                            <table class="table table-bordered table-hover" style="table-layout:fixed; width:100%;">
-                                <colgroup>
-                                    <col style="width:9%">
-                                    <col style="width:16%">
-                                    <col style="width:28%">
-                                    <col style="width:22%">
-                                    <col style="width:12.5%">
-                                    <col style="width:12.5%">
-                                </colgroup>
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Reference</th>
-                                        <th>Description</th>
-                                        <th>Double Entry</th>
-                                        <th>DR Amount</th>
-                                        <th>CR Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($transactions as $row)
-                                    <tr>
-                                        <td>{{ $row->Ddate }}</td>
-                                        <td class="text-truncate" style="max-width:0;" title="{{ $row->reference_label }}">
-                                            @if($row->reference_url)
-                                                <a href="{{ $row->reference_url }}" target="_blank">{{ $row->reference_label }}</a>
-                                            @else
-                                                {{ $row->reference_label }}
-                                            @endif
-                                        </td>
-                                        <td class="text-truncate" style="max-width:0;" title="{{ $row->Description }}">{{ $row->Description }}</td>
-                                        <td class="text-truncate" style="max-width:0;" title="{{ $row->logic_summary }}">{{ $row->logic_summary }}</td>
-                                        <td>{{ number_format((float) $row->dr_amount, 2) }}</td>
-                                        <td>{{ number_format((float) $row->cr_amount, 2) }}</td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted">No transactions found for the selected dates.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                                @if($transactions->count())
-                                <tfoot>
-                                    <tr class="fw-bold" style="background-color:#f4f6f9;">
-                                        <td colspan="4" class="text-end">Total</td>
-                                        <td>{{ number_format((float) $totalDr, 2) }}</td>
-                                        <td>{{ number_format((float) $totalCr, 2) }}</td>
-                                    </tr>
-                                </tfoot>
-                                @endif
-                            </table>
+                                    <table class="table table-bordered table-hover mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th style="width:9%;">Date</th>
+                                                <th style="width:16%;">Reference</th>
+                                                <th>Description / Account</th>
+                                                <th style="width:12%;" class="text-end">DR Amount</th>
+                                                <th style="width:12%;" class="text-end">CR Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($glRows as $row)
+                                            <tr>
+                                                <td>{{ $row->Ddate }}</td>
+                                                <td>
+                                                    @if($row->reference_url)
+                                                        <a href="{{ $row->reference_url }}" target="_blank">{{ $row->reference_label }}</a>
+                                                    @else
+                                                        {{ $row->reference_label }}
+                                                    @endif
+                                                </td>
+                                                <td>{{ $row->Description }} @if($row->logic_summary)<br><small class="text-muted">{{ $row->logic_summary }}</small>@endif</td>
+                                                <td class="text-end">{{ number_format((float) $row->dr_amount, 2) }}</td>
+                                                <td class="text-end">{{ number_format((float) $row->cr_amount, 2) }}</td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">No general ledger transactions for the selected dates.</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- ── 2. Supplier Ledger ──────────────────────────────── --}}
+                        <div class="card dt-card sub">
+                            <div class="dt-section-head">
+                                <div>
+                                    <p class="dt-section-title">Supplier Ledger</p>
+                                    <p class="dt-section-sub">Purchases invoiced (DR) and payments made (CR) to suppliers. These two columns aren't expected to match on any single day.</p>
+                                </div>
+                                <div class="dt-section-total">
+                                    DR {{ number_format((float) $subTotalDr, 2) }} &nbsp; / &nbsp; CR {{ number_format((float) $subTotalCr, 2) }}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th style="width:9%;">Date</th>
+                                                <th style="width:16%;">Reference</th>
+                                                <th>Supplier</th>
+                                                <th style="width:12%;" class="text-end">DR Amount</th>
+                                                <th style="width:12%;" class="text-end">CR Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($subRows as $row)
+                                            <tr>
+                                                <td>{{ $row->Ddate }}</td>
+                                                <td>
+                                                    @if($row->reference_url)
+                                                        <a href="{{ $row->reference_url }}" target="_blank">{{ $row->reference_label }}</a>
+                                                    @else
+                                                        {{ $row->reference_label }}
+                                                    @endif
+                                                </td>
+                                                <td>{{ $row->logic_summary }}</td>
+                                                <td class="text-end">{{ number_format((float) $row->dr_amount, 2) }}</td>
+                                                <td class="text-end">{{ number_format((float) $row->cr_amount, 2) }}</td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">No supplier purchases/payments for the selected dates.</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- ── 3. Banking Actions ──────────────────────────────── --}}
+                        <div class="card dt-card bank">
+                            <div class="dt-section-head">
+                                <div>
+                                    <p class="dt-section-title">Banking Actions</p>
+                                    <p class="dt-section-sub">Cheque issued / deposited / returned, and day-end closes — shown for visibility only. The actual money movement for these is already recorded above, in the General Ledger.</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th style="width:9%;">Date</th>
+                                                <th style="width:16%;">Action</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($bankingRows as $row)
+                                            <tr>
+                                                <td>{{ $row->Ddate }}</td>
+                                                <td>{{ $row->reference_label }}</td>
+                                                <td>{{ $row->Description }}</td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">No banking actions for the selected dates.</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
