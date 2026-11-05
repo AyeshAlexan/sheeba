@@ -31,12 +31,12 @@
                             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h15v13H3z"/><path d="M16 8h4l2 4v4h-6"/><circle cx="7.5" cy="19.5" r="1.5"/><circle cx="17.5" cy="19.5" r="1.5"/></svg>
                         </div>
                         <div>
-                            <h3 class="page-title">Delivery Order List</h3>
-                            <p class="page-subtitle">Browse and reprint past delivery orders</p>
+                            <h3 class="page-title">Delivery Order List (Archive)</h3>
+                            <p class="page-subtitle">Historical delivery orders — view and reprint only. Stock is now reduced when a sales invoice is saved.</p>
                         </div>
                     </div>
-                    <a href="{{ route('delivery_orders') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Create Delivery Order
+                    <a href="{{ route('salesInvoice_withoutVat') }}" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Go to Sales Invoice
                     </a>
                 </div>
 
@@ -89,9 +89,9 @@
                     @else
                         <div class="do-list-empty">
                             <i class="fas fa-truck" style="font-size:28px; display:block; margin-bottom:10px; color:#c6d4e6;"></i>
-                            No delivery orders found{{ ($fromDate && $toDate) ? ' for this date range' : ' yet' }}.
+                            No delivery orders found{{ ($fromDate && $toDate) ? ' for this date range' : '' }}.
                             <div class="mt-2">
-                                <a href="{{ route('delivery_orders') }}">Create your first Delivery Order</a>
+                                <a href="{{ route('salesInvoice_withoutVat') }}">Use Sales Invoice instead</a>
                             </div>
                         </div>
                     @endif

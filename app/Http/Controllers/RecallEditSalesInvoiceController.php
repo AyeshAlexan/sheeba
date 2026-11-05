@@ -73,9 +73,14 @@ class RecallEditSalesInvoiceController extends Controller
                 ->where('BC',$branch_code)
                 ->get();
         if($data->count() != null){
+            $salesOrderId = DB::table('sales_orders')
+                ->where('bc', $branch_code)
+                ->where('invoice_no', $receiptNo)
+                ->value('id');
             return response()->json([
                 'status' => 'success',
-                'data' => $data
+                'data' => $data,
+                'sales_order_id' => $salesOrderId,
             ]);
         }else{
             return response()->json([
@@ -141,6 +146,10 @@ class RecallEditSalesInvoiceController extends Controller
 
             if (!$invoice) {
                 return response()->json(['status' => 'error', 'message' => 'Invoice not found.']);
+            }
+
+            if ($invoice->confirmed_at !== null) {
+                return response()->json(['status' => 'error', 'message' => 'This invoice is finalized and can no longer be edited.']);
             }
 
             // Update the invoice header
@@ -283,6 +292,15 @@ class RecallEditSalesInvoiceController extends Controller
             DB::beginTransaction();
             try {
                 $branchCode = auth()->user()->BC;
+
+                $invoiceSum = TwithoutVatSalesSum::where('Invoice_no', $invoiceNo)
+                    ->where('BC', $branchCode)
+                    ->first();
+
+                if ($invoiceSum && $invoiceSum->confirmed_at !== null) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'This invoice is finalized and can no longer be deleted.']);
+                }
 
                 // Delete related sales details
                 TWithoutVatSalesDetails::where('Invoice_no', $invoiceNo)

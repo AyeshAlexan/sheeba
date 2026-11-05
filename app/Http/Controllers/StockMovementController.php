@@ -30,6 +30,13 @@ class StockMovementController extends Controller
         'STOCK_TRANSFER'    => 'Stock Transfer',
         'STOCK_ADJUSTMENT'  => 'Stock Adjustment',
         'STOCK_DAMAGE'      => 'Stock Damage',
+        'CONFIRM_INVOICE'          => 'Sales Invoice (Confirmed)',
+        'CONFIRM_INVOICE_REVERSAL' => 'Confirmed Invoice Reversal',
+        // Delivery Order is retired (replaced by Confirm Invoice above), but
+        // historical DO movement rows remain in the data and still need a
+        // friendly label here rather than showing the raw code.
+        'DO'                       => 'Delivery Order (Archived)',
+        'DO_REVERSAL'              => 'Delivery Order Reversal (Archived)',
     ];
 
     public function index(Request $request)

@@ -22,10 +22,10 @@ return [
     'stock' => ['stock_open', 'stockAdjuestment', 'stockAdjuestmentNew', 'stock_transfer', 'stock_damage', 'stock_movements'],
     'purchases' => ['purchases_order', 'purchases', 'purchases_supplyer_payment', 'purchases_return'],
     'sales' => [
-        'sales_create_invoice', 'salesInvoice_withoutVat', 'sales_advance_payment', 'sales_return', 'sales_quatation',
+        'sales_orders', 'sales_orders.show', 'sales_orders.print', 'sales_create_invoice', 'salesInvoice_withoutVat', 'sales_advance_payment', 'sales_return', 'sales_quatation',
         'sales_customer_payment', 'customer_opening_balance', 'invoiceDiscountEnter',
     ],
-    'delivery_orders' => ['delivery_orders', 'delivery_orders_list'],
+    'delivery_orders' => ['delivery_orders_list'],
     'vouchers' => ['PaymentVoucher', 'gentralreceipt', 'PettyCash'],
     'expense' => ['AddExpense', 'CashOut'],
     'banking' => ['cheque.deposit', 'issued.cheques', 'cheque.return'],
@@ -33,7 +33,7 @@ return [
     'reports' => [
         'Item_detail_report', 'stock_report', 'Stock_valuation_report', 'bin_card', 'ZerostockReport',
         'reports.stockTranferReport', 'reports.stockDetailsSummeryReport', 'Item_wish_sales_report',
-        'sales_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport',
+        'sales_report', 'sales_order_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport',
         'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report', 'get_customer_details_report',
         'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport',
         'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport',

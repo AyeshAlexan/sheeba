@@ -239,28 +239,11 @@
 @endif
 
 
-                {{-- Delivery Orders --}}
 
-@if(\App\Support\Permissions::can('delivery_orders'))
-                <li class="{{ Request::is('delivery_orders*') ? 'active' : '' }}">
-                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h15v13H3z"/><path d="M16 8h4l2 4v4h-6"/><circle cx="7.5" cy="19.5" r="1.5"/><circle cx="17.5" cy="19.5" r="1.5"/></svg> <span>Delivery Orders</span>
-                        <span class="menu-arrow"></span></a>
 
-                    <ul style=" {{ Request::is('delivery_orders*') ? 'display:block;' : '' }}">
-                        <li class="{{ Request::is('delivery_orders') && !Request::is('delivery_orders_list') ? 'active' : '' }}">
-                            <a href="{{route("delivery_orders")}}">
-                                <i class="fa fa-angle-right"></i>
-                                Create Delivery Order</a>
-                        </li>
-                        <li class="{{ Request::is('delivery_orders_list') ? 'active' : '' }}">
-                            <a href="{{route("delivery_orders_list")}}">
-                                <i class="fa fa-angle-right"></i>
-                                Delivery Order List</a>
-                        </li>
-                    </ul>
-                </li>
-@endif
-
+                {{-- Delivery Orders is retired — no sidebar entry. Historical
+                     records stay reachable at route('delivery_orders_list')
+                     directly for anyone who needs the archive. --}}
 
 @if(\App\Support\Permissions::can('purchases'))
                 <li class=" dropdown {{ Request::is('purchases*') ? 'active' : '' }} ">
@@ -303,6 +286,9 @@
                                 <i class="fa fa-angle-right"></i> Invoice Sales</a>
                         </li> --}}
 
+                        <li class="{{ Request::is('sales_orders*') ? 'active' : '' }}">
+                            <a href="{{ route('sales_orders') }}"><i class="fa fa-angle-right"></i> Sales Order</a>
+                        </li>
                         <li class="{{ Request::is('salesInvoice_withoutVat') ? 'active' : '' }}">
                             <a href="{{route("salesInvoice_withoutVat")}}">
                                 <i class="fa fa-angle-right"></i> Sales Invoice</a>
@@ -474,7 +460,7 @@
 @if(\App\Support\Permissions::can('reports'))
                 @php
                     $stockReportOpen = request()->routeIs('Item_detail_report', 'stock_report', 'Stock_valuation_report', 'bin_card', 'ZerostockReport', 'reports.stockTranferReport', 'reports.stockDetailsSummeryReport');
-                    $salesReportOpen = request()->routeIs('Item_wish_sales_report', 'sales_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport', 'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report');
+                    $salesReportOpen = request()->routeIs('Item_wish_sales_report', 'sales_report', 'sales_order_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport', 'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report');
                     $purchaseOrderReportOpen = request()->routeIs('Purchase_order_report', 'Purchase_order_details_report');
                     $customerReportOpen = request()->routeIs('get_customer_details_report', 'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport', 'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport') || $purchaseOrderReportOpen;
                     $supplierReportOpen = request()->routeIs('get_supplier_details_report', 'supplyer_payment_report', 'supplyer_cheque_payment_report', 'supplier_account_report', 'supplyer_balance_report');
@@ -491,7 +477,7 @@
                     // shown at all if at least one of its reports is visible.
                     $canSee = fn (...$keys) => collect($keys)->contains(fn ($k) => \App\Support\Permissions::canViewReport($k));
                     $canSeeStockGroup = $canSee('Item_detail_report', 'stock_report', 'Stock_valuation_report', 'bin_card', 'ZerostockReport', 'reports.stockTranferReport', 'reports.stockDetailsSummeryReport');
-                    $canSeeSalesGroup = $canSee('Item_wish_sales_report', 'sales_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport', 'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report');
+                    $canSeeSalesGroup = $canSee('Item_wish_sales_report', 'sales_report', 'sales_order_report', 'Invoice_detail_report', 'customer_wish_report', 'reports.salesmanInvoiceReport', 'reports.SalesmanInvoiceSumReport', 'Cash_in_out_report');
                     $canSeePurchaseOrderGroup = $canSee('Purchase_order_report', 'Purchase_order_details_report');
                     $canSeeCustomerGroup = $canSee('get_customer_details_report', 'customer_payment_report', 'customer_cheque_payment_report', 'Cust_Transferreport', 'customersalesWishReport', 'customer_balance_report', 'AdvancePaymentReport') || $canSeePurchaseOrderGroup;
                     $canSeeSupplierGroup = $canSee('get_supplier_details_report', 'supplyer_payment_report', 'supplyer_cheque_payment_report', 'supplier_account_report', 'supplyer_balance_report');
@@ -588,6 +574,13 @@
                       <li class="menu-item {{ request()->routeIs('sales_report') ? 'active' : '' }}">
                         <a href="{{route("sales_report")}}" target ="_ blank" class="menu-link">
                           <div class="text-truncate" data-i18n="Order Details">Sales Summery</div>
+                        </a>
+                      </li>
+                      @endif
+                      @if(\App\Support\Permissions::canViewReport('sales_order_report'))
+                      <li class="menu-item {{ request()->routeIs('sales_order_report') ? 'active' : '' }}">
+                        <a href="{{route("sales_order_report")}}" target ="_ blank" class="menu-link">
+                          <div class="text-truncate" data-i18n="Order Details">Sales Order Report</div>
                         </a>
                       </li>
                       @endif

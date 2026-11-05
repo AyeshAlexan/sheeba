@@ -422,7 +422,9 @@
     });
     
     feather.replace();
-    $("body").append(right_side_views);
+    if (typeof right_side_views !== "undefined") {
+        $("body").append(right_side_views);
+    }
     $('.open-layout').on("click", function(s) {
         s.preventDefault();
         $('.sidebar-layout').addClass('show-layout');

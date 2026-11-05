@@ -58,14 +58,16 @@ class BinCardController extends Controller
                 it.Item_description AS item_name,
                 im.qun_in,
                 im.qun_out,
-                COALESCE(s.Invoice_no, r.Invoice_no)       AS invoice_no,
-                COALESCE(s.Customer_NIC, r.Customer_NIC)   AS customer_code,
-                COALESCE(s.Customer_Name, r.Customer_Name) AS customer_name
+                COALESCE(s.Invoice_no, c.Invoice_no, r.Invoice_no)       AS invoice_no,
+                COALESCE(s.Customer_NIC, c.Customer_NIC, r.Customer_NIC)   AS customer_code,
+                COALESCE(s.Customer_Name, c.Customer_Name, r.Customer_Name) AS customer_name
             FROM t_item_movements im
             LEFT JOIN items it
                 ON it.Item_code = im.item_code
             LEFT JOIN t_without_vat_sales_sums s
                 ON s.Invoice_no = im.trans_no AND im.trans_code = 'SALES_OUT_VAT'
+            LEFT JOIN t_without_vat_sales_sums c
+                ON c.Invoice_no = im.trans_no AND im.trans_code = 'CONFIRM_INVOICE'
             LEFT JOIN t_sales_return_sums r
                 ON r.Invoice_no = im.trans_no AND im.trans_code = 'SPN'
             WHERE im.dDate BETWEEN ? AND ?
@@ -113,14 +115,16 @@ class BinCardController extends Controller
                 it.Item_description AS item_name,
                 im.qun_in,
                 im.qun_out,
-                COALESCE(s.Invoice_no, r.Invoice_no)       AS invoice_no,
-                COALESCE(s.Customer_NIC, r.Customer_NIC)   AS customer_code,
-                COALESCE(s.Customer_Name, r.Customer_Name) AS customer_name
+                COALESCE(s.Invoice_no, c.Invoice_no, r.Invoice_no)       AS invoice_no,
+                COALESCE(s.Customer_NIC, c.Customer_NIC, r.Customer_NIC)   AS customer_code,
+                COALESCE(s.Customer_Name, c.Customer_Name, r.Customer_Name) AS customer_name
             FROM t_item_movements im
             LEFT JOIN items it
                 ON it.Item_code = im.item_code
             LEFT JOIN t_without_vat_sales_sums s
                 ON s.Invoice_no = im.trans_no AND im.trans_code = 'SALES_OUT_VAT'
+            LEFT JOIN t_without_vat_sales_sums c
+                ON c.Invoice_no = im.trans_no AND im.trans_code = 'CONFIRM_INVOICE'
             LEFT JOIN t_sales_return_sums r
                 ON r.Invoice_no = im.trans_no AND im.trans_code = 'SPN'
             WHERE im.dDate BETWEEN ? AND ?

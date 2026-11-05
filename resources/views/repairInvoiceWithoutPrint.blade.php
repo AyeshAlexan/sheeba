@@ -1,10 +1,13 @@
+@php
+    $isSalesOrderPrint = $isSalesOrderPrint ?? false;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" type="image/png" href="{{ asset('assets/img/icon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Invoice</title>
+    <title>{{ $isSalesOrderPrint ? 'Sales Order #'.$order->id : 'Sales Invoice' }}</title>
     <style>
         /* NOTE: this is rendered through DomPDF, which does NOT support
            CSS flexbox/grid or CSS custom properties (var(--x)) — every
@@ -242,7 +245,7 @@
 
     {{-- ── Screen Buttons ── --}}
     <div class="no-print">
-        <button class="btn-print" onclick="window.print()">Print Invoice</button>
+        <button class="btn-print" onclick="window.print()">{{ $isSalesOrderPrint ? 'Print Sales Order' : 'Print Invoice' }}</button>
         <button class="btn-close"  onclick="window.close()">Close</button>
     </div>
 
@@ -284,11 +287,11 @@
                     </table>
                 </td>
                 <td class="header-right" style="width:35%;">
-                    <div class="invoice-title-right">INVOICE</div>
+                    <div class="invoice-title-right">{{ $isSalesOrderPrint ? 'SALES ORDER' : 'INVOICE' }}</div>
                     @foreach($pawnSumData as $sumData)
                     <table class="invoice-meta">
                         <tr>
-                            <td>Invoice #</td>
+                            <td>{{ $isSalesOrderPrint ? 'Sales Order #' : 'Invoice #' }}</td>
                             <td>{{ $sumData->Invoice_no }}</td>
                         </tr>
                         <tr>
@@ -320,12 +323,18 @@
                     if ($chequePaid > 0) $typeParts[] = 'CHEQUE';
                     $invoiceType = count($typeParts) ? implode(' / ', $typeParts) . ' INVOICE' : 'INVOICE';
                 @endphp
-                <div class="meta-col-label">Payment Type</div>
-                <div class="invoice-type-banner">{{ $invoiceType }}</div>
+                @if($isSalesOrderPrint)
+                    <div class="meta-col-label">Document Type</div>
+                    <div class="invoice-type-banner">SALES ORDER</div>
+                    <div style="font-size:10px;color:#6b7280;margin-top:6px;">This is an order, not an invoice.</div>
+                @else
+                    <div class="meta-col-label">Payment Type</div>
+                    <div class="invoice-type-banner">{{ $invoiceType }}</div>
+                @endif
             </td>
 
             <td class="meta-col meta-col-billto">
-                <div class="meta-col-label">Bill To</div>
+                <div class="meta-col-label">{{ $isSalesOrderPrint ? 'Customer' : 'Bill To' }}</div>
                 @if($customerData->isNotEmpty())
                     @foreach($customerData as $cust)
                         <div class="customer-name">{{ $cust->First_name }}</div>
@@ -341,7 +350,9 @@
                     {{-- True walk-in sale: no customer captured at all --}}
                     <div class="customer-name">Walk-in Customer</div>
                 @endif
-                <div class="cash-paid-note">Cash Paid: Rs. {{ number_format($cashPaid, 2) }}</div>
+                @unless($isSalesOrderPrint)
+                    <div class="cash-paid-note">Cash Paid: Rs. {{ number_format($cashPaid, 2) }}</div>
+                @endunless
             </td>
         </tr>
     </table>
@@ -499,7 +510,7 @@
             {{-- Amount in words --}}
             <td class="balance-left">
                 <div style="font-size:10px;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;">
-                    Amount Chargeable (in words)
+                    {{ $isSalesOrderPrint ? 'Order Amount (in words)' : 'Amount Chargeable (in words)' }}
                 </div>
                 <div style="font-size:12px;font-weight:700;text-transform:uppercase;line-height:1.5;color:#1f2430;">
                     {{ $amountInWords }}
@@ -507,6 +518,7 @@
             </td>
 
             {{-- Balances --}}
+            @unless($isSalesOrderPrint)
             <td class="balance-right-cell">
                 <div class="balance-right">
                     <table>
@@ -521,11 +533,13 @@
                     </table>
                 </div>
             </td>
+            @endunless
         </tr>
     </table>
 
     {{-- $cashPaid / $creditDue / $chequePaid already computed above, next to
          the invoice-type banner (same $sumData, same values). --}}
+    @unless($isSalesOrderPrint)
     <div class="payment-summary">
         <div class="payment-summary-title">Payment Method</div>
         @if($cashPaid > 0)
@@ -542,10 +556,12 @@
         @endif
     </div>
 
+    @endunless
+
     @if(!empty($sumData->invoice_remark))
     <div style="margin-top:8px; border-top:1px solid #d9dee6; padding-top:8px;">
         <div style="font-size:10px;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;">
-            Invoice Remark
+            {{ $isSalesOrderPrint ? 'Order Remark' : 'Invoice Remark' }}
         </div>
         <div style="font-size:12px;font-weight:600;line-height:1.5;">
             {{ $sumData->invoice_remark }}

@@ -312,14 +312,13 @@ Route::post('/delete_stock_transfer_ajax', [App\Http\Controllers\StockTransferCo
 // index for sales_create_invoice
 Route::get('/sales_create_stock_transfer', [App\Http\Controllers\StockTransferController::class, 'indexPurchases'])->name('sales_create_stock_transfer');
 
-// Delivery Orders
-Route::get('delivery_orders', [App\Http\Controllers\DeliveryOrderController::class, 'index'])->name('delivery_orders');
-Route::get('/find_invoice_for_do_items', [App\Http\Controllers\DeliveryOrderController::class, 'findInvoice'])->name('find_invoice_for_do_items');
-Route::get('/find_invoice_for_do_customer', [App\Http\Controllers\DeliveryOrderController::class, 'findInvoiceCustomerData'])->name('find_invoice_for_do_customer');
-Route::post('/add_delivery_order', [App\Http\Controllers\DeliveryOrderController::class, 'createDeliveryOrder'])->name('add_delivery_order');
+// Delivery Orders — retired (replaced by Confirm Invoice below). Creation,
+// lookup, and reversal routes removed; print/list kept so historical DOs
+// stay viewable/printable (frozen, real production data).
 Route::get('/print_delivery_order/{do_no}', [App\Http\Controllers\DeliveryOrderController::class, 'print'])->name('print_delivery_order');
-Route::post('/delete_delivery_order_ajax', [App\Http\Controllers\DeliveryOrderController::class, 'deleteDeliveryOrder'])->name('delete_delivery_order_ajax');
 Route::get('delivery_orders_list', [App\Http\Controllers\DeliveryOrderController::class, 'listDeliveryOrders'])->name('delivery_orders_list');
+
+// Saving a Sales Invoice now finalizes the sale and reduces stock.
 
 // show_select_category_item_ajax
 Route::get('/show_select_category_item_ajax', [App\Http\Controllers\StockTransferController::class, 'setItemsCode'])->name('show_select_category_item_ajax');
@@ -824,8 +823,8 @@ Route::get('/show_CustomerCode_ajax',  [App\Http\Controllers\CustomerOpeningBala
 
 
 
-Route::get('/salesInvoice_withoutVat', [App\Http\Controllers\SalesInvoicewithoutVatController::class, 'index'])->name('salesInvoice_withoutVat');
-Route::post('/add_salesInvoice_withoutVat', [App\Http\Controllers\SalesInvoicewithoutVatController::class, 'add_salesInvoice'])->name('add_salesInvoice_withoutVat');
+Route::get('/salesInvoice_withoutVat', [App\Http\Controllers\SalesInvoicewithoutVatController::class, 'index'])->name('salesInvoice_withoutVat')->middleware('auth');
+Route::post('/add_salesInvoice_withoutVat', [App\Http\Controllers\SalesInvoicewithoutVatController::class, 'add_salesInvoice'])->name('add_salesInvoice_withoutVat')->middleware('auth');
 
 
 Route::get('/sales_loding_report', [App\Http\Controllers\SalesLodingReportController::class, 'index'])->name('sales_loding_report');
@@ -1140,3 +1139,9 @@ Route::post('/invoices/apply-transport', [App\Http\Controllers\InvoiceDiscountEn
 
 
 Route::get('/get_customer_ajax_return_nic', [App\Http\Controllers\CustomerController::class, 'getReturnCustomer'])->name('get_customer_ajax_return_nic');
+Route::get('/sales_orders', [App\Http\Controllers\SalesOrderController::class, 'index'])->name('sales_orders')->middleware('auth');
+Route::post('/sales_orders', [App\Http\Controllers\SalesOrderController::class, 'store'])->name('sales_orders.save')->middleware('auth');
+Route::get('/sales_orders/{order}', [App\Http\Controllers\SalesOrderController::class, 'show'])->name('sales_orders.show')->middleware('auth');
+
+Route::get('/sales_orders/{order}/print', [App\Http\Controllers\SalesOrderController::class, 'printOrder'])->name('sales_orders.print')->middleware('auth');
+Route::get('/sales_order_report', [App\Http\Controllers\SalesOrderController::class, 'report'])->name('sales_order_report')->middleware('auth');

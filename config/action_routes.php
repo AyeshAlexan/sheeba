@@ -14,6 +14,7 @@
 return [
     // ── Sales ──────────────────────────────────────────────────────────
     'sales.save' => [
+        'sales_orders.save',
         'add_invoice', 'add_invoice_ajax', 'update_sales_invoice_data',
         'update_vat_invoice_data',
         'add_salesInvoice_withoutVat',
@@ -47,12 +48,12 @@ return [
         'DeleteCustomerOpeningBalance',
     ],
     'sales.print' => [
+        'sales_orders.print',
         'print_sales_invoice_ajax',
         'sales.return.print',
     ],
 
-    // ── Delivery Orders ───────────────────────────────────────────────
-    'delivery_orders.add' => ['add_delivery_order'],
-    'delivery_orders.delete' => ['delete_delivery_order_ajax'],
+
+    // ── Delivery Orders (archive — print only, creation retired) ──────
     'delivery_orders.print' => ['print_delivery_order'],
 ];

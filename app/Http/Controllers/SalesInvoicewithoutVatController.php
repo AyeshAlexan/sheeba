@@ -33,6 +33,15 @@ class SalesInvoicewithoutVatController extends Controller
     // ════════════════════════════════════════════════════════════
    public function index()
     {
+        $branch = auth()->user()->BC;
+        return view('salesInvoice_withoutVat', [
+            'recentOrders' => DB::table('sales_orders')->where('bc', $branch)->whereNull('invoice_no')->orderByDesc('id')->limit(100)->get(['id']),
+            'maxInvoiceNo' => (int) TwithoutVatSalesSum::where('BC', $branch)->max('Invoice_no'),
+        ]);
+    }
+
+    public function orderForm()
+    {
         $branch_code = auth()->user()->BC;
 
         $maxInvoiceNo = TwithoutVatSalesSum::orderBy('Invoice_no', 'desc')
@@ -74,7 +83,7 @@ class SalesInvoicewithoutVatController extends Controller
             DB::raw('MAX(t_item_movements.dDate) AS last_movement_date')
         )
         ->leftJoin('t_item_movements', function ($join) use ($branch_code) {
-            $join->on('items.Item_code', '=', 't_item_movements.item_code');
+            $join->on('items.Item_code', '=', 't_item_movements.item_code')->where('t_item_movements.bc', $branch_code);
         })
         ->groupBy(
             'items.Item_code',
@@ -88,7 +97,11 @@ class SalesInvoicewithoutVatController extends Controller
         )
         ->get();
 
-        return view('salesInvoice_withoutVat')
+        $nextOrderNo = (int) (DB::table('sales_orders')->max('id') ?? 0) + 1;
+
+        return view('salesOrder')
+            ->with('recentOrders', DB::table('sales_orders')->where('bc', $branch_code)->orderByDesc('id')->limit(100)->get(['id', 'invoice_no']))
+            ->with('nextOrderNo',    $nextOrderNo)
             ->with('Route',           $route)
             ->with('nextAgreementNo', $nextAgreementNo)
             ->with('salesmandetails', $salesman)
@@ -116,13 +129,15 @@ class SalesInvoicewithoutVatController extends Controller
 public function add_salesInvoice(Request $request)
 {
     $request->validate([
-        'inputs.*.invoice_no'   => 'required',
-        'inputs.*.invoice_date' => 'required',
+        'invoice_no' => 'required|string|max:255',
+        'sales_order_id' => 'required|integer',
+        'customer_nic' => 'required|string',
+        'invoice_date' => 'required|date',
+        'inputs' => 'required|array|min:1',
         'inputs.*.item_code'    => 'required',
         'inputs.*.qty'          => 'required|numeric|min:0.001',
         'inputs.*.unit_price'   => 'required|numeric|min:0',
         'inputs.*.discount'     => 'nullable|numeric|min:0|max:100',
-        'inputs.*.net_value'    => 'required',
         'cash_payment'          => 'nullable|numeric|min:0',
         'half_payment'          => 'nullable|numeric|min:0',
         'credite_payment'       => 'nullable|numeric|min:0',
@@ -176,12 +191,50 @@ public function add_salesInvoice(Request $request)
         return $guard;
     }
 
+    if ($chequePayment > 0) {
+        $cheques = json_decode($request->input('cheques_data', '[]'), true);
+        if (!is_array($cheques) || empty($cheques) ||
+            abs(round(array_sum(array_column($cheques, 'amount')), 2) - $chequePayment) > 0.001) {
+            return back()->withInput()->with('error', 'Cheque details must match the cheque payment amount.');
+        }
+        foreach ($cheques as $cheque) {
+            if (!is_numeric($cheque['amount'] ?? null) || (float) $cheque['amount'] <= 0) {
+                return back()->withInput()->with('error', 'Every cheque must have a positive amount.');
+            }
+        }
+    }
+
     $branch_code = auth()->user()->BC;
     $oc          = auth()->user()->username;
 
     DB::beginTransaction();
 
     try {
+        // Serialize conversions for this branch before allocating the final number.
+        DB::table('sales_orders')->where('bc', $branch_code)->orderBy('id')->lockForUpdate()->first();
+        $order = DB::table('sales_orders')->where('id', $request->sales_order_id)
+            ->where('bc', $branch_code)->lockForUpdate()->first();
+        abort_unless($order, 404, 'Sales order not found.');
+        abort_if($order->invoice_no !== null, 409, 'This sales order has already been invoiced.');
+        // Only lines from the loaded order may be invoiced; quantities, prices
+        // and discounts may be corrected before finalizing.
+        $orderPayload = json_decode($order->payload, true);
+        abort_unless((string) $request->customer_nic === (string) $orderPayload['customer_nic'], 422,
+            'The invoice customer must match the sales order.');
+        $allowedLines = [];
+        foreach ($orderPayload['inputs'] as $line) {
+            $key = json_encode([$line['item_code'], ($line['batch_no'] ?? '') ?: '']);
+            $allowedLines[$key] = ($allowedLines[$key] ?? 0) + 1;
+        }
+        foreach ($items as $line) {
+            $key = json_encode([$line['item_code'], ($line['batch_no'] ?? '') ?: '']);
+            abort_unless(($allowedLines[$key] ?? 0) > 0, 422,
+                'New items must be added in Sales Order before creating the invoice.');
+            $allowedLines[$key]--;
+        }
+
+        $request->merge(['invoice_no' => (int) TwithoutVatSalesSum::where('BC', $branch_code)->max('Invoice_no') + 1]);
+        Item::whereIn('Item_code', array_column($items, 'item_code'))->orderBy('Item_code')->lockForUpdate()->get();
         // Stock check up-front, same SUM(qun_in)-SUM(qun_out) derivation used by
         // Delivery Order/GRN, so the invoice fails before writing any rows if
         // stock is short — oversold qty should be caught here, not only at DO time.
@@ -192,11 +245,12 @@ public function add_salesInvoice(Request $request)
             }
 
             $item = Item::where('Item_code', $value['item_code'])->first();
+            abort_unless($item, 422, 'Unknown item.');
             if ($item && $item->Batchwise && empty($batchNo)) {
                 abort(422, "\"{$value['item_code']}\" is batch-tracked — pick a batch before saving.");
             }
 
-            $query = TItemMovement::where('item_code', $value['item_code']);
+            $query = TItemMovement::where('item_code', $value['item_code'])->where('bc', $branch_code);
             if (!empty($batchNo)) {
                 $query->where('batch_no', $batchNo);
             } else {
@@ -208,6 +262,16 @@ public function add_salesInvoice(Request $request)
                 $batchLabel = $batchNo ? " in batch \"{$batchNo}\"" : '';
                 abort(422, "Not enough stock{$batchLabel} for item {$value['item_code']}. Remaining: {$qtyRemaining}");
             }
+            $movement = new TItemMovement;
+            $movement->trans_no = $request->invoice_no;
+            $movement->trans_code = 'CONFIRM_INVOICE';
+            $movement->item_code = $value['item_code'];
+            $movement->batch_no = $batchNo;
+            $movement->qun_out = $value['qty'];
+            $movement->Free_Issues = $value['Free_Issues'] ?? 0;
+            $movement->dDate = $request->invoice_date;
+            $movement->bc = $branch_code;
+            $movement->save();
         }
 
         // ── 1. Save Summary ──────────────────────────────────────
@@ -232,7 +296,12 @@ public function add_salesInvoice(Request $request)
         $InvoiceSum->invoice_remark           = $request->invoice_remark ?? 0;
         $InvoiceSum->BC               = $branch_code;
         $InvoiceSum->OC               = $oc;
+        $InvoiceSum->confirmed_at = now();
+        $InvoiceSum->confirmed_by = $oc;
         $InvoiceSum->save();
+        DB::table('sales_orders')->where('id', $order->id)->update([
+            'invoice_no' => $request->invoice_no, 'updated_at' => now(),
+        ]);
 
         // ── 2. Handle All Transactions (Account & Customer) ──────
 
@@ -265,16 +334,14 @@ public function add_salesInvoice(Request $request)
         }
 
         // ── 3. Save Detail Rows ───────────────────────────────────
-        // Stock is no longer deducted here: billing (this invoice) and physical
-        // dispatch are separate events now. Stock-out only happens when a
-        // Delivery Order is created against this invoice (DeliveryOrderController).
+        // Stock and final confirmation are recorded in this same transaction.
         foreach ($request->inputs as $value) {
             $detail                   = new TWithoutVatSalesDetails;
-            $detail->Invoice_no       = $value['invoice_no'];
-            $detail->Invoice_date     = $value['invoice_date'];
+            $detail->Invoice_no       = $request->invoice_no;
+            $detail->Invoice_date     = $request->invoice_date;
             $detail->Item_code        = $value['item_code'];
             $detail->Item_s_code      = $value['item_code'];
-            $detail->batch_no         = $value['batch_no'] ?: null;
+            $detail->batch_no         = ($value['batch_no'] ?? null) ?: null;
             $detail->Item_description = $value['item_description'];
             $detail->QTY              = $value['qty'];
             $detail->Per              = $value['Per'] ?? null;
@@ -333,9 +400,9 @@ public function add_salesInvoice(Request $request)
                 'print_type'  => 'pos',
             ]));
 
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         DB::rollBack();
-        return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
 }
 
@@ -517,6 +584,7 @@ public function printInvoice(Request $request)
         $oc          = auth()->user()->username;
 
         $invoiceNo   = $invoice['invoice_no'];
+        abort_if(TwithoutVatSalesSum::where('BC', $branch_code)->where('Invoice_no', $invoiceNo)->whereNotNull('confirmed_at')->exists(), 409, 'Finalized invoices cannot be edited.');
         $invoiceDate = $invoice['invoice_date'];
         $customerNic = $invoice['customer_nic'];
         $items       = $invoice['items'] ?? [];
@@ -671,6 +739,14 @@ public function printInvoice(Request $request)
             return response()->json(['status' => 'not_found']);
         }
 
+        $invoiceSum = TwithoutVatSalesSum::where('Invoice_no', $item->Invoice_no)
+            ->where('BC', $branch_code)
+            ->first();
+
+        if ($invoiceSum && $invoiceSum->confirmed_at !== null) {
+            return response()->json(['status' => 'error', 'message' => 'This invoice is finalized and can no longer be edited.']);
+        }
+
         // Reverse the stock movement for this specific item
         TItemMovement::where('trans_no',   $item->Invoice_no)
             ->where('trans_code', 'SALES_OUT_VAT')
@@ -690,23 +766,36 @@ public function printInvoice(Request $request)
     {
         $branch_code = auth()->user()->BC;
 
-        TwithoutVatSalesSum::where('Invoice_no', $invoiceNo)
-            ->where('BC', $branch_code)->delete();
+        abort_if(
+            TwithoutVatSalesSum::where('Invoice_no', $invoiceNo)
+                ->where('BC', $branch_code)->whereNotNull('confirmed_at')->exists(),
+            409,
+            'This invoice is finalized and can no longer be deleted.'
+        );
 
-        TWithoutVatSalesDetails::where('Invoice_no', $invoiceNo)
-            ->where('BC', $branch_code)->delete();
+        DB::transaction(function () use ($invoiceNo, $branch_code) {
+            TwithoutVatSalesSum::where('Invoice_no', $invoiceNo)
+                ->where('BC', $branch_code)->delete();
 
-        TItemMovement::where('trans_no',   $invoiceNo)
-            ->where('trans_code', 'SALES_OUT_VAT')
-            ->where('bc',         $branch_code)->delete();
+            TWithoutVatSalesDetails::where('Invoice_no', $invoiceNo)
+                ->where('BC', $branch_code)->delete();
 
-        TAccountTrans::where('trance_no',   $invoiceNo)
-            ->where('trance_type', 'SALES_OUT_VAT')
-            ->where('BC',          $branch_code)->delete();
+            TItemMovement::where('trans_no',   $invoiceNo)
+                ->whereIn('trans_code', ['SALES_OUT_VAT', 'CONFIRM_INVOICE'])
+                ->where('bc',         $branch_code)->delete();
 
-        TCusSaleTrance::where('trance_no',   $invoiceNo)
-            ->where('trance_type', 'SALES_OUT_VAT')
-            ->where('BC',          $branch_code)->delete();
+            TAccountTrans::where('trance_no',   $invoiceNo)
+                ->where('trance_type', 'SALES_OUT_VAT')
+                ->where('BC',          $branch_code)->delete();
+
+            TCusSaleTrance::where('trance_no',   $invoiceNo)
+                ->where('trance_type', 'SALES_OUT_VAT')
+                ->where('BC',          $branch_code)->delete();
+
+            DB::table('sales_orders')->where('bc', $branch_code)
+                ->where('invoice_no', $invoiceNo)
+                ->update(['invoice_no' => null, 'updated_at' => now()]);
+        });
 
         return response()->json(['message' => 'Invoice deleted successfully.']);
     }

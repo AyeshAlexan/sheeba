@@ -17,6 +17,7 @@ return [
     'Sales Reports' => [
         'Item_wish_sales_report' => 'Item Wise Sales',
         'sales_report' => 'Sales Summary',
+        'sales_order_report' => 'Sales Order Report',
         'Invoice_detail_report' => 'Sales Details',
         'customer_wish_report' => 'Customer Wish Item Sales',
         'reports.salesmanInvoiceReport' => 'Salesman Invoice Report',

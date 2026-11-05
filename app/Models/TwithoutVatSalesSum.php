@@ -36,6 +36,8 @@ protected $fillable = [
     'OC',
     'BC',
     'serial_number',
+    'confirmed_at',
+    'confirmed_by',
 ];
 
 }
