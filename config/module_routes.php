@@ -28,7 +28,7 @@ return [
     'delivery_orders' => ['delivery_orders_list'],
     'vouchers' => ['PaymentVoucher', 'gentralreceipt', 'PettyCash'],
     'expense' => ['AddExpense', 'CashOut'],
-    'banking' => ['cheque.deposit', 'issued.cheques', 'cheque.return'],
+    'banking' => ['cheque.deposit', 'issued.cheques', 'cheque.return', 'opening.cheques'],
     'accounting' => ['account_category', 'account_type', 'chartofaccount'],
     'reports' => [
         'Item_detail_report', 'stock_report', 'Stock_valuation_report', 'bin_card', 'ZerostockReport',

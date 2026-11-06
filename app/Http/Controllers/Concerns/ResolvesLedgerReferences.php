@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\Suppliers;
 use App\Models\DailyTransaction;
 use App\Models\ChequeBank;
+use App\Models\TCusCheque;
 
 /**
  * Shared by any report that lists raw t_account_trans rows and needs to
@@ -88,6 +89,18 @@ trait ResolvesLedgerReferences
             $bankName = ChequeBank::find($ref)?->bank_name;
             $label    = 'Bank Opening' . ($bankName ? " — {$bankName}" : '');
             return [$label, route('ChequeBanks')];
+        }
+
+        // Opening cheque — a historical customer cheque entered directly
+        // before go-live, not tied to a sale. $ref is the t_cus_cheques
+        // row id.
+        if ($type === 'OPENING_CHEQUE') {
+            $cheque = TCusCheque::find($ref);
+            $customerName = $cheque
+                ? (Customer::where('Code', $cheque->customer)->value('First_name') ?: $cheque->customer)
+                : null;
+            $label = 'Opening Cheque' . ($customerName ? " — {$customerName}" : '');
+            return [$label, route('opening.cheques')];
         }
 
         // Purchases (goods received) — no->purchase invoice number.

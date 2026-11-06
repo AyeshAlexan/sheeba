@@ -85,13 +85,26 @@
                                         <td>
                                             @if($cheque->direction === 'supplier')
                                                 <span class="badge bg-warning text-dark">Supplier (Issued)</span>
+                                            @elseif(($cheque->trans_type ?? null) === 'OPENING_CHEQUE')
+                                                <span class="badge bg-primary">Opening Cheque</span>
                                             @else
                                                 <span class="badge bg-info text-dark">Customer (Received)</span>
                                             @endif
                                         </td>
                                         <td>{{ $cheque->cheques_no }}</td>
                                         <td>{{ $cheque->party }} <br><small class="text-muted">{{ $cheque->party_code }}</small></td>
-                                        <td>{{ $cheque->bank_name }}</td>
+                                        <td>
+                                            @if($cheque->direction === 'customer' && ($cheque->trans_type ?? null) === 'OPENING_CHEQUE' && !$cheque->cheque_bank_id)
+                                                <select class="form-control form-control-sm account-for-cheque" data-cheque-id="{{ $cheque->id }}">
+                                                    <option value="">Select Account</option>
+                                                    @foreach($chequeBanks as $b)
+                                                        <option value="{{ $b->id }}">{{ $b->bank_name }}{{ $b->branch ? ' - '.$b->branch : '' }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                {{ $cheque->bank_name }}
+                                            @endif
+                                        </td>
                                         <td>{{ $cheque->release_date }}</td>
                                         <td>
                                             {{ number_format((float) $cheque->amount, 2) }}
@@ -136,6 +149,11 @@
                 $('#depositBtn').prop('disabled', $('.chequeCheckbox:checked').length === 0);
             }
 
+            function accountMissingFor(checkbox) {
+                let select = $('.account-for-cheque[data-cheque-id="' + $(checkbox).val() + '"]');
+                return select.length > 0 && !select.val();
+            }
+
             $(document).on('click', '.chequeCheckbox', function (e) {
                 let chequeDate = $(this).data('cheque-date');
                 if (chequeDate && chequeDate > todayStr) {
@@ -143,13 +161,28 @@
                     alert('This cheque is dated ' + chequeDate + ' — it can\'t be actioned until then.');
                     return false;
                 }
+                if ($(this).is(':checked') && accountMissingFor(this)) {
+                    e.preventDefault();
+                    alert('Pick an account for this opening cheque before ticking it.');
+                    return false;
+                }
+            });
+
+            // If the account is cleared after the row was already ticked, un-tick it.
+            $(document).on('change', '.account-for-cheque', function () {
+                let checkbox = $('.chequeCheckbox[value="' + $(this).data('cheque-id') + '"]');
+                if (!$(this).val()) {
+                    checkbox.prop('checked', false);
+                    toggleDepositBtn();
+                }
             });
 
             $('#checkAll').on('change', function () {
                 let checked = $(this).is(':checked');
                 $('.chequeCheckbox').each(function () {
                     let chequeDate = $(this).data('cheque-date');
-                    if (!chequeDate || chequeDate <= todayStr) {
+                    let dateOk = !chequeDate || chequeDate <= todayStr;
+                    if (dateOk && !(checked && accountMissingFor(this))) {
                         $(this).prop('checked', checked);
                     }
                 });
@@ -172,14 +205,28 @@
             $('#depositBtn').on('click', function () {
                 let supplierIds = [];
                 let customerIds = [];
+                let accountForCheque = {};
+                let missingAccount = false;
 
                 $('.chequeCheckbox:checked').each(function () {
+                    let id = $(this).val();
                     if ($(this).data('direction') === 'supplier') {
-                        supplierIds.push($(this).val());
+                        supplierIds.push(id);
                     } else {
-                        customerIds.push($(this).val());
+                        customerIds.push(id);
+                        let select = $('.account-for-cheque[data-cheque-id="' + id + '"]');
+                        if (select.length) {
+                            let accountId = select.val();
+                            if (!accountId) { missingAccount = true; }
+                            accountForCheque[id] = accountId;
+                        }
                     }
                 });
+
+                if (missingAccount) {
+                    alert('Pick an account for every ticked opening cheque before depositing.');
+                    return;
+                }
 
                 let total = supplierIds.length + customerIds.length;
                 if (total === 0) return;
@@ -190,7 +237,7 @@
                 $.ajax({
                     url: "{{ route('cheque.deposit.process') }}",
                     method: 'POST',
-                    data: { supplier_ids: supplierIds, customer_ids: customerIds },
+                    data: { supplier_ids: supplierIds, customer_ids: customerIds, account_for_cheque: accountForCheque },
                     success: function (res) {
                         $('#alertBox').html('<div class="alert alert-success">' + res.message + '</div>');
                         setTimeout(function () { window.location.reload(); }, 800);

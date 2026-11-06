@@ -64,7 +64,9 @@ class ChequeDepositController extends Controller
                 't_cus_cheques.release_date',
                 't_cus_cheques.amount',
                 't_cus_cheques.is_partial_payment',
-                't_cus_cheques.pending_amount'
+                't_cus_cheques.pending_amount',
+                't_cus_cheques.trans_type',
+                't_cus_cheques.cheque_bank_id'
             );
 
         if ($search) {
@@ -86,7 +88,9 @@ class ChequeDepositController extends Controller
 
         $cheques = $supplierCheques->concat($customerCheques)->sortBy('release_date')->values();
 
-        return view('banking.cheque_deposit', compact('cheques', 'search', 'fromDate', 'toDate'));
+        $chequeBanks = ChequeBank::where('is_active', true)->orderBy('bank_name')->get();
+
+        return view('banking.cheque_deposit', compact('cheques', 'search', 'fromDate', 'toDate', 'chequeBanks'));
     }
 
     /**
@@ -97,14 +101,17 @@ class ChequeDepositController extends Controller
     public function deposit(Request $request)
     {
         $request->validate([
-            'supplier_ids'   => 'array',
-            'supplier_ids.*' => 'integer|exists:t_sup_cheques,id',
-            'customer_ids'   => 'array',
-            'customer_ids.*' => 'integer|exists:t_cus_cheques,id',
+            'supplier_ids'        => 'array',
+            'supplier_ids.*'      => 'integer|exists:t_sup_cheques,id',
+            'customer_ids'        => 'array',
+            'customer_ids.*'      => 'integer|exists:t_cus_cheques,id',
+            'account_for_cheque'  => 'array',
+            'account_for_cheque.*' => 'nullable|integer|exists:cheque_banks,id',
         ]);
 
-        $supplierIds = $request->input('supplier_ids', []);
-        $customerIds = $request->input('customer_ids', []);
+        $supplierIds       = $request->input('supplier_ids', []);
+        $customerIds       = $request->input('customer_ids', []);
+        $accountForCheque  = $request->input('account_for_cheque', []);
 
         if (empty($supplierIds) && empty($customerIds)) {
             return response()->json(['status' => 'error', 'message' => 'No cheques selected.'], 422);
@@ -129,6 +136,20 @@ class ChequeDepositController extends Controller
                 ->whereNotIn('cheque_status', ['deposit', 'return', 'ARCHIVED'])
                 ->get();
             foreach ($customerCheques as $cheque) {
+                // Opening Cheques never have a bank picked at entry time —
+                // the account is chosen here, at deposit time, instead.
+                if ($cheque->trans_type === 'OPENING_CHEQUE' && !$cheque->cheque_bank_id) {
+                    $chosenAccountId = $accountForCheque[$cheque->id] ?? null;
+                    if (!$chosenAccountId) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status'  => 'error',
+                            'message' => "Pick an account to deposit opening cheque #{$cheque->cheques_no} into.",
+                        ], 422);
+                    }
+                    $cheque->cheque_bank_id = $chosenAccountId;
+                }
+
                 $cheque->cheque_status     = 'deposit';
                 $cheque->status_changed_at = $now;
                 $cheque->save();

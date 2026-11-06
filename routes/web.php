@@ -435,6 +435,11 @@ Route::post('issued-cheques/mark-issued', [App\Http\Controllers\IssuedChequeCont
 Route::get('cheque-deposit', [App\Http\Controllers\ChequeDepositController::class, 'index'])->name('cheque.deposit');
 Route::post('cheque-deposit/process', [App\Http\Controllers\ChequeDepositController::class, 'deposit'])->name('cheque.deposit.process');
 
+//Banking > Opening Cheques (historical customer cheques held before go-live)
+Route::get('opening-cheques', [App\Http\Controllers\OpeningChequeController::class, 'index'])->name('opening.cheques');
+Route::post('opening-cheques', [App\Http\Controllers\OpeningChequeController::class, 'store'])->name('opening.cheques.store');
+Route::delete('opening-cheques/{id}', [App\Http\Controllers\OpeningChequeController::class, 'destroy'])->name('opening.cheques.destroy');
+
 //Banking > Cheque Return (bounced supplier and customer cheques)
 Route::get('cheque-return', [App\Http\Controllers\ChequeReturnController::class, 'index'])->name('cheque.return');
 Route::post('cheque-return/process', [App\Http\Controllers\ChequeReturnController::class, 'returnCheque'])->name('cheque.return.process');
