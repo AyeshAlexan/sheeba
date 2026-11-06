@@ -20,6 +20,7 @@ use App\Models\TCusSaleTrance;
 use App\Models\MRoute;
 use App\Models\MSalesman;
 use App\Models\branchDel;
+use App\Models\ChequeBank;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Concerns\EnforcesCreditLimit;
 
@@ -37,6 +38,7 @@ class SalesInvoicewithoutVatController extends Controller
         return view('salesInvoice_withoutVat', [
             'recentOrders' => DB::table('sales_orders')->where('bc', $branch)->whereNull('invoice_no')->orderByDesc('id')->limit(100)->get(['id']),
             'maxInvoiceNo' => (int) TwithoutVatSalesSum::where('BC', $branch)->max('Invoice_no'),
+            'chequeBanks'  => ChequeBank::where('is_active', true)->get(),
         ]);
     }
 

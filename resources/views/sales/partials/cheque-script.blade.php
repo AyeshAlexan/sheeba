@@ -45,8 +45,17 @@ function openChequeModal() {
     $('#chequeDetailsModal').one('shown.bs.modal', function () { $('#cheque_bank').focus(); });
 }
 
+// Selecting a bank from the master list auto-fills its branch/account no —
+// same pattern as Customer Payment / Supplier Payment.
+$(document).on('change', '#cheque_bank', function () {
+    var opt = $(this).find('option:selected');
+    $('#cheque_bank_branch').val(opt.data('branch') || '');
+    $('#cheque_acc_no').val(opt.data('account-no') || '');
+});
+
 $('#saveChequeDetails').on('click', function () {
-    var bank        = $('#cheque_bank').val().trim();
+    var bankId      = $('#cheque_bank').val();
+    var bank        = ($('#cheque_bank').find('option:selected').data('bank-name') || '').toString().trim();
     var branch      = $('#cheque_bank_branch').val().trim();
     var chequeNo    = $('#cheque_no').val().trim();
     var accNo       = $('#cheque_acc_no').val().trim();
@@ -54,7 +63,7 @@ $('#saveChequeDetails').on('click', function () {
     var releaseDate = $('#cheque_release_date').val();
 
     $('#cheque_error').hide();
-    if (!bank)        { $('#cheque_error').text('Bank name is required.').show();     $('#cheque_bank').focus();           return; }
+    if (!bankId)      { $('#cheque_error').text('Please select a bank.').show();      $('#cheque_bank').focus();           return; }
     if (!chequeNo)    { $('#cheque_error').text('Cheque number is required.').show(); $('#cheque_no').focus();             return; }
     if (amount <= 0)  { $('#cheque_error').text('Amount must be greater than 0.').show(); $('#cheque_amount_input').focus(); return; }
     if (!releaseDate) { $('#cheque_error').text('Cheque date is required.').show();   $('#cheque_release_date').focus();   return; }

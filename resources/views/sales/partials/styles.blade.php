@@ -859,6 +859,83 @@
     color: #2c4f7c;
 }
 
+/* Cheque Details modal */
+.cheque-modal { border-radius: 16px; overflow: hidden; border: none; }
+.cheque-modal .modal-header {
+    background: #f5f9ff;
+    border-bottom: 1px solid #dfeaf6;
+    padding: 16px 20px;
+}
+.cheque-modal-title { display: flex; align-items: center; gap: 12px; }
+.cheque-modal-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4c8cf7, #2d6ce9);
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 6px 14px rgba(45, 108, 233, 0.25);
+}
+.cheque-modal .modal-title { font-size: 15px; font-weight: 800; color: #1f2d3d; margin: 0; }
+.cheque-modal .modal-body { padding: 20px; }
+.cheque-summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.cheque-summary-figure {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 10px;
+}
+.cheque-summary-figure span {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #7f8ea3;
+    margin-bottom: 3px;
+}
+.cheque-summary-figure strong { font-size: 15px; color: #1f2d3d; }
+.cheque-summary-figure.remaining strong { color: #d43636; }
+.cheque-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+.cheque-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.cheque-field label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2b3b4f;
+    margin: 0;
+}
+.cheque-field label i { color: #2d6ce9; font-size: 12px; width: 13px; text-align: center; }
+.cheque-field .sales-icon-wrap { min-height: 44px; }
+.cheque-field select.sales-select {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #24384e;
+    font-size: 14px;
+    flex: 1;
+    width: 100%;
+}
+.cheque-error { font-size: 12.5px; color: #d43636; font-weight: 600; margin-top: 10px; }
+.cheque-modal .modal-footer { border-top: 1px solid #edf1f5; padding: 14px 20px 18px; gap: 10px; }
+.cheque-modal .modal-footer .recall-load-btn,
+.cheque-modal .modal-footer .recall-secondary-btn { flex: 1; justify-content: center; }
+
 /* A finalized/recalled invoice is strictly view-only — grey out every field
    inside it regardless of readonly/disabled state so it's unmistakable at a
    glance, not just functionally blocked. */
