@@ -858,4 +858,21 @@
     font-weight: 600;
     color: #2c4f7c;
 }
+
+/* A finalized/recalled invoice is strictly view-only — grey out every field
+   inside it regardless of readonly/disabled state so it's unmistakable at a
+   glance, not just functionally blocked. */
+.invoice-view-locked .form-control,
+.invoice-view-locked input,
+.invoice-view-locked select,
+.invoice-view-locked textarea {
+    background: #eef1f5 !important;
+    color: #6b7785 !important;
+    cursor: not-allowed !important;
+    opacity: 1 !important;
+}
+.invoice-view-locked .stock-item-search-btn,
+.invoice-view-locked button[type="submit"] {
+    display: none !important;
+}
 </style>

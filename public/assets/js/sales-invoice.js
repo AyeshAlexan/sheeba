@@ -40,24 +40,27 @@
         $('#itemsNetTotal').text(money(net).toFixed(2));
         window.recalcCreditFromPayments();
     }
-    function input(row, index, key, value, editable) {
+    function input(row, index, key, value, editable, hardLock) {
         var cell = $('<td>').appendTo(row);
         var field = $('<input>', {class: 'form-control', name: 'inputs[' + index + '][' + key + ']',
             type: editable ? 'number' : 'text', readonly: !editable, 'aria-label': key}).val(value == null ? '' : value).appendTo(cell);
         if (editable) field.attr({step: 'any', min: key === 'qty' ? '0.001' : '0', required: true});
         if (key === 'discount') field.attr('max', 100);
+        // A finalized/saved invoice is read-only end to end — disable (not just
+        // readonly) so the field can't be focused/typed into at all.
+        if (hardLock) field.prop('disabled', true);
     }
     function renderLines(lines, locked) {
         var body = $('#invoiceLines tbody').empty();
         Object.values(lines).forEach(function (line, index) {
             var row = $('<tr>').appendTo(body);
-            input(row, index, 'item_code', line.item_code, false);
-            input(row, index, 'item_description', line.item_description, false);
-            input(row, index, 'batch_no', line.batch_no, false);
-            input(row, index, 'unit_price', line.unit_price, !locked);
-            input(row, index, 'qty', line.qty, !locked);
-            input(row, index, 'discount', line.discount || 0, !locked);
-            input(row, index, 'net_value', line.net_value || 0, false);
+            input(row, index, 'item_code', line.item_code, false, locked);
+            input(row, index, 'item_description', line.item_description, false, locked);
+            input(row, index, 'batch_no', line.batch_no, false, locked);
+            input(row, index, 'unit_price', line.unit_price, !locked, locked);
+            input(row, index, 'qty', line.qty, !locked, locked);
+            input(row, index, 'discount', line.discount || 0, !locked, locked);
+            input(row, index, 'net_value', line.net_value || 0, false, locked);
             var action = $('<td>').appendTo(row);
             if (!locked) $('<button>', {type:'button', class:'btn btn-outline-danger remove-order-line', text:'Remove'}).appendTo(action);
             $('<input>', {type:'hidden', name:'inputs[' + index + '][Free_Issues]'}).val(line.Free_Issues || 0).appendTo(action);
@@ -66,18 +69,18 @@
     }
     function clearForm() {
         viewingSaved = false;
-        $('#invoiceDetails').prop('hidden', true);
+        $('#invoiceDetails').prop('hidden', true).removeClass('invoice-view-locked');
         $('#savedInvoiceNotice').prop('hidden', true).text('');
         $('#sales_order_id').val('');
         $('#invoiceLines tbody').empty();
-        $('#cash_payment, #half_payment, #cheque_payment').prop('readonly', false);
+        $('#cash_payment, #half_payment, #cheque_payment').prop({readonly: false, disabled: false});
         $('#cash_payment, #half_payment, #cheque_payment').val('');
         $('#invoice_no').val(config.nextInvoice);
-        $('#invoice_date').prop('readonly', false);
-        $('#invoice_remark').prop('readonly', false);
+        $('#invoice_date').prop({readonly: false, disabled: false});
+        $('#invoice_remark').prop({readonly: false, disabled: false});
         chequeList = []; renderChequeTable(); syncChequeHiddenFields();
         $('#savedInvoicePrint, #savedInvoicePosPrint').prop('hidden', true);
-        $('#finalizeInvoiceBtn, #openChequeModalBtn, #itemEditHint').show();
+        $('#finalizeInvoiceBtn, #openChequeModalBtn, #itemEditHint').show().prop('disabled', false);
     }
     function header(payload, orderNo) {
         $('#loadedOrderNo').text(orderNo || '-');
@@ -134,8 +137,12 @@
             $('#total_amount').val(invoice.Gross_Amount); $('#paid_discount').val(invoice.Discount); $('#paid_amount').val(invoice.Net_Amount);
             $('#itemsNetTotal').text(number(invoice.Net_Amount).toFixed(2));
             $('#cash_payment').val(invoice.Cash_Pay); $('#half_payment').val(invoice.Half_Payment); $('#cheque_payment').val(invoice.Cheque); $('#credite_payment').val(invoice.Credite);
-            $('#cash_payment, #half_payment, #cheque_payment, #invoice_remark').prop('readonly', true);
-            $('#finalizeInvoiceBtn, #openChequeModalBtn, #itemEditHint').hide();
+            // disabled (not just readonly) so a finalized invoice's payment/date/remark
+            // fields can't be focused or typed into at all, and visually grey out via
+            // the .invoice-view-locked class below — readonly alone still looks editable.
+            $('#cash_payment, #half_payment, #cheque_payment, #invoice_remark, #invoice_date').prop({readonly: true, disabled: true});
+            $('#finalizeInvoiceBtn, #openChequeModalBtn, #itemEditHint').hide().prop('disabled', true);
+            $('#invoiceDetails').addClass('invoice-view-locked');
             ['savedInvoicePrint','savedInvoicePosPrint'].forEach(function (id, index) {
                 var params = new URLSearchParams({invoice_no:invoice.Invoice_no, branch_code:config.branch, print_type:index ? 'pos':'normal'});
                 $('#' + id).attr('href', config.printUrl + '?' + params.toString()).prop('hidden', false);
@@ -159,7 +166,12 @@
         if (e.key === 'Enter') { e.preventDefault(); $(this.id === 'load_order_no' ? '#loadOrderBtn' : '#recallInvoiceBtn').click(); }
     });
     $('#sales_form').on('submit', function (e) {
-        if (viewingSaved || !$('#sales_order_id').val() || !$('#invoiceLines tbody tr').length) {
+        if (viewingSaved) {
+            e.preventDefault();
+            alert('This invoice is already finalized and cannot be edited or re-saved. Use "Start Over" to create a new one.');
+            return;
+        }
+        if (!$('#sales_order_id').val() || !$('#invoiceLines tbody tr').length) {
             e.preventDefault(); alert('Load a sales order with at least one item.'); return;
         }
         syncChequeHiddenFields();
