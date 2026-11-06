@@ -103,6 +103,12 @@ trait ResolvesLedgerReferences
             return [$label, route('opening.cheques')];
         }
 
+        // A cheque actually banked — moves its value out of 201-123 and
+        // into whichever Account it was deposited into.
+        if ($type === 'CHEQUE_DEPOSIT') {
+            return [$row->Description ?: ('Cheque Deposited #' . $ref), route('cheque.deposit')];
+        }
+
         // Purchases (goods received) — no->purchase invoice number.
         if ($type === 'GRN') {
             return ['Purchase #' . $row->no, route('purchasing.report', ['purchase_no' => $row->no])];

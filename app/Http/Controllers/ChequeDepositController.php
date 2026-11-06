@@ -7,6 +7,7 @@ use App\Models\TSupCheque;
 use App\Models\TCusCheque;
 use App\Models\ChequeBank;
 use App\Models\Customer;
+use App\Models\TAccountTrans;
 use Illuminate\Support\Facades\DB;
 
 class ChequeDepositController extends Controller
@@ -157,12 +158,27 @@ class ChequeDepositController extends Controller
                 if ($cheque->cheque_bank_id) {
                     ChequeBank::where('id', $cheque->cheque_bank_id)
                         ->increment('current_amount', $cheque->amount);
+
+                    // The cheque's value moves out of "Cheques in Hand" (201-123)
+                    // and into the bank the moment it's actually deposited — this
+                    // was previously missing, leaving deposited cheques stuck
+                    // showing as an asset forever. No customer-ledger entry here:
+                    // the customer's balance already moved in full when the
+                    // cheque was first recorded, not at deposit time.
+                    TAccountTrans::create([
+                        'trance_type' => 'CHEQUE_DEPOSIT',
+                        'Ddate'       => $now->toDateString(),
+                        'AccCode'     => '201-123',
+                        'Description' => 'Cheque Deposited #' . $cheque->cheques_no,
+                        'dr_amount'   => 0,
+                        'cr_amount'   => $cheque->amount,
+                        'trance_no'   => $cheque->id,
+                        'no'          => $cheque->id,
+                        'BC'          => $cheque->bc,
+                        'OC'          => $cheque->oc,
+                    ]);
                 }
 
-                // No customer-ledger entry here: the payment (including this
-                // cheque's amount) was already posted to t_cus_sale_trances
-                // in full when the payment was recorded — depositing only
-                // updates the cheque's own status and the bank balance.
                 $processed++;
             }
 

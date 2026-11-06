@@ -68,6 +68,16 @@
                     .negative-balance { color: var(--cct-red); }
                     .positive-balance { color: var(--cct-green); }
 
+                    /* ── Opening Cheque badge ── */
+                    .opening-cheque-badge {
+                        display: inline-flex; align-items: center; gap: 4px;
+                        background: #fff; color: var(--cct-amber);
+                        border: 1.3px solid var(--cct-amber);
+                        font-size: 10px; font-weight: 700; padding: 2px 8px;
+                        border-radius: 999px; margin-left: 8px; letter-spacing: .03em;
+                    }
+                    .opening-cheque-badge i { font-size: 9px; }
+
                     /* ── Day End Close panel ── */
                     .day-end-panel {
                         border: 1.5px dashed var(--cct-red);
@@ -268,6 +278,9 @@
                                                             <a href="{{ $inv->reference_url }}" target="_blank">{{ $inv->reference_label }}</a>
                                                         @else
                                                             {{ $inv->reference_label }}
+                                                        @endif
+                                                        @if($inv->trance_type === 'OPENING_CHEQUE')
+                                                            <span class="opening-cheque-badge"><i class="fa-solid fa-clock-rotate-left"></i> Opening</span>
                                                         @endif
                                                     </td>
                                                     <td>{{ $inv->Description }}</td>

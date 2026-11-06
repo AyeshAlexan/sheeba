@@ -117,7 +117,7 @@
                                     <label>Customer <span class="text-danger">*</span></label>
                                     <div class="si-icon-wrap customer-code-wrap">
                                         <input type="text" id="oc_customer_display" class="form-control" placeholder="Select customer" readonly>
-                                        <button type="button" class="btn btn-primary customer-picker" data-bs-toggle="modal" data-bs-target="#selectOpeningChequeCustomerModal" aria-label="Select customer">
+                                        <button type="button" class="btn btn-primary customer-picker" id="openOpeningChequeCustomerPicker" aria-label="Select customer">
                                             <i class="fas fa-arrow-left" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -221,11 +221,28 @@
         $('#openingChequeCustomerSearch').on('input', function () {
             customerTable.search(this.value).draw();
         });
+
+        // Bootstrap doesn't cleanly support two stacked modals — hiding the
+        // picker while the Add form is still open strips the body's modal
+        // state and silently kills the Add modal too. So only one is ever
+        // shown at a time: hide Add, show the picker; when the picker
+        // closes (picked or cancelled), bring Add back.
+        var addChequeModalEl = document.getElementById('addOpeningChequeModal');
+        var pickerModalEl    = document.getElementById('selectOpeningChequeCustomerModal');
+
+        $('#openOpeningChequeCustomerPicker').on('click', function () {
+            bootstrap.Modal.getOrCreateInstance(addChequeModalEl).hide();
+            bootstrap.Modal.getOrCreateInstance(pickerModalEl).show();
+        });
+
+        $(pickerModalEl).on('hidden.bs.modal', function () {
+            bootstrap.Modal.getOrCreateInstance(addChequeModalEl).show();
+        });
+
         $(document).on('click', '.select-opening-cheque-customer', function () {
             $('#oc_customer_code').val($(this).data('customer-code'));
             $('#oc_customer_display').val($(this).data('customer-code') + ' — ' + $(this).data('customer-name'));
-            var modal = bootstrap.Modal.getInstance(document.getElementById('selectOpeningChequeCustomerModal'));
-            if (modal) modal.hide();
+            bootstrap.Modal.getOrCreateInstance(pickerModalEl).hide();
         });
 
         $('#addOpeningChequeForm').on('submit', function (e) {

@@ -227,6 +227,24 @@ class ChequeReturnController extends Controller
                 if ($wasDeposited && $cheque->cheque_bank_id) {
                     ChequeBank::where('id', $cheque->cheque_bank_id)
                         ->decrement('current_amount', $cheque->amount);
+
+                    // Deposit also moved this cheque's value out of 201-123
+                    // (CHEQUE_DEPOSIT, see ChequeDepositController) — undo
+                    // that too, on top of the creation-time reversal above,
+                    // so a deposited-then-bounced cheque nets to zero instead
+                    // of leaving 201-123 permanently short.
+                    TAccountTrans::create([
+                        'trance_type' => 'CHEQUE_RETURN',
+                        'Ddate'       => $now->toDateString(),
+                        'AccCode'     => '201-123',
+                        'Description' => 'Reverse Deposit — Cheque Returned #' . $cheque->cheques_no,
+                        'dr_amount'   => $cheque->amount,
+                        'cr_amount'   => 0,
+                        'trance_no'   => $cheque->id,
+                        'no'          => $cheque->id,
+                        'BC'          => $cheque->bc,
+                        'OC'          => $cheque->oc,
+                    ]);
                 }
                 $processed++;
             }
