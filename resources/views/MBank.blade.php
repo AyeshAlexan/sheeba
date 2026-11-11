@@ -256,7 +256,7 @@
                 success: function(response) {
                     $('#addEmployeeModal').modal('hide');
                     employeeList();
-                    alert(response.message);
+                    showValidationAlert(response.message);
                 }
 
             })
@@ -283,7 +283,7 @@
                 success: function(response) {
                     $('#editEmployeeModal').modal('hide');
                     employeeList();
-                    alert(response.message);
+                    showValidationAlert(response.message);
                 }
 
             })
@@ -322,7 +322,7 @@
                 url: "{{ url('employee-delete') }}",
                 success: function(response) {
                     employeeList();
-                    alert(response.message);
+                    showValidationAlert(response.message);
                 }
             })
         }

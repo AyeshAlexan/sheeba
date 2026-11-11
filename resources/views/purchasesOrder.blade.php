@@ -783,7 +783,7 @@ aria-hidden="true">
             });
 
         }else{
-            alert("Please Enter Amount");
+            showValidationAlert("Please Enter Amount");
         }
 
     });
@@ -1458,7 +1458,7 @@ aria-hidden="true">
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

@@ -462,7 +462,7 @@
                 if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.description) {
                     msg = xhr.responseJSON.errors.description[0];
                 }
-                alert(msg);
+                showValidationAlert(msg);
             }
         });
     });

@@ -564,7 +564,7 @@
                                     $panel.attr('data-saved-keys', previousSavedKeys);
                                     $panel.data('saved-keys', previousSavedKeys);
                                     restoreReportsPanel(role);
-                                    alert('Something went wrong while saving — reopen "Configure Reports" to try again.');
+                                    showValidationAlert('Something went wrong while saving — reopen "Configure Reports" to try again.', {type: 'danger'});
                                 }
                             });
                         });
@@ -615,7 +615,7 @@
                                 },
                                 error: function () {
                                     $btn.prop('disabled', false);
-                                    alert('Something went wrong while saving.');
+                                    showValidationAlert('Something went wrong while saving.', {type: 'danger'});
                                 }
                             });
                         });

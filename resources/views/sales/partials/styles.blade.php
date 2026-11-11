@@ -255,6 +255,65 @@
 .recall-secondary-btn:hover { background: #f5f9ff; }
 .recall-secondary-btn:disabled { opacity: .6; cursor: not-allowed; }
 
+/* "Not Enough Stock" modal */
+.stock-warning-modal { border-radius: 16px; overflow: hidden; border: none; }
+.stock-warning-modal .modal-header {
+    background: #fdecec;
+    border-bottom: 1px solid #f6cfcf;
+    padding: 16px 20px;
+}
+.stock-warning-modal .modal-header .modal-title {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #a32d2d;
+}
+.stock-warning-modal .modal-body { padding: 24px 20px 10px; }
+.stock-warning-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #fdecec;
+    color: #d43636;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+.stock-warning-item {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2d3d;
+    margin-bottom: 16px;
+}
+.stock-warning-figures {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.stock-warning-figure {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 8px;
+}
+.stock-warning-figure span {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #7f8ea3;
+    margin-bottom: 4px;
+}
+.stock-warning-figure strong { font-size: 18px; color: #1e8d5e; }
+.stock-warning-figure.requested strong { color: #d43636; }
+.stock-warning-note { font-size: 12.5px; color: #5a6f8b; margin-bottom: 4px; }
+.stock-warning-modal .modal-footer { border-top: none; padding: 10px 20px 22px; }
+
 /* Modern sales invoice header and form shell */
 .sales-shell {
     border: 1px solid #dfeaf6 !important;

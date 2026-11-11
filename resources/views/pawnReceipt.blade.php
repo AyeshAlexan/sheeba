@@ -763,7 +763,7 @@
             if (receipt_type == "" || receipt_no == "" || receipt_date == "" || category == "" || articles ==
                 "" || condition == "" || karatage == "" || weight == "" || total_weight == "" || qty == "" ||
                 value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

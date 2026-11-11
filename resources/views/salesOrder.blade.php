@@ -505,6 +505,38 @@ CHEQUE DETAILS MODAL
     </div>
 </div>
 
+{{-- ══════════════════════════════════════════════════════════
+NOT ENOUGH STOCK MODAL
+══════════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="stockWarningModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content stock-warning-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-triangle-exclamation me-2"></i> Not Enough Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="stock-warning-icon"><i class="fas fa-box-open"></i></div>
+                <p class="stock-warning-item" id="sw_item_label"></p>
+                <div class="stock-warning-figures">
+                    <div class="stock-warning-figure">
+                        <span>Available</span>
+                        <strong id="sw_available">0</strong>
+                    </div>
+                    <div class="stock-warning-figure requested">
+                        <span>You tried to add</span>
+                        <strong id="sw_requested">0</strong>
+                    </div>
+                </div>
+                <p class="stock-warning-note">Lower the quantity or pick a different batch before adding this item.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">OK, I'll fix it</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('layouts.footer')
 {!! Toastr::message() !!}
 
@@ -543,10 +575,10 @@ FORM SUBMIT VALIDATION
 <script>
 document.getElementById('sales_form').addEventListener('submit', function (e) {
     if ($('#sales_form').data('order-load-pending')) {
-        e.preventDefault(); alert('Load an open sales order successfully, or start over before saving.'); return;
+        e.preventDefault(); showValidationAlert('Load an open sales order successfully, or start over before saving.'); return;
     }
     if (!$('#searchCustomer').val().trim() || !$('#dynamicAdded tr').length) {
-        e.preventDefault(); alert('Select a customer and add at least one item before saving the order.');
+        e.preventDefault(); showValidationAlert('Select a customer and add at least one item before saving the order.');
     }
 });
 </script>
@@ -627,6 +659,7 @@ function loadItemBatches(itemCode) {
                     batchSelect.append($('<option>', {
                         value: b.batch_no,
                         'data-sale-price': b.sale_price,
+                        'data-qty-remaining': b.qty_remaining,
                         disabled: false,
                         style: isEmpty ? 'color:#aaa;' : '',
                         text: b.batch_no + ' (Qty ' + b.qty_remaining + ', Rs.' + b.sale_price + ')' + (isEmpty ? ' — Out of stock' : '')
@@ -796,9 +829,24 @@ var pendingAddPayload   = null;
 
 // Build a lookup map: item_code => purchasePrice  (rendered once by Blade)
 var itemCostMap = {};
+// Build a lookup map: item_code => total remaining stock (all batches combined).
+// Batch-tracked items are checked against the selected batch's own remaining
+// qty instead (see loadItemBatches' data-qty-remaining), since stock is kept
+// per-batch for those.
+var itemStockMap = {};
 @foreach($itemDetails as $ItemData)
     itemCostMap['{{ $ItemData->Item_code }}'] = {{ floatval($ItemData->purchasePrice) }};
+    itemStockMap['{{ $ItemData->Item_code }}'] = {{ floatval($ItemData->QTY) }};
 @endforeach
+
+// ── Open "not enough stock" modal ──
+function showStockWarning(itemCode, batchNo, available, requested) {
+    var label = itemCode + (batchNo ? ' (Batch ' + batchNo + ')' : '');
+    $('#sw_item_label').text(label);
+    $('#sw_available').text(available);
+    $('#sw_requested').text(requested);
+    $('#stockWarningModal').modal('show');
+}
 
 // ── Open cost guard modal ──
 function openCostGuard(netValue, totalCost) {
@@ -858,12 +906,36 @@ $('.add-item').click(function () {
     var batch_no         = $('#item_batch').val();
 
     if (discount < 0 || discount > 100) {
-        alert('Discount percentage must be between 0 and 100.');
+        showValidationAlert('Discount percentage must be between 0 and 100.');
         return;
     }
 
     if (!customer_nic || !invoice_no || !item_code || !qty || !unit_price || !net_value) {
-        alert('Please fill in all required fields.');
+        showValidationAlert('Please fill in all required fields.');
+        return;
+    }
+
+    // ── Stock check — block adding more than what's actually available ──
+    var availableStock = batch_no
+        ? parseFloat($('#item_batch option:selected').data('qty-remaining'))
+        : itemStockMap[item_code];
+    if (isNaN(availableStock)) availableStock = 0;
+
+    // Account for the same item/batch already sitting in this order (not yet
+    // saved) so adding it twice can't together exceed real stock.
+    var alreadyAdded = 0;
+    $('#dynamicAdded tr').each(function () {
+        var row       = $(this);
+        var rowCode   = row.find('[name$="[item_code]"]').val();
+        var rowBatch  = row.find('[name$="[batch_no]"]').val() || '';
+        if (rowCode === item_code && rowBatch === (batch_no || '')) {
+            alreadyAdded += parseFloat(row.find('[name$="[qty]"]').val()) || 0;
+        }
+    });
+
+    var remainingStock = availableStock - alreadyAdded;
+    if (qty > remainingStock) {
+        showStockWarning(item_code, batch_no, remainingStock, qty);
         return;
     }
 

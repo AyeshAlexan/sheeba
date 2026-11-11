@@ -560,10 +560,10 @@ $(document).ready(function () {
     /* ── Confirm button submit ── */
     $('#confirmBtn').on('click', function(){
         var action = $('#f_action_type_hidden').val();
-        if(!action){ alert('Please select an action type.'); return; }
+        if(!action){ showValidationAlert('Please select an action type.'); return; }
         if(action === 'deposit'){
             var amt = parseFloat($('#f_dr_amount').val());
-            if(!amt || amt <= 0){ alert('Please enter a valid deposit amount.'); return; }
+            if(!amt || amt <= 0){ showValidationAlert('Please enter a valid deposit amount.'); return; }
         }
         $('#cashReceivedForm').submit();
     });

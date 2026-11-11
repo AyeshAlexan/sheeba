@@ -1804,7 +1804,7 @@
                 // Check if the input is a valid number
                 if (isNaN(number_of_instalment) || isNaN(fixed_gross_amount) || isNaN(fixed_net_amount) || isNaN(document_charge) ||
                     isNaN(down_payment) || isNaN(cus_payment) || isNaN(int_amount || isNaN(transport))) {
-                        alert('Invalid input. Please enter valid numbers.');
+                        showValidationAlert('Invalid input. Please enter valid numbers.');
                     return;
                 }
 
@@ -2092,7 +2092,7 @@
                                     window.open(response.pdfUrl, '_blank');
                                 } else {
                                     // Handle the error or show a message
-                                    alert('Error printing invoice !!');
+                                    showValidationAlert('Error printing invoice !!', {type: 'danger'});
                                 }
                         }
                     });
@@ -2680,7 +2680,7 @@
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

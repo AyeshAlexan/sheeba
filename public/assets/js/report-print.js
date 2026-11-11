@@ -139,7 +139,7 @@
     window.stockReportPrintTables = function (selectors) {
         var printWindow = window.open('', '_blank');
         if (!printWindow) {
-            window.alert('Please allow pop-ups to print this report.');
+            window.showValidationAlert('Please allow pop-ups to print this report.');
             return;
         }
 

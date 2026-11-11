@@ -419,7 +419,7 @@
 
             if (Store_code == "" || invoice_no == "" || item_code == "" || qtyOut == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

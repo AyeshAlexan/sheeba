@@ -415,7 +415,7 @@
                             });
 
                             if (!items.length) {
-                                alert('Add at least one item before saving.');
+                                showValidationAlert('Add at least one item before saving.');
                                 return;
                             }
 
@@ -440,7 +440,7 @@
                                             msg = xhr.responseJSON.message;
                                         }
                                     }
-                                    alert(msg);
+                                    showValidationAlert(msg);
                                 }
                             });
                         });

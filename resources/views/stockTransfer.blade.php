@@ -627,7 +627,7 @@ Branch Add --}}
         }).length;
 
         if (filledCount !== 1) {
-            alert('Please fill exactly one payment type.');
+            showValidationAlert('Please fill exactly one payment type.');
             event.preventDefault(); // Prevent form submission
         }
     });
@@ -1024,7 +1024,7 @@ Branch Add --}}
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

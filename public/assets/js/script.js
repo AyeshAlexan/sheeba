@@ -639,3 +639,80 @@ jQuery(document).on('click', '.pawn_cancel', function (e) {
         window.location.reload();
     }
 });
+
+// Shared validation popup — replaces plain browser alert() everywhere in
+// the app with a styled modal matching the rest of the UI. Built in pure
+// vanilla JS (no Bootstrap modal plugin) and injected into the DOM on
+// first use, so it works the same on every page regardless of which
+// Bootstrap build that page happens to load.
+(function () {
+    var overlay, titleEl, messageEl, okBtn, boxEl, lastFocused;
+
+    function ensureModal() {
+        if (overlay) return;
+        var html = '' +
+            '<div id="gvmOverlay">' +
+            '  <div class="gvm-box" id="gvmBox" role="alertdialog" aria-modal="true" aria-labelledby="gvmTitle">' +
+            '    <div class="gvm-head">' +
+            '      <h5 class="gvm-title" id="gvmTitle"><i class="fas fa-triangle-exclamation" id="gvmIcon"></i><span id="gvmTitleText">Please check this</span></h5>' +
+            '      <button type="button" class="gvm-close" id="gvmCloseBtn" aria-label="Close">&times;</button>' +
+            '    </div>' +
+            '    <div class="gvm-body">' +
+            '      <p class="gvm-message" id="gvmMessage"></p>' +
+            '    </div>' +
+            '    <div class="gvm-footer">' +
+            '      <button type="button" class="gvm-ok-btn" id="gvmOkBtn">OK</button>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
+        document.body.insertAdjacentHTML('beforeend', html);
+        overlay   = document.getElementById('gvmOverlay');
+        boxEl     = document.getElementById('gvmBox');
+        titleEl   = document.getElementById('gvmTitleText');
+        messageEl = document.getElementById('gvmMessage');
+        okBtn     = document.getElementById('gvmOkBtn');
+
+        var hide = function () { window.hideValidationAlert(); };
+        okBtn.addEventListener('click', hide);
+        document.getElementById('gvmCloseBtn').addEventListener('click', hide);
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) hide(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('show')) hide();
+        });
+    }
+
+    var ICONS = {
+        warning: 'fa-triangle-exclamation',
+        danger: 'fa-circle-exclamation',
+        success: 'fa-circle-check',
+        info: 'fa-circle-info',
+    };
+    var TITLES = {
+        warning: 'Please check this',
+        danger: 'Something went wrong',
+        success: 'Success',
+        info: 'Note',
+    };
+
+    // showValidationAlert(message, { title, type }) — type is 'warning'
+    // (default, amber-leaning red), 'danger', 'success', or 'info'.
+    window.showValidationAlert = function (message, opts) {
+        opts = opts || {};
+        var type = opts.type || 'warning';
+        ensureModal();
+
+        boxEl.className = 'gvm-box' + (type !== 'warning' ? ' gvm-' + type : '');
+        titleEl.textContent = opts.title || TITLES[type] || TITLES.warning;
+        document.getElementById('gvmIcon').className = 'fas ' + (ICONS[type] || ICONS.warning);
+        messageEl.textContent = message;
+
+        lastFocused = document.activeElement;
+        overlay.classList.add('show');
+        okBtn.focus();
+    };
+
+    window.hideValidationAlert = function () {
+        if (overlay) overlay.classList.remove('show');
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+    };
+})();

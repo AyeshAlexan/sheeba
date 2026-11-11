@@ -546,7 +546,7 @@
         if (isEmptyOrSpaces(cheque_bank_id) || isEmptyOrSpaces(cheque_date) ||
             isEmptyOrSpaces(account_no) || isEmptyOrSpaces(cheque_no) ||
             isEmptyOrSpaces(cheque_ammount)) {
-            alert("Please fill in all the fields.");
+            showValidationAlert("Please fill in all the fields.");
             return;
         }
 
@@ -800,13 +800,13 @@ $(document).ready(function () {
                 let error = err.responseJSON || {};
                 if (error.message) {
                     $('.errMsgContainer2').append('<span class="text-danger">' + error.message + '</span><br>');
-                    alert(error.message);
+                    showValidationAlert(error.message, {type: 'danger'});
                 } else if (error.errors) {
                     $.each(error.errors, function (index, value) {
                         $('.errMsgContainer2').append('<span class="text-danger">' + value + '<span><br>');
                     });
                 } else {
-                    alert('Something went wrong while saving the payment.');
+                    showValidationAlert('Something went wrong while saving the payment.', {type: 'danger'});
                 }
             }
         });

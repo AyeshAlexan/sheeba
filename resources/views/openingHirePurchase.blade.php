@@ -1496,7 +1496,7 @@
                                     window.open(response.pdfUrl, '_blank');
                                 } else {
                                     // Handle the error or show a message
-                                    alert('Error printing invoice !!');
+                                    showValidationAlert('Error printing invoice !!', {type: 'danger'});
                                 }
                         }
                     });
@@ -2016,7 +2016,7 @@
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

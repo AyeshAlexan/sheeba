@@ -448,7 +448,7 @@
                                             msg = xhr.responseJSON.message;
                                         }
                                     }
-                                    alert(msg);
+                                    showValidationAlert(msg);
                                 }
                             });
                         });

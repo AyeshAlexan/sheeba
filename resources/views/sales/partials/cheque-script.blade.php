@@ -5,13 +5,13 @@ $(document).on('keydown', '#cheque_payment', function (e) {
     if (e.keyCode !== 13) return;
     e.preventDefault();
     var val = parseFloat($(this).val()) || 0;
-    if (val <= 0) { alert('Please enter a cheque amount first.'); return; }
+    if (val <= 0) { showValidationAlert('Please enter a cheque amount first.'); return; }
     openChequeModal();
 });
 
 $(document).on('click', '#openChequeModalBtn', function () {
     var val = parseFloat($('#cheque_payment').val()) || 0;
-    if (val <= 0) { alert('Please enter a cheque amount first.'); return; }
+    if (val <= 0) { showValidationAlert('Please enter a cheque amount first.'); return; }
     openChequeModal();
 });
 

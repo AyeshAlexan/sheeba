@@ -819,7 +819,7 @@
         }).length;
 
         if (filledCount !== 1) {
-            alert('Please fill exactly one payment type.');
+            showValidationAlert('Please fill exactly one payment type.');
             event.preventDefault(); // Prevent form submission
         }
     });
@@ -892,7 +892,7 @@
             addSerialNoModal.modal('hide');
 
             // ✅ Show alert after modal hides
-            alert("Serial numbers saved successfully!");
+            showValidationAlert("Serial numbers saved successfully!", {type: 'success'});
         });
 
 
@@ -952,7 +952,7 @@
             addAutoSerialNoModal.modal('hide');
 
             // ✅ Show alert after modal hides
-            alert("Serial numbers saved successfully!");
+            showValidationAlert("Serial numbers saved successfully!", {type: 'success'});
         });
     });
 </script>
@@ -1033,7 +1033,7 @@
             });
 
         }else{
-            alert("Please Enter Amount");
+            showValidationAlert("Please Enter Amount");
         }
 
     });
@@ -1524,7 +1524,7 @@
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

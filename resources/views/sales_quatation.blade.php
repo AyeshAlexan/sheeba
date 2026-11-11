@@ -730,7 +730,7 @@
         var chequePayment = document.getElementById('cheque_payment').value;
 
         if (cashPayment.trim() === '' && creditePayment.trim() === '' && chequePayment.trim() === '') {
-            alert('Please fill at least one payment method.');
+            showValidationAlert('Please fill at least one payment method.');
             return false;
         }
         return true;
@@ -1182,7 +1182,7 @@
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 

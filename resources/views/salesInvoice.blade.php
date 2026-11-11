@@ -260,14 +260,14 @@ $(document).ready(function () {
         $('select[name="serialNumber[]"]').each(function () {
             let val = $(this).val();
             if (!val) {
-                alert("Please select all serial numbers before saving.");
+                showValidationAlert("Please select all serial numbers before saving.");
                 return false;
             }
             selectedValues.push(val);
         });
 
         if ((new Set(selectedValues)).size !== selectedValues.length) {
-            alert("Selected serial numbers must be unique.");
+            showValidationAlert("Selected serial numbers must be unique.");
             return;
         }
 
@@ -1051,7 +1051,7 @@ $(document).ready(function () {
         }).length;
 
         if (filledCount !== 1) {
-            alert('Please fill exactly one payment type.');
+            showValidationAlert('Please fill exactly one payment type.');
             event.preventDefault(); // Prevent form submission
         }
     });
@@ -1106,7 +1106,7 @@ $(document).ready(function () {
                                     window.open(response.pdfUrl, '_blank');
                                 } else {
                                     // Handle the error or show a message
-                                    alert('Error printing invoice !!');
+                                    showValidationAlert('Error printing invoice !!', {type: 'danger'});
                                 }
                         }
                     });
@@ -1457,7 +1457,7 @@ $(document).ready(function () {
 
             if (customer_nic == "" || invoice_no == "" || item_code == "" || qty == "" || unit_price == "" ||
                 net_value == "") {
-                alert("Please fill in all the fields.");
+                showValidationAlert("Please fill in all the fields.");
                 return;
             } else {
 
@@ -1823,7 +1823,7 @@ $(document).ready(function () {
             let cheque_ammount = parseFloat($('#cheque_ammount').val());
 
             if (!bank_name || !bank_branch || !account_no || !cheque_no || isNaN(cheque_ammount)) {
-                alert("Please fill in all fields correctly.");
+                showValidationAlert("Please fill in all fields correctly.");
                 return;
             }
 
@@ -2096,15 +2096,15 @@ $(document).ready(function () {
             },
             success: function (res) {
                 if (res.status === 'success') {
-                    alert('Invoice updated successfully!');
+                    showValidationAlert('Invoice updated successfully!', {type: 'success'});
                     // Refresh the page after alert
                     location.reload();
                 } else {
-                    alert(res.message || 'Something went wrong.');
+                    showValidationAlert(res.message || 'Something went wrong.', {type: 'danger'});
                 }
             },
             error: function (xhr) {
-                alert('Error saving invoice.');
+                showValidationAlert('Error saving invoice.', {type: 'danger'});
                 console.log(xhr.responseText);
             }
         });
@@ -2117,7 +2117,7 @@ $(document).ready(function () {
     let invoiceNo = $('#invoice_no').val();
 
     if (!invoiceNo) {
-        alert('No invoice number found.');
+        showValidationAlert('No invoice number found.');
         return;
     }
 
@@ -2132,11 +2132,11 @@ $(document).ready(function () {
             _token: '{{ csrf_token() }}'
         },
         success: function (response) {
-            alert(response.message);
+            showValidationAlert(response.message);
             location.reload();
         },
         error: function (xhr) {
-            alert('Error: ' + xhr.responseJSON.message);
+            showValidationAlert('Error: ' + xhr.responseJSON.message, {type: 'danger'});
         }
     });
 });

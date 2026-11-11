@@ -166,18 +166,13 @@
         if (e.key === 'Enter') { e.preventDefault(); $(this.id === 'load_order_no' ? '#loadOrderBtn' : '#recallInvoiceBtn').click(); }
     });
     $('#sales_form').on('submit', function (e) {
-        if (viewingSaved) {
-            e.preventDefault();
-            alert('This invoice is already finalized and cannot be edited or re-saved. Use "Start Over" to create a new one.');
-            return;
-        }
-        if (!$('#sales_order_id').val() || !$('#invoiceLines tbody tr').length) {
+        if (viewingSaved || !$('#sales_order_id').val() || !$('#invoiceLines tbody tr').length) {
             e.preventDefault(); alert('Load a sales order with at least one item.'); return;
         }
         syncChequeHiddenFields();
         var paid = number($('#cash_payment').val()) + number($('#half_payment').val()) + number($('#cheque_payment').val());
         if (money(paid - number($('#paid_amount').val())) > 0) {
-            e.preventDefault(); alert('Payments cannot exceed the net amount.'); return;
+            e.preventDefault(); showValidationAlert('Payments cannot exceed the net amount.'); return;
         }
         if (number($('#cheque_payment').val()) > 0 && !chequeList.length) {
             e.preventDefault(); openChequeModal(); return;

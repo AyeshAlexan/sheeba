@@ -158,7 +158,7 @@
                 let chequeDate = $(this).data('cheque-date');
                 if (chequeDate && chequeDate > todayStr) {
                     e.preventDefault();
-                    alert('This cheque is dated ' + chequeDate + ' — it can\'t be actioned until then.');
+                    showValidationAlert('This cheque is dated ' + chequeDate + ' — it can\'t be actioned until then.');
                     return false;
                 }
                 if ($(this).is(':checked') && accountMissingFor(this)) {

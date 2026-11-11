@@ -601,7 +601,7 @@ $(document).on("click", "#add-item", function () {
     let other_bank_name = $('#other_bank_name').val();
     let cheque_ammount  = $('#cheque_ammount').val();
     if (isEmptyOrSpaces(cheque_bank_id)||isEmptyOrSpaces(cheque_date)||isEmptyOrSpaces(cheque_no)||isEmptyOrSpaces(cheque_ammount)) {
-        alert("Please fill all cheque fields."); return;
+        showValidationAlert("Please fill all cheque fields."); return;
     }
     dataArray.push({ cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, other_bank_name, cheque_ammount });
     $("#multi_cheques_table_show tbody").append(`
@@ -646,7 +646,7 @@ $(document).on("click", "#tcp_add_cheque", function () {
     let cheque_no       = $('#tcp_cheque_no').val();
     let other_bank_name = $('#tcp_other_bank_name').val();
     let cheque_amt      = $('#tcp_cheque_amount').val();
-    if (!cheque_bank_id||!cheque_date||!cheque_no||!cheque_amt) { alert("Please fill all cheque fields."); return; }
+    if (!cheque_bank_id||!cheque_date||!cheque_no||!cheque_amt) { showValidationAlert("Please fill all cheque fields."); return; }
     tcpDataArray.push({ cheque_bank_id, bank_name, cheque_date, account_no, cheque_no, other_bank_name, cheque_ammount: cheque_amt });
     $("#tcp_cheques_table_show tbody").append(`
         <tr>
@@ -732,7 +732,7 @@ $(document).ready(function () {
                         </td></tr>`);
                 }
             },
-            error: function () { alert("Error fetching invoice data."); }
+            error: function () { showValidationAlert("Error fetching invoice data.", {type: 'danger'}); }
         });
 
         // Tab 2
@@ -870,8 +870,8 @@ $(document).ready(function () {
         e.preventDefault();
         let paying_amount = $('#tcp_paying_amount').val();
         let payment_date  = $('#tcp_payment_date').val();
-        if (!paying_amount) { alert("Please enter the paying amount."); return; }
-        if (!payment_date)  { alert("Please select the payment date.");  return; }
+        if (!paying_amount) { showValidationAlert("Please enter the paying amount."); return; }
+        if (!payment_date)  { showValidationAlert("Please select the payment date.");  return; }
         $.ajax({
             url: "{{ route('make_customer_total_credit_payment') }}",
             method: 'POST',
