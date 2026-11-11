@@ -77,6 +77,7 @@
         $('#cash_payment, #half_payment, #cheque_payment').val('');
         $('#invoice_no').val(config.nextInvoice);
         $('#invoice_date').prop({readonly: false, disabled: false});
+        window.unlockInvoiceDatePicker && window.unlockInvoiceDatePicker(document.getElementById('invoice_date'));
         $('#invoice_remark').prop({readonly: false, disabled: false});
         chequeList = []; renderChequeTable(); syncChequeHiddenFields();
         $('#savedInvoicePrint, #savedInvoicePosPrint').prop('hidden', true);
@@ -109,7 +110,7 @@
             renderLines(payload.inputs, false);
             $('#invoiceDetails').prop('hidden', false);
             if (previous) {
-                $('#invoice_date').val(previous.invoice_date);
+                window.setInvoiceDateValue(document.getElementById('invoice_date'), previous.invoice_date);
                 ['cash_payment','half_payment','cheque_payment'].forEach(function (key) { $('#' + key).val(previous[key] || ''); });
                 try { chequeList = JSON.parse(previous.cheques_data || '[]'); } catch (e) { chequeList = []; }
                 renderChequeTable(); syncChequeHiddenFields();
@@ -131,7 +132,7 @@
             if (summary.status !== 'success' || details.status !== 'success') { $('#orderStatus').addClass('is-error').text('Invoice not found.'); return; }
             var invoice = summary.data[0]; viewingSaved = true;
             header({customer_nic:invoice.Customer_NIC, customer_name:invoice.Customer_Name, customer_phone:invoice.Customer_Phone, invoice_remark:invoice.invoice_remark}, summary.sales_order_id || '-');
-            $('#invoice_no').val(invoice.Invoice_no); $('#invoice_date').val(invoice.Invoice_date).prop('readonly', true);
+            $('#invoice_no').val(invoice.Invoice_no); window.setInvoiceDateValue(document.getElementById('invoice_date'), invoice.Invoice_date);
             renderLines(details.data.map(function (line) { return {item_code:line.Item_code,item_description:line.Item_description,
                 batch_no:line.batch_no,unit_price:line.Unit_price,qty:line.QTY,discount:line.DiscountPercentage,net_value:line.Net_value}; }), true);
             $('#total_amount').val(invoice.Gross_Amount); $('#paid_discount').val(invoice.Discount); $('#paid_amount').val(invoice.Net_Amount);
@@ -140,7 +141,8 @@
             // disabled (not just readonly) so a finalized invoice's payment/date/remark
             // fields can't be focused or typed into at all, and visually grey out via
             // the .invoice-view-locked class below — readonly alone still looks editable.
-            $('#cash_payment, #half_payment, #cheque_payment, #invoice_remark, #invoice_date').prop({readonly: true, disabled: true});
+            $('#cash_payment, #half_payment, #cheque_payment, #invoice_remark').prop({readonly: true, disabled: true});
+            window.lockInvoiceDatePicker(document.getElementById('invoice_date'));
             $('#finalizeInvoiceBtn, #openChequeModalBtn, #itemEditHint').hide().prop('disabled', true);
             $('#invoiceDetails').addClass('invoice-view-locked');
             ['savedInvoicePrint','savedInvoicePosPrint'].forEach(function (id, index) {

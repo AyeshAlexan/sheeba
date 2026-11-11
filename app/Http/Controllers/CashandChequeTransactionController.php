@@ -264,24 +264,34 @@ class CashandChequeTransactionController extends Controller
         $branch_code = auth()->user()->BC;
         $closeDate   = $request->input('close_date');
 
-        // Prevent double-close
-        if (DayEndBalance::isDateClosed($branch_code, $closeDate)) {
+        // Prevent double-close (cheque ledger only — a prior cash-only close must not block this)
+        if (DayEndBalance::isDateClosed($branch_code, $closeDate, '201-123')) {
             return back()->with('error', "Day end for {$closeDate} has already been closed.");
         }
 
-        // ── CASH (201-001) ──────────────────────────────────────────────
-        $cashDr = TAccountTrans::whereDate('Ddate', $closeDate)
-            ->where('AccCode', '201-001')
-            ->where('BC', $branch_code)
-            ->sum('dr_amount');
+        // If the cash side was already closed earlier (via the cash-only Day End button),
+        // reuse that locked-in figure instead of recomputing/overwriting it.
+        $existing = DayEndBalance::where('BC', $branch_code)->where('close_date', $closeDate)->first();
 
-        $cashCr = TAccountTrans::whereDate('Ddate', $closeDate)
-            ->where('AccCode', '201-001')
-            ->where('BC', $branch_code)
-            ->sum('cr_amount');
+        if ($existing && $existing->cash_closing_balance !== null) {
+            $cashClosingBalance = $existing->cash_closing_balance;
+            $cashDr             = $existing->total_dr;
+            $cashCr             = $existing->total_cr;
+        } else {
+            // ── CASH (201-001) ──────────────────────────────────────────
+            $cashDr = TAccountTrans::whereDate('Ddate', $closeDate)
+                ->where('AccCode', '201-001')
+                ->where('BC', $branch_code)
+                ->sum('dr_amount');
 
-        $cashOpening        = DayEndBalance::getOpeningBalance($branch_code, $closeDate, '201-001');
-        $cashClosingBalance = $cashOpening + $cashDr - $cashCr;
+            $cashCr = TAccountTrans::whereDate('Ddate', $closeDate)
+                ->where('AccCode', '201-001')
+                ->where('BC', $branch_code)
+                ->sum('cr_amount');
+
+            $cashOpening        = DayEndBalance::getOpeningBalance($branch_code, $closeDate, '201-001');
+            $cashClosingBalance = $cashOpening + $cashDr - $cashCr;
+        }
 
         // ── CHEQUE (201-123) ────────────────────────────────────────────
         $chequeDr = TAccountTrans::whereDate('Ddate', $closeDate)
@@ -300,18 +310,20 @@ class CashandChequeTransactionController extends Controller
         // ── Combined ────────────────────────────────────────────────────
         $combinedClosing = $cashClosingBalance + $chequeClosingBalance;
 
-        // ── Save ONE row to day_end_balances ────────────────────────────
-        DayEndBalance::create([
-            'BC'                    => $branch_code,
-            'close_date'            => $closeDate,
-            'closing_balance'       => $combinedClosing,        // cash + cheque
-            'cash_closing_balance'  => $cashClosingBalance,     // 201-001
-            'cheque_closing_balance'=> $chequeClosingBalance,   // 201-123
-            'total_dr'              => $cashDr + $chequeDr,
-            'total_cr'              => $cashCr + $chequeCr,
-            'closed_by'             => auth()->id(),
-            'closed_at'             => now(),
-        ]);
+        // ── Save ONE row to day_end_balances (create, or fill in the cheque
+        // side of a row already started by the cash-only close) ───────────
+        DayEndBalance::updateOrCreate(
+            ['BC' => $branch_code, 'close_date' => $closeDate],
+            [
+                'closing_balance'        => $combinedClosing,        // cash + cheque
+                'cash_closing_balance'   => $cashClosingBalance,     // 201-001
+                'cheque_closing_balance' => $chequeClosingBalance,   // 201-123
+                'total_dr'               => $cashDr + $chequeDr,
+                'total_cr'               => $cashCr + $chequeCr,
+                'closed_by'              => auth()->id(),
+                'closed_at'              => now(),
+            ]
+        );
 
         return back()->with('success',
             "Day end closed for {$closeDate}. " .

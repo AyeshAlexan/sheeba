@@ -1,5 +1,6 @@
 @php
     $isSalesOrderPrint = $isSalesOrderPrint ?? false;
+    $isSalesReturnPrint = $isSalesReturnPrint ?? false;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +8,7 @@
     <link rel="icon" type="image/png" href="{{ asset('assets/img/icon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isSalesOrderPrint ? 'Sales Order #'.$order->id : 'Sales Invoice' }}</title>
+    <title>{{ $isSalesOrderPrint ? 'Sales Order #'.$order->id : ($isSalesReturnPrint ? 'Sales Return #'.optional($pawnSumData->first())->Invoice_no : 'Sales Invoice') }}</title>
     <style>
         /* NOTE: this is rendered through DomPDF, which does NOT support
            CSS flexbox/grid or CSS custom properties (var(--x)) — every
@@ -245,7 +246,7 @@
 
     {{-- ── Screen Buttons ── --}}
     <div class="no-print">
-        <button class="btn-print" onclick="window.print()">{{ $isSalesOrderPrint ? 'Print Sales Order' : 'Print Invoice' }}</button>
+        <button class="btn-print" onclick="window.print()">{{ $isSalesOrderPrint ? 'Print Sales Order' : ($isSalesReturnPrint ? 'Print Return Invoice' : 'Print Invoice') }}</button>
         <button class="btn-close"  onclick="window.close()">Close</button>
     </div>
 
@@ -287,11 +288,11 @@
                     </table>
                 </td>
                 <td class="header-right" style="width:35%;">
-                    <div class="invoice-title-right">{{ $isSalesOrderPrint ? 'SALES ORDER' : 'INVOICE' }}</div>
+                    <div class="invoice-title-right">{{ $isSalesOrderPrint ? 'SALES ORDER' : ($isSalesReturnPrint ? 'SALES RETURN' : 'INVOICE') }}</div>
                     @foreach($pawnSumData as $sumData)
                     <table class="invoice-meta">
                         <tr>
-                            <td>{{ $isSalesOrderPrint ? 'Sales Order #' : 'Invoice #' }}</td>
+                            <td>{{ $isSalesOrderPrint ? 'Sales Order #' : ($isSalesReturnPrint ? 'Return #' : 'Invoice #') }}</td>
                             <td>{{ $sumData->Invoice_no }}</td>
                         </tr>
                         <tr>
@@ -327,6 +328,9 @@
                     <div class="meta-col-label">Document Type</div>
                     <div class="invoice-type-banner">SALES ORDER</div>
                     <div style="font-size:10px;color:#6b7280;margin-top:6px;">This is an order, not an invoice.</div>
+                @elseif($isSalesReturnPrint)
+                    <div class="meta-col-label">Document Type</div>
+                    <div class="invoice-type-banner">SALES RETURN</div>
                 @else
                     <div class="meta-col-label">Payment Type</div>
                     <div class="invoice-type-banner">{{ $invoiceType }}</div>
@@ -350,7 +354,7 @@
                     {{-- True walk-in sale: no customer captured at all --}}
                     <div class="customer-name">Walk-in Customer</div>
                 @endif
-                @unless($isSalesOrderPrint)
+                @unless($isSalesOrderPrint || $isSalesReturnPrint)
                     <div class="cash-paid-note">Cash Paid: Rs. {{ number_format($cashPaid, 2) }}</div>
                 @endunless
             </td>
@@ -510,7 +514,7 @@
             {{-- Amount in words --}}
             <td class="balance-left">
                 <div style="font-size:10px;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;">
-                    {{ $isSalesOrderPrint ? 'Order Amount (in words)' : 'Amount Chargeable (in words)' }}
+                    {{ $isSalesOrderPrint ? 'Order Amount (in words)' : ($isSalesReturnPrint ? 'Return Amount (in words)' : 'Amount Chargeable (in words)') }}
                 </div>
                 <div style="font-size:12px;font-weight:700;text-transform:uppercase;line-height:1.5;color:#1f2430;">
                     {{ $amountInWords }}
@@ -541,7 +545,7 @@
          the invoice-type banner (same $sumData, same values). --}}
     @unless($isSalesOrderPrint)
     <div class="payment-summary">
-        <div class="payment-summary-title">Payment Method</div>
+        <div class="payment-summary-title">{{ $isSalesReturnPrint ? 'Refund Method' : 'Payment Method' }}</div>
         @if($cashPaid > 0)
             <span class="pay-line"><strong>Cash Pay</strong> Paid: {{ number_format($cashPaid, 2) }}</span>
         @endif
@@ -561,7 +565,7 @@
     @if(!empty($sumData->invoice_remark))
     <div style="margin-top:8px; border-top:1px solid #d9dee6; padding-top:8px;">
         <div style="font-size:10px;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;">
-            {{ $isSalesOrderPrint ? 'Order Remark' : 'Invoice Remark' }}
+            {{ $isSalesOrderPrint ? 'Order Remark' : ($isSalesReturnPrint ? 'Return Remark' : 'Invoice Remark') }}
         </div>
         <div style="font-size:12px;font-weight:600;line-height:1.5;">
             {{ $sumData->invoice_remark }}

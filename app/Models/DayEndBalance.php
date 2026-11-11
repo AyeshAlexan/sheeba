@@ -51,11 +51,17 @@ class DayEndBalance extends Model
 
     /**
      * Check whether a given date has already been closed for a branch.
+     *
+     * @param  string|null  $accCode  '201-001' (cash), '201-123' (cheque), or null to check both are closed.
      */
-    public static function isDateClosed(string $branchCode, string $date): bool
+    public static function isDateClosed(string $branchCode, string $date, ?string $accCode = null): bool
     {
-        return self::where('BC', $branchCode)
-            ->where('close_date', $date)
-            ->exists();
+        $query = self::where('BC', $branchCode)->where('close_date', $date);
+
+        return match ($accCode) {
+            '201-001' => $query->whereNotNull('cash_closing_balance')->exists(),
+            '201-123' => $query->whereNotNull('cheque_closing_balance')->exists(),
+            default   => $query->whereNotNull('cash_closing_balance')->whereNotNull('cheque_closing_balance')->exists(),
+        };
     }
 }

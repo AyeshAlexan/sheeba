@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 
 @include('sales.partials.styles')
+<link rel="stylesheet" href="{{ asset('assets/css/vendor/flatpickr/flatpickr.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/invoice-date-picker.css') }}">
 </head>
 <body>
 <div class="main-wrapper">
@@ -132,7 +134,7 @@
                     <label><i class="fas fa-calendar-alt"></i>Date</label>
                     <div class="sales-date-wrap">
                         <i class="fas fa-calendar-alt"></i>
-                        <input type="date" id="invoice_date" name="invoice_date" class="sales-textbox">
+                        <input type="text" id="invoice_date" name="invoice_date" class="sales-textbox">
                     </div>
                 </div>
             </div>
@@ -1119,6 +1121,8 @@ RECALL / EDIT / UPDATE / DELETE
 <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
 <script src="assets/js/feather.min.js"></script>
 <script src="assets/js/script.js"></script>
+<script src="{{ asset('assets/js/vendor/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('assets/js/invoice-date-picker.js') }}"></script>
 
 <script>
 $(function () {
@@ -1164,7 +1168,7 @@ $(function () {
             $('#invoice_no').val(res.id);
             $('#searchCustomer').val(p.customer_nic);
             loadCustomerDetails(p.customer_nic);
-            $('#invoice_date').val(p.invoice_date);
+            window.setInvoiceDateValue(document.getElementById('invoice_date'), p.invoice_date);
             ['Route', 'Salesmen', 'ref_no', 'customer_type', 'invoice_remark'].forEach(function (key) {
                 $('#sales_form [name="' + key + '"]').val(p[key] || '');
             });
@@ -1202,7 +1206,7 @@ $(function () {
     var unsaved = @json(old('inputs') && !old('sales_order_id') ? old() : null);
     if (unsaved) {
         $('#searchCustomer').val(unsaved.customer_nic); loadCustomerDetails(unsaved.customer_nic);
-        $('#invoice_date').val(unsaved.invoice_date);
+        window.setInvoiceDateValue(document.getElementById('invoice_date'), unsaved.invoice_date);
         $('#invoice_remark').val(unsaved.invoice_remark || '');
         Object.values(unsaved.inputs).forEach(function (line) {
             var gross = Number(line.qty) * Number(line.unit_price);

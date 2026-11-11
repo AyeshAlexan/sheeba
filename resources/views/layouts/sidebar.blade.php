@@ -784,23 +784,12 @@
 
 
                   @if($canSeeSalesReturnGroup)
-                  <li class="menu-item">
-                       <a href="javascript:void(0);"  class="menu-link menu-toggle {{ $salesReturnReportOpen ? 'subdrop' : '' }}">
-                      <div class="text-truncate" data-i18n="Order">Sales Return Report<span
-                        class="menu-arrow"></span></div>
+                  <li class="menu-item {{ $salesReturnReportOpen ? 'active' : '' }}">
+                    <a href="{{ route('sales.return.report') }}" class="menu-link">
+                      <div class="text-truncate" data-i18n="Order">Sales Return Report</div>
                     </a>
-
-                    <ul style="{{ $salesReturnReportOpen ? 'display:block;' : '' }}">
-                        @if(\App\Support\Permissions::canViewReport('sales.return.report'))
-                        <li class="{{ $salesReturnReportOpen ? 'active' : '' }}">
-                            <a href="{{route("sales.return.report")}}">
-                                <i class="fa fa-angle-right"></i>
-                                Sales Return</a>
-                        </li>
-                        @endif
-                    </ul>
-                </li>
-                @endif
+                  </li>
+                  @endif
 
 
                 @if(\App\Support\Permissions::canViewReport('cashInHandReport'))

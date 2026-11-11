@@ -30,6 +30,10 @@
         }
         .batch-tag i { font-size:9px; }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/vendor/flatpickr/flatpickr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/invoice-date-picker.css') }}">
+    <script src="{{ asset('assets/js/vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('assets/js/invoice-date-picker.js') }}"></script>
 </head>
 
 <body>
@@ -152,7 +156,7 @@
                                             <div class="input-group">
                                                 <div class="input-group-text" id="btnGroupAddon3">Date :
                                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </div>
-                                                <input type="date" id="invoice_date" name="invoice_date"
+                                                <input type="text" id="invoice_date" name="invoice_date"
                                                     class="form-control" aria-label="Date:"
                                                     aria-describedby="btnGroupAddon3">
                                             </div>
@@ -1940,7 +1944,7 @@ $(document).ready(function () {
                                 records.forEach(record => {
                                     // Update fields with the response data
                                     $('#invoice_no').val(record.Invoice_no);
-                                    $('#invoice_date').val(record.Invoice_date);
+                                    window.setInvoiceDateValue(document.getElementById('invoice_date'), record.Invoice_date);
                                     $('#searchCustomer').val(record.Customer_NIC);
                                     $('#customer_name').val(record.Customer_Name);
                                     $('#customer_contact_1').val(record.Customer_Phone);
@@ -1996,11 +2000,12 @@ $(document).ready(function () {
             if (canEditSales) {
                 return;
             }
-            ['#invoice_date', '#searchCustomer', '#customer_name', '#customer_contact_1',
+            ['#searchCustomer', '#customer_name', '#customer_contact_1',
              '#total_amount', '#paid_discount', '#paid_amount', '#cash_payment',
              '#credit_payment', '#cheque_payment'].forEach(function (sel) {
                 $(sel).prop('readonly', true).prop('disabled', true);
             });
+            window.lockInvoiceDatePicker(document.getElementById('invoice_date'));
             $('#dynamicAdded input').prop('readonly', true);
             $('#dynamicAdded .edit-row').remove();
         }

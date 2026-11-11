@@ -5,6 +5,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}"><title>Sales Invoice</title>
 @include('sales.partials.styles')
+<link rel="stylesheet" href="{{ asset('assets/css/vendor/flatpickr/flatpickr.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/invoice-date-picker.css') }}">
 <style>
 #invoiceLines input{min-width:80px}#invoiceLines td{vertical-align:middle}
 #invoiceDetails[hidden]{display:none!important}.invoice-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
@@ -74,7 +76,7 @@
                     <div class="si-field"><label>Sales Order No</label><span id="loadedOrderNo"></span></div>
                     <div class="si-field"><label>Customer</label><span id="loadedCustomer"></span></div>
                     <div class="si-field"><label for="invoice_no">Invoice No</label><input class="form-control" id="invoice_no" name="invoice_no" value="{{ $maxInvoiceNo + 1 }}" readonly></div>
-                    <div class="si-field"><label for="invoice_date">Invoice Date</label><input class="form-control" id="invoice_date" name="invoice_date" type="date" value="{{ now()->toDateString() }}" required></div>
+                    <div class="si-field"><label for="invoice_date">Invoice Date</label><input class="form-control" id="invoice_date" name="invoice_date" type="text" value="{{ now()->toDateString() }}" required></div>
                 </div>
                 <div class="sales-table-card mt-3">
                     <div class="sales-table-head"><div class="sales-table-title"><i class="fas fa-list"></i> Order Items</div></div>
@@ -118,6 +120,8 @@ window.salesInvoiceConfig = {
 function escapeInvoiceText(value) { return $('<div>').text(value == null ? '' : String(value)).html(); }
 </script>
 @include('sales.partials.cheque-script')
+<script src="{{ asset('assets/js/vendor/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('assets/js/invoice-date-picker.js') }}"></script>
 <script src="{{ asset('assets/js/sales-invoice.js') }}?v={{ filemtime(public_path('assets/js/sales-invoice.js')) }}"></script>
 <script src="{{ asset('assets/js/feather.min.js') }}"></script>
 <script src="{{ asset('assets/js/script.js') }}"></script>

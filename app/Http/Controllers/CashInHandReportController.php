@@ -144,8 +144,8 @@ class CashInHandReportController extends Controller
         $branch_code = auth()->user()->BC;
         $closeDate   = $request->input('close_date');
 
-        // Prevent double-close
-        if (DayEndBalance::isDateClosed($branch_code, $closeDate)) {
+        // Prevent double-close (cash ledger only)
+        if (DayEndBalance::isDateClosed($branch_code, $closeDate, '201-001')) {
             return back()->with('error', "Day end for {$closeDate} has already been closed.");
         }
 
@@ -166,15 +166,19 @@ class CashInHandReportController extends Controller
         // ── Balance = CR - DR ───────────────────────────────────────────────
         $closingBalance = $openingBalance + $sumDr - $sumCr;
 
-        DayEndBalance::create([
-            'BC'              => $branch_code,
-            'close_date'      => $closeDate,
-            'closing_balance' => $closingBalance,
-            'total_dr'        => $sumDr,
-            'total_cr'        => $sumCr,
-            'closed_by'       => auth()->id(),
-            'closed_at'       => now(),
-        ]);
+        // A row can only reach this point with no cash_closing_balance set, which (given the
+        // cheque-close flow always sets cash too) means no row exists for this date yet.
+        DayEndBalance::updateOrCreate(
+            ['BC' => $branch_code, 'close_date' => $closeDate],
+            [
+                'cash_closing_balance' => $closingBalance,
+                'closing_balance'      => $closingBalance,
+                'total_dr'             => $sumDr,
+                'total_cr'             => $sumCr,
+                'closed_by'            => auth()->id(),
+                'closed_at'            => now(),
+            ]
+        );
 
         return back()->with('success', "Day end closed successfully for {$closeDate}. Closing Balance: " . number_format($closingBalance, 2));
     }

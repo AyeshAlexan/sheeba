@@ -120,7 +120,7 @@ public function SalesReturnprintInvoice(Request $request)
 
         $view = $printType === 'pos'
             ? 'repairInvoiceWithoutPosPrint'
-            : 'repairReturnInvoicePrint';
+            : 'salesReturnInvoicePrint';
 
         return view($view, [
             'balance'         => $balance,

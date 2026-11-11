@@ -172,8 +172,12 @@ public function createSalesReturn(Request $request)
     {
         $branch_code = Auth::user()->BC;
 
-        // Use first() to get an object, not a collection or paginator
-        $companyData = Company::latest()->first();
+        // ->paginate(1) (not ->first()) so the shared print template's
+        // @foreach($companyData as $comData) actually iterates — a plain
+        // Eloquent model isn't iterable and silently renders the company
+        // block empty, which is the shared template used across Sales
+        // Invoice / Sales Order print as well.
+        $companyData = Company::latest()->paginate(1);
 
         $T_detailsdata = TSalesReturnDetails::where('Invoice_no', $invoice_no)
                         ->where('BC', $branch_code)
@@ -193,10 +197,21 @@ public function createSalesReturn(Request $request)
             $isReprint = $returnRow->print_count > 1;
         }
 
-        return view('repairReturnInvoicePrint', [
+        $customerNic  = $T_sumdata->first()?->Customer_NIC;
+        $customerName = $T_sumdata->first()?->Customer_Name;
+        $customerData = Customer::where('First_name', $customerName)->get();
+
+        $custData  = TCusSaleTrance::where('customer', $customerNic)->get();
+        $dr_amount = $custData->sum('dr_amount');
+        $cr_amount = $custData->sum('cr_amount');
+        $balance   = $cr_amount - $dr_amount;
+
+        return view('salesReturnInvoicePrint', [
             'pawnSumData' => $T_sumdata,
             'pawnDetailsData' => $T_detailsdata,
             'companyData' => $companyData,
+            'customerData' => $customerData,
+            'balance' => $balance,
             'isReprint' => $isReprint,
         ]);
     }
