@@ -153,7 +153,7 @@
                                                     @endif
                                                 </td>
                                                 <td>{{ $row->id }}</td>
-                                                <td>{{ \Illuminate\Support\Carbon::parse($row->created_at)->format('Y-m-d') }}</td>
+                                                <td>{{ $row->invoice_date ? \Illuminate\Support\Carbon::parse($row->invoice_date)->format('Y-m-d') : '—' }}</td>
                                                 <td>
                                                     @if($row->invoice_no)
                                                         <span class="so-status-badge so-status-invoiced">Invoiced #{{ $row->invoice_no }}</span>

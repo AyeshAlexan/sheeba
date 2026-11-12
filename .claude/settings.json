@@ -89,7 +89,22 @@
       "Bash(grep -n \"use App\\\\\\\\\\\\\\\\Models\\\\|class CustomerController\\\\|function customerDetailsReportIndex\" app/Http/Controllers/CustomerController.php)",
       "Bash(php -l app/Http/Controllers/CustomerPaymentReportController.php)",
       "Bash(grep -n \"jquery\\\\|</script>\\\\s*$\" resources/views/reports/customer_cheque_payment_report.blade.php)",
-      "Bash(php -l app/Http/Controllers/CustomerChequePaymentReportController.php)"
+      "Bash(php -l app/Http/Controllers/CustomerChequePaymentReportController.php)",
+      "Bash(php artisan *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:8123/)",
+      "Bash(node inspect.js)",
+      "Bash(node inspect2.js)",
+      "Bash(node inspect3.js)",
+      "Bash(python -c \"print\\('no python needed'\\)\")",
+      "Bash(jobs)",
+      "Bash(rm -rf \"E:/xampp/phpMyAdmin/tmp/twig\"/* 2>&1; ls \"E:/xampp/phpMyAdmin/tmp/twig\" 2>&1)",
+      "Bash(curl -s -o /tmp_response.html -w \"HTTP %{http_code}\\\\n\" \"http://localhost/phpmyadmin/\")",
+      "Bash(wc -l /tmp_response.html)",
+      "Bash(curl -s -o /c/Users/SINGER/AppData/Local/Temp/claude/e--sheeba/50e8153c-a6f5-46c9-b5b5-e1f04b5f49fd/scratchpad/pma.html -w 'HTTP %{http_code}\\\\n' http://localhost/phpmyadmin/)"
+    ],
+    "additionalDirectories": [
+      "E:\\xampp\\phpMyAdmin\\libraries\\classes",
+      "E:\\xampp\\phpMyAdmin\\tmp\\twig"
     ]
   }
 }

@@ -883,7 +883,7 @@
                         </div>
                         <div class="chart-card-body chart-wrap">
                             <div class="chart-loading hidden" id="sales-loading">
-                                <div class="spinner-border text-primary" role="status"></div>
+                                <x-cube-loader size="64" color="#1677FF" duration="1.5s" />
                             </div>
                             <div id="sales_chart"></div>
                         </div>
@@ -908,7 +908,7 @@
                         <div class="chart-card-body inv-chart-row">
                             <div class="chart-wrap">
                                 <div class="chart-loading hidden" id="invoice-loading">
-                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <x-cube-loader size="64" color="#1677FF" duration="1.5s" />
                                 </div>
                                 <div id="invoice_chart"></div>
                             </div>
@@ -953,7 +953,7 @@
                         </div>
                         <div class="chart-card-body chart-wrap pt-2">
                             <div class="chart-loading hidden" id="topItems-loading">
-                                <div class="spinner-border text-primary" role="status"></div>
+                                <x-cube-loader size="64" color="#1677FF" duration="1.5s" />
                             </div>
                             <div class="top-items-list" id="top_items_list"></div>
                         </div>
@@ -977,7 +977,7 @@
                         </div>
                         <div class="chart-card-body chart-wrap">
                             <div class="chart-loading hidden" id="paymentTrend-loading">
-                                <div class="spinner-border text-primary" role="status"></div>
+                                <x-cube-loader size="64" color="#1677FF" duration="1.5s" />
                             </div>
                             <div id="payment_trend_chart"></div>
                         </div>

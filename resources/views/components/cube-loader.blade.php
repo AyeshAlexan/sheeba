@@ -17,7 +17,15 @@
     'label'    => 'Loading',
 ])
 
-@once
+{{--
+    Note: deliberately NOT wrapped in @once. The page loader (see
+    loading-screen.blade.php) removes its own <x-cube-loader> markup
+    from the DOM a couple seconds after load — if it were the instance
+    that printed a shared @once style block, that block would vanish
+    with it and break every other cube-loader left on the page (e.g.
+    chart-loading overlays). Each instance carries its own tiny style
+    tag instead so removing one never affects the others.
+--}}
 <style>
     .cube-loader{
         width: var(--cube-size, 96px);
@@ -55,7 +63,6 @@
         .cube-loader path{ stroke-dashoffset: 0 }
     }
 </style>
-@endonce
 
 <svg
     {{ $attributes->merge(['class' => 'cube-loader']) }}

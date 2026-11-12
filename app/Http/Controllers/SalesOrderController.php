@@ -85,7 +85,6 @@ class SalesOrderController extends Controller
         $branch_code = auth()->user()->BC;
 
         $orders = DB::table('sales_orders')->where('bc', $branch_code)
-            ->when($fromDate && $toDate, fn ($q) => $q->whereBetween(DB::raw('DATE(created_at)'), [$fromDate, $toDate]))
             ->when($status === 'open', fn ($q) => $q->whereNull('invoice_no'))
             ->when($status === 'invoiced', fn ($q) => $q->whereNotNull('invoice_no'))
             ->orderByDesc('id')
@@ -97,6 +96,10 @@ class SalesOrderController extends Controller
             return (object) [
                 'id' => $order->id,
                 'invoice_no' => $order->invoice_no,
+                // The date the order is actually for — what the user picked
+                // on the form — not $order->created_at, which is just the
+                // timestamp the row happened to be saved at.
+                'invoice_date' => $payload['invoice_date'] ?? null,
                 'created_at' => $order->created_at,
                 'created_by' => $order->created_by,
                 'customer_nic' => $payload['customer_nic'] ?? '',
@@ -107,6 +110,10 @@ class SalesOrderController extends Controller
                 'net_amount' => (float) ($payload['net_amount'] ?? 0),
             ];
         });
+
+        if ($fromDate && $toDate) {
+            $rows = $rows->filter(fn ($row) => $row->invoice_date && $row->invoice_date >= $fromDate && $row->invoice_date <= $toDate)->values();
+        }
 
         if ($customer) {
             $rows = $rows->filter(fn ($row) => str_contains(strtolower($row->customer_nic), strtolower($customer))
