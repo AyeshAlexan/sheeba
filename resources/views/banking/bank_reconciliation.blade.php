@@ -15,6 +15,25 @@
     <link rel="stylesheet" href="../assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="../assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .recognition-card, .recognition-table { border: 1px solid #dce5ef; border-radius: 16px; background: #fff; }
+        .recognition-card { padding: 20px; margin-bottom: 20px; }
+        .recognition-card .form-label { color: #334155; font-weight: 600; }
+        .recognition-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .recognition-save { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid #e6edf5; margin-top: 18px; padding-top: 16px; }
+        .recognition-table { overflow: hidden; margin-bottom: 18px; }
+        .recognition-table header { display: flex; align-items: center; gap: 10px; padding: 16px 20px; }
+        .recognition-table h4 { margin: 0; font-size: 17px; font-weight: 650; }
+        .recognition-count, .recognition-status { display: inline-block; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; background: #eef2f7; color: #334155; }
+        .recognition-table--reconciled .recognition-count, .recognition-status--deposited { background: #e8f7ef; color: #14643c; }
+        .recognition-status--returned { background: #fcebee; color: #9c2841; }
+        .recognition-status--issued { background: #eaf2ff; color: #254f99; }
+        .recognition-table .table { margin: 0; }
+        .recognition-table .table th { background: #f5f8fc; color: #475569; font-size: 12px; font-weight: 650; white-space: nowrap; }
+        .recognition-table .table th, .recognition-table .table td { padding: 12px 16px; vertical-align: middle; border-color: #e6edf5; }
+        .recognition-amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .recognition-table .reconcileCheckbox { width: 18px; height: 18px; margin: 0; vertical-align: middle; accent-color: #2563eb; }
+    </style>
 </head>
 
 <body>
@@ -33,14 +52,13 @@
                     </div>
                 </div>
 
-                <div id="alertBox"></div>
+                <div id="alertBox" aria-live="polite"></div>
 
-                <div class="card">
-                    <div class="card-body">
-                        <form method="GET" action="{{ route('banking.recognition') }}" class="row g-2 mb-3 align-items-end">
-                            <div class="col-md-3">
-                                <label class="form-label mb-0 small">Bank</label>
-                                <select name="cheque_bank_id" class="form-control">
+                <div class="recognition-card">
+                        <form method="GET" action="{{ route('banking.recognition') }}" class="row g-3 align-items-end">
+                            <div class="col-sm-6 col-lg-4">
+                                <label for="recognitionBank" class="form-label small">Bank</label>
+                                <select id="recognitionBank" name="cheque_bank_id" class="form-select">
                                     <option value="">All Banks</option>
                                     @foreach($banks as $bank)
                                     <option value="{{ $bank->id }}" {{ (string) $bankId === (string) $bank->id ? 'selected' : '' }}>
@@ -49,27 +67,38 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label mb-0 small">From Date</label>
-                                <input type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
+                            <div class="col-sm-6 col-lg">
+                                <label for="recognitionFrom" class="form-label small">From Date</label>
+                                <input id="recognitionFrom" type="date" name="from_date" class="form-control" value="{{ $fromDate }}">
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label mb-0 small">To Date</label>
-                                <input type="date" name="to_date" class="form-control" value="{{ $toDate }}">
+                            <div class="col-sm-6 col-lg">
+                                <label for="recognitionTo" class="form-label small">To Date</label>
+                                <input id="recognitionTo" type="date" name="to_date" class="form-control" value="{{ $toDate }}">
                             </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-outline-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
+                            <div class="col-sm-6 col-lg-auto recognition-actions">
+                                <button type="submit" class="btn btn-outline-secondary">Apply Filters</button>
+                                @if($bankId || $fromDate || $toDate)
+                                    <a href="{{ route('banking.recognition') }}" class="btn btn-link">Clear</a>
+                                @endif
                             </div>
                         </form>
 
-                        <div class="mb-3 text-end">
+                        <div class="recognition-save">
+                            <span id="pendingChanges" class="text-muted small" aria-live="polite">No unsaved changes</span>
                             <button type="button" id="saveBtn" class="btn btn-primary" disabled>
-                                <i class="fas fa-save"></i> Save
+                                <i class="fas fa-save" aria-hidden="true"></i> <span>Save Changes</span>
                             </button>
                         </div>
+                </div>
 
+                        @foreach($cheques->partition(fn ($cheque) => !$cheque->is_reconciled) as $section => $sectionCheques)
+                        <section class="recognition-table {{ $section === 1 ? 'recognition-table--reconciled' : '' }}" aria-labelledby="cheque-heading-{{ $section }}">
+                        <header>
+                            <h4 id="cheque-heading-{{ $section }}">{{ $section === 0 ? 'Unreconciled Cheques' : 'Reconciled Cheques' }}</h4>
+                            <span class="recognition-count" aria-label="Cheque count">{{ $sectionCheques->count() }}</span>
+                        </header>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-hover" aria-labelledby="cheque-heading-{{ $section }}">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Date</th>
@@ -78,12 +107,12 @@
                                         <th>Status</th>
                                         <th>Cheque No</th>
                                         <th>Party</th>
-                                        <th>Amount</th>
+                                        <th class="recognition-amount">Amount</th>
                                         <th class="text-center">Reconciled</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($cheques as $cheque)
+                                <tbody id="cheques-{{ $section }}">
+                                    @foreach($sectionCheques as $cheque)
                                     <tr>
                                         <td>{{ $cheque->release_date }}</td>
                                         <td>{{ $cheque->bank_name }}</td>
@@ -94,28 +123,28 @@
                                                 <span class="badge bg-info text-dark">Customer</span>
                                             @endif
                                         </td>
-                                        <td>{{ $cheque->status_label }}</td>
+                                        <td><span class="recognition-status recognition-status--{{ strtolower($cheque->status_label) }}">{{ $cheque->status_label }}</span></td>
                                         <td>{{ $cheque->cheques_no }}</td>
                                         <td>{{ $cheque->party }}</td>
-                                        <td>{{ number_format((float) $cheque->amount, 2) }}</td>
+                                        <td class="recognition-amount">{{ number_format((float) $cheque->amount, 2) }}</td>
                                         <td class="text-center">
-                                            <input type="checkbox" class="reconcileCheckbox" style="width:18px;height:18px;"
+                                            <input type="checkbox" class="reconcileCheckbox"
+                                                aria-label="Reconciled status for cheque {{ $cheque->cheques_no }}"
                                                 data-direction="{{ $cheque->direction }}"
                                                 data-id="{{ $cheque->id }}"
                                                 data-initial="{{ $cheque->is_reconciled ? '1' : '0' }}"
                                                 {{ $cheque->is_reconciled ? 'checked' : '' }}>
                                         </td>
                                     </tr>
-                                    @empty
-                                    <tr>
+                                    @endforeach
+                                    <tr class="empty-cheque-row {{ $sectionCheques->isNotEmpty() ? 'd-none' : '' }}">
                                         <td colspan="8" class="text-center text-muted">No cheques found for the selected filters.</td>
                                     </tr>
-                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
+                        </section>
+                        @endforeach
             </div>
             @include('layouts.footer')
         </div>
@@ -131,13 +160,14 @@
             // until the Save button is pressed. The Save button only
             // enables once at least one box differs from how it loaded.
             function refreshSaveBtn() {
-                let dirty = false;
+                let count = 0;
                 $('.reconcileCheckbox').each(function () {
                     if (($(this).prop('checked') ? '1' : '0') !== $(this).data('initial').toString()) {
-                        dirty = true;
+                        count++;
                     }
                 });
-                $('#saveBtn').prop('disabled', !dirty);
+                $('#saveBtn').prop('disabled', count === 0);
+                $('#pendingChanges').text(count === 0 ? 'No unsaved changes' : count + (count === 1 ? ' unsaved change' : ' unsaved changes'));
             }
 
             $(document).on('change', '.reconcileCheckbox', refreshSaveBtn);
@@ -159,22 +189,42 @@
 
                 let $btn = $(this);
                 $btn.prop('disabled', true);
+                $btn.find('span').text('Saving…');
+                $('#alertBox').empty();
+                const $checkboxes = $('.reconcileCheckbox').prop('disabled', true);
 
                 $.ajax({
                     url: "{{ route('banking.recognition.save') }}",
                     method: 'POST',
-                    data: { changes: changes },
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({ changes: changes }),
                     success: function (res) {
-                        $('#alertBox').html('<div class="alert alert-success">' + res.message + '</div>');
-                        $('.reconcileCheckbox').each(function () {
-                            $(this).data('initial', $(this).prop('checked') ? '1' : '0');
+                        $('#alertBox').append($('<div>', { class: 'alert alert-success', text: res.message }));
+                        $checkboxes.each(function () {
+                            const $checkbox = $(this);
+                            const state = this.checked ? '1' : '0';
+                            if (state !== $checkbox.data('initial').toString()) {
+                                $('#cheques-' + state + ' .empty-cheque-row').before($checkbox.closest('tr'));
+                                $checkbox.data('initial', state);
+                            }
                         });
-                        refreshSaveBtn();
+                        $('.empty-cheque-row').each(function () {
+                            const $emptyRow = $(this);
+                            const $rows = $emptyRow.siblings().get();
+                            $rows.sort((a, b) => a.cells[0].textContent.localeCompare(b.cells[0].textContent));
+                            $emptyRow.before($rows).toggleClass('d-none', $rows.length > 0);
+                            $emptyRow.closest('.recognition-table').find('.recognition-count').text($rows.length);
+                        });
                     },
                     error: function (xhr) {
                         let msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Something went wrong.';
-                        $('#alertBox').html('<div class="alert alert-danger">' + msg + '</div>');
-                        $btn.prop('disabled', false);
+                        $('#alertBox').append($('<div>', { class: 'alert alert-danger', text: msg }));
+                    },
+                    complete: function () {
+                        $checkboxes.prop('disabled', false);
+                        $btn.find('span').text('Save Changes');
+                        refreshSaveBtn();
                     }
                 });
             });
