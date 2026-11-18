@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ChequeBank;
 use App\Models\TAccountTrans;
+use App\Models\MChartofAccount;
 use App\Models\BankDetails;
 use App\Models\BankBranch;
 use Datatables;
@@ -69,14 +70,30 @@ class ChequeBankController extends Controller
             'BC'             => $request->BC,
         ]);
 
-        // Seed the "Cheques" GL account so this amount shows up everywhere
-        // that reads t_account_trans (Cash Book, Cash & Cheque report)
-        // instead of only living on cheque_banks.current_amount.
+        // Each bank account gets its own GL code — it must never share
+        // 201-123, which means "cheques physically held, not yet
+        // deposited" everywhere else in the app (Opening Cheque, Cheque
+        // Deposit/Return, customer/supplier cheque payments).
+        $glCode = '202-' . str_pad($chequeBank->id, 3, '0', STR_PAD_LEFT);
+        $chequeBank->update(['gl_code' => $glCode]);
+
+        MChartofAccount::create([
+            'account'         => 'Current Assets',
+            'accountsub'      => 'Assets',
+            'code'            => $glCode,
+            'description'     => 'Bank — ' . $chequeBank->bank_name . ' (' . $chequeBank->account_no . ')',
+            'opening_balance' => 0,
+            'BC'              => $request->BC,
+            'OC'              => $request->OC,
+        ]);
+
+        // Seed this bank's own GL account so the opening amount shows up
+        // in Daily Transactions, without touching the Cheques account.
         if ($openingAmount > 0) {
             TAccountTrans::create([
                 'trance_type' => 'BANK_OPEN',
                 'Ddate'       => now()->format('Y-m-d'),
-                'AccCode'     => '201-123',
+                'AccCode'     => $glCode,
                 'Description' => 'Opening Amount — ' . $chequeBank->bank_name,
                 'dr_amount'   => $openingAmount,
                 'cr_amount'   => 0,

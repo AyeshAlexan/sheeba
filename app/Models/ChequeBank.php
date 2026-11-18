@@ -16,6 +16,7 @@ class ChequeBank extends Model
         'account_no',
         'opening_amount',
         'current_amount',
+        'gl_code',
         'is_active',
         'OC',
         'BC',

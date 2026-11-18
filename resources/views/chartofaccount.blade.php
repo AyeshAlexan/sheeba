@@ -355,16 +355,16 @@
                             });
                         });
 
-                        // Cheques (201-123) gets its opening balance from each bank's
-                        // own Opening Amount instead (see the Account screen) — lock
-                        // this field for that one account so the two can't be added
-                        // together and overstate the balance.
+                        // Cheques (201-123) means only cheques physically held and not
+                        // yet deposited — it only ever moves via real cheque
+                        // transactions (Opening Cheque, Deposit, Return, etc.), never a
+                        // manually typed opening balance, so lock this field for it.
                         function syncOpeningBalanceLock() {
                             var isCheques = $('#code').val() === '201-123';
                             $('#opening_balance').prop('disabled', isCheques);
                             if (isCheques) {
                                 $('#opening_balance').val(0);
-                                $('#opening_balance_note').text('Locked — Cheques gets its opening balance from each bank\'s own Opening Amount on the Account screen instead.');
+                                $('#opening_balance_note').text('Locked — Cheques only moves via real cheque transactions, never a manual opening balance.');
                             } else {
                                 $('#opening_balance_note').text('One-time starting balance used when no transaction history exists yet.');
                             }

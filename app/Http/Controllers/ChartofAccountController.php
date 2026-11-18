@@ -56,11 +56,11 @@ class ChartofAccountController extends Controller
             'code.unique'         => 'This account code is already in use — each account must have a unique code.',
         ]);
 
-        // The "Cheques" account (201-123) gets its opening balance from each
-        // individual bank's own Opening Amount (posted as a ledger entry —
-        // see ChequeBankController::store), never from this field. Forcing
-        // it to 0 here (regardless of what the form sends) stops the two
-        // sources being added together and overstating the balance.
+        // The "Cheques" account (201-123) means only cheques physically
+        // held and not yet deposited — it only ever moves via actual
+        // cheque transactions, never a manually typed opening balance.
+        // Each bank account has its own GL code for its Opening Amount
+        // (see ChequeBankController::store) and is unaffected by this.
         $openingBalance = $request->code === '201-123' ? 0 : $request->opening_balance;
 
         $Item  =   MChartofAccount::updateOrCreate(
