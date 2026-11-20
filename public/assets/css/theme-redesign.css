@@ -19,10 +19,26 @@
   --tr-success: #16A34A;
   --tr-danger: #EF4444;
   --tr-warning: #F59E0B;
-  --tr-header-h: 70px;
+  --tr-header-h: 0px;
   --tr-sidebar-w: 280px;
+  --tr-brand-h: 76px;
+  --tr-footer-h: 72px;
+  --tr-sidebar-gap: 16px;
   --tr-content-gap: 0px;
   --tr-font: 'Inter', 'Segoe UI', Arial, sans-serif;
+
+  /* Charcoal black — sidebar only. The rest of the app (content area,
+     dropdown popovers, modals) stays on the light --tr-* palette above;
+     these are scoped to #sidebar so the dark theme doesn't leak out. */
+  --sidebar-bg: #111827;
+  --sidebar-text: #D1D5DB;
+  --sidebar-muted: #8B93A1;
+  --sidebar-active-bg: rgba(22,119,255,.18);
+  --sidebar-active-text: #60A5FA;
+  --sidebar-active-bar: #1677FF;
+  --sidebar-divider: rgba(255,255,255,.08);
+  --sidebar-hover-bg: rgba(255,255,255,.06);
+  --sidebar-chip-bg: rgba(255,255,255,.08);
 }
 
 /* Soft page background so the breathing room below the header (added by
@@ -85,8 +101,7 @@ body::-webkit-scrollbar-corner,
    -------------------------------------------------------------------------- */
 
 .app-topbar {
-  margin: 0 !important;
-  padding: 0 !important;
+  display: none !important;
 }
 
 .header.header-one {
@@ -248,17 +263,278 @@ body::-webkit-scrollbar-corner,
    -------------------------------------------------------------------------- */
 
 #sidebar.sidebar {
-  background: var(--tr-white) !important;
+  background: var(--sidebar-bg) !important;
   width: var(--tr-sidebar-w) !important;
-  box-shadow: none !important;
-  border-right: 1px solid var(--tr-border) !important;
-  top: calc(var(--tr-header-h) + var(--tr-content-gap)) !important;
+  /* Floating card: gap on every side instead of flush against the
+     viewport edges, so it reads as a panel sitting on the page
+     background rather than a fixed strip. */
+  top: var(--tr-sidebar-gap) !important;
+  bottom: var(--tr-sidebar-gap) !important;
+  left: var(--tr-sidebar-gap) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--sidebar-divider) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35) !important;
+  overflow: hidden !important;
   z-index: 1001 !important;
   font-family: var(--tr-font);
   /* Original template used a sluggish 0.2–0.4s "transition: all" on both
      the sidebar and .page-wrapper for the collapse/expand toggle. Scope it
      to just the properties that actually change, at a snappier duration. */
   transition: width 0.15s ease !important;
+  /* Brand header + scrollable menu + footer stacked as a column so the
+     footer (profile card) stays pinned at the bottom instead of being
+     pushed off by a tall menu list. */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#sidebar.sidebar .sidebar-brand {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: var(--tr-brand-h);
+  padding: 0 16px;
+  border-bottom: 1px solid var(--sidebar-divider);
+}
+
+#sidebar.sidebar .sidebar-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none !important;
+  min-width: 0;
+}
+
+#sidebar.sidebar .sidebar-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+  background: linear-gradient(155deg, var(--tr-blue), #3b8bff);
+  color: var(--tr-white);
+  flex-shrink: 0;
+}
+
+#sidebar.sidebar .sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#sidebar.sidebar .sidebar-brand-title {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--sidebar-text);
+  white-space: nowrap;
+}
+
+#sidebar.sidebar .sidebar-brand-subtitle {
+  font-size: 11px;
+  color: var(--sidebar-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#sidebar.sidebar .sidebar-brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--sidebar-chip-bg);
+  border: 1px solid var(--sidebar-divider);
+  color: var(--sidebar-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+#sidebar.sidebar .sidebar-brand-pill svg {
+  color: var(--tr-success);
+  flex-shrink: 0;
+}
+
+#sidebar.sidebar > .scroll {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar footer — profile card (avatar, name/role, collapse toggle, "more"
+   menu) that replaces the old top-bar user menu.
+   -------------------------------------------------------------------------- */
+
+#sidebar.sidebar .sidebar-footer {
+  flex: 0 0 auto;
+  height: var(--tr-footer-h);
+  padding: 0 14px;
+  border-top: 1px solid var(--sidebar-divider);
+  display: flex;
+  align-items: center;
+}
+
+#sidebar.sidebar .sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+#sidebar.sidebar .sidebar-profile-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--tr-blue);
+  color: var(--tr-white);
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+#sidebar.sidebar .sidebar-profile-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+#sidebar.sidebar .sidebar-profile-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--sidebar-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#sidebar.sidebar .sidebar-profile-role {
+  font-size: 11px;
+  color: var(--sidebar-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#sidebar.sidebar .sidebar-profile-toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: var(--sidebar-chip-bg);
+  border: 1px solid var(--sidebar-divider);
+  color: var(--sidebar-muted);
+  padding: 0;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+#sidebar.sidebar .sidebar-profile-toggle:hover {
+  background: var(--sidebar-active-bg);
+  border-color: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+}
+
+#sidebar.sidebar .sidebar-profile-toggle svg {
+  transition: transform .15s ease;
+}
+
+/* Collapsed: arrow points the other way (toward "expand") and the
+   button itself picks up the brand blue so it still reads as the
+   control that gets you back out, not a dead icon. */
+body.mini-sidebar #sidebar.sidebar .sidebar-profile-toggle {
+  background: var(--sidebar-active-bg);
+  border-color: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+}
+
+body.mini-sidebar #sidebar.sidebar .sidebar-profile-toggle svg {
+  transform: rotate(180deg);
+}
+
+#sidebar.sidebar .sidebar-profile-more {
+  flex-shrink: 0;
+  position: relative;
+}
+
+#sidebar.sidebar .sidebar-profile-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: var(--sidebar-muted);
+}
+
+#sidebar.sidebar .sidebar-profile-more-btn:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--sidebar-text);
+}
+
+#sidebar.sidebar .sidebar-profile-more .dropdown-menu {
+  border: 1px solid var(--tr-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 40px rgba(20, 33, 61, 0.12) !important;
+  padding: 8px !important;
+  min-width: 160px;
+}
+
+#sidebar.sidebar .sidebar-profile-more .dropdown-item {
+  border-radius: 10px !important;
+  font-size: 13.5px !important;
+  padding: 9px 12px !important;
+  color: var(--tr-text) !important;
+}
+
+#sidebar.sidebar .sidebar-profile-more .dropdown-item:hover {
+  background: var(--tr-blue-light) !important;
+  color: var(--tr-blue) !important;
+}
+
+/* Collapsed sidebar: shrink the footer to the avatar + collapse toggle,
+   stacked and centred, same way the menu list collapses to icon-only.
+   The toggle must stay visible here — it's the only control that can
+   expand the sidebar back out, so hiding it (as an earlier version of
+   this file did) left no way to un-collapse. */
+body.mini-sidebar #sidebar.sidebar .sidebar-brand-text,
+body.mini-sidebar #sidebar.sidebar .sidebar-brand-pill,
+body.mini-sidebar #sidebar.sidebar .sidebar-profile-info,
+body.mini-sidebar #sidebar.sidebar .sidebar-profile-more {
+  display: none !important;
+}
+
+body.mini-sidebar #sidebar.sidebar .sidebar-brand {
+  justify-content: center;
+  padding: 0;
+}
+
+body.mini-sidebar #sidebar.sidebar .sidebar-footer {
+  height: auto;
+  padding: 14px 0;
+}
+
+body.mini-sidebar #sidebar.sidebar .sidebar-profile {
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
 }
 
 /* --------------------------------------------------------------------------
@@ -270,13 +546,13 @@ body::-webkit-scrollbar-corner,
    -------------------------------------------------------------------------- */
 
 .page-wrapper {
-  margin-left: var(--tr-sidebar-w) !important;
-  padding-top: calc(var(--tr-header-h) + var(--tr-content-gap)) !important;
+  margin-left: calc(var(--tr-sidebar-w) + (var(--tr-sidebar-gap) * 2)) !important;
+  padding-top: 0 !important;
   transition: margin-left 0.15s ease !important;
 }
 
 body.mini-sidebar .page-wrapper {
-  margin-left: 80px !important;
+  margin-left: calc(80px + (var(--tr-sidebar-gap) * 2)) !important;
 }
 
 #sidebar-menu.sidebar-menu {
@@ -297,75 +573,77 @@ body.mini-sidebar .page-wrapper {
   gap: 12px !important;
   height: 46px !important;
   padding: 0 12px !important;
-  margin-bottom: 2px !important;
-  border-radius: 9px !important;
+  margin-bottom: 4px !important;
+  border-radius: 14px !important;
   font-size: 14.5px !important;
   font-weight: 500 !important;
-  color: var(--tr-navy) !important;
+  color: var(--sidebar-text) !important;
   background: transparent !important;
   border: none !important;
   transition: background .15s ease, color .15s ease;
 }
 
 #sidebar-menu.sidebar-menu > ul > li > a:hover {
-  background: var(--tr-bg) !important;
+  background: var(--sidebar-hover-bg) !important;
 }
 
-#sidebar-menu.sidebar-menu > ul > li > a i {
-  width: 18px;
-  text-align: center;
-  font-size: 15px;
-  color: var(--tr-text-secondary) !important;
-  flex-shrink: 0;
-}
-
-#sidebar-menu.sidebar-menu > ul > li > a svg.nav-svg {
+#sidebar-menu.sidebar-menu > ul > li > a i.nav-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 18px;
   height: 18px;
+  font-size: 18px;
+  color: var(--sidebar-muted) !important;
   flex-shrink: 0;
-  color: var(--tr-text-secondary);
+  border-radius: 8px;
+  transition: background .15s ease, color .15s ease, width .15s ease, height .15s ease, padding .15s ease;
 }
-#sidebar-menu.sidebar-menu > ul > li.active > a svg.nav-svg,
-#sidebar-menu.sidebar-menu > ul > li > a.subdrop svg.nav-svg {
-  color: var(--tr-blue);
+
+/* Active icon: just recolors in place, no chip/badge box. A floating
+   circular chip plus a left bar plus a tinted pill was three accents
+   fighting each other — one quiet tint + one accent color reads as
+   deliberate instead of busy. */
+#sidebar-menu.sidebar-menu > ul > li.active > a i.nav-ico,
+#sidebar-menu.sidebar-menu > ul > li > a.subdrop i.nav-ico {
+  color: var(--sidebar-active-text) !important;
 }
 
 #sidebar-menu.sidebar-menu > ul > li > a .menu-arrow {
   margin-left: auto;
-  color: var(--tr-text-muted) !important;
+  color: var(--sidebar-muted) !important;
 }
 
-/* Active top-level item: light-blue background + left indicator bar */
+/* Active top-level item: one quiet accent — a soft tinted pill, icon +
+   text in the accent color. No separate chip, no left bar. */
 #sidebar-menu.sidebar-menu > ul > li.active > a,
 #sidebar-menu.sidebar-menu > ul > li > a.subdrop {
-  background: var(--tr-blue-light) !important;
-  color: var(--tr-blue) !important;
+  background: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
   font-weight: 600 !important;
   position: relative;
 }
 
-#sidebar-menu.sidebar-menu > ul > li.active > a i,
-#sidebar-menu.sidebar-menu > ul > li > a.subdrop i {
-  color: var(--tr-blue) !important;
+/* The legacy template (style.css) draws its own 5px purple bar via
+   `.sidebar-menu li.active > a::before` — our pill-style active state
+   above replaces it, but doesn't un-set it, so it was still rendering
+   underneath/beside the rounded highlight. Explicitly kill it here. */
+#sidebar-menu.sidebar-menu li.active > a::before {
+  display: none !important;
+  content: none !important;
 }
 
-#sidebar-menu.sidebar-menu > ul > li.active > a::before {
-  content: "";
-  position: absolute;
-  left: -12px;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--tr-blue);
+#sidebar-menu.sidebar-menu > ul > li.active > a i,
+#sidebar-menu.sidebar-menu > ul > li > a.subdrop i {
+  color: var(--sidebar-active-text) !important;
 }
 
 /* Submenus */
 #sidebar-menu.sidebar-menu ul ul {
   background: transparent !important;
-  margin: 2px 0 6px 20px !important;
+  margin: 4px 0 8px 20px !important;
   padding-left: 20px !important;
-  border-left: 1px solid var(--tr-border) !important;
+  border-left: 1px solid var(--sidebar-divider) !important;
 }
 
 #sidebar-menu.sidebar-menu ul ul li a {
@@ -374,27 +652,47 @@ body.mini-sidebar .page-wrapper {
   gap: 8px;
   height: 40px !important;
   padding: 0 12px !important;
+  margin-bottom: 2px !important;
   font-size: 13.5px !important;
   font-weight: 500 !important;
-  color: var(--tr-text-secondary) !important;
-  border-radius: 8px !important;
+  color: var(--sidebar-muted) !important;
+  border-radius: 12px !important;
   background: transparent !important;
   transition: background .15s ease, color .15s ease;
 }
 
 #sidebar-menu.sidebar-menu ul ul li a:hover {
-  background: var(--tr-bg) !important;
-  color: var(--tr-navy) !important;
+  background: var(--sidebar-hover-bg) !important;
+  color: var(--sidebar-text) !important;
 }
 
 #sidebar-menu.sidebar-menu ul ul li a i {
-  display: none;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 10px;
+  background: var(--sidebar-chip-bg);
+  color: var(--sidebar-muted) !important;
+  font-size: 13px !important;
+  flex-shrink: 0;
 }
 
 #sidebar-menu.sidebar-menu ul ul li.active > a {
-  background: var(--tr-blue-light) !important;
-  color: var(--tr-blue) !important;
+  background: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
   font-weight: 600 !important;
+}
+
+#sidebar-menu.sidebar-menu ul ul li.active > a i {
+  background: transparent !important;
+  color: var(--sidebar-active-text) !important;
+}
+
+#sidebar-menu.sidebar-menu ul ul li a:hover i {
+  background: var(--sidebar-chip-bg) !important;
+  color: var(--sidebar-text) !important;
 }
 
 /* Collapsed / mini sidebar — keep existing toggle behaviour, restyle it */
@@ -427,13 +725,12 @@ body.mini-sidebar #sidebar-menu.sidebar-menu ul ul {
    child of the sidebar — script.js portals it straight to <body> and
    positions it in JS via getBoundingClientRect() instead. */
 body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a {
-  background: var(--tr-blue-light) !important;
-  color: var(--tr-blue) !important;
+  background: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
 }
 
-body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a svg.nav-svg,
-body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a i {
-  color: var(--tr-blue) !important;
+body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a i.nav-ico {
+  color: var(--sidebar-active-text) !important;
 }
 
 #sidebarFlyout {
@@ -445,10 +742,10 @@ body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a i {
   max-height: calc(100vh - 20px);
   overflow-y: auto;
   padding: 8px;
-  background: var(--tr-surface, #fff);
-  border: 1px solid var(--tr-border);
-  border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, .16);
+  background: var(--sidebar-bg);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, .4);
   z-index: 2000;
 }
 
@@ -470,25 +767,39 @@ body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a i {
   padding: 0 12px !important;
   font-size: 13.5px !important;
   font-weight: 500 !important;
-  color: var(--tr-text-secondary) !important;
+  color: var(--sidebar-text) !important;
   border-radius: 8px !important;
   background: transparent !important;
   transition: background .15s ease, color .15s ease;
 }
 
 #sidebarFlyout ul li a:hover {
-  background: var(--tr-bg) !important;
-  color: var(--tr-navy) !important;
+  background: var(--sidebar-hover-bg) !important;
+  color: #fff !important;
 }
 
 #sidebarFlyout ul li a i {
-  display: none;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--sidebar-muted) !important;
+  font-size: 11px !important;
+  flex-shrink: 0;
 }
 
 #sidebarFlyout ul li.active > a {
-  background: var(--tr-blue-light) !important;
-  color: var(--tr-blue) !important;
+  background: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
   font-weight: 600 !important;
+}
+
+#sidebarFlyout ul li.active > a i {
+  background: rgba(255, 255, 255, .08) !important;
+  color: var(--sidebar-active-text) !important;
 }
 
 /* ==========================================================================
@@ -498,6 +809,16 @@ body.mini-sidebar #sidebar-menu.sidebar-menu > ul > li.flyout-open > a i {
    etc). Styling them once here reskins every page built on them, without
    needing per-page markup rewrites for pure visual changes.
    ========================================================================== */
+
+/* Base content padding — the legacy template sets two different
+   `.content{padding:...}` rules (1.875rem/.9375rem, both with
+   padding-bottom:0) that only differ by viewport width, so some pages
+   read as cramped against the edges and none of them have breathing
+   room at the bottom. One consistent value, on every page, at every
+   width. */
+.content {
+  padding: 28px 28px 36px !important;
+}
 
 /* Page header */
 .content .page-header {
@@ -2046,3 +2367,33 @@ table.dataTable thead th.sorting_desc:after {
 .gvm-ok-btn:hover { filter: brightness(1.06); }
 .gvm-box.gvm-success .gvm-ok-btn { background: #1e8d5e; }
 .gvm-box.gvm-info .gvm-ok-btn { background: #2d6ce9; }
+
+/* Confirm (Yes/No) variant — shares the .gvm-box visual system above. */
+#gvcOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10600;
+  padding: 16px;
+}
+#gvcOverlay.show { display: flex; }
+.gvm-footer-split {
+  display: flex;
+  gap: 10px;
+}
+.gvm-footer-split .gvm-ok-btn {
+  width: auto;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.gvm-no-btn {
+  background: #eef1f6 !important;
+  color: #42505f !important;
+}
+.gvm-no-btn:hover { filter: brightness(0.97); }

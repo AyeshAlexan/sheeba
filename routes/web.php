@@ -697,6 +697,7 @@ Route::get('/filter_stock_by_date', [App\Http\Controllers\StockReportController:
 // Purchases Return
 Route::get('/purchases_order', [App\Http\Controllers\PurshasesOrderController::class, 'index'])->name('purchases_order');
 Route::post('/add_purchases_order', [App\Http\Controllers\PurshasesOrderController::class, 'createPurchasesorder'])->name('add_purchases_order');
+Route::get('/purchases_order/show', [App\Http\Controllers\PurshasesOrderController::class, 'show'])->name('purchases_order.show');
 //Purchase Report
 Route::get('/Purchasereport', [App\Http\Controllers\PurchasereportController::class,'index'])->name('Purchasereport');
 
@@ -835,14 +836,7 @@ Route::post('/add_salesInvoice_withoutVat', [App\Http\Controllers\SalesInvoicewi
 Route::get('/sales_loding_report', [App\Http\Controllers\SalesLodingReportController::class, 'index'])->name('sales_loding_report');
 
 
-Route::get('stockAdjuestment', [App\Http\Controllers\StockAdjuestmentController::class, 'index'])->name('stockAdjuestment');
-Route::post('add_StockAdjuestment', [App\Http\Controllers\StockAdjuestmentController::class, 'AddStockAdjuestment'])->name('add_StockAdjuestment');
 Route::get('/sales_report_withoutVat', [App\Http\Controllers\SalereportController::class, 'indexVat'])->name('sales_report_withoutVat');
-
-
-
-
-Route::get('/show_select_item_description_ajax_data', [App\Http\Controllers\StockAdjuestmentController::class, 'setItemDescriptionShow'])->name('show_select_item_description_ajax_data');
 
 Route::get('/stockAdjuestmentNew', [App\Http\Controllers\StockAdjuestmentController::class, 'indexShow'])->name('stockAdjuestmentNew');
 

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/icons/feather/feather.css') }}">
     <link rel="stylesheet" href="assets/plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/theme-redesign.css') }}?v={{ filemtime(public_path('assets/css/theme-redesign.css')) }}">
@@ -53,6 +54,21 @@
 
 
 <div class="sidebar shadow" id="sidebar">
+    <div class="sidebar-brand">
+        <a href="{{ route('home') }}" class="sidebar-brand-link">
+            <span class="sidebar-brand-mark" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+            </span>
+            <span class="sidebar-brand-text">
+                <span class="sidebar-brand-title">Sheba</span>
+                <span class="sidebar-brand-subtitle">Your business partner</span>
+            </span>
+        </a>
+        <span class="sidebar-brand-pill" title="Branch">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+            {{ optional(Auth::user())->Branch ?? optional(Auth::user())->BC ?? '-' }}
+        </span>
+    </div>
     <div class="scroll">
     <!--<div class="sidebar-inner slimscroll">-->
         <div id="sidebar-menu" class="sidebar-menu">
@@ -61,7 +77,7 @@
                 <li class="menu-title"><span>Main</span></li>
                         <li class="{{ Request::is('home') ? 'active' : '' }}">
                         <a href="{{ route('home') }}">
-                            <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <i class="fe fe-home nav-ico" aria-hidden="true"></i>
                             <span>Home</span>
                         </a>
                     </li>
@@ -74,24 +90,24 @@
 @if(\App\Support\Permissions::can('user_management'))
                 <li class="submenu {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') || Request::is('role-permissions')  ? 'active' : '' }} ">
                     <a href="#" class=" {{ Request::is('users') || Request::is('Userrole')  || Request::is('add_user') || Request::is('role-permissions') ? 'subdrop' : '' }} ">
-                        <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span> User Management</span>
+                        <i class="fe fe-users nav-ico" aria-hidden="true"></i> <span> User Management</span>
                         <span class="menu-arrow"></span></a>
                     <ul style=" {{ Request::is('users') || Request::is('Userrole') || Request::is('add_user') || Request::is('role-permissions') ? 'display:block;' : '' }} ">
                         <li class="{{ Request::is('users') || Request::is('add_user') ? 'active ' : '' }}">
                             <a href="{{route("users")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-user" aria-hidden="true"></i>
                                 Users
                             </a>
                         </li>
                         <li class="{{ Request::is('Userrole') ? 'active ' : '' }}">
                             <a href="{{route("Userrole")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-user-check" aria-hidden="true"></i>
                                 Roles</a>
                         </li>
 @if(\App\Support\Permissions::can('role_permissions'))
                         <li class="{{ Request::is('role-permissions') ? 'active ' : '' }}">
                             <a href="{{route("role_permissions")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-shield" aria-hidden="true"></i>
                                 Role Permissions</a>
                         </li>
 @endif
@@ -105,18 +121,18 @@
 
 @if(\App\Support\Permissions::can('system'))
                 <li class="{{ Request::is('Company*') ? 'active' : '' }}">
-                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg> <span>System</span>
+                    <a href="#"><i class="fe fe-server nav-ico" aria-hidden="true"></i> <span>System</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style=" {{ Request::is('Company*') ? 'display:block;' : '' }}">
                         <li class="{{ Request::is('Company') ? 'active' : '' }}">
                             <a href="{{route("Company")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-briefcase" aria-hidden="true"></i>
                                 Company</a>
                         </li>
                         <li class="{{ Request::is('Company_branchdetails') ? 'active' : '' }}">
                             <a href="{{route("branchdetails")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-git-branch" aria-hidden="true"></i>
                                 Branch</a>
                         </li>
                     </ul>
@@ -127,64 +143,64 @@
 @if(\App\Support\Permissions::can('master'))
                 <li
                     class="dropdown {{ Request::is('master*')  || Request::is('SalesMan') || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MColor')  || Request::is('M_Make')  || Request::is('MBrand')  || Request::is('Category') || Request::is('Store') || Request::is('Department') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category') ? 'active' : '' }} ">
-                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M12 9v3M12 12H6v3M12 12h6v3"/></svg> <span> Master</span> <span class="menu-arrow"></span></a>
+                    <a href="#"><i class="fe fe-layers nav-ico" aria-hidden="true"></i> <span> Master</span> <span class="menu-arrow"></span></a>
                     <ul
                         style=" {{ Request::is('master*') || Request::is('SalesMan')  || Request::is('Area')  || Request::is('Route') || Request::is('Bank_Branch') || Request::is('BankDeltails') || Request::is('MColor')  || Request::is('Category') || Request::is('Store') || Request::is('Department') || Request::is('M_Make')  || Request::is('MBrand') ||Request::is('Suppliers') || Request::is('Item') || Request::is('Category')  ? 'display:block;' : '' }}">
                         <li class="{{ Request::is('Department') ? 'active' : '' }}">
-                            <a href="{{'Department'}}"><i class="fa fa-angle-right"></i>Department</a>
+                            <a href="{{'Department'}}"><i class="fe fe-briefcase" aria-hidden="true"></i>Department</a>
                         </li>
 
                         <li class="{{ Request::is('Store') ? 'active' : '' }}">
-                            <a href="{{route("Store")}}"><i class="fa fa-angle-right"></i>Store</a>
+                            <a href="{{route("Store")}}"><i class="fe fe-inbox" aria-hidden="true"></i>Store</a>
                         </li>
 
                         <li class="{{ Request::is('Category') ? 'active' : '' }}">
-                            <a href="{{route("Category")}}"><i class="fa fa-angle-right"></i>Category</a>
+                            <a href="{{route("Category")}}"><i class="fe fe-tag" aria-hidden="true"></i>Category</a>
                         </li>
 
                         <li class="{{ Request::is('MBrand') ? 'active' : '' }}">
-                            <a href="{{route("MBrand")}}"><i class="fa fa-angle-right"></i>Brands</a>
+                            <a href="{{route("MBrand")}}"><i class="fe fe-award" aria-hidden="true"></i>Brands</a>
                         </li>
                         <li class="{{ Request::is('M_Make') ? 'active' : '' }}">
-                            <a href="{{route("M_Make")}}"><i class="fa fa-angle-right"></i>Make</a>
+                            <a href="{{route("M_Make")}}"><i class="fe fe-settings" aria-hidden="true"></i>Make</a>
                         </li>
                         <li class="{{ Request::is('MColor') ? 'active' : '' }}">
-                            <a href="{{route("MColor")}}"><i class="fa fa-angle-right"></i>Color</a>
+                            <a href="{{route("MColor")}}"><i class="fe fe-droplet" aria-hidden="true"></i>Color</a>
                         </li>
 
                         <li class="{{ Request::is('Item') ? 'active' : '' }}">
-                            <a href="{{route('Item')}}"><i class="fa fa-angle-right"></i>Item</a>
+                            <a href="{{route('Item')}}"><i class="fe fe-box" aria-hidden="true"></i>Item</a>
                         </li>
                         <li class="dropdown {{ Request::is('master_customers') ? 'active' : '' }}">
                             <a href="{{route("master_customers")}}">
-                                <i class="fa fa-angle-right"></i>Customers</a>
+                                <i class="fe fe-users" aria-hidden="true"></i>Customers</a>
                         </li>
 
 						<li class="{{ Request::is('Suppliers') ? 'active' : '' }}">
-                            <a href="{{('Suppliers')}}"><i class="fa fa-angle-right"></i>Suppliers</a>
+                            <a href="{{('Suppliers')}}"><i class="fe fe-truck" aria-hidden="true"></i>Suppliers</a>
                         </li>
                         <li class="{{ Request::is('BankDeltails') ? 'active' : '' }}">
-                            <a href="{{route("BankDeltails")}}"><i class="fa fa-angle-right"></i>Bank</a>
+                            <a href="{{route("BankDeltails")}}"><i class="fe fe-credit-card" aria-hidden="true"></i>Bank</a>
                         </li>
                         <li class="{{ Request::is('Bank_Branch') ? 'active' : '' }}">
-                            <a href="{{route('Bank_Branch')}}"><i class="fa fa-angle-right"></i>Bank Branch</a>
+                            <a href="{{route('Bank_Branch')}}"><i class="fe fe-git-branch" aria-hidden="true"></i>Bank Branch</a>
                         </li>
                         <li class="{{ Request::is('ChequeBanks') ? 'active' : '' }}">
-                            <a href="{{route('ChequeBanks')}}"><i class="fa fa-angle-right"></i>Account</a>
+                            <a href="{{route('ChequeBanks')}}"><i class="fe fe-credit-card" aria-hidden="true"></i>Account</a>
                         </li>
                            {{-- Route --}}
 
                         <li class="{{ Request::is('Route') ? 'active' : '' }}">
-                            <a href="{{route('Route')}}"><i class="fa fa-angle-right"></i>Route</a>
+                            <a href="{{route('Route')}}"><i class="fe fe-map" aria-hidden="true"></i>Route</a>
                         </li>
 
                         {{-- Area --}}
                         <li class="{{ Request::is('Area') ? 'active' : '' }}">
-                            <a href="{{route('Area')}}"><i class="fa fa-angle-right"></i>Area</a>
+                            <a href="{{route('Area')}}"><i class="fe fe-map-pin" aria-hidden="true"></i>Area</a>
                         </li>
                         {{-- SalesMan --}}
                         <li class="{{ Request::is('SalesMan') ? 'active' : '' }}">
-                            <a href="{{route('SalesMan')}}"><i class="fa fa-angle-right"></i>SalesMan</a>
+                            <a href="{{route('SalesMan')}}"><i class="fe fe-briefcase" aria-hidden="true"></i>SalesMan</a>
                         </li>
 
                     </ul>
@@ -196,42 +212,36 @@
 
 @if(\App\Support\Permissions::can('stock'))
                 <li class="{{ Request::is('stock*') ? 'active' : '' }}">
-                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg> <span>Stock</span>
+                    <a href="#"><i class="fe fe-package nav-ico" aria-hidden="true"></i> <span>Stock</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style=" {{ Request::is('stock*') ? 'display:block;' : '' }}">
                         <li class="{{ Request::is('stock_open') ? 'active' : '' }}">
                             <a href="{{route("stock_open")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-inbox" aria-hidden="true"></i>
                                 Opening Stock</a>
                         </li>
-                       <li class="{{ Request::is('stockAdjuestment') ? 'active' : '' }}">
-                          <a href="{{route("stockAdjuestment")}}">
-                                <i class="fa fa-angle-right"></i>
-                                Stock Adjestment</a>
-                        </li>
-
                         <li class="{{ Request::is('stockAdjuestmentNew') ? 'active' : '' }}">
                           <a href="{{route("stockAdjuestmentNew")}}">
-                                <i class="fa fa-angle-right"></i>
-                                Stock Adjestment New</a>
+                                <i class="fe fe-sliders" aria-hidden="true"></i>
+                                Stock Adjustment</a>
                         </li>
 
                         <li class="{{ Request::is('stock_damage') ? 'active' : '' }}">
                             <a href="{{route("stock_damage")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-alert-triangle" aria-hidden="true"></i>
                                 Damage Stock</a>
                         </li>
 
                         <li class="{{ Request::is('stock_movements') ? 'active' : '' }}">
                             <a href="{{route("stock_movements")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-repeat" aria-hidden="true"></i>
                                 Stock Movements</a>
                         </li>
 
                         <li class="{{ Request::is('stock_transfer') ? 'active' : '' }}">
                             <a href="{{route("stock_transfer")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-truck" aria-hidden="true"></i>
                                 Stock Transfer</a>
                         </li>
                     </ul>
@@ -247,28 +257,28 @@
 
 @if(\App\Support\Permissions::can('purchases'))
                 <li class=" dropdown {{ Request::is('purchases*') ? 'active' : '' }} ">
-                   <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> <span>Purchases</span>
+                   <a href="#"><i class="fe fe-shopping-cart nav-ico" aria-hidden="true"></i> <span>Purchases</span>
                        <span class="menu-arrow"></span></a>
 
                    <ul style="{{ Request::is('purchases*') ? 'display:block;' : '' }} ">
                        <li class="{{ Request::is('purchases_order') ? 'active' : '' }}">
                            <a href="{{route("purchases_order")}}">
-                               <i class="fa fa-angle-right"></i>Purshases Order</a>
+                               <i class="fe fe-file-text" aria-hidden="true"></i>Purshases Order</a>
                        </li>
                        <li class="{{ Request::is('purchases') ? 'active' : '' }}">
                            <a href="{{route("purchases")}}">
-                               <i class="fa fa-angle-right" ></i>Purchases</a>
+                               <i class="fe fe-truck" aria-hidden="true"></i>Purchases</a>
                        </li>
 
                        <li class="{{ Request::is('purchases_supplyer_payment') ? 'active' : '' }}">
                            <a href="{{route("purchases_supplyer_payment")}}">
-                               <i class="fa fa-angle-right"></i>
+                               <i class="fe fe-credit-card" aria-hidden="true"></i>
                                Supplyer Payment</a>
                        </li>
 
                        <li class="{{ Request::is('purchases_return') ? 'active' : '' }}">
                            <a href="{{route("purchases_return")}}">
-                               <i class="fa fa-angle-right"></i>
+                               <i class="fe fe-corner-up-left" aria-hidden="true"></i>
                                Purchases Return</a>
                        </li>
                    </ul>
@@ -277,61 +287,61 @@
 
 @if(\App\Support\Permissions::can('sales'))
                 <li class=" dropdown {{ Request::is('sales*') ? 'active' : '' }} ">
-                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> <span>Sales</span>
+                    <a href="#"><i class="fe fe-bar-chart-2 nav-ico" aria-hidden="true"></i> <span>Sales</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style="{{ Request::is('sales*') ? 'display:block;' : '' }} ">
                         {{-- <li class="{{ Request::is('sales_invoice') ? 'active' : '' }}">
                             <a href="{{route("sales_invoice")}}">
-                                <i class="fa fa-angle-right"></i> Invoice Sales</a>
+                                <i class="fe fe-chevron-right" aria-hidden="true"></i> Invoice Sales</a>
                         </li> --}}
 
                         <li class="{{ Request::is('sales_orders*') ? 'active' : '' }}">
-                            <a href="{{ route('sales_orders') }}"><i class="fa fa-angle-right"></i> Sales Order</a>
+                            <a href="{{ route('sales_orders') }}"><i class="fe fe-clipboard" aria-hidden="true"></i> Sales Order</a>
                         </li>
                         <li class="{{ Request::is('salesInvoice_withoutVat') ? 'active' : '' }}">
                             <a href="{{route("salesInvoice_withoutVat")}}">
-                                <i class="fa fa-angle-right"></i> Sales Invoice</a>
+                                <i class="fe fe-file-text" aria-hidden="true"></i> Sales Invoice</a>
                         </li>
 
                         <!--<li class="{{ Request::is('sales_create_invoice') ? 'active' : '' }}">-->
                         <!--    <a href="{{route("sales_create_invoice")}}">-->
-                        <!--        <i class="fa fa-angle-right"></i> Vat Sales Invoice</a>-->
+                        <!--        <i class="fe fe-chevron-right" aria-hidden="true"></i> Vat Sales Invoice</a>-->
                         <!--</li>-->
 
                         <li class="{{ Request::is('sales_advance_payment') ? 'active' : '' }}">
                             <a href="{{route("sales_advance_payment")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-dollar-sign" aria-hidden="true"></i>
                                 Advance Payment</a>
                         </li>
 
                         <li class="{{ Request::is('sales_return') ? 'active' : '' }}">
                             <a href="{{route("sales_return")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-corner-up-left" aria-hidden="true"></i>
                                 Sales Return</a>
                         </li>
 
                         <li class="{{ Request::is('sales_quatation') ? 'active' : '' }}">
                             <a href="{{route("sales_quatation")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-edit-3" aria-hidden="true"></i>
                                 Quatation</a>
                         </li>
                         <li class="{{ Request::is('sales_customer_payment') ? 'active' : '' }}">
                             <a href="{{route("sales_customer_payment")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-dollar-sign" aria-hidden="true"></i>
                                 Customer Payment</a>
                         </li>
 
                            <li class="{{ Request::is('sales_customer_payment') ? 'active' : '' }}" target ="_ blank">
                           <a href="{{route("customer_opening_balance")}}">
-                              <i class="fa fa-angle-right"></i>
+                              <i class="fe fe-sliders" aria-hidden="true"></i>
                              Customer Balance</a>
                       </li>
                       
                       
                             <li class="{{ Request::is('invoiceDiscountEnter') ? 'active' : '' }}">
                     <a href="{{ route('invoiceDiscountEnter') }}" target="_blank">
-                        <i class="fa fa-angle-right"></i>
+                        <i class="fe fe-tag" aria-hidden="true"></i>
                         Customer Discount
                     </a>
                           </li>
@@ -348,7 +358,7 @@
                 @endphp
                 <li class="{{ $vouchersOpen ? 'active' : '' }}">
                 <a href="#" class="{{ $vouchersOpen ? 'subdrop' : '' }}">
-                    <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 9a3 3 0 1 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 1 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg> <span> Vouchers</span> <span class="menu-arrow"></span></a>
+                    <i class="fe fe-bookmark nav-ico" aria-hidden="true"></i> <span> Vouchers</span> <span class="menu-arrow"></span></a>
                 <ul
                 style=" {{ $vouchersOpen ? 'display:block;' : '' }}"
                 >
@@ -356,19 +366,19 @@
                     class="{{ Request::is('PaymentVoucher*') ? 'active' : '' }}"
                     >
                         <a href="{{route("PaymentVoucher")}}">
-                            <i class="fa fa-angle-right"></i>
+                            <i class="fe fe-credit-card" aria-hidden="true"></i>
                             Payment Vouchers</a>
                     </li>
 
                     <li class="{{ Request::is('gentralreceipt*') ? 'active' : '' }}">
             <a href="{{ route('gentralreceipt') }}" >
-                <i class="fa fa-receipt"></i> Gentral Receipt
+                <i class="fe fe-file-text" aria-hidden="true"></i> Gentral Receipt
             </a>
         </li>
 
                     <li class="{{ Request::is('PettyCash*') ? 'active' : '' }}">
                         <a href="{{route("PettyCash")}}">
-                            <i class="fa fa-angle-right"></i>
+                            <i class="fe fe-credit-card" aria-hidden="true"></i>
                             Petty Cash</a>
                     </li>
                 </ul>
@@ -377,18 +387,18 @@
 
 @if(\App\Support\Permissions::can('expense'))
                 <li class="{{ Request::is('AddExpense*') ? 'active' : '' }}">
-                    <a href="#"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> <span>Expense</span>
+                    <a href="#"><i class="fe fe-file-minus nav-ico" aria-hidden="true"></i> <span>Expense</span>
                         <span class="menu-arrow"></span></a>
 
                     <ul style=" {{ Request::is('AddExpense*') ? 'display:block;' : '' }}">
                         <li class="{{ Request::is('AddExpense') ? 'active' : '' }}">
                             <a href="{{route("AddExpense")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-plus-circle" aria-hidden="true"></i>
                                 Add Expense</a>
                         </li>
                         <li class="{{ Request::is('CashOut') ? 'active' : '' }}">
                             <a href="{{route("CashOut")}}">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fe fe-dollar-sign" aria-hidden="true"></i>
                                 Cash Out</a>
                         </li>
                     </ul>
@@ -399,32 +409,32 @@
 @if(\App\Support\Permissions::can('banking'))
                 <li class="dropdown {{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') || Request::is('banking-recognition') || Request::is('opening-cheques') ? 'active' : '' }}">
                     <a href="#">
-                        <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span> Banking </span> <span
+                        <i class="fe fe-credit-card nav-ico" aria-hidden="true"></i> <span> Banking </span> <span
                             class="menu-arrow"></span></a>
                             <ul style="{{ Request::is('cheque-deposit') || Request::is('issued-cheques') || Request::is('cheque-return') || Request::is('banking-recognition') || Request::is('opening-cheques') ? 'display:block;' : '' }}">
                                 <li class="{{ Request::is('opening-cheques') ? 'active' : '' }}">
                                     <a href="{{ route('opening.cheques') }}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-book-open" aria-hidden="true"></i>
                                     Opening Cheques</a>
                                 </li>
                                 <li class="{{ Request::is('cheque-deposit') ? 'active' : '' }}">
                                     <a href="{{ route('cheque.deposit') }}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-download" aria-hidden="true"></i>
                                     Cheque Deposit</a>
                                 </li>
                                 <li class="{{ Request::is('issued-cheques') ? 'active' : '' }}">
                                     <a href="{{ route('issued.cheques') }}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-send" aria-hidden="true"></i>
                                     Issued Cheques </a>
                                 </li>
                                 <li class="{{ Request::is('cheque-return') ? 'active' : '' }}">
                                     <a href="{{ route('cheque.return') }}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-corner-up-left" aria-hidden="true"></i>
                                     Cheque Return</a>
                                 </li>
                                 <li class="{{ Request::is('banking-recognition') ? 'active' : '' }}">
                                     <a href="{{ route('banking.recognition') }}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-check-circle" aria-hidden="true"></i>
                                     Banking Recognition</a>
                                 </li>
                             </ul>
@@ -439,22 +449,22 @@
                 @endphp
                 <li class="{{ $accountingOpen ? 'active' : '' }}">
                     <a href="#" class="{{ $accountingOpen ? 'subdrop' : '' }}">
-                        <svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/></svg> <span> Accounting</span> <span
+                        <i class="fe fe-grid nav-ico" aria-hidden="true"></i> <span> Accounting</span> <span
                             class="menu-arrow"></span></a>
                             <ul style="{{ $accountingOpen ? 'display:block;' : '' }}">
                                 <li class="{{ request()->routeIs('account_category') ? 'active' : '' }}">
                                     <a href="{{route("account_category")}}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-chevron-right" aria-hidden="true"></i>
                                    Category</a>
                                 </li>
                                 <li class="{{ request()->routeIs('account_type') ? 'active' : '' }}">
                                     <a href="{{route("account_type")}}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-chevron-right" aria-hidden="true"></i>
                                    Type</a>
                                 </li>
                                 <li class="{{ request()->routeIs('chartofaccount') ? 'active' : '' }}">
                                     <a href="{{route("chartofaccount")}}">
-                                    <i class="fa fa-angle-right"></i>
+                                    <i class="fe fe-chevron-right" aria-hidden="true"></i>
                                    Chart Of Accounts</a>
                                 </li>
 
@@ -494,7 +504,7 @@
                 @endphp
             @if($canSeeAnyReport)
             <li class="{{ $reportsOpen ? 'active' : '' }}">
-                <a href="#" class="{{ $reportsOpen ? 'subdrop' : '' }}"><svg class="nav-svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> <span>Reports</span> <span
+                <a href="#" class="{{ $reportsOpen ? 'subdrop' : '' }}"><i class="fe fe-trending-up nav-ico" aria-hidden="true"></i> <span>Reports</span> <span
                     class="menu-arrow"></span></a>
                 <ul class="menu-sub" style="{{ $reportsOpen ? 'display:block;' : '' }}">
                   @if($canSeeStockGroup)
@@ -844,8 +854,46 @@
             </ul>
         </div>
     </div>
+    <div class="sidebar-footer">
+        <div class="sidebar-profile">
+            <span class="sidebar-profile-avatar">{{ strtoupper(substr(Auth::user()->username ?? 'A', 0, 1)) }}</span>
+            <span class="sidebar-profile-info">
+                <span class="sidebar-profile-name">{{ Auth::user()->username ?? 'Admin' }}</span>
+                <span class="sidebar-profile-role">{{ optional(Auth::user())->role_name ?? 'Super Admin' }}</span>
+            </span>
+            <button type="button" id="toggle_btn" class="sidebar-profile-toggle" aria-controls="sidebar-menu" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="sidebar-profile-more">
+                <button type="button" id="sidebar-logout-btn" class="sidebar-profile-more-btn" aria-label="Logout" title="Logout">
+                    <i data-feather="log-out"></i>
+                </button>
+                <form id="sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
+(() => {
+    const toggle = document.getElementById('toggle_btn');
+
+    function updateToggle() {
+        const collapsed = document.body.classList.contains('mini-sidebar');
+        const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+        toggle.setAttribute('aria-label', label);
+        toggle.title = label;
+    }
+
+    toggle.addEventListener('click', () => {
+        document.body.classList.toggle('mini-sidebar');
+        updateToggle();
+    });
+    updateToggle();
+})();
+
 $(function() {
     var $scroll = $('#sidebar .scroll');
     var $active = $('#sidebar-menu li.active > a, #sidebar-menu li a.active').last();

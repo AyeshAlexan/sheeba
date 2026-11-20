@@ -52,37 +52,37 @@ class HomeController extends Controller
             ->count();
 
         // ── Payments (sent vs received) ───────────────────────────────
-        [$paymentSentSum, $paymentSentPct] = $this->monthOverMonth(
+        [$paymentSentSum, $paymentSentPct, $paymentSentHasPrev] = $this->monthOverMonth(
             TSupplierPayment::class, 'Payment_Amount', 'Payment_date'
         );
-        [$paymentReceivedSum, $paymentReceivedPct] = $this->monthOverMonth(
+        [$paymentReceivedSum, $paymentReceivedPct, $paymentReceivedHasPrev] = $this->monthOverMonth(
             TCustomerPayment::class, 'Payment_Amount', 'Payment_date'
         );
 
         // ── Month-over-month % for the top metric cards ───────────────
-        [, $salesMoMPct]     = $this->monthOverMonth(TwithoutVatSalesSum::class, 'Net_Amount', 'Invoice_date');
-        [, $purchasesMoMPct] = $this->monthOverMonth(TPurchasesSum::class, 'Net_Amount', 'Invoice_date');
-        [, $customersMoMPct] = $this->monthOverMonthCount(Customer::class, 'created_at');
+        [, $salesMoMPct, $salesHasPrev]         = $this->monthOverMonth(TwithoutVatSalesSum::class, 'Net_Amount', 'Invoice_date');
+        [, $purchasesMoMPct, $purchasesHasPrev] = $this->monthOverMonth(TPurchasesSum::class, 'Net_Amount', 'Invoice_date');
+        [, $customersMoMPct, $customersHasPrev] = $this->monthOverMonthCount(Customer::class, 'created_at');
 
         $statCards = [
-            ['label' => 'Total Sales',      'value' => $invoiceSumTotal,     'decimals' => 2, 'pct' => $salesMoMPct,     'icon' => 'fa-chart-line',            'color' => 'indigo'],
-            ['label' => 'Total Purchases',  'value' => $purchasesPaymentSum, 'decimals' => 2, 'pct' => $purchasesMoMPct, 'icon' => 'fa-shopping-cart',         'color' => 'sky'],
-            ['label' => 'Customers',        'value' => $totalCustomerCount,  'decimals' => 0, 'pct' => $customersMoMPct, 'icon' => 'fa-users',                 'color' => 'violet'],
-            ['label' => 'Payment Sent',     'value' => $paymentSentSum,      'decimals' => 2, 'pct' => $paymentSentPct,     'icon' => 'fa-upload',   'color' => 'amber'],
-            ['label' => 'Payment Received', 'value' => $paymentReceivedSum,  'decimals' => 2, 'pct' => $paymentReceivedPct, 'icon' => 'fa-download', 'color' => 'emerald'],
+            ['label' => 'Total Sales',      'value' => $invoiceSumTotal,     'decimals' => 2, 'pct' => $salesMoMPct,     'hasPrev' => $salesHasPrev,     'icon' => 'fa-chart-line',            'color' => 'indigo'],
+            ['label' => 'Total Purchases',  'value' => $purchasesPaymentSum, 'decimals' => 2, 'pct' => $purchasesMoMPct, 'hasPrev' => $purchasesHasPrev, 'icon' => 'fa-shopping-cart',         'color' => 'sky'],
+            ['label' => 'Customers',        'value' => $totalCustomerCount,  'decimals' => 0, 'pct' => $customersMoMPct, 'hasPrev' => $customersHasPrev, 'icon' => 'fa-users',                 'color' => 'violet'],
+            ['label' => 'Payment Sent',     'value' => $paymentSentSum,      'decimals' => 2, 'pct' => $paymentSentPct,     'hasPrev' => $paymentSentHasPrev,     'icon' => 'fa-upload',   'color' => 'amber'],
+            ['label' => 'Payment Received', 'value' => $paymentReceivedSum,  'decimals' => 2, 'pct' => $paymentReceivedPct, 'hasPrev' => $paymentReceivedHasPrev, 'icon' => 'fa-download', 'color' => 'emerald'],
         ];
 
         // ── Stock history (qty moved this month vs last month) ────────
-        [$salesItemsQty, $salesItemsPct]         = $this->monthOverMonth(TWithoutVatSalesDetails::class, 'QTY', 'Invoice_date');
-        [$salesReturnQty, $salesReturnPct]       = $this->monthOverMonth(TSalesReturnDetails::class, 'QTY', 'Invoice_date');
-        [$purchaseItemsQty, $purchaseItemsPct]   = $this->monthOverMonth(TPurchasesDetails::class, 'QTY', 'Invoice_date');
-        [$purchaseReturnQty, $purchaseReturnPct] = $this->monthOverMonth(TPurchasesReturnDetails::class, 'QTY', 'Invoice_date');
+        [$salesItemsQty, $salesItemsPct, $salesItemsHasPrev]         = $this->monthOverMonth(TWithoutVatSalesDetails::class, 'QTY', 'Invoice_date');
+        [$salesReturnQty, $salesReturnPct, $salesReturnHasPrev]       = $this->monthOverMonth(TSalesReturnDetails::class, 'QTY', 'Invoice_date');
+        [$purchaseItemsQty, $purchaseItemsPct, $purchaseItemsHasPrev]   = $this->monthOverMonth(TPurchasesDetails::class, 'QTY', 'Invoice_date');
+        [$purchaseReturnQty, $purchaseReturnPct, $purchaseReturnHasPrev] = $this->monthOverMonth(TPurchasesReturnDetails::class, 'QTY', 'Invoice_date');
 
         $stockHistory = [
-            ['label' => 'Total Sales Items',     'value' => $salesItemsQty,     'pct' => $salesItemsPct],
-            ['label' => 'Sales Return Items',    'value' => $salesReturnQty,    'pct' => $salesReturnPct],
-            ['label' => 'Total Purchase Items',  'value' => $purchaseItemsQty,  'pct' => $purchaseItemsPct],
-            ['label' => 'Purchase Return Items', 'value' => $purchaseReturnQty, 'pct' => $purchaseReturnPct],
+            ['label' => 'Total Sales Items',     'value' => $salesItemsQty,     'pct' => $salesItemsPct,     'hasPrev' => $salesItemsHasPrev],
+            ['label' => 'Sales Return Items',    'value' => $salesReturnQty,    'pct' => $salesReturnPct,    'hasPrev' => $salesReturnHasPrev],
+            ['label' => 'Total Purchase Items',  'value' => $purchaseItemsQty,  'pct' => $purchaseItemsPct,  'hasPrev' => $purchaseItemsHasPrev],
+            ['label' => 'Purchase Return Items', 'value' => $purchaseReturnQty, 'pct' => $purchaseReturnPct, 'hasPrev' => $purchaseReturnHasPrev],
         ];
 
         // ── Stock details (QTY = qun_in − qun_out per item) ─────────
@@ -290,15 +290,17 @@ class HomeController extends Controller
         $returns   = TSalesReturnSum::where('Invoice_date',     '>=', $invoiceRange)->count()
                    + TPurchasesReturnSum::where('Invoice_date', '>=', $invoiceRange)->count();
 
-        $total = max($sales + $purchases + $returns, 1);
+        $hasData = ($sales + $purchases + $returns) > 0;
+        $total   = max($sales + $purchases + $returns, 1);
 
         $salesPct     = round($sales     / $total * 100, 1);
         $purchasesPct = round($purchases / $total * 100, 1);
-        $returnsPct   = round(max(100 - $salesPct - $purchasesPct, 0), 1);
+        $returnsPct   = round($returns   / $total * 100, 1);
 
         return [
             'labels'  => ['Sales', 'Purchases', 'Returns'],
             'series'  => [$salesPct, $purchasesPct, $returnsPct],
+            'hasData' => $hasData,
             'totals'  => [
                 'sales'     => $sales,
                 'purchases' => $purchases,
@@ -387,14 +389,14 @@ class HomeController extends Controller
 
         $pct = $previous > 0
             ? round(($current - $previous) / $previous * 100, 1)
-            : ($current > 0 ? 100.0 : 0.0);
+            : 0.0;
 
-        return [$current, $pct];
+        return [$current, $pct, $previous > 0];
     }
 
     /**
      * Counts rows for the current calendar month and returns
-     * [currentMonthCount, pctChangeVsPreviousMonth].
+     * [currentMonthCount, pctChangeVsPreviousMonth, hasPreviousData].
      */
     private function monthOverMonthCount(string $modelClass, string $dateCol): array
     {
@@ -409,9 +411,9 @@ class HomeController extends Controller
 
         $pct = $previous > 0
             ? round(($current - $previous) / $previous * 100, 1)
-            : ($current > 0 ? 100.0 : 0.0);
+            : 0.0;
 
-        return [$current, $pct];
+        return [$current, $pct, $previous > 0];
     }
 
     // ══════════════════════════════════════════════════════════════

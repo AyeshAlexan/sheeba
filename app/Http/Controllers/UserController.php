@@ -46,16 +46,43 @@ class UserController extends Controller
         return view('roles');
     }
 
+    // ── Shared validation rules for creating a user ──────────────────────────
+    private function addUserRules(): array
+    {
+        return [
+            'user_name' => 'required|string|max:50|regex:/^[A-Za-z0-9_.]+$/|unique:users,username',
+            'name'      => 'required|string|max:100',
+            'email'     => 'nullable|email:filter|max:255|unique:users,email',
+            'password'  => 'required|string|min:5|max:255',
+            'role'      => 'required|exists:userroles,role_name',
+            'Branch'    => 'required|exists:branch_dels,name',
+        ];
+    }
+
+    private function addUserMessages(): array
+    {
+        return [
+            'user_name.required' => 'Please enter a username.',
+            'user_name.regex'    => 'Username can only contain letters, numbers, dots and underscores.',
+            'user_name.unique'   => 'This username is already taken.',
+            'name.required'      => 'Please enter the full name.',
+            'email.email'        => 'Please enter a valid email address.',
+            'email.unique'       => 'This email is already in use by another user.',
+            'password.required'  => 'Please enter a password.',
+            'password.min'       => 'Password must be at least 5 characters.',
+            'role.required'      => 'Please select a role.',
+            'role.exists'        => 'Selected role is not valid.',
+            'Branch.required'    => 'Please select a branch.',
+            'Branch.exists'      => 'Selected branch is not valid.',
+        ];
+    }
+
     // ── Add user (form submit, redirect) ────────────────────────────────────
     public function AddUser(Request $request)
     {
-        $request->validate([
-            'user_name' => 'required|max:50|unique:users,username',
-            'name'      => 'required|max:100',
-            'password'  => 'required|min:5',
-            'role'      => 'required',
-            'Branch'    => 'required',
-        ]);
+        $request->merge(['email' => $request->filled('email') ? trim($request->email) : null]);
+
+        $request->validate($this->addUserRules(), $this->addUserMessages());
 
         $data           = new User;
         $data->email    = $request->email;
@@ -73,13 +100,9 @@ class UserController extends Controller
     // ── Add user via AJAX (modal form) ───────────────────────────────────────
     public function addUserAjax(Request $request)
     {
-        $request->validate([
-            'user_name' => 'required|max:50|unique:users,username',
-            'name'      => 'required|max:100',
-            'password'  => 'required|min:5',
-            'role'      => 'required',
-            'Branch'    => 'required',
-        ]);
+        $request->merge(['email' => $request->filled('email') ? trim($request->email) : null]);
+
+        $request->validate($this->addUserRules(), $this->addUserMessages());
 
         $data           = new User;
         $data->email    = $request->email;
@@ -118,11 +141,31 @@ class UserController extends Controller
     // ── Update user via AJAX ─────────────────────────────────────────────────
     public function update(Request $request)
     {
+        if ($request->filled('up_email')) {
+            $request->merge(['up_email' => trim($request->up_email)]);
+        }
+
         $request->validate([
-            'up_user_name' => 'required|max:50|unique:users,username,' . $request->up_id,
-            'up_name'      => 'required|max:100',
-            'up_role'      => 'required',
-            'up_Branch'    => 'required',
+            'up_id'        => 'required|exists:users,id',
+            'up_user_name' => 'required|string|max:50|regex:/^[A-Za-z0-9_.]+$/|unique:users,username,' . $request->up_id,
+            'up_name'      => 'required|string|max:100',
+            'up_email'     => 'nullable|email:filter|max:255|unique:users,email,' . $request->up_id,
+            'up_password'  => 'nullable|string|min:5|max:255',
+            'up_role'      => 'required|exists:userroles,role_name',
+            'up_Branch'    => 'required|exists:branch_dels,name',
+        ], [
+            'up_id.exists'        => 'The user being edited could not be found.',
+            'up_user_name.required' => 'Please enter a username.',
+            'up_user_name.regex'    => 'Username can only contain letters, numbers, dots and underscores.',
+            'up_user_name.unique'   => 'This username is already taken.',
+            'up_name.required'      => 'Please enter the full name.',
+            'up_email.email'        => 'Please enter a valid email address.',
+            'up_email.unique'       => 'This email is already in use by another user.',
+            'up_password.min'       => 'Password must be at least 5 characters.',
+            'up_role.required'      => 'Please select a role.',
+            'up_role.exists'        => 'Selected role is not valid.',
+            'up_Branch.required'    => 'Please select a branch.',
+            'up_Branch.exists'      => 'Selected branch is not valid.',
         ]);
 
         $updateData = [

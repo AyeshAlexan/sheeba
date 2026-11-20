@@ -314,6 +314,44 @@
 .stock-warning-note { font-size: 12.5px; color: #5a6f8b; margin-bottom: 4px; }
 .stock-warning-modal .modal-footer { border-top: none; padding: 10px 20px 22px; }
 
+/* Live stock indicator shown under the item-code field as soon as an item is picked */
+.item-stock-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    width: max-content;
+    max-width: 100%;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .01em;
+    margin-top: 6px;
+    padding: 5px 10px;
+    border-radius: 7px;
+    border: 1.5px solid transparent;
+}
+.item-stock-badge.show { display: flex; }
+.item-stock-badge i { font-size: 12px; }
+.item-stock-badge.in-stock {
+    color: #15803d; background: #e7f9ef; border-color: #b6ecc9;
+}
+.item-stock-badge.low-stock {
+    color: #92400e; background: #fff4df; border-color: #fbdca0;
+    animation: stockBadgePulse 1.4s ease-in-out infinite;
+}
+.item-stock-badge.no-stock {
+    color: #fff; background: #e63946; border-color: #e63946;
+    animation: stockBadgePulse 1.4s ease-in-out infinite;
+}
+@keyframes stockBadgePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(230,57,70,.35); }
+    50%      { box-shadow: 0 0 0 5px rgba(230,57,70,0); }
+}
+.item-stock-badge.low-stock { animation-name: stockBadgePulseAmber; }
+@keyframes stockBadgePulseAmber {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(251,191,36,.4); }
+    50%      { box-shadow: 0 0 0 5px rgba(251,191,36,0); }
+}
+
 /* Modern sales invoice header and form shell */
 .sales-shell {
     border: 1px solid #dfeaf6 !important;

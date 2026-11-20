@@ -307,12 +307,18 @@
         .metric-value { font-size: 21px; font-weight: 800; color: var(--clr-text-h); line-height: 1.2; }
         .metric-trend {
             margin-top: auto; padding-top: 12px;
-            font-size: 12.5px; font-weight: 600;
-            display: inline-flex; align-items: center; gap: 5px;
+            display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
         }
-        .metric-trend.up   { color: var(--clr-emerald); }
-        .metric-trend.down { color: var(--clr-rose); }
-        .metric-trend i { font-size: 10px; }
+        .metric-trend-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 11.5px; font-weight: 700;
+            padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+        }
+        .metric-trend.up      .metric-trend-badge { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
+        .metric-trend.down    .metric-trend-badge { background: var(--clr-rose-lt);    color: var(--clr-rose); }
+        .metric-trend.neutral .metric-trend-badge { background: var(--clr-bg);         color: var(--clr-text-l); }
+        .metric-trend-badge i { font-size: 9px; }
+        .metric-trend-text { font-size: 12px; color: var(--clr-text-l); font-weight: 500; }
 
         .btn-stat {
             font-size: 11px; font-weight: 700;
@@ -374,6 +380,17 @@
             z-index: 10; transition: opacity .2s;
         }
         .chart-loading.hidden { opacity: 0; pointer-events: none; }
+
+        .chart-empty {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 10px; text-align: center; padding: 0 16px;
+            background: #fff; border-radius: var(--radius-lg);
+            z-index: 9; transition: opacity .2s;
+        }
+        .chart-empty.hidden { display: none; }
+        .chart-empty i { font-size: 26px; color: #CBD5E1; }
+        .chart-empty span { font-size: 12.5px; font-weight: 600; color: #94A3B8; line-height: 1.4; }
 
         /* ══════════════════════════════════════════════════
            INVOICE LEGEND (side column, next to donut)
@@ -438,8 +455,9 @@
             font-size: 11px; font-weight: 700;
             padding: 3px 9px; border-radius: 20px; white-space: nowrap;
         }
-        .kpi-pct.up   { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
-        .kpi-pct.down { background: var(--clr-rose-lt);    color: var(--clr-rose); }
+        .kpi-pct.up      { background: var(--clr-emerald-lt); color: var(--clr-emerald); }
+        .kpi-pct.down    { background: var(--clr-rose-lt);    color: var(--clr-rose); }
+        .kpi-pct.neutral { background: var(--clr-bg);         color: var(--clr-text-l); }
 
         /* Horizontal variant: used when the Stock History card spans full width */
         .kpi-list-row { flex-direction: row; flex-wrap: wrap; }
@@ -476,17 +494,28 @@
         .pay-progress-bar {
             height: 6px; border-radius: 10px;
             overflow: hidden; display: flex;
-            margin: 14px 20px 8px;
+            margin: 16px 20px 14px;
+            background: var(--clr-border);
         }
         .pay-progress-bar div { height: 100%; transition: width .4s; }
         .pay-legend {
-            display: flex; gap: 12px; flex-wrap: wrap;
-            padding: 0 20px 14px;
+            display: flex; gap: 8px; flex-wrap: wrap;
+            padding: 0 20px 16px;
             border-bottom: 1px solid var(--clr-border);
-            font-size: 12px; font-weight: 600; color: var(--clr-text-m);
         }
-        .pay-legend span { display: flex; align-items: center; gap: 5px; }
-        .pay-legend i { font-size: 8px; }
+        .pay-chip {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 10px; border-radius: 9px;
+            font-size: 11.5px; font-weight: 700;
+            background: var(--chip-bg); color: var(--clr-text-h);
+        }
+        .pay-chip .pc-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--chip-dot); flex: 0 0 auto;
+        }
+        .pay-chip .pc-label { color: var(--clr-text-m); font-weight: 600; }
+        .pay-chip .pc-pct   { font-weight: 800; }
+        .pay-chip .pc-count { color: var(--clr-text-l); font-weight: 600; }
 
         /* ══════════════════════════════════════════════════
            INVENTORY TABLE
@@ -856,10 +885,19 @@
                     <div class="metric-icon {{ $card['color'] }}"><i class="fas {{ $card['icon'] }}"></i></div>
                     <div class="metric-label">{{ $card['label'] }}</div>
                     <div class="metric-value" data-countup data-value="{{ $card['value'] }}" data-decimals="{{ $card['decimals'] }}">0</div>
-                    <div class="metric-trend {{ $card['pct'] >= 0 ? 'up' : 'down' }}">
-                        <i class="fas fa-{{ $card['pct'] >= 0 ? 'arrow-up' : 'arrow-down' }}"></i>
-                        {{ $card['pct'] >= 0 ? '+' : '' }}{{ $card['pct'] }}% Than Last Month
+                    @if(!$card['hasPrev'])
+                    <div class="metric-trend neutral">
+                        <span class="metric-trend-badge"><i class="fas fa-minus"></i> No data last month</span>
                     </div>
+                    @else
+                    <div class="metric-trend {{ $card['pct'] >= 0 ? 'up' : 'down' }}">
+                        <span class="metric-trend-badge">
+                            <i class="fas fa-{{ $card['pct'] >= 0 ? 'arrow-up' : 'arrow-down' }}"></i>
+                            {{ $card['pct'] >= 0 ? '+' : '' }}{{ abs($card['pct']) > 999 ? '>999' : $card['pct'] }}%
+                        </span>
+                        <span class="metric-trend-text">vs last month</span>
+                    </div>
+                    @endif
                 </div>
                 @endforeach
             </div>
@@ -910,6 +948,10 @@
                                 <div class="chart-loading hidden" id="invoice-loading">
                                     <x-cube-loader size="64" color="#1677FF" duration="1.5s" />
                                 </div>
+                                <div class="chart-empty hidden" id="invoice-empty">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>No invoices, purchases or returns for this period</span>
+                                </div>
                                 <div id="invoice_chart"></div>
                             </div>
                             <div class="inv-legend-v" id="invoice-totals">
@@ -955,6 +997,10 @@
                             <div class="chart-loading hidden" id="topItems-loading">
                                 <x-cube-loader size="64" color="#1677FF" duration="1.5s" />
                             </div>
+                            <div class="chart-empty hidden" id="topItems-empty">
+                                <i class="fas fa-ranking-star"></i>
+                                <span>No items sold in this period</span>
+                            </div>
                             <div class="top-items-list" id="top_items_list"></div>
                         </div>
                     </div>
@@ -997,9 +1043,13 @@
                                 <div class="kpi-row">
                                     <span class="kpi-label">{{ $row['label'] }}</span>
                                     <span class="kpi-value">{{ number_format($row['value']) }}</span>
+                                    @if(!$row['hasPrev'])
+                                    <span class="kpi-pct neutral">No data last month</span>
+                                    @else
                                     <span class="kpi-pct {{ $row['pct'] >= 0 ? 'up' : 'down' }}">
-                                        {{ $row['pct'] >= 0 ? '↑' : '↓' }} {{ abs($row['pct']) }}%
+                                        {{ $row['pct'] >= 0 ? '↑' : '↓' }} {{ abs($row['pct']) > 999 ? '>999' : abs($row['pct']) }}%
                                     </span>
+                                    @endif
                                 </div>
                                 @endforeach
                             </div>
@@ -1013,11 +1063,17 @@
                 $invStatusTotal = max(array_sum($invoiceStatusCounts), 1);
                 $invPaidPct     = round($invoiceStatusCounts['Paid']     / $invStatusTotal * 100);
                 $invUnpaidPct   = round($invoiceStatusCounts['Unpaid']   / $invStatusTotal * 100);
+                $invOverduePct  = round($invoiceStatusCounts['Overdue']  / $invStatusTotal * 100);
                 $invReturnedPct = round($invoiceStatusCounts['Returned'] / $invStatusTotal * 100);
-                $invOverduePct  = max(100 - $invPaidPct - $invUnpaidPct - $invReturnedPct, 0);
 
                 $methodTotal = max(array_sum($paymentMethodTotals), 1);
                 $methodPct = collect($paymentMethodTotals)->map(fn($v) => round($v / $methodTotal * 100));
+                $methodCount = [
+                    'Cash'   => $recentPayments->where('primary_method', 'Cash')->count(),
+                    'Card'   => $recentPayments->where('primary_method', 'Card')->count(),
+                    'Cheque' => $recentPayments->where('primary_method', 'Cheque')->count(),
+                    'Bank'   => $recentPayments->where('primary_method', 'Bank')->count(),
+                ];
             @endphp
             <div class="row mb-24" style="margin-bottom:20px;">
                 <div class="col-md-6 col-sm-6 mb-3">
@@ -1033,10 +1089,26 @@
                             <div style="width:{{ $invReturnedPct }}%;background:var(--clr-sky);border-radius:0 10px 10px 0;"></div>
                         </div>
                         <div class="pay-legend">
-                            <span><i class="fas fa-circle" style="color:var(--clr-emerald);font-size:8px;"></i>Paid</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-amber);font-size:8px;"></i>Unpaid</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-rose);font-size:8px;"></i>Overdue</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-sky);font-size:8px;"></i>Returned</span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-emerald-lt);--chip-dot:var(--clr-emerald);">
+                                <span class="pc-dot"></span><span class="pc-label">Paid</span>
+                                <span class="pc-pct">{{ $invPaidPct }}%</span>
+                                <span class="pc-count">({{ $invoiceStatusCounts['Paid'] }})</span>
+                            </span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-amber-lt);--chip-dot:var(--clr-amber);">
+                                <span class="pc-dot"></span><span class="pc-label">Unpaid</span>
+                                <span class="pc-pct">{{ $invUnpaidPct }}%</span>
+                                <span class="pc-count">({{ $invoiceStatusCounts['Unpaid'] }})</span>
+                            </span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-rose-lt);--chip-dot:var(--clr-rose);">
+                                <span class="pc-dot"></span><span class="pc-label">Overdue</span>
+                                <span class="pc-pct">{{ $invOverduePct }}%</span>
+                                <span class="pc-count">({{ $invoiceStatusCounts['Overdue'] }})</span>
+                            </span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-sky-lt);--chip-dot:var(--clr-sky);">
+                                <span class="pc-dot"></span><span class="pc-label">Returned</span>
+                                <span class="pc-pct">{{ $invReturnedPct }}%</span>
+                                <span class="pc-count">({{ $invoiceStatusCounts['Returned'] }})</span>
+                            </span>
                         </div>
                         <div class="table-responsive">
                             <table class="pro-table">
@@ -1085,10 +1157,26 @@
                             <div style="width:{{ $methodPct['Bank'] }}%;background:var(--clr-sky);border-radius:0 10px 10px 0;"></div>
                         </div>
                         <div class="pay-legend">
-                            <span><i class="fas fa-circle" style="color:var(--clr-emerald);font-size:8px;"></i>Cash</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-indigo);font-size:8px;"></i>Card</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-amber);font-size:8px;"></i>Cheque</span>
-                            <span><i class="fas fa-circle" style="color:var(--clr-sky);font-size:8px;"></i>Bank</span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-emerald-lt);--chip-dot:var(--clr-emerald);">
+                                <span class="pc-dot"></span><span class="pc-label">Cash</span>
+                                <span class="pc-pct">{{ $methodPct['Cash'] }}%</span>
+                                <span class="pc-count">({{ $methodCount['Cash'] }})</span>
+                            </span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-indigo-lt);--chip-dot:var(--clr-indigo);">
+                                <span class="pc-dot"></span><span class="pc-label">Card</span>
+                                <span class="pc-pct">{{ $methodPct['Card'] }}%</span>
+                                <span class="pc-count">({{ $methodCount['Card'] }})</span>
+                            </span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-amber-lt);--chip-dot:var(--clr-amber);">
+                                <span class="pc-dot"></span><span class="pc-label">Cheque</span>
+                                <span class="pc-pct">{{ $methodPct['Cheque'] }}%</span>
+                                <span class="pc-count">({{ $methodCount['Cheque'] }})</span>
+                            </span>
+                            <span class="pay-chip" style="--chip-bg:var(--clr-sky-lt);--chip-dot:var(--clr-sky);">
+                                <span class="pc-dot"></span><span class="pc-label">Bank</span>
+                                <span class="pc-pct">{{ $methodPct['Bank'] }}%</span>
+                                <span class="pc-count">({{ $methodCount['Bank'] }})</span>
+                            </span>
                         </div>
                         <div class="table-responsive">
                             <table class="pro-table">
@@ -1303,9 +1391,12 @@ function buildInvoiceChart(data) {
                             formatter: v => v + '%'
                         },
                         total: {
-                            show: true, label: 'Total',
-                            fontSize: '12px', fontWeight: 700, color: '#64748B',
-                            formatter: () => '100%'
+                            show: true, label: 'Total Transactions',
+                            fontSize: '11px', fontWeight: 700, color: '#64748B',
+                            formatter: () => {
+                                const t = data.totals.sales + data.totals.purchases + data.totals.returns;
+                                return t;
+                            }
                         }
                     }
                 }
@@ -1331,9 +1422,20 @@ function buildInvoiceChart(data) {
         },
     };
 
-    if (invoiceChart) { invoiceChart.updateOptions(opts); return; }
-    invoiceChart = new ApexCharts(document.querySelector('#invoice_chart'), opts);
-    invoiceChart.render();
+    const emptyEl  = document.getElementById('invoice-empty');
+    const chartEl  = document.getElementById('invoice_chart');
+    const legendEl = document.getElementById('invoice-totals');
+    const isEmpty  = data.hasData === false;
+
+    emptyEl.classList.toggle('hidden', !isEmpty);
+    chartEl.style.visibility  = isEmpty ? 'hidden' : 'visible';
+    legendEl.style.visibility = isEmpty ? 'hidden' : 'visible';
+
+    if (invoiceChart) { invoiceChart.updateOptions(opts); }
+    else {
+        invoiceChart = new ApexCharts(chartEl, opts);
+        invoiceChart.render();
+    }
 
     document.getElementById('inv-sales-pct').textContent = data.series[0] + '%';
     document.getElementById('inv-purch-pct').textContent = data.series[1] + '%';
@@ -1350,6 +1452,12 @@ function escapeHtml(str) {
 function buildTopItemsList(data) {
     const container = document.getElementById('top_items_list');
     if (!container) return;
+
+    const emptyEl = document.getElementById('topItems-empty');
+    const isEmpty = !data.categories || data.categories.length === 0;
+    if (emptyEl) emptyEl.classList.toggle('hidden', !isEmpty);
+    container.style.visibility = isEmpty ? 'hidden' : 'visible';
+    if (isEmpty) { container.innerHTML = ''; return; }
 
     const revenues = data.revenue.map(Number);
     const max = Math.max(...revenues, 1);

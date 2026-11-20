@@ -283,7 +283,7 @@
         to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .modal-head {
-        background: var(--grad-accent); border-radius: 14px 14px 0 0;
+        background: var(--navy); border-radius: 14px 14px 0 0;
         padding: 18px 22px; display: flex; align-items: center; justify-content: space-between;
     }
     .modal-head h4 {
@@ -309,6 +309,59 @@
         display: flex; justify-content: flex-end; gap: 10px;
         background: #fafbff; border-radius: 0 0 14px 14px;
     }
+
+    /* ── Modern toast notifications (replaces toastr for this page) ── */
+    #toastStack {
+        position: fixed; top: 22px; left: 50%; transform: translateX(-50%); z-index: 2000;
+        display: flex; flex-direction: column; align-items: center; gap: 10px;
+        pointer-events: none;
+    }
+    .toast-m {
+        pointer-events: auto;
+        display: flex; align-items: center; gap: 12px;
+        min-width: 300px; max-width: 360px;
+        background: var(--card); border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--green);
+        padding: 13px 16px;
+        opacity: 0; transform: translateY(-24px) scale(.96);
+        animation: toastIn .35s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    .toast-m.toast-m-out { animation: toastOut .25s ease forwards; }
+    .toast-m.toast-err { border-left-color: var(--red); }
+    @keyframes toastIn {
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+        to { opacity: 0; transform: translateY(-24px) scale(.96); }
+    }
+    .toast-m-icon {
+        flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--green-light);
+    }
+    .toast-m.toast-err .toast-m-icon { background: var(--red-light); }
+    .toast-m-icon svg {
+        width: 16px; height: 16px;
+        stroke: var(--green); stroke-width: 3; fill: none;
+        stroke-linecap: round; stroke-linejoin: round;
+    }
+    .toast-m.toast-err .toast-m-icon svg { stroke: var(--red); }
+    .toast-m-icon .tick-path {
+        stroke-dasharray: 20; stroke-dashoffset: 20;
+        animation: tickDraw .35s ease .15s forwards;
+    }
+    @keyframes tickDraw { to { stroke-dashoffset: 0; } }
+    .toast-m-body { flex: 1 1 auto; min-width: 0; }
+    .toast-m-title { font-size: .82rem; font-weight: 700; color: var(--text-main); }
+    .toast-m-msg   { font-size: .76rem; color: var(--text-sub); margin-top: 1px; }
+    .toast-m-close {
+        flex: 0 0 auto; border: none; background: none; cursor: pointer;
+        color: var(--text-light); font-size: .95rem; line-height: 1;
+        padding: 2px;
+    }
+    .toast-m-close:hover { color: var(--text-sub); }
 
     /* Form grid */
     .fg    { display: grid; gap: 15px; }
@@ -746,8 +799,39 @@
 
 {!! Toastr::message() !!}
 
+<div id="toastStack"></div>
+
 <script>
 $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+
+/* Modern toast — replaces toastr popups for create/edit/delete feedback */
+function notify(message, type) {
+    type = type || 'success';
+    var icon = type === 'error'
+        ? '<svg viewBox="0 0 24 24"><line class="tick-path" x1="6" y1="6" x2="18" y2="18"/><line class="tick-path" x1="18" y1="6" x2="6" y2="18"/></svg>'
+        : '<svg viewBox="0 0 24 24"><polyline class="tick-path" points="4 12 9 17 20 6"/></svg>';
+    var $t = $(
+        '<div class="toast-m' + (type === 'error' ? ' toast-err' : '') + '">' +
+            '<div class="toast-m-icon">' + icon + '</div>' +
+            '<div class="toast-m-body">' +
+                '<div class="toast-m-title">' + (type === 'error' ? 'Error' : 'Success') + '</div>' +
+                '<div class="toast-m-msg"></div>' +
+            '</div>' +
+            '<button type="button" class="toast-m-close">&times;</button>' +
+        '</div>'
+    );
+    $t.find('.toast-m-msg').text(message);
+    $('#toastStack').append($t);
+
+    function dismiss() {
+        $t.addClass('toast-m-out');
+        setTimeout(function () { $t.remove(); }, 250);
+    }
+    var timer = setTimeout(dismiss, 3200);
+    $t.find('.toast-m-close').on('click', function () { clearTimeout(timer); dismiss(); });
+
+    return $t;
+}
 
 $(document).ready(function () {
 
@@ -795,8 +879,8 @@ $(document).ready(function () {
                 if (res.status === 'success') {
                     closeModal('addUserBg');
                     $('#addUserForm')[0].reset();
-                    location.reload();
-                    toastr.success("User created successfully!", "Success");
+                    notify('User created successfully!', 'success');
+                    setTimeout(function () { location.reload(); }, 1100);
                 }
             },
             error: function (err) { showAjaxErr('addErrBox', err); }
@@ -847,8 +931,8 @@ $(document).ready(function () {
             success: function (res) {
                 if (res.status === 'success') {
                     closeModal('editUserBg');
-                    location.reload();
-                    toastr.success("User updated successfully!", "Success");
+                    notify('User updated successfully!', 'success');
+                    setTimeout(function () { location.reload(); }, 1100);
                 }
             },
             error: function (err) { showAjaxErr('editErrBox', err); }
@@ -865,8 +949,8 @@ $(document).ready(function () {
                 data: { "_token": "{{ csrf_token() }}", user_id: uid },
                 success: function (res) {
                     if (res.status === 'success') {
-                        location.reload();
-                        toastr.success("User deleted!", "Success");
+                        notify('User deleted!', 'success');
+                        setTimeout(function () { location.reload(); }, 1100);
                     }
                 }
             });
@@ -889,7 +973,7 @@ $(document).ready(function () {
                 if (res.status === 'success') {
                     closeModal('addRoleBg');
                     $('#addRoleForm')[0].reset();
-                    toastr.success("Role '" + res.role_name + "' created!", "Success");
+                    notify("Role '" + res.role_name + "' created!", 'success');
                     var $opt = $('<option>', { value: res.role_name, text: res.role_name });
                     $('#add_role, #up_role').append($opt.clone());
                 }

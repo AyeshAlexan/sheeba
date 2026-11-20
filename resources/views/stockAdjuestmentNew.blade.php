@@ -9,18 +9,31 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <title>Stock Adjustment</title>
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
-        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-    <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <style>
-        .stock-table-card { background:#f5f9ff; border:1px solid #dfeaf6; border-radius:16px; margin-top:18px; padding:14px; box-shadow:0 10px 25px rgba(42,92,171,.04); }
+        .stock-table-card { background:#fff; border:1px solid #d9e3ee; border-radius:16px; margin-top:18px; padding:16px; }
         .stock-table-card > .card-body { padding:0; }
-        .stock-item-details-table { width:100%; table-layout:fixed; border:1px solid #d9e3ee; border-radius:12px; overflow:hidden; background:#fff; border-collapse:separate; border-spacing:0; }
-        .stock-item-details-table thead th { background:#fff; color:#2b3e5b; font-size:12px; font-weight:800; padding:12px 10px; border-bottom:1px solid #d9e3ee; text-align:center; }
-        .stock-item-details-table tbody td { padding:10px 8px; border-color:#edf1f5; vertical-align:middle; }
-        .stock-item-details-table .form-control { min-height:42px; border:1px solid #d7e3f1; border-radius:10px; }
+        .adjustment-toolbar { position:sticky; top:var(--tr-header-h, 0px); z-index:5; background:#fff; padding:8px 0; }
+        #adjustmentError:empty { display:none; }
+        .adjustment-grid-scroll { overflow-x:auto; border:1px solid #dce4ed; border-radius:12px; }
+        #stockAdjItemsTable { width:100%; min-width:650px; margin:0; border-collapse:separate; border-spacing:0; }
+        #stockAdjItemsTable thead th { background:#edf3fa; color:#354961; font-weight:600; font-size:.8rem; padding:12px 24px 12px 14px; white-space:nowrap; }
+        #stockAdjItemsTable tbody td { padding:10px 14px; border:0; border-top:1px solid #e4eaf1; color:#20354d; vertical-align:middle; }
+        #stockAdjItemsTable tbody tr:focus-within td { background:#f4f8fd; }
+        #stockAdjItemsTable .item-name { display:block; font-weight:600; white-space:normal; overflow-wrap:anywhere; }
+        #stockAdjItemsTable .item-code { display:block; color:#51647b; font: .78rem/1.6 monospace; overflow-wrap:anywhere; }
+        #stockAdjItemsTable .balance { text-align:right; font-variant-numeric:tabular-nums; }
+        #stockAdjItemsTable output { display:inline-block; font-weight:700; border-radius:6px; padding:3px 9px; background:#eff3f7; }
+        #stockAdjItemsTable tr[data-action="increase"] output { background:#def3e8; color:#185e3c; }
+        #stockAdjItemsTable tr[data-action="reduce"] output { background:#fff0d7; color:#784900; }
+        #stockAdjItemsTable .form-control, #stockAdjItemsTable .form-select { min-height:36px; border-radius:7px; font-size:.875rem; }
+        #stockAdjItemsTable .adjustment-action { min-width:9rem; }
+        #stockAdjItemsTable label { display:block; margin:0; max-width:8rem; }
+        #stockAdjItemsTable .quantity-label { font-size:.75rem; color:#52657b; }
+        #stockAdjItemsTable tr[data-action=""] .quantity-label { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+        #stockAdjItemsTable input:disabled { background:#f5f7fa; }
+        #stockAdjItemsTable small { white-space:normal; }
         .stock-table-card .stock-search-wrap { max-width:360px; }
         .stock-table-card .stock-search-wrap input { height:42px; border:1px solid #d7e3f1; border-radius:10px; }
     </style>
@@ -37,7 +50,7 @@
                         </div>
                         <div>
                             <h3 class="page-title">Create Stock Adjustment</h3>
-                            <p class="page-subtitle">Adjust manual stock counts against system quantities</p>
+                            <p class="page-subtitle">Choose Increase stock or Reduce stock and enter how many units.</p>
                         </div>
                     </div>
                     <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Reset this form and start over?')) window.location.reload();">
@@ -87,21 +100,14 @@
 
                         <form action="{{route('Store_StockAdjuestment')}}" method="post">
                                     @csrf
+                                    <input type="hidden" name="lines">
                                     <div class="stock-info-card">
                                         <div class="stock-info-grid">
                                             <div class="si-field">
                                                 <label>Store Code</label>
                                                 <select class="select form-control" id="Store_code" name="Store_code" aria-hidden="true">
                                                     @foreach($storeDta as $Data)
-                                                    <option selected="selected" value="{{ $Data->Store_code}}">{{ $Data->Store_code}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="si-field">
-                                                <label>Store Name</label>
-                                                <select class="select form-control" id="StoreDescription" name="StoreDescription" aria-hidden="true">
-                                                    @foreach($storeDta as $Data)
-                                                    <option selected="selected" value="{{ $Data->Store_name}}">{{ $Data->Store_name}}</option>
+                                                    <option value="{{ $Data->Store_code }}" @selected(old('Store_code', optional($storeDta->last())->Store_code) == $Data->Store_code)>{{ $Data->Store_code }} — {{ $Data->Store_name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -119,7 +125,7 @@
                                                 <div class="si-icon-wrap">
                                                     <i class="fas fa-calendar-alt"></i>
                                                     <input type="date" id="invoice_date" name="invoice_date"
-                                                        class="form-control" aria-label="Date">
+                                                        value="{{ old('invoice_date', now()->toDateString()) }}" required class="form-control" aria-label="Date">
                                                 </div>
                                             </div>
                                         </div>
@@ -128,66 +134,59 @@
                             {{-- Item Details card --}}
                             <div class="card stock-table-card">
                                 <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <div class="adjustment-toolbar mb-3">
+                                <div class="d-flex align-items-center flex-wrap gap-2">
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="fas fa-list" style="color:var(--tr-blue);"></i>
                                         <strong style="font-size:15px;color:var(--tr-navy);">Item Details</strong>
                                     </div>
-                                    <div class="stock-search-wrap">
+                                    <div class="stock-search-wrap ms-auto">
                                         <i class="fas fa-search"></i>
                                         <input type="text" id="stockItemSearch" class="form-control" placeholder="Search item code or description...">
                                     </div>
+                                    <button type="submit" name="save" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save adjustment
+                                    </button>
+                                </div>
+                                <p id="adjustmentError" class="text-danger mt-2 mb-0" role="alert"></p>
                                 </div>
                             {{-- dynamicAdded table --}}
-                            <table class="table table-bordered stock-item-details-table" id="stockAdjItemsTable">
-                                <thead class="thead-light">
-                                    <tr>
-                                        {{-- <th style="width:15%; text-align: center;">Category</th> --}}
-                                        <th style="width:10%; text-align: center;">Item Code</th>
-                                        <th style="width:25%; text-align: center;">Description</th>
-                                        <th style="width:10%; text-align: center;">Price</th>
-                                        <th style="width:10%; text-align: center;">Total Qty</th>
-                                        <th style="width:15%; text-align: center;">Manual Stock</th>
-                                        <th style="width:10%; text-align: center;">Stock Variance</th>
-                                        <th style="width:20%; text-align: center;">Net Value</th>
+                            <div class="adjustment-grid-scroll" role="region" aria-label="Stock adjustment items" tabindex="0">
+                            <table class="table" id="stockAdjItemsTable">
+                                <thead><tr>
+                                    <th>Item</th><th class="balance">Current stock</th>
+                                    <th>Action</th><th>Quantity</th><th class="balance">New stock</th>
+                                </tr></thead>
+                                <tbody>
+                                @php($previous = collect(old('lines', []))->keyBy('item_code'))
+                                @foreach ($itemDetails as $item)
+                                    @php($line = $previous->get($item->Item_code, []))
+                                    <tr data-code="{{ $item->Item_code }}" data-balance="{{ $item->QTY }}">
+                                        <td data-order="{{ $item->Item_code }}">
+                                            <span class="item-name">{{ $item->Item_description }}</span>
+                                            <span class="item-code">{{ $item->Item_code }}</span>
+                                        </td>
+                                        <td class="balance">{{ $item->QTY }}</td>
+                                        <td><select class="form-select adjustment-action" aria-label="Action for {{ $item->Item_code }}">
+                                            <option value="">Choose action</option>
+                                            <option value="increase" @selected(($line['action'] ?? '') === 'increase')>Increase stock</option>
+                                            <option value="reduce" @selected(($line['action'] ?? '') === 'reduce')>Reduce stock</option>
+                                        </select></td>
+                                        <td><label> <span class="quantity-label">Quantity</span>
+                                            <input type="number" class="form-control adjustment-quantity" aria-describedby="quantity-error-{{ $loop->index }}" min="0.01" max="999999.99" step="0.01" value="{{ $line['quantity'] ?? '' }}">
+                                        </label>
+                                        <small id="quantity-error-{{ $loop->index }}" aria-live="polite" class="text-danger d-block"></small></td>
+                                        <td class="balance"><output>{{ $item->QTY }}</output></td>
                                     </tr>
-                                </thead>
-                              <tbody>
-                                @foreach ($itemDetails as $key => $ItemData)
-                                <tr>
-                                    <td>
-                                        <input type="text" name="item_code[]" class="form-control" placeholder="item Code" value="{{ $ItemData->Item_code }}" readonly>
-                                    </td>
-                                    <td>
-                                        <input type="text" name="item_description[]" class="form-control" placeholder="item Description" value="{{ $ItemData->Item_description }}" readonly>
-                                    </td>
-                                    <td>
-                                        <input class="form-control" type="text" placeholder="Sale Price" name="saleprice[]" value="{{ $ItemData->saleprice }}" readonly>
-                                    </td>
-                                    <td>
-                                        <input class="form-control qty" type="text" placeholder="QTY" name="qty[]" value="{{ $ItemData->QTY }}" readonly>
-                                    </td>
-                                    <td>
-                                        <input class="form-control qtyOut" type="number" placeholder="QTY Out" name="qtyOut[]" value="">
-                                    </td>
-                                    <td>
-                                        <input class="form-control stockAdjustment" type="text" placeholder="Stock Adjustment" name="Stock_adjuestment[]" value="0" readonly>
-                                    </td>
-                                    <td>
-                                        <input class="form-control netValue" type="text" placeholder="Net Value" name="net_value[]" value="0" readonly>
-                                    </td>
-                                </tr>
                                 @endforeach
-                            </tbody>
+                                </tbody>
 
                             </table>
+                            </div>
                             <div id="stockAdjItemsCustomPager"></div>
                                 </div>
                             </div>
                             <div class="d-flex gap-2 mt-2">
-                                <button type="submit" name="save" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
                                 <button type="button" name="print" class="btn printReceipt btn-outline-primary" onclick="window.print();">
                                     <i class="fas fa-print"></i> Print
                                 </button>
@@ -217,94 +216,6 @@
 
 
     
-    <script src="assets/js/dt-custom-pager.js"></script>
-    <script>
-        $(document).ready(function () {
-            // The item code/description cells hold their data in readonly
-            // <input value="..."> attributes, not plain cell text, so
-            // DataTables' default text-based search would never match them —
-            // filter against the actual input values instead.
-            $.fn.dataTable.ext.search.push(function (settings, searchData, dataIndex, rowData, counter) {
-                if (settings.nTable.id !== 'stockAdjItemsTable') {
-                    return true;
-                }
-                var q = $('#stockItemSearch').val().toLowerCase();
-                if (!q) {
-                    return true;
-                }
-                var row = stockAdjItemsDt.row(dataIndex).node();
-                var itemCode = $(row).find('input[name="item_code[]"]').val() || '';
-                var itemDescription = $(row).find('input[name="item_description[]"]').val() || '';
-                return (itemCode + ' ' + itemDescription).toLowerCase().indexOf(q) !== -1;
-            });
-
-            var stockAdjItemsDt = $('#stockAdjItemsTable').DataTable({
-                dom: 't',
-                pageLength: 10,
-                lengthChange: false,
-                ordering: true,
-                info: false,
-            });
-
-            $('#stockAdjItemsTable_wrapper').addClass('dt-collapsed');
-            DTCustomPager.init(stockAdjItemsDt, '#stockAdjItemsCustomPager');
-
-            $(document).on('keyup', '#stockItemSearch', function () {
-                stockAdjItemsDt.draw();
-            });
-        });
-    </script>
-
-    {{-- form default date set for today --}}
-    <script>
-        var dateObj = new Date();
-        document.getElementById('invoice_date').value = dateObj.toISOString().slice(0, 10);
-    </script>
-
-    {{-- CSRF Token --}}
-    <script type="text/javascript">
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-    </script>
-
-
-<script>
-$(document).ready(function() {
-    $('.qtyOut').on('input', function () {
-        var $row = $(this).closest('tr');
-
-        var qty = parseFloat($row.find('.qty').val()) || 0;
-        var qtyOut = parseFloat($(this).val()) || 0;
-
-        let adjustment = 0;
-
-        // ✅ If both are negative, add their absolute values
-        if (qty < 0 && qtyOut < 0) {
-            adjustment = Math.abs(qty) - qtyOut;
-        } else {
-            // ✅ All other cases, regular subtraction
-            adjustment = qty - qtyOut;
-        }
-
-        $row.find('.stockAdjustment').val(adjustment);
-
-        // Net value calculation
-        var salePrice = parseFloat($row.find('input[name="saleprice[]"]').val()) || 0;
-        var netValue = adjustment * salePrice;
-        $row.find('.netValue').val(netValue.toFixed(2));
-    });
-});
-</script>
-
-
-
-
-
-
                 <script src="assets/js/jquery-3.6.0.min.js"></script>
                 <script src="assets/js/feather.min.js"></script>
                 <script src="assets/js/toastr.min.js"></script>
@@ -312,6 +223,8 @@ $(document).ready(function() {
                 <script src="assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
                 <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
                 <script src="assets/plugins/datatables/datatables.min.js"></script>
+                <script src="assets/js/dt-custom-pager.js"></script>
+                <script src="assets/js/stock-adjustment.js"></script>
                 <script src="assets/js/script.js"></script>
                 <script src="assets/plugins/apexchart/apexcharts.min.js"></script>
                 <script src="assets/plugins/apexchart/chart-data.js"></script>

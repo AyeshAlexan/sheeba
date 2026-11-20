@@ -149,21 +149,6 @@
     $(document).on('click', '.mail-important', function() {
         $(this).find('i.fa').toggleClass('fa-star').toggleClass('fa-star-o');
     });
-    $(document).on('click', '#toggle_btn', function() {
-        if ($('body').hasClass('mini-sidebar')) {
-            $('body').removeClass('mini-sidebar');
-            $('.subdrop + ul').slideDown();
-        } else {
-            $('body').addClass('mini-sidebar');
-            $('.subdrop + ul').slideUp();
-            closeSidebarFlyout();
-        }
-        setTimeout(function() {
-            mA.redraw();
-            mL.redraw();
-        }, 300);
-        return false;
-    });
     // Collapsed (icon-only) sidebar: tapping/clicking a parent icon opens
     // a flyout panel with its sub-pages next to it. This replaces the old
     // mouseover-to-expand behaviour, which only ever worked with a mouse —
@@ -716,3 +701,80 @@ jQuery(document).on('click', '.pawn_cancel', function (e) {
         if (lastFocused && lastFocused.focus) lastFocused.focus();
     };
 })();
+
+// Shared "Are you sure?" confirm popup — same visual system as the
+// validation alert above, but with Yes/No buttons and a callback instead
+// of a browser confirm(). Used for logout and other destructive actions.
+(function () {
+    var overlay, titleEl, messageEl, yesBtn, noBtn, boxEl, lastFocused, onConfirm;
+
+    function ensureModal() {
+        if (overlay) return;
+        var html = '' +
+            '<div id="gvcOverlay">' +
+            '  <div class="gvm-box gvm-info" id="gvcBox" role="alertdialog" aria-modal="true" aria-labelledby="gvcTitle">' +
+            '    <div class="gvm-head">' +
+            '      <h5 class="gvm-title" id="gvcTitle"><i class="fas fa-circle-question"></i><span id="gvcTitleText">Are you sure?</span></h5>' +
+            '      <button type="button" class="gvm-close" id="gvcCloseBtn" aria-label="Close">&times;</button>' +
+            '    </div>' +
+            '    <div class="gvm-body">' +
+            '      <div class="gvm-icon" id="gvcIcon"><i class="fas fa-right-from-bracket"></i></div>' +
+            '      <p class="gvm-message" id="gvcMessage"></p>' +
+            '    </div>' +
+            '    <div class="gvm-footer gvm-footer-split">' +
+            '      <button type="button" class="gvm-ok-btn gvm-no-btn" id="gvcNoBtn"><i class="fas fa-xmark"></i> No</button>' +
+            '      <button type="button" class="gvm-ok-btn gvm-yes-btn" id="gvcYesBtn"><i class="fas fa-check"></i> Yes</button>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
+        document.body.insertAdjacentHTML('beforeend', html);
+        overlay   = document.getElementById('gvcOverlay');
+        boxEl     = document.getElementById('gvcBox');
+        titleEl   = document.getElementById('gvcTitleText');
+        messageEl = document.getElementById('gvcMessage');
+        yesBtn    = document.getElementById('gvcYesBtn');
+        noBtn     = document.getElementById('gvcNoBtn');
+
+        var hide = function () { window.hideConfirmAlert(); };
+        noBtn.addEventListener('click', hide);
+        document.getElementById('gvcCloseBtn').addEventListener('click', hide);
+        yesBtn.addEventListener('click', function () {
+            var cb = onConfirm;
+            hide();
+            if (cb) cb();
+        });
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) hide(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('show')) hide();
+        });
+    }
+
+    // showConfirmAlert(message, callback, opts) — callback runs only when
+    // the user picks "Yes". opts: { title, icon }.
+    window.showConfirmAlert = function (message, callback, opts) {
+        opts = opts || {};
+        ensureModal();
+
+        titleEl.textContent = opts.title || 'Are you sure?';
+        messageEl.textContent = message;
+        document.getElementById('gvcIcon').innerHTML = '<i class="fas ' + (opts.icon || 'fa-right-from-bracket') + '"></i>';
+        onConfirm = callback;
+
+        lastFocused = document.activeElement;
+        overlay.classList.add('show');
+        noBtn.focus();
+    };
+
+    window.hideConfirmAlert = function () {
+        if (overlay) overlay.classList.remove('show');
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+    };
+})();
+
+jQuery(document).on('click', '#sidebar-logout-btn', function (e) {
+    e.preventDefault();
+    window.showConfirmAlert('Do you want to logout?', function () {
+        var form = document.getElementById('sidebar-logout-form');
+        if (form) form.submit();
+    }, { title: 'Logout' });
+});

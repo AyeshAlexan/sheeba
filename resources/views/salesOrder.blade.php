@@ -184,6 +184,7 @@
                                     <i class="fas fa-plus" style="color:white"></i>
                                 </button>
                             </div>
+                            <div id="item_stock_badge" class="item-stock-badge"></div>
                         </td>
                         <td>
                             <select class="form-control sales-select" id="item_description" name="item_description">
@@ -615,6 +616,8 @@ function setItemDetails() {
     var code        = $('#item_code').val();
     var isWholesale = $('#customer_toggle').is(':checked');
 
+    if (!code) { updateStockBadge(''); }
+
     $.get("{{ route('show_select_item_description_ajax') }}", { Item_code: code })
     .done(function (res) {
         if (res.status === 'success') {
@@ -630,9 +633,35 @@ function setItemDetails() {
             });
             calculateEntryRow();
             updateCostBadge();
+            updateStockBadge(code);
             loadItemBatches(code);
         }
     });
+}
+
+// Shows how much stock is actually left for the picked item/batch, right
+// under the item-code field — so "no stock" is visible before Add is even
+// clicked, instead of only surfacing as an error afterwards.
+function updateStockBadge(itemCode) {
+    var badge = $('#item_stock_badge');
+
+    if (!itemCode || !itemStockMap.hasOwnProperty(itemCode)) {
+        badge.removeClass('show in-stock low-stock no-stock').empty();
+        return;
+    }
+
+    var selectedBatchOpt = $('#item_batch option:selected');
+    var batchQty         = selectedBatchOpt.val() ? parseFloat(selectedBatchOpt.data('qty-remaining')) : NaN;
+    var stock             = isNaN(batchQty) ? (itemStockMap[itemCode] || 0) : batchQty;
+
+    badge.addClass('show').removeClass('in-stock low-stock no-stock');
+    if (stock <= 0) {
+        badge.addClass('no-stock').html('<i class="fas fa-circle-exclamation"></i> No stock available');
+    } else if (stock <= 5) {
+        badge.addClass('low-stock').html('<i class="fas fa-triangle-exclamation"></i> Only ' + stock + ' left in stock');
+    } else {
+        badge.addClass('in-stock').html('<i class="fas fa-circle-check"></i> In stock: ' + stock);
+    }
 }
 
 // Load every batch (including depleted ones) for the selected item into #item_batch.
@@ -677,6 +706,7 @@ $(document).on('change', '#item_batch', function () {
         $('#unit_price').val(price);
         updateCostBadge();
     }
+    updateStockBadge($('#item_code').val());
 });
 
 $('#item_code').on('keyup', function () { setItemDetails(); });
@@ -912,12 +942,21 @@ $('.add-item').click(function () {
         return;
     }
 
-    if (!customer_nic || !invoice_no || !item_code || !qty || !unit_price || !net_value) {
+    if (!customer_nic || !invoice_no) {
         showValidationAlert('Please fill in all required fields.');
         return;
     }
 
-    // ── Stock check — block adding more than what's actually available ──
+    if (!item_code || !qty) {
+        showValidationAlert('Please select an item and enter a quantity.');
+        return;
+    }
+
+    // ── Stock check — run BEFORE the price/value checks below. An
+    // out-of-stock item has no price data to pull from (price is only
+    // recorded against batches/GRNs), so unit_price/net_value legitimately
+    // sit at 0 — checking those first used to surface the generic "fill in
+    // all required fields" message instead of the real reason: no stock. ──
     var availableStock = batch_no
         ? parseFloat($('#item_batch option:selected').data('qty-remaining'))
         : itemStockMap[item_code];
@@ -936,8 +975,19 @@ $('.add-item').click(function () {
     });
 
     var remainingStock = availableStock - alreadyAdded;
+    if (remainingStock <= 0) {
+        var noStockLabel = item_code + (item_description ? ' — ' + item_description : '') + (batch_no ? ' (Batch ' + batch_no + ')' : '');
+        showValidationAlert("\"" + noStockLabel + "\" has no stock available right now. You can't add it until stock is received.",
+            { title: 'No Stock Available', type: 'danger' });
+        return;
+    }
     if (qty > remainingStock) {
         showStockWarning(item_code, batch_no, remainingStock, qty);
+        return;
+    }
+
+    if (!unit_price || !net_value) {
+        showValidationAlert('Please fill in all required fields.');
         return;
     }
 
@@ -1054,6 +1104,7 @@ function resetTopRow() {
     $('#net_value').val('0');
     $('#item_batch').html('<option value="">(no batch)</option>');
     $('#cg_net_badge').hide();
+    updateStockBadge('');
 }
 
 $(document).on('click', '.remove-new-row', function () {
