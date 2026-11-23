@@ -21,7 +21,7 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            font-size: 12px;
+            font-size: 14px;
             color: #1f2430;
             background: #fff;
             padding: 22px 32px;
@@ -52,7 +52,7 @@
         }
         .company-block p {
             margin: 2px 0;
-            font-size: 11px;
+            font-size: 12px;
             color: #6b7280;
         }
         .company-block .contact { color: #1f2430; font-weight: 500; }
@@ -66,7 +66,7 @@
             letter-spacing: 2px;
         }
         .invoice-meta { margin-top: 8px; border-collapse: collapse; width: 100%; }
-        .invoice-meta td { font-size: 11px; padding: 1px 0 1px 10px; text-align: right; }
+        .invoice-meta td { font-size: 12px; padding: 1px 0 1px 10px; text-align: right; }
         .invoice-meta td:first-child { color: #6b7280; font-weight: 600; padding-left: 0; }
         .invoice-meta td:last-child { font-weight: 700; color: #1f2430; }
 
@@ -86,7 +86,7 @@
         .meta-col-payment { width: 38%; border-left: 1px solid #d9dee6; border-right: 1px solid #d9dee6; }
         .meta-col-billto { text-align: right; border-right: 1px solid #d9dee6; }
         .meta-col-label {
-            font-size: 10px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: .6px;
             color: #6b7280;
@@ -94,14 +94,14 @@
             margin-bottom: 6px;
         }
         .invoice-type-banner {
-            font-size: 11.5px;
+            font-size: 13px;
             font-weight: 700;
             letter-spacing: .5px;
             color: #123e78;
         }
-        .meta-col-billto .customer-name { font-size: 17px; font-weight: 800; color: #1f2430; margin-bottom: 3px; }
-        .meta-col-billto div { font-size: 11px; color: #6b7280; line-height: 1.5; }
-        .meta-col-billto .cash-paid-note { font-size: 9.5px; color: #9aa3b0; margin-top: 4px; }
+        .meta-col-billto .customer-name { font-size: 18px; font-weight: 800; color: #1f2430; margin-bottom: 3px; }
+        .meta-col-billto div { font-size: 12px; color: #6b7280; line-height: 1.5; }
+        .meta-col-billto .cash-paid-note { font-size: 10.5px; color: #9aa3b0; margin-top: 4px; }
 
         /* ── Items Table ── */
         table.items-table { width: 100%; border-collapse: collapse; }
@@ -110,7 +110,7 @@
             background: #1a5fb4;
             color: #fff;
             padding: 7px 6px;
-            font-size: 10.5px;
+            font-size: 12px;
             font-weight: 700;
             text-align: center;
             letter-spacing: .3px;
@@ -121,7 +121,7 @@
 
         table.items-table tbody tr td {
             padding: 6px 6px;
-            font-size: 11.5px;
+            font-size: 13px;
             vertical-align: middle;
             border-bottom: 1px solid #d9dee6;
         }
@@ -135,7 +135,7 @@
             border-top: 0 !important;
             border-bottom: none !important;
             padding: 4px 6px !important;
-            font-size: 11px;
+            font-size: 12px;
             background: #fff !important;
             color: #6b7280;
         }
@@ -143,7 +143,7 @@
             border-top: 2px solid #1a5fb4 !important;
             border-bottom: 2px solid #1a5fb4 !important;
             padding: 7px 6px !important;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 800;
             background: #f4f7fb !important;
             color: #123e78;
@@ -155,11 +155,11 @@
         .balance-left { width: 55%; }
         .balance-right-cell { text-align: right; }
         .balance-right table { border-collapse: collapse; margin-left: auto; }
-        .balance-right td { padding: 2px 6px; font-size: 11px; }
+        .balance-right td { padding: 2px 6px; font-size: 12px; }
         .balance-right td:first-child { text-align: left;  color: #6b7280; }
         .balance-right td:last-child  { text-align: right; font-weight: 700; }
         .balance-right tr:last-child td {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 800;
             color: #123e78;
             border-top: 1.5px solid #d9dee6;
@@ -169,9 +169,9 @@
             margin-top: 10px;
             padding-top: 8px;
             border-top: 1px solid #d9dee6;
-            font-size: 11px;
+            font-size: 12px;
         }
-        .payment-summary-title { color: #6b7280; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: .4px; }
+        .payment-summary-title { color: #6b7280; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: .4px; }
         .pay-line {
             display: inline-block;
             border: 1px solid #1a5fb4;
@@ -180,7 +180,7 @@
             margin-right: 6px;
             background: #eaf2fc;
             color: #123e78;
-            font-size: 11px;
+            font-size: 12px;
         }
         .pay-line strong { font-weight: 700; margin-right: 4px; }
         .pay-line.neutral { border-color: #bbb; background: #f5f5f5; color: #777; }
@@ -191,7 +191,7 @@
         .sig-box .sig-line {
             border-top: 1.5px solid #1f2430;
             padding-top: 6px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             color: #6b7280;
         }
@@ -202,7 +202,7 @@
             padding-top: 8px;
             border-top: 1px solid #d9dee6;
             text-align: center;
-            font-size: 10px;
+            font-size: 11px;
             color: #6b7280;
         }
 
@@ -229,7 +229,7 @@
                 color: #000 !important;
                 border-top: 1px solid #000 !important;
                 border-bottom: 2px solid #000 !important;
-                font-size: 11.5px !important;
+                font-size: 13px !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
