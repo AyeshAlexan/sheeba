@@ -519,6 +519,11 @@
                                             <button type="button" name="print" class="btn printReceipt btn-outline-primary" onclick="window.print();">
                                                 <i class="fas fa-print"></i> Print
                                             </button>
+                                            @if (Session::has('pdfLink'))
+                                            <a href="{{ Session::get('pdfLink') }}" target="_blank" rel="noopener" class="btn btn-outline-primary">
+                                                <i class="fas fa-file-pdf"></i> Print saved invoice
+                                            </a>
+                                            @endif
                                             <button type="button" name="pawn_delete" id="pawn_delete" class="btn btn-outline-danger pawn_delete d-none">DELETE</button>
                                             <button type="button" name="pawn_cancel" id="pawn_cancel" class="btn btn-outline-warning pawn_cancel"
                                                 onclick="if(confirm('Discard this form and start over?')) window.location.reload();">

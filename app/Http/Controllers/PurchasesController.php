@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
 use PDF;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\Customer;
@@ -281,39 +279,32 @@ public function createPurchases(Request $request)
             }
         }
 
-        // Prepare Data for PDF
-        $companyData = Company::latest()->paginate(1);
-        $T_detailsdata = TPurchasesDetails::where('Invoice_no', $request->invoice_no)
-            ->where('BC', $branchCode)
-            ->get();
-
-        $T_sumdata = TPurchasesSum::where('Invoice_no', $request->invoice_no)
-            ->where('BC', $branchCode)
-            ->get();
-
-        $supplierData = Suppliers::where('Code', $request->customer_nic)->get();
-
-        $pdf = PDF::loadView('purchaseInvoicePrint', [
-            'pawnSumData' => $T_sumdata,
-            'supplierData' => $supplierData,
-            'pawnDetailsData' => $T_detailsdata,
-            'companyData' => $companyData
-        ]);
-
-        $pdfPath = storage_path('../public/assets/pdf/Purchase_Invoice.pdf');
-        $pdf->save($pdfPath);
-        $pdfUrl = asset('public/assets/pdf/Purchase_Invoice.pdf');
-
         DB::commit();
-
-        return back()
-            ->with('done', 'The Invoice has been added')
-            ->with('pdfLink', $pdfUrl);
-
     } catch (\Exception $e) {
         DB::rollBack();
         return back()->withErrors(['error' => 'Failed to save Purchase Invoice. ' . $e->getMessage()]);
     }
+
+    return back()
+        ->with('done', 'The Invoice has been added')
+        ->with('pdfLink', route('purchases.print', ['invoiceNo' => $InvoiceSum->Invoice_no]));
+}
+
+public function printInvoice(string $invoiceNo)
+{
+    $branchCode = auth()->user()->BC;
+    $invoice = TPurchasesSum::where('Invoice_no', $invoiceNo)
+        ->where('BC', $branchCode)
+        ->firstOrFail();
+
+    return PDF::loadView('purchaseInvoicePrint', [
+        'pawnSumData' => [$invoice],
+        'supplierData' => Suppliers::where('Code', $invoice->Customer_NIC)->get(),
+        'pawnDetailsData' => TPurchasesDetails::where('Invoice_no', $invoice->Invoice_no)
+            ->where('BC', $branchCode)
+            ->get(),
+        'companyData' => Company::latest()->limit(1)->get(),
+    ])->stream('Purchase_Invoice.pdf');
 }
 
 // Auto-generate a fresh batch number for an item: {Item_code}-B{sequence}

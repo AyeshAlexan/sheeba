@@ -333,6 +333,9 @@ Route::get('/get_branchdetails_ajax', [App\Http\Controllers\branchdetailsControl
 // 2023.10.25
 // Show repair invoice page
 Route::get('/purchases', [App\Http\Controllers\PurchasesController::class, 'index'])->name('purchases');
+
+Route::get('/purchases/{invoiceNo}/print', [App\Http\Controllers\PurchasesController::class, 'printInvoice'])
+    ->where('invoiceNo', '-?[0-9]+')->middleware('auth')->name('purchases.print');
 // add_invoice
 Route::post('/add_Purchases', [App\Http\Controllers\PurchasesController::class, 'createPurchases'])->name('add_Purchases');
 //create_recall_purchase
